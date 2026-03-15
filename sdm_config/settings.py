@@ -83,7 +83,15 @@ USE_TZ = True
 
 # --- FICHIERS STATIQUES ET MÉDIA ---
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# Configuration du stockage pour Django 4.2+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "cloudinary_storage.storage.StaticHashedCloudinaryStorage",
+    },
+}
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Obligatoire pour la production
 
 # Configuration Cloudinary via le fichier .env
