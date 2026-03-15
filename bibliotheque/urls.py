@@ -1,0 +1,38 @@
+from django.contrib import admin
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
+from bibliotheque import views # Vérifie bien le nom de ton app ici
+
+urlpatterns = [
+    # Admin
+    path('admin/', admin.site.urls),
+
+    # Accueil et Authentification
+    path('', views.home, name='home'),
+    path('login/', auth_views.LoginView.as_view(template_name='bibliotheque/login.html'), name='login'),
+    path('register/', views.register_view, name='register'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+
+    # Profil et Abonnement
+    path('profile/', views.profil_view, name='profile'),
+    path('abonnement/', views.page_abonnement, name='abonnement'),
+    path('paiement-confirmation/', views.paiement_reussi, name='paiement_reussi'),
+
+    # Contenu (Sons, Coran, etc.)
+    path('collection/son/', views.liste_sons, name='liste_sons'),
+    path('collection/<str:categorie>/', views.liste_dynamique, name='liste'),
+    path('lire/<str:categorie>/<int:id>/', views.lire_pdf, name='lire_pdf'),
+    path('zikr-compteur/<int:id>/', views.zikr_compteur, name='zikr_compteur'),
+    path('voir-historique/', views.voir_historique, name='voir_historique'),
+    path('historique/zikr/', views.voir_historique_zikr, name='voir_historique_zikr'),
+    path('historique/general/', views.voir_historique_general, name='voir_historique_general'),
+    path('details/<int:id>/', views.details_contenu, name='details_contenu'),
+    path('api/enregistrer-seance/', views.enregistrer_seance, name='enregistrer_seance'),
+]
+
+# Gestion des fichiers média et statiques en développement
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

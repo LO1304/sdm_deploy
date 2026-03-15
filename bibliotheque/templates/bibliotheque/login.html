@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --gold:#d4af37;
+    --dark:#05070a;
+}
+
+body{
+    background: radial-gradient(circle at top,#0a0d12,#05070a);
+    font-family:'DM Mono',monospace;
+    color:white;
+}
+
+.glass{
+    background: rgba(255,255,255,0.02);
+    border:1px solid rgba(212,175,55,0.15);
+    backdrop-filter: blur(14px);
+}
+
+.gold-text{
+    font-family:'Cormorant Garamond',serif;
+    color:var(--gold);
+}
+
+.input-style{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(212,175,55,0.12);
+    transition:all .25s ease;
+}
+
+.input-style:focus{
+    border-color:var(--gold);
+    box-shadow:0 0 0 1px rgba(212,175,55,0.3);
+}
+
+.btn-gold{
+    background:var(--gold);
+    transition:all .25s ease;
+}
+
+.btn-gold:hover{
+    transform:translateY(-2px) scale(1.02);
+    box-shadow:0 8px 30px rgba(212,175,55,0.25);
+}
+</style>
+
+<title>SDM Authentification</title>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4">
+
+<div class="glass w-full max-w-md rounded-[2rem] p-10 shadow-2xl">
+
+<div class="text-center mb-10">
+<h1 class="text-5xl gold-text mb-2">SDM</h1>
+<p class="text-[10px] uppercase tracking-[0.5em] opacity-40">
+Authentification
+</p>
+</div>
+
+<form method="post" class="space-y-6">
+
+{% csrf_token %}
+
+{% if form.non_field_errors %}
+<div class="text-red-400 text-[11px] bg-red-400/10 p-3 rounded-lg text-center">
+Identifiants incorrects
+</div>
+{% endif %}
+
+{% for field in form %}
+<div class="space-y-1">
+
+<label class="text-[9px] uppercase tracking-widest opacity-40 ml-1">
+{{ field.label }}
+</label>
+
+{{ field.as_widget|safe }}
+
+</div>
+{% endfor %}
+
+<button type="submit"
+class="btn-gold w-full text-black py-4 rounded-xl text-[11px] font-bold uppercase tracking-widest mt-4">
+
+Entrer dans la bibliothèque
+
+</button>
+
+</form>
+
+<div class="mt-10 text-center">
+
+<p class="text-[10px] opacity-40">
+Pas encore de compte ?
+
+<a href="{% url 'register' %}"
+class="text-[#d4af37] hover:underline ml-1">
+
+S'inscrire
+
+</a>
+
+</p>
+
+</div>
+
+</div>
+
+</body>
+</html>

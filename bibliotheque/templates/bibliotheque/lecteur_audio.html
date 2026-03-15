@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Zikr Compteur — {{ zikr.titre }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+  --g1:#d4af37; --g2:#f5dc6e; --g3:#9a7520;
+  --bg:#03040a;
+  --s1:rgba(255,255,255,.03);
+  --s2:rgba(255,255,255,.055);
+  --b1:rgba(212,175,55,.18);
+  --b2:rgba(255,255,255,.07);
+  --dim:rgba(255,255,255,.25);
+  --mid:rgba(255,255,255,.58);
+  --fS:'Cormorant Garamond',serif;
+  --fU:'Outfit',sans-serif;
+  --fA:'Amiri',serif;
+  --fT:'Cinzel Decorative',cursive;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+html,body {
+  height:100%; overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+body {
+  background:var(--bg); color:#fff;
+  font-family:var(--fU);
+}
+
+/* ─── Canvas ─── */
+#bg-canvas {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+}
+
+/* ─── Blobs ─── */
+.blob { position:fixed; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:0; }
+.b1 {
+  width:600px; height:600px; top:-200px; left:50%;
+  transform:translateX(-50%);
+  background:radial-gradient(circle, rgba(212,175,55,.07) 0%, transparent 65%);
+  animation:bp1 12s ease-in-out infinite alternate;
+}
+.b2 {
+  width:350px; height:350px; bottom:-80px; right:-80px;
+  background:radial-gradient(circle, rgba(90,50,200,.05) 0%, transparent 65%);
+  animation:bp2 16s ease-in-out infinite alternate;
+}
+@keyframes bp1 { to { transform:translateX(-48%) scale(1.1); } }
+@keyframes bp2 { to { transform:scale(1.18) rotate(15deg); } }
+
+/* ─── Layout ─── */
+.screen {
+  position:relative; z-index:1;
+  height:100vh; display:flex; flex-direction:column;
+  overflow:hidden;
+}
+
+/* ─── TOPBAR ─── */
+.topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:22px 20px 0; flex-shrink:0;
+}
+.t-btn {
+  width:40px; height:40px; border-radius:50%;
+  background:var(--s1); border:1px solid var(--b2);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--g1);
+  transition:all .2s;
+  text-decoration:none;
+  backdrop-filter:blur(10px);
+}
+.t-btn:active { transform:scale(.88); background:rgba(212,175,55,.12); }
+.t-center { text-align:center; flex:1; padding:0 12px; }
+.t-tag { font-size:8px; letter-spacing:.28em; text-transform:uppercase; color:var(--dim); margin-bottom:3px; }
+.t-title { font-family:var(--fT); font-size:11px; color:var(--g1); letter-spacing:.08em; }
+
+/* ─── ZIKR TEXT ─── */
+.zikr-zone {
+  padding:14px 20px 0; flex-shrink:0;
+}
+.zikr-pill {
+  background:var(--s1); border:1px solid var(--b1);
+  border-radius:20px; padding:16px 18px;
+  text-align:center; position:relative; overflow:hidden;
+  backdrop-filter:blur(16px);
+}
+.zikr-pill::before {
+  content:''; position:absolute; top:0; left:20%; right:20%; height:1px;
+  background:linear-gradient(90deg, transparent, var(--g1), transparent);
+}
+.zikr-pill::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent, rgba(212,175,55,.03), transparent);
+  animation:shimmer 5s ease-in-out infinite; pointer-events:none;
+}
+@keyframes shimmer { 0%{left:-100%} 100%{left:200%} }
+.zp-arabic {
+  font-family:var(--fA); font-size:clamp(18px,4.5vw,24px);
+  direction:rtl; line-height:1.8; margin-bottom:8px;
+  color:rgba(255,255,255,.9);
+}
+.zp-text {
+  font-family:var(--fS); font-style:italic; font-size:15px;
+  color:var(--g1); line-height:1.5;
+}
+
+/* ─── MAIN COUNTER AREA ─── */
+.counter-area {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  padding:0 20px;
+}
+
+/* Ambient ring behind tap */
+.ambient-ring {
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(212,175,55,.08);
+  pointer-events:none;
+  animation:ambientPulse 4s ease-in-out infinite;
+}
+.ar1 { width:200px; height:200px; animation-delay:0s; }
+.ar2 { width:260px; height:260px; animation-delay:.8s; border-style:dashed; border-color:rgba(212,175,55,.04); }
+.ar3 { width:310px; height:310px; animation-delay:1.6s; border-color:rgba(212,175,55,.03); }
+@keyframes ambientPulse {
+  0%,100% { opacity:.4; transform:scale(1); }
+  50%      { opacity:1; transform:scale(1.04); }
+}
+
+/* Ripple host */
+#ripples { position:absolute; inset:0; pointer-events:none; display:flex; align-items:center; justify-content:center; }
+.rpl {
+  position:absolute; border-radius:50%;
+  border:1.5px solid rgba(212,175,55,.55);
+  animation:rpl .8s ease-out forwards;
+}
+@keyframes rpl {
+  0%   { width:100px; height:100px; opacity:.7; }
+  100% { width:320px; height:320px; opacity:0; }
+}
+
+/* Energy burst particles */
+.particle {
+  position:absolute;
+  width:4px; height:4px; border-radius:50%;
+  background:var(--g1);
+  pointer-events:none;
+  animation:burst var(--dur,.6s) ease-out forwards;
+}
+@keyframes burst {
+  0%   { transform:translate(0,0) scale(1); opacity:.9; }
+  100% { transform:translate(var(--tx),var(--ty)) scale(0); opacity:0; }
+}
+
+/* TAP BUTTON */
+.tap-btn {
+  position:relative; cursor:pointer;
+  width:150px; height:150px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  transition:transform .12s;
+  z-index:2;
+  -webkit-tap-highlight-color:transparent;
+}
+.tap-btn:active { transform:scale(.86); }
+
+.tap-outer {
+  position:absolute; inset:0; border-radius:50%;
+  border:1px solid rgba(212,175,55,.22);
+  animation:outerPulse 3s ease-in-out infinite;
+}
+@keyframes outerPulse {
+  0%,100% { transform:scale(1); box-shadow:0 0 0 0 rgba(212,175,55,0); }
+  50%      { transform:scale(1.06); box-shadow:0 0 0 12px rgba(212,175,55,.04); }
+}
+.tap-inner {
+  width:114px; height:114px; border-radius:50%;
+  background:linear-gradient(145deg, rgba(212,175,55,.14) 0%, rgba(212,175,55,.04) 100%);
+  border:1px solid rgba(212,175,55,.38);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 40px rgba(212,175,55,.08), inset 0 0 24px rgba(212,175,55,.05);
+  transition:box-shadow .15s;
+}
+.tap-btn:active .tap-inner {
+  box-shadow:0 0 60px rgba(212,175,55,.28), inset 0 0 32px rgba(212,175,55,.1);
+}
+.tap-icon { font-size:42px; color:var(--g1); opacity:.8; }
+
+/* ─── COUNTER AREA restructured ─── */
+.counter-area {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  gap:0; padding:8px 20px;
+}
+
+/* Count block — in normal flow, above button */
+.count-block {
+  display:flex; flex-direction:column; align-items:center;
+  position:relative; z-index:3;
+  margin-bottom:10px; pointer-events:none;
+}
+.count-num {
+  font-family:var(--fU); font-weight:200;
+  font-size:clamp(68px,18vw,96px);
+  line-height:1; font-variant-numeric:tabular-nums;
+  transition:color .2s;
+  letter-spacing:-.02em;
+}
+.count-num.bump { animation:numBump .18s ease; }
+@keyframes numBump {
+  0%  { transform:scale(1); }
+  45% { transform:scale(1.13); }
+  100%{ transform:scale(1); }
+}
+.count-fraction {
+  font-size:13px; color:var(--dim); margin-top:4px;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.05em;
+}
+.count-fraction span { color:var(--g1); font-weight:500; }
+
+/* ─── GOAL CHIPS ─── */
+.goal-panel {
+  position:relative; z-index:3;
+  display:flex; flex-direction:column; align-items:center;
+  gap:8px; margin-bottom:14px;
+}
+.goal-chips {
+  display:flex; gap:6px; flex-wrap:wrap; justify-content:center;
+}
+.g-chip {
+  padding:5px 14px; border-radius:99px;
+  background:var(--s1); border:1px solid var(--b2);
+  font-family:var(--fU); font-size:11px; font-weight:500;
+  color:var(--mid); cursor:pointer;
+  transition:all .2s;
+  display:flex; align-items:center; gap:5px;
+  user-select:none;
+}
+.g-chip:hover { border-color:rgba(212,175,55,.3); color:#fff; }
+.g-chip.active {
+  background:rgba(212,175,55,.12);
+  border-color:rgba(212,175,55,.45);
+  color:var(--g1);
+  box-shadow:0 0 12px rgba(212,175,55,.1);
+}
+.g-chip.add-chip {
+  border-style:dashed;
+  border-color:rgba(212,175,55,.25);
+  color:var(--g1);
+  padding:5px 10px;
+}
+.g-chip.add-chip:hover { background:rgba(212,175,55,.08); }
+
+/* Custom goal input inline */
+.custom-goal-row {
+  display:flex; align-items:center; gap:6px;
+  background:rgba(212,175,55,.07);
+  border:1px solid rgba(212,175,55,.3);
+  border-radius:99px; padding:4px 6px 4px 14px;
+  animation:popIn .2s cubic-bezier(.36,1.56,.64,1) both;
+}
+@keyframes popIn { from { transform:scale(.8); opacity:0; } }
+.custom-goal-row input {
+  background:transparent; border:none; outline:none;
+  color:#fff; font-family:var(--fU); font-size:13px;
+  width:52px; text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+.custom-goal-row input::placeholder { color:var(--dim); font-size:11px; }
+.cg-confirm {
+  width:26px; height:26px; border-radius:50%;
+  background:rgba(212,175,55,.2); border:1px solid rgba(212,175,55,.4);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--g1); font-size:10px;
+  transition:all .15s;
+}
+.cg-confirm:hover { background:rgba(212,175,55,.35); }
+.cg-cancel {
+  width:26px; height:26px; border-radius:50%;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--dim); font-size:10px;
+  transition:all .15s;
+}
+
+/* Streak badge */
+.streak-badge {
+  position:absolute; top:12px; right:12px;
+  background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.2);
+  border-radius:99px; padding:5px 12px;
+  display:flex; align-items:center; gap:5px;
+  font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--g1);
+  z-index:3;
+  opacity:0; transform:translateX(10px);
+  transition:opacity .3s, transform .3s;
+}
+.streak-badge.show { opacity:1; transform:translateX(0); }
+.streak-dot {
+  width:5px; height:5px; border-radius:50%;
+  background:var(--g1);
+  animation:dotBlink 1s ease-in-out infinite;
+}
+@keyframes dotBlink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ─── AUDIO PLAYER ─── */
+.audio-section {
+  padding:0 20px 28px; flex-shrink:0;
+}
+.audio-card {
+  background:var(--s2); border:1px solid var(--b1);
+  border-radius:18px; padding:14px 16px;
+  backdrop-filter:blur(16px);
+}
+.audio-label {
+  font-size:8px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--dim); margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+}
+.audio-label::after {
+  content:''; flex:1; height:1px;
+  background:linear-gradient(90deg, var(--b1), transparent);
+}
+.audio-controls { display:flex; align-items:center; gap:12px; }
+.aud-btn {
+  width:36px; height:36px; border-radius:50%;
+  background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--g1); cursor:pointer;
+  transition:all .2s; flex-shrink:0;
+}
+.aud-btn:active { transform:scale(.9); background:rgba(212,175,55,.16); }
+.aud-btn.main {
+  width:44px; height:44px;
+  background:linear-gradient(135deg, rgba(212,175,55,.18), rgba(212,175,55,.06));
+  border-color:rgba(212,175,55,.38);
+  font-size:14px;
+}
+.aud-seek {
+  flex:1; display:flex; flex-direction:column; gap:5px;
+}
+.seek-bar {
+  -webkit-appearance:none; appearance:none;
+  width:100%; height:3px; border-radius:99px; outline:none; cursor:pointer;
+  background:linear-gradient(to right, var(--g1) 0%, var(--g1) var(--sp,0%), rgba(255,255,255,.08) var(--sp,0%), rgba(255,255,255,.08) 100%);
+}
+.seek-bar::-webkit-slider-thumb {
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:var(--g1); box-shadow:0 0 6px rgba(212,175,55,.5);
+  transition:transform .15s;
+}
+.seek-bar:hover::-webkit-slider-thumb { transform:scale(1.3); }
+.seek-times {
+  display:flex; justify-content:space-between;
+  font-size:8px; color:var(--dim); font-variant-numeric:tabular-nums;
+}
+.aud-vol {
+  width:60px; -webkit-appearance:none; appearance:none;
+  height:3px; border-radius:99px; outline:none; cursor:pointer;
+  background:rgba(255,255,255,.1); flex-shrink:0;
+}
+.aud-vol::-webkit-slider-thumb {
+  -webkit-appearance:none; width:9px; height:9px; border-radius:50%; background:var(--g1);
+}
+
+/* ─── CONGRATS MODAL ─── */
+.modal {
+  position:fixed; inset:0; z-index:100;
+  background:rgba(3,4,10,.97);
+  backdrop-filter:blur(24px);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 28px;
+  opacity:0; pointer-events:none;
+  transition:opacity .5s ease;
+}
+.modal.open { opacity:1; pointer-events:all; }
+
+/* Particle explosion behind modal icon */
+#modal-particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+
+.m-icon {
+  width:90px; height:90px; border-radius:50%;
+  background:rgba(212,175,55,.08);
+  border:1px solid rgba(212,175,55,.28);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:20px; position:relative; z-index:1;
+  animation:mIconIn .7s cubic-bezier(.36,1.56,.64,1) both;
+}
+@keyframes mIconIn { from { transform:scale(0) rotate(-30deg); opacity:0; } }
+
+/* Ring around icon */
+.m-icon::after {
+  content:''; position:absolute; inset:-6px; border-radius:50%;
+  border:1px solid rgba(212,175,55,.15);
+  animation:mRingPulse 2s ease-in-out infinite;
+}
+@keyframes mRingPulse {
+  0%,100% { transform:scale(1); opacity:.5; }
+  50%      { transform:scale(1.1); opacity:1; }
+}
+
+.m-stars { display:flex; gap:8px; margin-bottom:20px; z-index:1; position:relative; }
+.m-stars i {
+  color:var(--g1); font-size:18px;
+  animation:starIn .5s cubic-bezier(.36,1.56,.64,1) both;
+}
+.m-stars i:nth-child(2) { animation-delay:.08s; }
+.m-stars i:nth-child(3) { animation-delay:.16s; }
+.m-stars i:nth-child(4) { animation-delay:.24s; }
+.m-stars i:nth-child(5) { animation-delay:.32s; }
+@keyframes starIn { from { transform:scale(0) rotate(-20deg); opacity:0; } }
+
+.m-title {
+  font-family:var(--fT); font-size:20px; color:var(--g1);
+  margin-bottom:8px; z-index:1; position:relative;
+  text-align:center;
+  animation:fadeUp .5s .2s ease both;
+}
+.m-sub {
+  font-family:var(--fS); font-style:italic;
+  font-size:15px; color:var(--mid); line-height:1.7;
+  text-align:center; margin-bottom:36px;
+  z-index:1; position:relative;
+  animation:fadeUp .5s .3s ease both;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } }
+
+.m-count-badge {
+  background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2);
+  border-radius:14px; padding:10px 24px; margin-bottom:28px;
+  z-index:1; position:relative;
+  animation:fadeUp .5s .4s ease both;
+}
+.m-count-num {
+  font-family:var(--fU); font-weight:200; font-size:40px;
+  color:var(--g1); text-align:center; line-height:1;
+}
+.m-count-lbl {
+  font-size:8px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--dim); text-align:center; margin-top:4px;
+}
+
+.m-btn {
+  width:100%; max-width:280px; padding:18px;
+  border-radius:18px;
+  background:linear-gradient(135deg, var(--g2), var(--g1), var(--g3));
+  color:#080400; font-family:var(--fU); font-size:11px;
+  font-weight:700; letter-spacing:.22em; text-transform:uppercase;
+  border:none; cursor:pointer;
+  box-shadow:0 8px 30px rgba(212,175,55,.3);
+  transition:transform .15s, box-shadow .2s;
+  z-index:1; position:relative;
+  animation:fadeUp .5s .5s ease both;
+}
+.m-btn:active { transform:scale(.96); }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+
+<div class="screen">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <a href="javascript:history.back()" class="t-btn">
+      <i class="fa-solid fa-arrow-left" style="font-size:12px"></i>
+    </a>
+    <div class="t-center">
+      <div class="t-tag">Compteur Zikr</div>
+      <div class="t-title">{{ zikr.titre }}</div>
+    </div>
+    <button class="t-btn" onclick="resetSession()" title="Réinitialiser">
+      <i class="fa-solid fa-rotate-right" style="font-size:12px"></i>
+    </button>
+  </div>
+
+  <!-- ZIKR TEXT -->
+  <div class="zikr-zone">
+    <div class="zikr-pill">
+      {% if zikr.texte_arabe %}
+      <p class="zp-arabic">{{ zikr.texte_arabe }}</p>
+      {% endif %}
+      <p class="zp-text">" {{ zikr.texte_a_repeter|default:zikr.transcription }} "</p>
+    </div>
+  </div>
+
+  <!-- MAIN COUNTER -->
+  <div class="counter-area" id="counterArea">
+
+    <!-- Ambient rings (centred on button, not whole area) -->
+    <div class="ambient-ring ar1"></div>
+    <div class="ambient-ring ar2"></div>
+    <div class="ambient-ring ar3"></div>
+
+    <!-- Ripple host -->
+    <div id="ripples"></div>
+
+    <!-- Streak badge (top-right corner) -->
+    <div class="streak-badge" id="streakBadge">
+      <div class="streak-dot"></div>
+      <span id="streakNum">0</span>&nbsp;/ <span id="streakGoal">33</span>
+    </div>
+
+    <!-- ① COUNT in normal flow -->
+    <div class="count-block">
+      <div class="count-num" id="countNum">0</div>
+      <div class="count-fraction">sur <span id="goalDisplay">33</span></div>
+    </div>
+
+    <!-- ② GOAL CHIPS -->
+    <div class="goal-panel" id="goalPanel">
+      <div class="goal-chips" id="chipsRow">
+        <!-- rendered by JS -->
+      </div>
+      <!-- Custom input (hidden by default) -->
+      <div class="custom-goal-row" id="customRow" style="display:none">
+        <input type="number" id="customIn" placeholder="ex: 500" min="1" max="9999">
+        <div class="cg-confirm" onclick="confirmCustomGoal()"><i class="fa-solid fa-check"></i></div>
+        <div class="cg-cancel"  onclick="cancelCustomGoal()"><i class="fa-solid fa-xmark"></i></div>
+      </div>
+    </div>
+
+    <!-- ③ TAP BUTTON in normal flow -->
+    <button class="tap-btn" id="tapBtn"
+            onclick="handleTap()"
+            ontouchstart="handleTap()">
+      <div class="tap-outer"></div>
+      <div class="tap-inner">
+        <i class="fa-solid fa-fingerprint tap-icon"></i>
+      </div>
+    </button>
+
+  </div>
+
+  <!-- AUDIO PLAYER -->
+  {% if zikr.fichier_audio %}
+  <div class="audio-section">
+    <div class="audio-card">
+      <div class="audio-label">Écouter</div>
+      <div class="audio-controls">
+        <button class="aud-btn" onclick="skipBack()">
+          <i class="fa-solid fa-backward-step" style="font-size:11px"></i>
+        </button>
+        <button class="aud-btn main" id="audPlayBtn" onclick="toggleAudio()">
+          <i class="fa-solid fa-play" id="audIcon"></i>
+        </button>
+        <button class="aud-btn" onclick="skipFwd()">
+          <i class="fa-solid fa-forward-step" style="font-size:11px"></i>
+        </button>
+        <div class="aud-seek">
+          <input type="range" class="seek-bar" id="seekBar" min="0" max="1000" value="0" step="1">
+          <div class="seek-times">
+            <span id="audCur">00:00</span>
+            <span id="audDur">00:00</span>
+          </div>
+        </div>
+        <input type="range" class="aud-vol" id="volBar" min="0" max="1" step=".01" value="1">
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div><!-- /screen -->
+
+<!-- CONGRATS MODAL -->
+<div class="modal" id="modal">
+  <div id="modal-particles"></div>
+  <div class="m-icon">
+    <i class="fa-solid fa-check" style="font-size:34px;color:var(--g1)"></i>
+  </div>
+  <div class="m-stars">
+    <i class="fa-solid fa-star"></i>
+    <i class="fa-solid fa-star"></i>
+    <i class="fa-solid fa-star"></i>
+    <i class="fa-solid fa-star"></i>
+    <i class="fa-solid fa-star"></i>
+  </div>
+  <div class="m-title">Macha'Allah !</div>
+  <div class="m-sub">Séance terminée avec succès.<br>Que Allah accepte votre Zikr.</div>
+  <div class="m-count-badge">
+    <div class="m-count-num" id="finalCount">0</div>
+    <div class="m-count-lbl">Répétitions effectuées</div>
+  </div>
+  <button class="m-btn" onclick="resetSession()">Nouvelle séance</button>
+</div>
+
+<audio id="aud" preload="metadata">
+  {% if zikr.fichier_audio %}
+  <source src="{{ zikr.fichier_audio.url }}" type="audio/mpeg">
+  {% endif %}
+</audio>
+
+<script>
+/* ─── STARS ─── */
+(function(){
+  const c=document.getElementById('bg-canvas');
+  const ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function rs(){ W=c.width=innerWidth; H=c.height=innerHeight; }
+  function mk(){ return {x:Math.random()*W,y:Math.random()*H,
+    r:Math.random()*.9+.2,a:Math.random(),
+    da:(Math.random()*.005+.001)*(Math.random()>.5?1:-1),
+    vx:(Math.random()-.5)*.05,vy:(Math.random()-.5)*.05}; }
+  rs(); pts=Array.from({length:130},mk);
+  (function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(const p of pts){
+      p.a=Math.max(.04,Math.min(1,p.a+p.da));
+      if(p.a>=1||p.a<=.04) p.da*=-1;
+      p.x=(p.x+p.vx+W)%W; p.y=(p.y+p.vy+H)%H;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(212,175,55,${p.a*.45})`; ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  })();
+  window.addEventListener('resize',rs);
+})();
+
+/* ══════════════════════════════════════
+   GOAL MANAGEMENT
+══════════════════════════════════════ */
+const DEFAULT_GOALS = [33, 99, 100, 1000];
+let goals    = [...DEFAULT_GOALS];
+let activeGoal = {{ zikr.objectif_par_defaut|default:33 }};
+
+// Add default goal if not in list
+if (!goals.includes(activeGoal)) goals.unshift(activeGoal);
+
+function renderChips() {
+  const row = document.getElementById('chipsRow');
+  row.innerHTML = '';
+
+  goals.forEach(g => {
+    const chip = document.createElement('div');
+    chip.className = 'g-chip' + (g === activeGoal ? ' active' : '');
+    chip.innerHTML = `
+      <span>${g}</span>
+      ${goals.length > 1 ? `<i class="fa-solid fa-xmark" style="font-size:8px;opacity:.4" onclick="removeGoal(event,${g})"></i>` : ''}
+    `;
+    chip.addEventListener('click', () => selectGoal(g));
+    row.appendChild(chip);
+  });
+
+  // "+" chip
+  const add = document.createElement('div');
+  add.className = 'g-chip add-chip';
+  add.innerHTML = '<i class="fa-solid fa-plus" style="font-size:9px"></i>';
+  add.onclick = showCustomInput;
+  row.appendChild(add);
+}
+
+function selectGoal(g) {
+  activeGoal = g;
+  document.getElementById('goalDisplay').textContent = g;
+  document.getElementById('streakGoal').textContent  = g;
+  // If count already passed new goal → show modal
+  if (count > 0 && count >= activeGoal) openModal();
+  renderChips();
+  // Bump goal display
+  const d = document.getElementById('goalDisplay');
+  d.style.transform = 'scale(1.3)';
+  d.style.color = 'var(--g1)';
+  setTimeout(() => { d.style.transform=''; d.style.color=''; }, 250);
+}
+
+function removeGoal(e, g) {
+  e.stopPropagation();
+  if (goals.length <= 1) return;
+  goals = goals.filter(x => x !== g);
+  if (activeGoal === g) selectGoal(goals[0]);
+  else renderChips();
+}
+
+function showCustomInput() {
+  document.getElementById('customRow').style.display = 'flex';
+  document.getElementById('customIn').focus();
+}
+
+function confirmCustomGoal() {
+  const v = parseInt(document.getElementById('customIn').value);
+  if (v > 0 && v <= 9999) {
+    if (!goals.includes(v)) { goals.push(v); goals.sort((a,b)=>a-b); }
+    selectGoal(v);
+  }
+  cancelCustomGoal();
+}
+
+function cancelCustomGoal() {
+  document.getElementById('customRow').style.display = 'none';
+  document.getElementById('customIn').value = '';
+}
+
+// Confirm on Enter key
+document.getElementById('customIn').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmCustomGoal();
+  if (e.key === 'Escape') cancelCustomGoal();
+});
+
+// Init chips
+renderChips();
+document.getElementById('goalDisplay').textContent = activeGoal;
+document.getElementById('streakGoal').textContent  = activeGoal;
+
+/* ══════════════════════════════════════
+   COUNTER
+══════════════════════════════════════ */
+let count   = 0;
+let lastTap = 0;
+
+function handleTap(){
+  const now = Date.now();
+  if (now - lastTap < 80) return;
+  lastTap = now;
+  if (count >= activeGoal) return;
+
+  count++;
+
+  // Update number
+  const el = document.getElementById('countNum');
+  el.textContent = count;
+  el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+  el.style.color = count / activeGoal > .8 ? 'var(--g1)' : '';
+
+  // Ripple
+  spawnRipple();
+
+  // Particles every 5 taps
+  if (count % 5 === 0) spawnParticles();
+
+  // Streak badge
+  document.getElementById('streakNum').textContent = count;
+  document.getElementById('streakBadge').classList.add('show');
+
+  // Vibrate
+  if (navigator.vibrate) navigator.vibrate(count % 10 === 0 ? [40,20,40] : 35);
+
+  if (count === activeGoal) setTimeout(openModal, 420);
+}
+
+/* ─── RIPPLE ─── */
+function spawnRipple(){
+  const host = document.getElementById('ripples');
+  const r = document.createElement('div');
+  r.className = 'rpl'; host.appendChild(r);
+  r.addEventListener('animationend', () => r.remove());
+}
+
+/* ─── PARTICLES ─── */
+function spawnParticles(){
+  const area = document.getElementById('counterArea');
+  const cx = area.offsetWidth / 2, cy = area.offsetHeight / 2;
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const angle = (i / 14) * 360 + Math.random() * 20;
+    const dist  = 55 + Math.random() * 85;
+    const tx = Math.cos(angle * Math.PI / 180) * dist + 'px';
+    const ty = Math.sin(angle * Math.PI / 180) * dist + 'px';
+    const dur = (.35 + Math.random() * .4) + 's';
+    p.style.cssText = `left:${cx}px;top:${cy}px;--tx:${tx};--ty:${ty};--dur:${dur}`;
+    area.appendChild(p);
+    p.addEventListener('animationend', () => p.remove());
+  }
+}
+
+/* ─── MODAL ─── */
+function openModal(){
+  document.getElementById('finalCount').textContent = count;
+  document.getElementById('modal').classList.add('open');
+  spawnModalParticles();
+}
+
+function spawnModalParticles(){
+  const host = document.getElementById('modal-particles');
+  host.innerHTML = '';
+  for (let i = 0; i < 32; i++) {
+    const p = document.createElement('div');
+    const size = 2 + Math.random() * 4;
+    p.style.cssText = `
+      position:absolute;
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      width:${size}px;height:${size}px;border-radius:50%;
+      background:rgba(212,175,55,${.4+Math.random()*.5});
+      animation:burst ${.7+Math.random()*.7}s ${Math.random()*.4}s ease-out forwards;
+      --tx:${(Math.random()-.5)*220}px;--ty:${(Math.random()-1)*220}px;
+    `;
+    host.appendChild(p);
+  }
+}
+
+function resetSession(){
+  count = 0;
+  const el = document.getElementById('countNum');
+  el.textContent = '0'; el.style.color = '';
+  document.getElementById('streakNum').textContent = '0';
+  document.getElementById('streakBadge').classList.remove('show');
+  document.getElementById('modal').classList.remove('open');
+}
+
+/* ─── AUDIO PLAYER ─── */
+const aud = document.getElementById('aud');
+let isSeeking = false;
+
+function fmt(s){
+  if (!isFinite(s)||isNaN(s)) return '00:00';
+  return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');
+}
+function toggleAudio(){
+  if (aud.paused){ aud.play(); document.getElementById('audIcon').className='fa-solid fa-pause'; }
+  else           { aud.pause(); document.getElementById('audIcon').className='fa-solid fa-play'; }
+}
+function skipBack(){ aud.currentTime = Math.max(0, aud.currentTime-10); }
+function skipFwd() { aud.currentTime = Math.min(aud.duration||0, aud.currentTime+10); }
+
+const seekBar = document.getElementById('seekBar');
+if (seekBar) {
+  seekBar.addEventListener('mousedown',  () => isSeeking=true);
+  seekBar.addEventListener('touchstart', () => isSeeking=true, {passive:true});
+  seekBar.addEventListener('change', () => {
+    if (aud.duration) aud.currentTime = (seekBar.value/1000)*aud.duration;
+    isSeeking = false;
+  });
+  seekBar.addEventListener('input', () => {
+    const pct = seekBar.value/1000;
+    seekBar.style.setProperty('--sp',(pct*100)+'%');
+    document.getElementById('audCur').textContent = fmt(pct*(aud.duration||0));
+  });
+  document.addEventListener('mouseup',  () => isSeeking=false);
+  document.addEventListener('touchend', () => isSeeking=false);
+
+  aud.addEventListener('timeupdate', () => {
+    if (!aud.duration||isSeeking) return;
+    const pct = aud.currentTime/aud.duration;
+    seekBar.value = Math.round(pct*1000);
+    seekBar.style.setProperty('--sp',(pct*100)+'%');
+    document.getElementById('audCur').textContent = fmt(aud.currentTime);
+    document.getElementById('audDur').textContent = fmt(aud.duration);
+  });
+  aud.addEventListener('loadedmetadata', () => {
+    document.getElementById('audDur').textContent = fmt(aud.duration);
+  });
+  aud.addEventListener('ended', () => {
+    document.getElementById('audIcon').className='fa-solid fa-play';
+  });
+
+  const vb = document.getElementById('volBar');
+  if (vb) vb.addEventListener('input', e => aud.volume=e.target.value);
+}
+</script>
+</body>
+</html>

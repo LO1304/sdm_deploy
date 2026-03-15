@@ -1,0 +1,44 @@
+{% extends "bibliotheque/index.html" %}
+
+{% block content %}
+<div class="zikr-hist-container" style="padding: 20px; background: #03040a; min-height: 100vh; color: white;">
+    
+    <div style="text-align: center; padding: 30px 15px; background: linear-gradient(145deg, #1a1a1a, #000); border-radius: 30px; border: 1px solid rgba(212,175,55,0.3); margin-bottom: 25px;">
+        <h2 class="gold-grad" style="font-family: serif; font-size: 22px; margin: 0;">Mes Récitations</h2>
+        <div style="margin-top: 15px;">
+            <span style="font-size: 40px; font-weight: 800; color: #D4AF37; display: block;">{{ total_global }}</span>
+            <span style="font-size: 10px; text-transform: uppercase; color: #888; letter-spacing: 2px;">Grains au total</span>
+        </div>
+    </div>
+
+    <div class="list-wrapper">
+        {% for item in historique %}
+        <div style="background: rgba(255,255,255,0.03); border-left: 3px solid #D4AF37; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h4 style="margin: 0; font-size: 15px; color: #efefef;">{{ item.zikr.nom }}</h4>
+                <p style="margin: 3px 0 0; font-size: 10px; color: #666;">{{ item.date_seance|date:"d M Y • H:i" }}</p>
+            </div>
+            <div style="text-align: right;">
+                <span style="background: rgba(212,175,55,0.1); color: #D4AF37; padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 14px;">
+                    {{ item.nombre_total }}
+                </span>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; padding: 50px; opacity: 0.3;">
+            <i class="fa-solid fa-dharmachakra fa-3x"></i>
+            <p style="margin-top: 15px;">Aucune séance enregistrée</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<style>
+    .gold-grad {
+        background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+{% endblock %}

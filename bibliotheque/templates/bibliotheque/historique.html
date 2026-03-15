@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Historique</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-[#050505] text-white p-5">
+    <div class="flex items-center gap-4 mb-8">
+        <a href="/" class="text-[#d4af37]"><i class="fa-solid fa-arrow-left text-xl"></i></a>
+        <h1 class="text-xl font-bold uppercase tracking-widest text-[#d4af37]">Mon Historique</h1>
+    </div>
+
+    <div class="space-y-4">
+        {% for item in historique %}
+        <div class="bg-white/5 border border-white/10 p-4 rounded-2xl flex justify-between items-center">
+            <div>
+                <p class="font-bold text-[#d4af37]">{{ item.zikr.titre }}</p>
+                <p class="text-[10px] opacity-50">{{ item.date_seance|date:"d M Y à H:i" }}</p>
+            </div>
+            <div class="text-right">
+                <span class="text-xl font-light">{{ item.nombre_total }}</span>
+                <p class="text-[8px] uppercase opacity-40">Répétitions</p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center opacity-40 mt-10">Aucun historique pour le moment.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

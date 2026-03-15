@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecteur - {{ document.titre }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #050505; color: #fff; margin: 0; overflow: hidden; }
+        .gold-text { color: #d4af37; }
+        .nav-header { background: rgba(0,0,0,0.9); border-bottom: 1px solid rgba(212,175,55,0.3); }
+        iframe { border: none; width: 100vw; height: calc(100vh - 60px); }
+    </style>
+</head>
+<body>
+
+    <div class="nav-header h-[60px] flex items-center px-4 justify-between">
+        <a href="javascript:history.back()" class="gold-text p-2">
+            <i class="fa-solid fa-arrow-left text-xl"></i>
+        </a>
+        <h1 class="text-sm font-bold uppercase tracking-widest gold-text truncate px-4">
+            {{ document.titre }}
+        </h1>
+        <div class="w-10"></div> </div>
+
+    {% if document.fichier_pdf %}
+        <iframe src="{{ document.fichier_pdf.url }}#toolbar=0"></iframe>
+    {% elif document.fichier_audio %}
+        <iframe src="{{ document.fichier_audio.url }}#toolbar=0"></iframe>
+    {% else %}
+        <div class="flex flex-col items-center justify-center h-full opacity-30">
+            <i class="fa-solid fa-file-circle-exclamation text-5xl mb-4"></i>
+            <p>Aucun fichier PDF trouvé pour ce document.</p>
+        </div>
+    {% endif %}
+
+</body>
+</html>

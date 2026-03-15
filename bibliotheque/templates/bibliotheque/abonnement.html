@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=DM+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #d4af37; --dark: #05070a; --wave: #1da1f2; }
+        body { background: var(--dark); font-family: 'DM Mono', monospace; color: white; }
+        .glass { background: rgba(255,255,255,0.02); border: 1px solid rgba(212,175,55,0.1); backdrop-filter: blur(10px); }
+        .gold-text { font-family: 'Cormorant Garamond', serif; color: var(--gold); }
+    </style>
+</head>
+<body class="h-screen flex items-center justify-center p-4">
+
+    <div class="glass w-full max-w-[450px] rounded-[3rem] p-10 shadow-2xl border-t-gold/20 text-center">
+        <div class="inline-block px-4 py-1 rounded-full bg-gold/10 border border-gold/20 mb-6">
+            <span class="text-[9px] text-gold uppercase tracking-[0.3em]">Offre Premium</span>
+        </div>
+
+        <h1 class="text-4xl gold-text mb-4">SDM Unlimited</h1>
+        <p class="text-[11px] opacity-50 mb-8 leading-relaxed">
+            Écoutez vos Khassidas et Coran sans aucune interruption publicitaire.
+        </p>
+
+        <div class="mb-10">
+            <div class="text-5xl font-bold mb-1">490<span class="text-lg ml-1 opacity-50 font-light">FCFA</span></div>
+            <p class="text-[9px] uppercase tracking-widest text-gold/60">Par Mois</p>
+        </div>
+
+        <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/?amount=490" 
+           target="_blank"
+           class="flex items-center justify-center gap-3 w-full bg-[#1da1f2] hover:bg-[#1a91db] text-white py-5 rounded-2xl font-bold uppercase tracking-widest transition-all shadow-lg shadow-blue-500/10 mb-6">
+           <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Wave_Logo.png" class="h-5" alt="Wave">
+           Payer avec Wave
+        </a>
+
+        <div class="space-y-4 text-left bg-white/5 p-6 rounded-2xl">
+            <h4 class="text-[10px] uppercase text-gold tracking-widest font-bold">Comment ça marche ?</h4>
+            <ol class="text-[10px] space-y-2 opacity-70">
+                <li>1. Cliquez sur le bouton bleu ci-dessus.</li>
+                <li>2. Effectuez le transfert de 490 F via Wave.</li>
+                <li>3. Revenez ici et cliquez sur le lien de validation.</li>
+            </ol>
+        </div>
+
+        <a href="{% url 'paiement_reussi' %}" class="block mt-8 text-[10px] text-gold/40 hover:text-gold underline transition-colors uppercase tracking-widest">
+            J'ai déjà payé, activer mon accès
+        </a>
+    </div>
+
+</body>
+</html>

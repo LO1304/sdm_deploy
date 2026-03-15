@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDM - {{ categorie|upper }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #050505; color: #fff; font-family: 'Inter', sans-serif; }
+        .gold-text { color: #d4af37; }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 15px; 
+            transition: all 0.2s;
+        }
+        .search-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: white;
+        }
+        .search-input:focus { outline: none; border-color: #d4af37; }
+    </style>
+</head>
+<body class="p-4 pb-20">
+
+    <div class="flex items-center justify-between mb-6 pt-2">
+        <a href="{% url 'home' %}" class="gold-text p-2">
+            <i class="fa-solid fa-chevron-left text-xl"></i>
+        </a>
+        <h1 class="text-lg font-bold uppercase tracking-widest gold-text">
+            {{ categorie }}
+        </h1>
+        <div class="w-10"></div>
+    </div>
+
+    <form method="GET" action="" class="mb-8">
+        <div class="relative flex items-center">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 gold-text opacity-40"></i>
+            <input type="text" name="search" value="{{ query|default:'' }}" 
+                   placeholder="Rechercher dans {{ categorie }}..." 
+                   class="search-input w-full py-4 pl-12 pr-4 rounded-2xl text-sm">
+        </div>
+    </form>
+
+    <div class="space-y-3">
+        {% for item in items %}
+            
+            {% if 'zikr' in categorie|lower %}
+                <a href="{% url 'zikr_compteur' item.id %}" class="glass-card p-5 flex justify-between items-center block">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid fa-fingerprint gold-text text-xl"></i>
+                        <div>
+                            <h2 class="font-medium text-white">{{ item.titre }}</h2>
+                            <p class="text-[10px] opacity-40 uppercase tracking-widest">Objectif : {{ item.objectif_par_defaut }} fois</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-angle-right opacity-20"></i>
+                </a>
+
+            {% elif 'youtube' in categorie|lower %}
+                <a href="https://www.youtube.com/@SDM_Project" target="_blank" class="glass-card p-5 flex justify-between items-center block border-l-2 border-red-600">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-brands fa-youtube text-red-600 text-xl"></i>
+                        <div>
+                            <h2 class="font-medium text-white">{{ item.titre|default:"Vidéo YouTube" }}</h2>
+                            <p class="text-[10px] opacity-40 uppercase tracking-widest">Voir sur la chaîne</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-20"></i>
+                </a>
+
+            {% elif 'son' in categorie|lower or item.fichier_audio %}
+                <div class="glass-card p-5 flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid fa-headphones gold-text text-xl"></i>
+                        <div>
+                            <h2 class="font-medium text-white">{{ item.titre }}</h2>
+                            <p class="text-[10px] opacity-40 uppercase tracking-widest">{{ item.auteur_voix|default:"Audio disponible" }}</p>
+                        </div>
+                    </div>
+                    <button class="gold-text"><i class="fa-solid fa-play"></i></button>
+                </div>
+
+            {% elif 'historique' in categorie|lower %}
+                <div class="glass-card p-5 flex justify-between items-center opacity-80">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid fa-history gold-text text-xl"></i>
+                        <div>
+                            <h2 class="font-medium text-white">{{ item.zikr.titre }}</h2>
+                            <p class="text-[10px] opacity-40 uppercase tracking-widest">Fait le : {{ item.date_seance|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                    <span class="gold-text font-bold text-xs">{{ item.nombre_total }}</span>
+                </div>
+
+            {% else %}
+                <a href="{% url 'lire_pdf' categorie item.id %}" class="glass-card p-5 flex justify-between items-center block">
+                    <div class="flex items-center gap-4">
+                        {% if 'coran' in categorie|lower %}
+                            <i class="fa-solid fa-quran gold-text text-xl"></i>
+                        {% elif 'wird' in categorie|lower %}
+                            <i class="fa-solid fa-ellipsis-vertical gold-text text-xl"></i>
+                        {% else %}
+                            <i class="fa-solid fa-file-pdf gold-text text-xl"></i>
+                        {% endif %}
+                        <div>
+                            <h2 class="font-medium text-white">{{ item.titre }}</h2>
+                            <p class="text-[10px] opacity-40 uppercase tracking-widest">
+                                {% if item.auteur %}{{ item.auteur }}{% else %}Consulter{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-angle-right opacity-20"></i>
+                </a>
+            {% endif %}
+
+        {% empty %}
+            <div class="text-center py-20 opacity-30 italic">
+                <i class="fa-solid fa-folder-open text-5xl mb-4 block"></i>
+                Aucun élément trouvé dans {{ categorie }}.
+            </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

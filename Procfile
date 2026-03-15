@@ -1,0 +1,1 @@
+web: gunicorn sdm_config.wsgi
