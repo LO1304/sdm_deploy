@@ -18,9 +18,8 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
-# En production, on ajoute l'adresse de Render ici
-ALLOWED_HOSTS = ['sdm-project.onrender.com', '127.0.0.1', 'localhost']
-
+# En production, on ajoute l'adresse de Render iciLLOWED_HOSTS = ['sdm-project.onrender.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['sdm-mouride-2jbn.onrender.com', 'localhost', '127.0.0.1']
 # --- APPLICATIONS INSTALLÉES ---
 INSTALLED_APPS = [
     'django.contrib.admin',
