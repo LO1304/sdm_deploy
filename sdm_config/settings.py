@@ -90,7 +90,7 @@ CLOUDINARY_STORAGE = {
     'API_KEY': env('CLOUDINARY_API_KEY'),
     'API_SECRET': env('CLOUDINARY_API_SECRET'),
     'SECURE': True, # Force le HTTPS pour éviter les erreurs de lecture
-    'RESSOURCE_TYPE': 'raw'
+    'RESSOURCE_TYPE': 'auto'
 }
 # --- FICHIERS STATIQUES ET MÉDIA ---
 STATIC_URL = '/static/'
