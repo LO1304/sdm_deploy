@@ -1,24 +1,26 @@
 import os
+import environ
 from pathlib import Path
-import dj_database_url
-from environ import Env
 
-# 1. Initialisation de l'environnement
-env = Env()
-Env.read_env()
+# Initialisation d'environ
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
+# Chemin de base du projet
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 2. Sécurité
-SECRET_KEY = env('SECRET_KEY', default='django-insecure-votre-cle-ici')
+# Lecture du fichier .env
+# Assure-toi que ton fichier .env est bien à la racine (au même niveau que manage.py)
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# DEBUG doit être False en production sur Render
+# --- PARAMÈTRES DE SÉCURITÉ (Extraits du .env) ---
+SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
-# Ajoute bien ton domaine Render ici
+# En production, on ajoute l'adresse de Render iciLLOWED_HOSTS = ['sdm-project.onrender.com', '127.0.0.1', 'localhost']
 ALLOWED_HOSTS = ['sdm-mouride-2jbn.onrender.com', 'localhost', '127.0.0.1']
-
-# 3. Applications
+# --- APPLICATIONS INSTALLÉES ---
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -28,13 +30,12 @@ INSTALLED_APPS = [
     'cloudinary_storage',  # Doit être AVANT staticfiles
     'django.contrib.staticfiles',
     'cloudinary',
-    # Vos applications ici (ex: 'bibliotheque')
+    'bibliotheque', 
 ]
 
-# 4. Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Pour les fichiers statiques
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Ajouté pour les fichiers statiques en production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -43,12 +44,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 ROOT_URLCONF = 'sdm_config.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'bibliotheque', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -56,6 +59,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -63,41 +67,49 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sdm_config.wsgi.application'
 
-# 5. Base de données (Utilise SQLite par défaut, ou PostgreSQL si configuré sur Render)
+# --- BASE DE DONNÉES ---
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
-# 6. Gestion des fichiers (Cloudinary + Whitenoise)
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
-# Configuration moderne pour Django 4.2+
-STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
-
-# Configuration Cloudinary
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': env('CLOUDINARY_API_KEY'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET'),
-}
-
-# 7. Internationalisation
+# --- INTERNATIONALISATION ---
 LANGUAGE_CODE = 'fr-fr'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# --- FICHIERS STATIQUES ET MÉDIA ---
+STATIC_URL = 'static/'
+# Configuration du stockage pour Django 4.2+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "cloudinary_storage.storage.StaticHashedCloudinaryStorage",
+    },
+}
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Obligatoire pour la production
+
+# Configuration Cloudinary via le fichier .env
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': env('CLOUDINARY_API_KEY'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET')
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+MEDIA_URL = '/media/'
+# MEDIA_ROOT n'est plus nécessaire avec Cloudinary mais on le laisse par sécurité
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = '/collection/son/'
+LOGOUT_REDIRECT_URL = 'login'
+
 
