@@ -92,6 +92,7 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': env('CLOUDINARY_API_SECRET'),
     'SECURE': True,
     'RESOURCE_TYPE': 'auto'  # <-- CORRIGÉ : un seul 'S'
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
 }
 # --- FICHIERS STATIQUES ET MÉDIA ---
 STATIC_URL = '/static/'
