@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 class Khassida(models.Model):
     titre = models.CharField(max_length=255)
     auteur= models.CharField(max_length=255,default="Cheikh Ahmadou Bamba ")
-    fichier_pdf = models.FileField(upload_to='pdfs/khassidas')
+    fichier_pdf = models.FileField(upload_to='khassidas/')
     image_couverture=models.ImageField(upload_to='couvertures/',blank=True,null=True)
 
     def __str__(self):
@@ -22,8 +22,8 @@ class Coran(models.Model):
     numero = models.IntegerField(blank=True, null=True) 
     traduction_fr = models.TextField(blank=True, null=True)
     # ON AJOUTE LE PDF ICI
-    fichier_pdf = models.FileField(upload_to='pdfs/coran', blank=True, null=True)
-    fichier_audio = models.FileField(upload_to='audios/coran', blank=True, null=True)
+    fichier_pdf = models.FileField(upload_to='coran_pdf/', blank=True, null=True)
+    fichier_audio = models.FileField(upload_to='coran_audio/', blank=True, null=True)
 
     def __str__(self):
         return self.titre
@@ -94,9 +94,9 @@ class ParametresPriere(models.Model):
 from django.db import models
 
 # 1. Fonction pour organiser les fichiers dans les dossiers media
-def upload_path(instance, filename):
+#def upload_path(instance, filename):
     # Range le fichier dans media/audios/NOM_CATEGORIE/nom_du_fichier
-    return f'audios/{instance.categorie.lower()}/{filename}'
+    #return f'audios/{instance.categorie.lower()}/{filename}'
 
 # 2. Modèle unique pour gérer tous les sons (plus simple pour ton code)
 class Son(models.Model):
@@ -123,7 +123,7 @@ class Son(models.Model):
         default='KHASSIDA'
     )
     # Utilisation de la fonction dynamique pour le rangement
-    fichier_audio = models.FileField(upload_to=upload_path) 
+    fichier_audio = models.FileField(upload_to='sons/')
     date_ajout = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
