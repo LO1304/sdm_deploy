@@ -93,9 +93,9 @@ CLOUDINARY_STORAGE = {
     'SECURE': True,
     'RESOURCE_TYPE': 'auto' 
 }
-# --- FICHIERS STATIQUES ET MÉDIA ---
+# Remplace tes lignes actuelles par celles-ci :
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build') # On change le nom ici
 
 # Indispensable pour la compatibilité Cloudinary + Django 6 sur Render
 STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
