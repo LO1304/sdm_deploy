@@ -92,6 +92,7 @@ class ParametresPriere(models.Model):
     
 
 from django.db import models
+from cloudinary_storage.storage import VideoMediaCloudinaryStorage  # Ajoute cet import en haut
 
 # 1. Fonction pour organiser les fichiers dans les dossiers media
 #def upload_path(instance, filename):
@@ -123,7 +124,8 @@ class Son(models.Model):
         default='KHASSIDA'
     )
     # Utilisation de la fonction dynamique pour le rangement
-    fichier_audio = models.FileField(upload_to='sons/')
+    # Remplace ta ligne actuelle par celle-ci :
+    fichier_audio = models.FileField(upload_to='sons/', storage=VideoMediaCloudinaryStorage())
     date_ajout = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
