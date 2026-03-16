@@ -18,8 +18,9 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
-# En production, on ajoute l'adresse de Render iciLLOWED_HOSTS = ['sdm-project.onrender.com', '127.0.0.1', 'localhost']
+# En production, on ajoute l'adresse de Render
 ALLOWED_HOSTS = ['sdm-mouride-2jbn.onrender.com', 'localhost', '127.0.0.1']
+
 # --- APPLICATIONS INSTALLÉES ---
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -83,6 +84,12 @@ USE_TZ = True
 
 # --- FICHIERS STATIQUES ET MÉDIA ---
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Obligatoire pour la production
+
+# --- CORRECTION RENDER POUR CLOUDINARY ---
+# Cette ligne est obligatoire pour éviter l'erreur collectstatic de Cloudinary
+STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+
 # Configuration du stockage pour Django 4.2+
 STORAGES = {
     "default": {
@@ -92,7 +99,6 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.StaticHashedCloudinaryStorage",
     },
 }
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Obligatoire pour la production
 
 # Configuration Cloudinary via le fichier .env
 CLOUDINARY_STORAGE = {
@@ -111,5 +117,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/collection/son/'
 LOGOUT_REDIRECT_URL = 'login'
-
-
