@@ -95,20 +95,25 @@ USE_TZ = True
 
 # --- CONFIGURATION CLOUDINARY ---
 # --- CONFIGURATION CLOUDINARY ---
+# --- CONFIGURATION CLOUDINARY ---
+# On utilise .get() ou un default pour éviter le crash "KeyError" sur ton PC
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': env('CLOUDINARY_API_KEY'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET'),
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='local'),
+    'API_KEY': env('CLOUDINARY_API_KEY', default='local'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET', default='local'),
     'SECURE': True,
-    'RESOURCE_TYPE': 'auto' 
 }
-# Remplace tes lignes actuelles par celles-ci :
+
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build') # On change le nom ici
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
 
-# Indispensable pour la compatibilité Cloudinary + Django 6 sur Render
-STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-
+# On ne force Cloudinary que si on est sur Render
+if 'RENDER' in os.environ:
+    STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    # En local, on reste simple pour ne pas dépendre d'Internet
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 # Configuration moderne des stockages
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
