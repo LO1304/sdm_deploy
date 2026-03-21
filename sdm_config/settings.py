@@ -72,13 +72,21 @@ WSGI_APPLICATION = 'sdm_config.wsgi.application'
 # --- BASE DE DONNÉES ---
 # Note : SQLite s'efface à chaque redémarrage sur Render. 
 # À l'avenir, une base PostgreSQL (ex: Neon ou Render DB) sera préférable.
-import dj_database_url
+import os
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=env('DATABASE_URL')
-    )
-}
+# Si on est sur Render, on utilise DATABASE_URL, sinon on utilise SQLite localement
+if 'RENDER' in os.environ:
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 # --- INTERNATIONALISATION ---
 LANGUAGE_CODE = 'fr-fr'
 TIME_ZONE = 'UTC'
