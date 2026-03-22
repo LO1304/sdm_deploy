@@ -209,3 +209,16 @@ class HistoriqueConsultation(models.Model):
     def __str__(self):
         return f"{self.user.username} a lu {self.titre} ({self.date_vue})"
 
+class Favori(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favoris')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    date_ajout = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date_ajout']
+        unique_together = ('user', 'content_type', 'object_id')
+
+    def __str__(self):
+        return f"{self.user.username} a ajouté {self.content_object} à ses favoris"

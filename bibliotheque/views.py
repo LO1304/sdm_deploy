@@ -21,6 +21,8 @@ from .forms import ModernRegisterForm
 
 def home(request):
     """Page d'accueil avec horaires de prières et contenus récents."""
+    if not request.user.is_authenticated:
+        return redirect('login')
     contenu = ContenuDuJour.objects.last()
     khassida = Khassida.objects.all()
     zikrs = Zikr.objects.all()
@@ -55,6 +57,7 @@ def home(request):
     }
     return render(request, 'bibliotheque/index.html', context)
 
+@login_required
 def liste_dynamique(request, categorie):
     """Affiche les listes filtrées par catégorie (Khassida, Coran, etc.)."""
     query = request.GET.get('search')
@@ -79,6 +82,7 @@ def liste_dynamique(request, categorie):
         'query': query
     })
 
+@login_required
 def lire_pdf(request, categorie, id):
     """Lecteur PDF pour le Coran et les Khassidas."""
     if categorie == 'coran':
@@ -89,6 +93,7 @@ def lire_pdf(request, categorie, id):
 
 # --- GESTION DU ZIKR ---
 
+@login_required
 def zikr_compteur(request, id):
     """Interface du chapelet électronique."""
     zikr = get_object_or_404(Zikr, id=id)
@@ -120,6 +125,7 @@ def enregistrer_seance(request):
 
 # --- GESTION DES SONS ---
 
+@login_required
 def liste_sons(request):
     """Liste audio filtrable."""
     categorie_filter = request.GET.get('cat')
@@ -157,9 +163,11 @@ def profil_view(request):
 
 # --- ABONNEMENT ---
 
+@login_required
 def page_abonnement(request):
     return render(request, 'bibliotheque/abonnement.html')
 
+@login_required
 def paiement_reussi(request):
     """Active le mode Premium après confirmation du paiement."""
     profile, created = Profile.objects.get_or_create(user=request.user)
@@ -169,16 +177,16 @@ def paiement_reussi(request):
 
 # --- HISTORIQUE & DÉTAILS ---
 
+@login_required
 def details_contenu(request, id):
     """Affiche les détails et enregistre la consultation dans l'historique."""
     contenu = get_object_or_404(Khassida, id=id)
-    if request.user.is_authenticated:
-        obj_type = ContentType.objects.get_for_model(contenu)
-        Historique.objects.update_or_create(
-            user=request.user,
-            content_type=obj_type,
-            object_id=contenu.id
-        )
+    obj_type = ContentType.objects.get_for_model(contenu)
+    Historique.objects.update_or_create(
+        user=request.user,
+        content_type=obj_type,
+        object_id=contenu.id
+    )
     return render(request, 'bibliotheque/details.html', {'contenu': contenu})
 
 @login_required
