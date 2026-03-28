@@ -23,8 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # C'est ICI que tu inclus l'application 'bibliotheque'
     path('', include('bibliotheque.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/', include('bibliotheque.urls')),
 ]
 
 # Indispensable pour tes PDF et Images
