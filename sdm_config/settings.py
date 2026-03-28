@@ -80,8 +80,8 @@ WSGI_APPLICATION = 'sdm_config.wsgi.application'
 # À l'avenir, une base PostgreSQL (ex: Neon ou Render DB) sera préférable.
 import os
 
-# Si on est sur Render, on utilise DATABASE_URL, sinon on utilise SQLite localement
-if 'RENDER' in os.environ:
+# Si on est sur Render et qu'une DATABASE_URL existe, on l'utilise, sinon SQLite
+if 'RENDER' in os.environ and 'DATABASE_URL' in os.environ:
     import dj_database_url
     DATABASES = {
         'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
