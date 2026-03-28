@@ -13,7 +13,7 @@ from django.utils.timezone import now
 from .models import (
     Khassida, Zikr, Wird, ContenuDuJour, Coran, 
     ParametresPriere, Historique, HistoriqueZikr, 
-    Son, Profile, HistoriqueConsultation
+    Son, Profile, HistoriqueConsultation, Favori
 )
 from .forms import ModernRegisterForm
 
@@ -29,31 +29,13 @@ def home(request):
     recents_khassidas = Khassida.objects.order_by('-id')[:3] 
 
     config = ParametresPriere.objects.first()
-    ville = config.ville if config else "Touba"
-    horaires = {}
-
-    try:
-        url = f"http://api.aladhan.com/v1/timingsByCity?city={ville}&country=&method=3"
-        response = requests.get(url, timeout=5).json()
-        if response['code'] == 200:
-            data = response['data']['timings']
-            horaires = {
-                'Fajr': data['Fajr'],
-                'Dhuhr': data['Dhuhr'],
-                'Asr': data['Asr'],
-                'Maghrib': data['Maghrib'],
-                'Isha': data['Isha']
-            }
-    except Exception:
-        horaires = None 
 
     context = {
         'contenu': contenu,
         'khassidas': khassida,
         'recents': recents_khassidas,
         'zikrs': zikrs,
-        'horaires': horaires,
-        'ville': ville,
+        'config': config,
     }
     return render(request, 'bibliotheque/index.html', context)
 
@@ -135,10 +117,19 @@ def liste_sons(request):
         sons = Son.objects.all().order_by('-date_ajout')
     
     categories = Son.CATEGORIES
+    
+    # Get favorited sound IDs for the current user
+    try:
+        son_ct = ContentType.objects.get_for_model(Son)
+        favoris_ids = Favori.objects.filter(user=request.user, content_type=son_ct).values_list('object_id', flat=True)
+    except Exception:
+        favoris_ids = []
+
     return render(request, 'bibliotheque/liste_sons.html', {
         'sons': sons,
         'categories': categories,
-        'active_cat': categorie_filter
+        'active_cat': categorie_filter,
+        'favoris_ids': list(favoris_ids),
     })
 
 # --- AUTHENTIFICATION & PROFIL ---
@@ -208,3 +199,63 @@ def voir_historique_zikr(request):
 def voir_historique_general(request):
     consultations = HistoriqueConsultation.objects.filter(user=request.user).order_by('-date_vue')
     return render(request, 'bibliotheque/historique_general.html', {'consultations': consultations})
+
+@login_required
+def toggle_favori(request, model_name, object_id):
+    from django.apps import apps
+    try:
+        model_class = apps.get_model('bibliotheque', model_name)
+    except LookupError:
+        return JsonResponse({'status': 'error'})
+    
+    content_type = ContentType.objects.get_for_model(model_class)
+    obj = get_object_or_404(model_class, id=object_id)
+    
+    favori, created = Favori.objects.get_or_create(
+        user=request.user,
+        content_type=content_type,
+        object_id=object_id
+    )
+
+    if not created:
+        favori.delete()
+        status = 'removed'
+    else:
+        status = 'added'
+        
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'status': status})
+    
+    # Redirect to the previous page
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+@login_required
+def view_favoris(request):
+    favoris = Favori.objects.filter(user=request.user)
+    
+    # Organize favorites by type
+    favoris_by_type = {
+        'Khassida': [],
+        'Zikr': [],
+        'Wird': [],
+        'Coran': [],
+        'Son': []
+    }
+    
+    for favori in favoris:
+        if favori.content_type.model == 'khassida':
+            favoris_by_type['Khassida'].append(favori.content_object)
+        elif favori.content_type.model == 'zikr':
+            favoris_by_type['Zikr'].append(favori.content_object)
+        elif favori.content_type.model == 'wird':
+            favoris_by_type['Wird'].append(favori.content_object)
+        elif favori.content_type.model == 'coran':
+            favoris_by_type['Coran'].append(favori.content_object)
+        elif favori.content_type.model == 'son':
+            favoris_by_type['Son'].append(favori.content_object)
+            
+    context = {
+        'favoris_by_type': favoris_by_type
+    }
+    
+    return render(request, 'bibliotheque/favoris.html', context)

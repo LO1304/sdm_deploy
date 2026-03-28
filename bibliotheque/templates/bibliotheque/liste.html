@@ -24,6 +24,7 @@
     </style>
 </head>
 <body class="p-4 pb-20">
+    {% load bibliotheque_tags %}
 
     <div class="flex items-center justify-between mb-6 pt-2">
         <a href="{% url 'home' %}" class="gold-text p-2">
@@ -47,74 +48,42 @@
     <div class="space-y-3">
         {% for item in items %}
             
-            {% if 'zikr' in categorie|lower %}
-                <a href="{% url 'zikr_compteur' item.id %}" class="glass-card p-5 flex justify-between items-center block">
-                    <div class="flex items-center gap-4">
+            <div class="glass-card p-5 flex justify-between items-center">
+                <a href="{% if 'zikr' in categorie|lower %}{% url 'zikr_compteur' item.id %}{% elif 'youtube' in categorie|lower %}https://www.youtube.com/@SDM_Project{% else %}{% url 'lire_pdf' categorie item.id %}{% endif %}" class="flex items-center gap-4 flex-grow">
+                    {% if 'zikr' in categorie|lower %}
                         <i class="fa-solid fa-fingerprint gold-text text-xl"></i>
-                        <div>
-                            <h2 class="font-medium text-white">{{ item.titre }}</h2>
-                            <p class="text-[10px] opacity-40 uppercase tracking-widest">Objectif : {{ item.objectif_par_defaut }} fois</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-angle-right opacity-20"></i>
-                </a>
-
-            {% elif 'youtube' in categorie|lower %}
-                <a href="https://www.youtube.com/@SDM_Project" target="_blank" class="glass-card p-5 flex justify-between items-center block border-l-2 border-red-600">
-                    <div class="flex items-center gap-4">
+                    {% elif 'youtube' in categorie|lower %}
                         <i class="fa-brands fa-youtube text-red-600 text-xl"></i>
-                        <div>
-                            <h2 class="font-medium text-white">{{ item.titre|default:"Vidéo YouTube" }}</h2>
-                            <p class="text-[10px] opacity-40 uppercase tracking-widest">Voir sur la chaîne</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-20"></i>
-                </a>
-
-            {% elif 'son' in categorie|lower or item.fichier_audio %}
-                <div class="glass-card p-5 flex justify-between items-center">
-                    <div class="flex items-center gap-4">
+                    {% elif 'son' in categorie|lower or item.fichier_audio %}
                         <i class="fa-solid fa-headphones gold-text text-xl"></i>
-                        <div>
-                            <h2 class="font-medium text-white">{{ item.titre }}</h2>
-                            <p class="text-[10px] opacity-40 uppercase tracking-widest">{{ item.auteur_voix|default:"Audio disponible" }}</p>
-                        </div>
+                    {% elif 'coran' in categorie|lower %}
+                        <i class="fa-solid fa-quran gold-text text-xl"></i>
+                    {% elif 'wird' in categorie|lower %}
+                        <i class="fa-solid fa-ellipsis-vertical gold-text text-xl"></i>
+                    {% else %}
+                        <i class="fa-solid fa-file-pdf gold-text text-xl"></i>
+                    {% endif %}
+                    <div>
+                        <h2 class="font-medium text-white">{{ item.titre }}</h2>
+                        <p class="text-[10px] opacity-40 uppercase tracking-widest">
+                            {% if 'zikr' in categorie|lower %}
+                                Objectif : {{ item.objectif_par_defaut }} fois
+                            {% elif 'youtube' in categorie|lower %}
+                                Voir sur la chaîne
+                            {% elif item.auteur_voix %}
+                                {{ item.auteur_voix }}
+                            {% elif item.auteur %}
+                                {{ item.auteur }}
+                            {% else %}
+                                Consulter
+                            {% endif %}
+                        </p>
                     </div>
-                    <button class="gold-text"><i class="fa-solid fa-play"></i></button>
-                </div>
-
-            {% elif 'historique' in categorie|lower %}
-                <div class="glass-card p-5 flex justify-between items-center opacity-80">
-                    <div class="flex items-center gap-4">
-                        <i class="fa-solid fa-history gold-text text-xl"></i>
-                        <div>
-                            <h2 class="font-medium text-white">{{ item.zikr.titre }}</h2>
-                            <p class="text-[10px] opacity-40 uppercase tracking-widest">Fait le : {{ item.date_seance|date:"d/m/Y" }}</p>
-                        </div>
-                    </div>
-                    <span class="gold-text font-bold text-xs">{{ item.nombre_total }}</span>
-                </div>
-
-            {% else %}
-                <a href="{% url 'lire_pdf' categorie item.id %}" class="glass-card p-5 flex justify-between items-center block">
-                    <div class="flex items-center gap-4">
-                        {% if 'coran' in categorie|lower %}
-                            <i class="fa-solid fa-quran gold-text text-xl"></i>
-                        {% elif 'wird' in categorie|lower %}
-                            <i class="fa-solid fa-ellipsis-vertical gold-text text-xl"></i>
-                        {% else %}
-                            <i class="fa-solid fa-file-pdf gold-text text-xl"></i>
-                        {% endif %}
-                        <div>
-                            <h2 class="font-medium text-white">{{ item.titre }}</h2>
-                            <p class="text-[10px] opacity-40 uppercase tracking-widest">
-                                {% if item.auteur %}{{ item.auteur }}{% else %}Consulter{% endif %}
-                            </p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-angle-right opacity-20"></i>
                 </a>
-            {% endif %}
+                <a href="{% url 'add_remove_favori' item|get_content_type_id item.id %}" class="gold-text p-2">
+                    <i class="fa-solid fa-star"></i>
+                </a>
+            </div>
 
         {% empty %}
             <div class="text-center py-20 opacity-30 italic">

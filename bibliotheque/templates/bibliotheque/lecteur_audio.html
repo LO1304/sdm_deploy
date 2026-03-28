@@ -817,8 +817,26 @@ function fmt(s){
   return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');
 }
 function toggleAudio(){
-  if (aud.paused){ aud.play(); document.getElementById('audIcon').className='fa-solid fa-pause'; }
-  else           { aud.pause(); document.getElementById('audIcon').className='fa-solid fa-play'; }
+  if (aud.paused){
+    aud.play().then(() => {
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: "{{ zikr.titre|escapejs }}",
+          artist: "Zikr SDM",
+          artwork: [{ src: "{% static 'images/auth_bg.png' %}", sizes: '512x512', type: 'image/png' }]
+        });
+        navigator.mediaSession.setActionHandler('play', toggleAudio);
+        navigator.mediaSession.setActionHandler('pause', toggleAudio);
+        navigator.mediaSession.setActionHandler('seekbackward', skipBack);
+        navigator.mediaSession.setActionHandler('seekforward', skipFwd);
+      }
+    });
+    document.getElementById('audIcon').className='fa-solid fa-pause';
+  }
+  else {
+    aud.pause();
+    document.getElementById('audIcon').className='fa-solid fa-play';
+  }
 }
 function skipBack(){ aud.currentTime = Math.max(0, aud.currentTime-10); }
 function skipFwd() { aud.currentTime = Math.min(aud.duration||0, aud.currentTime+10); }
@@ -846,6 +864,14 @@ if (seekBar) {
     seekBar.style.setProperty('--sp',(pct*100)+'%');
     document.getElementById('audCur').textContent = fmt(aud.currentTime);
     document.getElementById('audDur').textContent = fmt(aud.duration);
+    
+    if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession && isFinite(aud.duration)) {
+      navigator.mediaSession.setPositionState({
+        duration: aud.duration,
+        playbackRate: aud.playbackRate,
+        position: aud.currentTime
+      });
+    }
   });
   aud.addEventListener('loadedmetadata', () => {
     document.getElementById('audDur').textContent = fmt(aud.duration);

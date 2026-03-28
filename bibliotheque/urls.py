@@ -19,6 +19,8 @@ urlpatterns = [
     path('profile/', views.profil_view, name='profile'),
     path('abonnement/', views.page_abonnement, name='abonnement'),
     path('paiement-confirmation/', views.paiement_reussi, name='paiement_reussi'),
+    path('favoris/', views.view_favoris, name='view_favoris'),
+    path('favoris/toggle/<str:model_name>/<int:object_id>/', views.toggle_favori, name='toggle_favori'),
 
     # Contenu (Sons, Coran, etc.)
     path('collection/son/', views.liste_sons, name='liste_sons'),

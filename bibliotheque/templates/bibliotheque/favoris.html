@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Favoris - SDM Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --dark: #05070a;
+            --surface: rgba(255,255,255,0.03);
+            --border: rgba(212,175,55,0.15);
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--dark);
+            background-image: radial-gradient(circle at top right, rgba(212,175,55,0.05), transparent 40%);
+            color: white;
+            min-height: 100vh;
+        }
+        .font-gold { font-family: 'Cormorant Garamond', serif; }
+        
+        .glass-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(212,175,55,0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(212,175,55,0.1);
+        }
+        
+        .back-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: white; transition: all 0.2s; text-decoration: none;
+        }
+        .back-btn:hover { background: rgba(212,175,55,0.15); border-color: rgba(212,175,55,0.3); color: var(--gold); }
+        
+        /* Staggered animation */
+        .fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="pb-20">
+
+    <div class="container mx-auto px-4 lg:px-8 pt-8 max-w-5xl">
+        
+        <!-- HEADER -->
+        <div class="flex items-center gap-4 mb-12 fade-in-up">
+            <a href="{% url 'home' %}" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="text-4xl font-gold text-[#d4af37] tracking-wide">Mes Favoris</h1>
+                <p class="text-[10px] tracking-[0.2em] text-white/40 uppercase mt-1">Votre collection spirituelle personnelle</p>
+            </div>
+        </div>
+        
+        <!-- CATEGORIES -->
+        {% for type, items in favoris_by_type.items %}
+            {% if items %}
+                <div class="mb-12 fade-in-up" style="animation-delay: {{ forloop.counter }}00ms;">
+                    
+                    <div class="flex items-center gap-4 mb-6">
+                        <h2 class="text-2xl font-gold tracking-wider text-white">{{ type }}</h2>
+                        <div class="h-[1px] flex-1 bg-gradient-to-r from-[#d4af37]/40 to-transparent"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {% for item in items %}
+                            <a href="#" class="glass-card rounded-2xl p-5 flex items-center gap-4 relative group block cursor-pointer">
+                                
+                                <div class="w-12 h-12 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/30 flex items-center justify-center flex-shrink-0 group-hover:bg-[#d4af37]/20 transition-colors">
+                                    {% if type == 'Son' %}
+                                        <i class="fa-solid fa-music text-[#d4af37]"></i>
+                                    {% elif type == 'Khassida' %}
+                                        <i class="fa-solid fa-book-open text-[#d4af37]"></i>
+                                    {% elif type == 'Coran' %}
+                                        <i class="fa-solid fa-quran text-[#d4af37]"></i>
+                                    {% elif type == 'Zikr' %}
+                                        <i class="fa-solid fa-hands-praying text-[#d4af37]"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-bookmark text-[#d4af37]"></i>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-white font-medium truncate text-sm">{{ item.titre }}</h3>
+                                    <p class="text-[10px] text-[#d4af37]/70 uppercase tracking-wider mt-1 truncate">
+                                        {% if type == 'Son' %}
+                                            {{ item.auteur_voix|default:item.get_categorie_display }}
+                                        {% elif item.auteur %}
+                                            {{ item.auteur }}
+                                        {% else %}
+                                            Collection SDM
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                
+                                <button class="absolute top-4 right-4 text-[#d4af37] opacity-60 hover:opacity-100 hover:text-red-400 transition-colors" title="Retirer des favoris">
+                                    <i class="fa-solid fa-heart"></i>
+                                </button>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- EMPTY STATE -->
+        {% if not favoris_by_type.Khassida and not favoris_by_type.Zikr and not favoris_by_type.Wird and not favoris_by_type.Coran and not favoris_by_type.Son %}
+            <div class="flex flex-col items-center justify-center py-20 fade-in-up" style="animation-delay: 200ms;">
+                <div class="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                    <i class="fa-regular fa-heart text-3xl text-white/20"></i>
+                </div>
+                <h3 class="text-xl font-gold text-white mb-2">Aucun favori pour le moment</h3>
+                <p class="text-white/40 text-sm font-light text-center max-w-md">
+                    Explorez la bibliothèque et appuyez sur l'icône cœur pour sauvegarder vos Khassidas, Zikrs et audios préférés ici.
+                </p>
+                <a href="{% url 'home' %}" class="mt-8 px-8 py-3 bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#d4af37] hover:text-black transition-all">
+                    Explorer la collection
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

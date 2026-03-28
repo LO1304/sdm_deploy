@@ -176,12 +176,12 @@
     /* Right */
     .track-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .track-dur { font-size: 9px; color: var(--text-dim); min-width: 32px; text-align: right; }
-    .dl-btn {
+    .action-btn {
         width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-        border-radius: 8px; opacity: 0; transition: opacity 0.2s; color: #fff; text-decoration: none;
+        border-radius: 8px; opacity: 0; transition: opacity 0.2s; color: #fff; text-decoration: none; border: none; background: transparent; cursor: pointer;
     }
-    .track-item:hover .dl-btn { opacity: 0.4; }
-    .dl-btn:hover { opacity: 1 !important; background: var(--gold-10); }
+    .track-item:hover .action-btn { opacity: 0.6; }
+    .action-btn:hover { opacity: 1 !important; background: var(--gold-10); }
     .track-num { font-size: 9px; color: var(--text-dim); width: 18px; text-align: right; flex-shrink: 0; }
 
     .empty { text-align:center; padding:80px 0; font-family:var(--font-h); font-style:italic; color:var(--text-dim); font-size:18px; }
@@ -405,7 +405,14 @@
 
         <div class="track-right">
             <span class="track-dur"></span>
-            <a href="{{ s.fichier_audio.url }}" download class="dl-btn" onclick="event.stopPropagation()">
+            <button type="button" class="action-btn" onclick="toggleFavori(event, 'son', {{ s.id }}, this)" title="Favori">
+                {% if s.id in favoris_ids %}
+                    <i class="fa-solid fa-heart" style="color:var(--gold)"></i>
+                {% else %}
+                    <i class="fa-regular fa-heart"></i>
+                {% endif %}
+            </button>
+            <a href="{{ s.fichier_audio.url }}" download class="action-btn" onclick="event.stopPropagation()">
                 <i class="fa-solid fa-download" style="font-size:10px"></i>
             </a>
         </div>
@@ -541,6 +548,34 @@ function toast(msg) {
 function items() { return [...document.querySelectorAll('#sonList .track-item')]; }
 
 /* ════════════════════════════
+   FAVORIS (AJAX)
+════════════════════════════ */
+function toggleFavori(e, model, id, btn) {
+    e.stopPropagation();
+    const csrfToken = '{{ csrf_token }}';
+    
+    fetch(`/favoris/toggle/${model}/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.status === 'added') {
+            btn.innerHTML = '<i class="fa-solid fa-heart" style="color:var(--gold)"></i>';
+            toast("Ajouté aux favoris");
+        } else if(data.status === 'removed') {
+            btn.innerHTML = '<i class="fa-regular fa-heart"></i>';
+            toast("Retiré des favoris");
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+/* ════════════════════════════
    VOLUME
 ════════════════════════════ */
 document.getElementById('vol').addEventListener('input', e => { aud.volume = e.target.value; });
@@ -622,7 +657,44 @@ async function playTrack(el) {
 
     aud.src = url;
     aud.load();
-    aud.play().catch(() => {});
+    aud.play().then(() => {
+        // --- MEDIA SESSION API (Arrière-plan) ---
+        if ('mediaSession' in navigator) {
+            let artworkUrl = null;
+            const imgEl = el.querySelector('.tcover');
+            if (imgEl && imgEl.src && !imgEl.src.endsWith('undefined')) {
+                artworkUrl = imgEl.src;
+            } else {
+                artworkUrl = "{% static 'images/auth_bg.png' %}";
+            }
+            
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: titre,
+                artist: auteur,
+                album: 'SDM Bibliothèque',
+                artwork: [
+                    { src: artworkUrl, sizes: '512x512', type: 'image/png' }
+                ]
+            });
+
+            navigator.mediaSession.setActionHandler('play', togglePlay);
+            navigator.mediaSession.setActionHandler('pause', togglePlay);
+            navigator.mediaSession.setActionHandler('previoustrack', playPrev);
+            navigator.mediaSession.setActionHandler('nexttrack', playNext);
+            
+            // Si sur mobile, on peut aussi écouter la progression pour l'OS
+            const updatePositionState = () => {
+                if ('setPositionState' in navigator.mediaSession && isFinite(aud.duration)) {
+                    navigator.mediaSession.setPositionState({
+                        duration: aud.duration,
+                        playbackRate: aud.playbackRate,
+                        position: aud.currentTime
+                    });
+                }
+            };
+            aud.addEventListener('timeupdate', updatePositionState);
+        }
+    }).catch(e => console.log('Playback error:', e));
 }
 
 /* ════════════════════════════

@@ -712,7 +712,7 @@ body {
     <div class="ph-top">
       <div>
         <div class="ph-city-label">Localisation</div>
-        <div class="ph-city">{{ ville|default:"Touba" }}</div>
+        <div class="ph-city" id="loc-city">Recherche...</div>
       </div>
       <div class="ph-clock">
         <div class="clock-digits" id="clock">--:--</div>
@@ -722,23 +722,23 @@ body {
     <div class="ph-slots">
       <div class="ph-slot" data-prayer="Fajr">
         <div class="slot-name">Fajr</div>
-        <div class="slot-time">{{ horaires.Fajr|default:"--:--" }}</div>
+        <div class="slot-time">--:--</div>
       </div>
       <div class="ph-slot" data-prayer="Dhuhr">
         <div class="slot-name">Dhuhr</div>
-        <div class="slot-time">{{ horaires.Dhuhr|default:"--:--" }}</div>
+        <div class="slot-time">--:--</div>
       </div>
       <div class="ph-slot" data-prayer="Asr">
         <div class="slot-name">Asr</div>
-        <div class="slot-time">{{ horaires.Asr|default:"--:--" }}</div>
+        <div class="slot-time">--:--</div>
       </div>
       <div class="ph-slot" data-prayer="Maghrib">
         <div class="slot-name">Maghrib</div>
-        <div class="slot-time">{{ horaires.Maghrib|default:"--:--" }}</div>
+        <div class="slot-time">--:--</div>
       </div>
       <div class="ph-slot" data-prayer="Isha">
         <div class="slot-name">Isha</div>
-        <div class="slot-time">{{ horaires.Isha|default:"--:--" }}</div>
+        <div class="slot-time">--:--</div>
       </div>
     </div>
     <div class="ph-bottom">
@@ -787,7 +787,7 @@ body {
       <span class="action-lbl">Wird</span>
     </a>
   </div>
-  <div class="grid-3">
+  <div class="grid-4">
     <a href="{% url 'liste' 'son' %}" class="action-btn" style="animation:riseUp .5s .60s both">
       <div class="action-icon ic-dark"><i class="fa-solid fa-headphones" style="color:var(--g1)"></i></div>
       <span class="action-lbl">Sons</span>
@@ -798,7 +798,11 @@ body {
     </a>
     <a href="{% url 'voir_historique' %}" class="action-btn" style="animation:riseUp .5s .72s both">
       <div class="action-icon ic-gold"><i class="fa-solid fa-history" style="color:var(--g1)"></i></div>
-      <span class="action-lbl">Historique</span>
+      <span class="action-lbl">Histo.</span>
+    </a>
+    <a href="{% url 'view_favoris' %}" class="action-btn" style="animation:riseUp .5s .78s both">
+      <div class="action-icon ic-dark"><i class="fa-solid fa-heart" style="color:var(--g1)"></i></div>
+      <span class="action-lbl">Favoris</span>
     </a>
   </div>
 </div>
@@ -897,8 +901,73 @@ body {
   init();draw();window.addEventListener('resize',resize);
 })();
 
-/* CLOCK + PRAYER */
-const PT={Fajr:'{{ horaires.Fajr }}',Dhuhr:'{{ horaires.Dhuhr }}',Asr:'{{ horaires.Asr }}',Maghrib:'{{ horaires.Maghrib }}',Isha:'{{ horaires.Isha }}'};
+/* CLOCK + PRAYER (GEOLOCATION & API) */
+let PT = {Fajr:'05:30', Dhuhr:'13:15', Asr:'16:45', Maghrib:'19:20', Isha:'20:30'}; // Fallback default
+const DEF_LAT = 14.86; const DEF_LNG = -15.88; const DEF_CITY = "Touba"; // Touba, Senegal fallback
+
+function updateUISlots() {
+  document.querySelector('.ph-slot[data-prayer="Fajr"] .slot-time').textContent = PT.Fajr;
+  document.querySelector('.ph-slot[data-prayer="Dhuhr"] .slot-time').textContent = PT.Dhuhr;
+  document.querySelector('.ph-slot[data-prayer="Asr"] .slot-time').textContent = PT.Asr;
+  document.querySelector('.ph-slot[data-prayer="Maghrib"] .slot-time').textContent = PT.Maghrib;
+  document.querySelector('.ph-slot[data-prayer="Isha"] .slot-time').textContent = PT.Isha;
+}
+
+async function fetchPrayers(lat, lng) {
+  const cacheKey = `prayer_${new Date().toDateString()}_${lat.toFixed(2)}_${lng.toFixed(2)}`;
+  const cached = localStorage.getItem(cacheKey);
+  if(cached) {
+    PT = JSON.parse(cached);
+    updateUISlots();
+    updateQibla(lat, lng);
+    tick(); return;
+  }
+  try {
+    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=3`);
+    const data = await res.json();
+    if(data.code === 200) {
+      PT = data.data.timings;
+      localStorage.setItem(cacheKey, JSON.stringify(PT));
+      updateUISlots();
+      updateQibla(lat, lng);
+      tick();
+    }
+  } catch(e) { console.error('Prière API Err', e); updateUISlots(); tick(); }
+}
+
+async function fetchCity(lat, lng) {
+  const cacheKey = `city_${lat.toFixed(2)}_${lng.toFixed(2)}`;
+  const cached = localStorage.getItem(cacheKey);
+  if(cached) { document.getElementById('loc-city').textContent = cached; return; }
+  try {
+    const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=fr`);
+    const data = await res.json();
+    const city = data.city || data.locality || data.principalSubdivision || DEF_CITY;
+    document.getElementById('loc-city').textContent = city;
+    localStorage.setItem(cacheKey, city);
+  } catch(e) { document.getElementById('loc-city').textContent = DEF_CITY; }
+}
+
+function initGeo() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        fetchCity(pos.coords.latitude, pos.coords.longitude);
+        fetchPrayers(pos.coords.latitude, pos.coords.longitude);
+      },
+      (err) => {
+        document.getElementById('loc-city').textContent = DEF_CITY;
+        fetchPrayers(DEF_LAT, DEF_LNG);
+      }
+    );
+  } else {
+    document.getElementById('loc-city').textContent = DEF_CITY;
+    fetchPrayers(DEF_LAT, DEF_LNG);
+  }
+}
+// Init Geolocation immediately
+initGeo();
+
 function toMins(t){if(!t||!t.includes(':'))return Infinity;const[h,m]=t.trim().split(':').map(Number);return h*60+m;}
 function tick(){
   const now=new Date();
@@ -906,7 +975,7 @@ function tick(){
   const mm=String(now.getMinutes()).padStart(2,'0');
   const cur=now.getHours()*60+now.getMinutes();
   document.getElementById('clock').textContent=hh+':'+mm;
-  const entries=Object.entries(PT);
+  const entries=['Fajr','Dhuhr','Asr','Maghrib','Isha'].map(n=>[n,PT[n]]);
   let nextName=null,nextMins=Infinity;
   entries.forEach(([n,t])=>{const m=toMins(t);if(m>cur&&m<nextMins){nextMins=m;nextName=n;}});
   if(!nextName){nextName=entries[0][0];nextMins=toMins(entries[0][1])+1440;}
@@ -920,23 +989,19 @@ function tick(){
     document.getElementById('countdown').textContent=ch+':'+cm+':'+cs;
   }
   if("{{ config.activer_adhan }}"==="True"){
-    entries.forEach(([,t])=>{if(t&&hh+':'+mm===t.trim()&&now.getSeconds()===0)document.getElementById('adhan-player').play().catch(()=>{});});
+    entries.forEach(([,t])=>{if(t&&hh+':'+mm===t.trim()&&now.getSeconds()===0){const ap=document.getElementById('adhan-player'); if(ap.paused)ap.play().catch(()=>{});}});
   }
 }
-setInterval(tick,1000);tick();
+setInterval(tick,1000);
 
 /* QIBLA */
-function updateQibla(){
-  if(!navigator.geolocation)return;
-  navigator.geolocation.getCurrentPosition(p=>{
-    const lat=p.coords.latitude*Math.PI/180;
-    const dLng=(39.8262-p.coords.longitude)*Math.PI/180;
-    const kLat=21.4225*Math.PI/180;
-    const y=Math.sin(dLng),x=Math.cos(lat)*Math.sin(kLat)-Math.sin(lat)*Math.cos(kLat)*Math.cos(dLng);
-    document.getElementById('compass').style.transform=`rotate(${Math.atan2(y,x)*180/Math.PI}deg)`;
-  });
+function updateQibla(lat_deg, lng_deg){
+  const lat=lat_deg*Math.PI/180;
+  const dLng=(39.8262-lng_deg)*Math.PI/180;
+  const kLat=21.4225*Math.PI/180;
+  const y=Math.sin(dLng),x=Math.cos(lat)*Math.sin(kLat)-Math.sin(lat)*Math.cos(kLat)*Math.cos(dLng);
+  document.getElementById('compass').style.transform=`rotate(${Math.atan2(y,x)*180/Math.PI}deg)`;
 }
-updateQibla();
 
 /* SCROLL REVEAL */
 const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0) scale(1)';}});},{threshold:0.1});

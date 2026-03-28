@@ -7,9 +7,8 @@ class ModernRegisterForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # On applique le style "Gold" à tous les champs d'un coup
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'w-full bg-white/5 border border-gold/10 rounded-xl px-4 py-3 text-sm text-white focus:border-gold outline-none transition-all',
-                'placeholder': field.label
+                'class': 'peer w-full bg-transparent border-b-2 border-white/20 px-0 py-3 text-white focus:border-[#d4af37] focus:outline-none transition-colors placeholder-transparent',
+                'placeholder': ' ' # Required for Tailwind's peer-placeholder-shown to work
             })
