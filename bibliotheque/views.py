@@ -13,7 +13,7 @@ from django.utils.timezone import now
 from .models import (
     Khassida, Zikr, Wird, ContenuDuJour, Coran, 
     ParametresPriere, Historique, HistoriqueZikr, 
-    Son, Profile, HistoriqueConsultation, Favori
+    Son, Profile, HistoriqueConsultation, Favori, ProgressionLecture
 )
 from .forms import ModernRegisterForm
 
@@ -68,10 +68,57 @@ def liste_dynamique(request, categorie):
 def lire_pdf(request, categorie, id):
     """Lecteur PDF pour le Coran et les Khassidas."""
     if categorie == 'coran':
-        document = get_object_or_404(Coran, id=id)
+        target_model = Coran
     else:
-        document = get_object_or_404(Khassida, id=id)
-    return render(request, 'bibliotheque/lecteur.html', {'document': document})
+        target_model = Khassida
+        
+    document = get_object_or_404(target_model, id=id)
+    
+    # Récupérer la progression
+    page_reprise = 1
+    content_type = ContentType.objects.get_for_model(target_model)
+    prog = ProgressionLecture.objects.filter(user=request.user, content_type=content_type, object_id=id).first()
+    if prog:
+        page_reprise = prog.page_actuelle
+
+    return render(request, 'bibliotheque/lecteur.html', {
+        'document': document,
+        'categorie': categorie,
+        'page_reprise': page_reprise
+    })
+
+@csrf_exempt
+@login_required
+def sauvegarder_progression_pdf(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            categorie = data.get('categorie')
+            doc_id = data.get('id')
+            page = data.get('page')
+
+            if not all([categorie, doc_id, page]):
+                return JsonResponse({'status': 'error', 'message': 'Données manquantes'}, status=400)
+
+            target_model = Coran if categorie == 'coran' else Khassida
+            document = get_object_or_404(target_model, id=doc_id)
+            content_type = ContentType.objects.get_for_model(target_model)
+
+            progression, created = ProgressionLecture.objects.get_or_create(
+                user=request.user,
+                content_type=content_type,
+                object_id=document.id,
+                defaults={'page_actuelle': page}
+            )
+            
+            if not created:
+                progression.page_actuelle = page
+                progression.save()
+
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
 
 # --- GESTION DU ZIKR ---
 

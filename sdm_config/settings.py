@@ -21,7 +21,13 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
 # On garde les hôtes locaux et l'adresse de Render
-ALLOWED_HOSTS = ['sdm-mouride-2jbn.onrender.com', 'sdm-mouride.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'sdm-mouride.onrender.com', 
+    'sdm-mouride-2jbn.onrender.com', 
+    '.onrender.com', 
+    'localhost', 
+    '127.0.0.1'
+]
 
 # --- APPLICATIONS INSTALLÉES ---
 INSTALLED_APPS = [

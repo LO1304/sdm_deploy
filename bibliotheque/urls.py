@@ -32,6 +32,7 @@ urlpatterns = [
     path('historique/general/', views.voir_historique_general, name='voir_historique_general'),
     path('details/<int:id>/', views.details_contenu, name='details_contenu'),
     path('api/enregistrer-seance/', views.enregistrer_seance, name='enregistrer_seance'),
+    path('api/progression-pdf/', views.sauvegarder_progression_pdf, name='sauvegarder_progression_pdf'),
 ]
 
 # Gestion des fichiers média et statiques en développement

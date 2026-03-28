@@ -56,6 +56,21 @@ class Historique(models.Model):
 
     def __str__(self):
         return f"{self.user.username} a écouté {self.content_object} le {self.date_lecture}"
+
+class ProgressionLecture(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='progressions')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    
+    page_actuelle = models.PositiveIntegerField(default=1)
+    derniere_mise_a_jour = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'content_type', 'object_id')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.content_object} (Page {self.page_actuelle})"
 #wird
 class Wird(models.Model):
     titre=models.CharField(max_length=200)
