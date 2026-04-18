@@ -20,11 +20,12 @@ if os.path.exists(dot_env_path):
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
-# On garde les hôtes locaux et l'adresse de Render
+# On garde les hôtes locaux, Render et PythonAnywhere
 ALLOWED_HOSTS = [
     'sdm-mouride.onrender.com', 
     'sdm-mouride-2jbn.onrender.com', 
     '.onrender.com', 
+    '.pythonanywhere.com',
     'localhost', 
     '127.0.0.1'
 ]
