@@ -113,30 +113,28 @@ CLOUDINARY_STORAGE = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
 
-# On ne force Cloudinary que si on est sur Render
-if 'RENDER' in os.environ:
-    STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-else:
-    # En local, on reste simple pour ne pas dépendre d'Internet
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-# Configuration moderne des stockages
+# ── STOCKAGE CLOUDINARY (production Render) / local sinon ──
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': env('CLOUDINARY_API_KEY'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET'),
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='local'),
+    'API_KEY':    env('CLOUDINARY_API_KEY',    default='local'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET', default='local'),
     'SECURE': True,
-    'RESOURCE_TYPE': 'auto'
+    'RESOURCE_TYPE': 'auto',
 }
 
-# CETTE LIGNE DOIT ÊTRE EN DEHORS DES ACCOLADES CI-DESSUS
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
+if 'RENDER' in os.environ:
+    STATICFILES_STORAGE  = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
+else:
+    # En local, on reste simple pour ne pas dépendre d'Internet
+    STATICFILES_STORAGE  = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
-MEDIA_URL = '/media/'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+MEDIA_URL  = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # --- AUTRES PARAMÈTRES ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_REDIRECT_URL = '/collection/son/'
+LOGIN_REDIRECT_URL  = '/collection/son/'
 LOGOUT_REDIRECT_URL = 'login'
-LOGIN_URL = 'login'
+LOGIN_URL           = 'login'

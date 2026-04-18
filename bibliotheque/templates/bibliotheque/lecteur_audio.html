@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <!-- PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#040B08">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zikr Compteur — {{ zikr.titre }}</title>
@@ -883,6 +888,19 @@ if (seekBar) {
   const vb = document.getElementById('volBar');
   if (vb) vb.addEventListener('input', e => aud.volume=e.target.value);
 }
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        console.log('ServiceWorker registration successful');
+      }, function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
 </script>
 </body>
 </html>

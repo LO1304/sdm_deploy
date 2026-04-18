@@ -2,29 +2,43 @@
 
 {% block content %}
 <div style="padding: 20px; text-align: center; color: white; background: #03040a; min-height: 100vh;">
-    <h2 class="gold-grad" style="font-family: serif;">{{ zikr.nom }}</h2>
-    <p style="color: #888; font-size: 14px;">{{ zikr.description }}</p>
+    <h2 class="gold-grad" style="font-family: serif; font-size: 28px;" data-aos="fade-down">{{ zikr.nom|default:zikr.titre }}</h2>
+    <p style="color: #888; font-size: 14px; margin-top: 10px;" data-aos="fade-up" data-aos-delay="100">{{ zikr.description }}</p>
 
-    <div id="counter-circle" style="width: 200px; height: 200px; border: 5px solid #D4AF37; border-radius: 50%; margin: 40px auto; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s;">
-        <span id="count-display" style="font-size: 48px; font-weight: bold;">0</span>
+    <div id="counter-circle" 
+         class="glass-card"
+         style="width: 200px; height: 200px; border: 2px solid #D4AF37; border-radius: 50%; margin: 40px auto; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 20px rgba(212,175,55,0.1);"
+         data-aos="zoom-in" data-aos-delay="200">
+        <span id="count-display" style="font-size: 56px; font-weight: 300; font-family: 'Outfit', sans-serif;">0</span>
     </div>
     
-    <button onclick="validerSeance()" style="background: var(--gold-grad); border: none; padding: 10px 25px; border-radius: 20px; font-weight: bold; cursor: pointer;">
+    <button onclick="validerSeance()" 
+            class="gold-bg"
+            style="border: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-size: 11px;"
+            data-aos="fade-up" data-aos-delay="300">
         Enregistrer la séance
     </button>
 
-    <div style="margin-top: 40px; text-align: left; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px;">
-        <h4 style="color: #D4AF37; margin-bottom: 15px; font-size: 14px;">Mes dernières séances</h4>
+    <div style="margin-top: 60px; text-align: left; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 24px;"
+         data-aos="fade-up" data-aos-delay="400">
+        <h4 style="color: #D4AF37; margin-bottom: 20px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Dernières séances</h4>
         {% for session in mes_sessions %}
-            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(212,175,55,0.1);">
-                <span style="color: #888; font-size: 12px;">{{ session.date_seance|date:"d M Y" }}</span>
-                <span style="font-weight: bold;">{{ session.nombre_total }}</span>
+            <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <span style="color: rgba(255,255,255,0.4); font-size: 12px;">{{ session.date_seance|date:"d M Y" }}</span>
+                <span style="font-weight: 500; color: #fff;">{{ session.nombre_total }}</span>
             </div>
         {% empty %}
-            <p style="font-size: 12px; color: #555; text-align: center;">Aucune donnée encore.</p>
+            <p style="font-size: 12px; color: #444; text-align: center; padding: 20px;">Aucune donnée historique.</p>
         {% endfor %}
     </div>
 </div>
+
+<style>
+    .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); }
+    .glass-card:active { transform: scale(0.92); box-shadow: 0 0 40px rgba(212,175,55,0.3); }
+    .gold-bg { background: linear-gradient(135deg, #f5dc6e, #d4af37, #9a7520); color: black; transition: all 0.3s; }
+    .gold-bg:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(212,175,55,0.4); }
+</style>
 
 <script>
     let count = 0;

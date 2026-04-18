@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <!-- PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#040B08">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="google" content="notranslate">
 <title>Zikr — {{ zikr.titre }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -925,6 +931,43 @@ document.getElementById('volBar').addEventListener('input',e=>aud.volume=e.targe
   switchSalat(0);
   renderTabs();
 })();
+</script>
+<!-- NAV (Même style que l'accueil) -->
+<nav class="nav layer notranslate">
+  <a href="/" class="nav-item">
+    <i class="fa-solid fa-house-chimney"></i>
+    <span>Accueil</span>
+  </a>
+  <a href="{% url 'dashboard' %}" class="nav-item active">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Stats</span>
+  </a>
+  <a href="{% url 'favoris' %}" class="nav-item">
+    <i class="fa-solid fa-heart"></i>
+    <span>Favoris</span>
+  </a>
+  <a href="{% url 'profile' %}" class="nav-item">
+    <i class="fa-solid fa-circle-user"></i>
+    <span>Profil</span>
+  </a>
+</nav>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 800, once: true });
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        console.log('ServiceWorker registration successful');
+      }, function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
 </script>
 </body>
 </html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#03040a">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Hors Ligne — SDM Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37; --gold-lt: #f5dc6e; --gold-dk: #9a7520;
+            --bg: #03040a; --dim: rgba(255,255,255,0.35);
+            --border: rgba(255,255,255,0.07); --border-g: rgba(212,175,55,0.2);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg); color: #f0f0f0;
+            min-height: 100dvh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            overflow: hidden; padding: 24px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── COSMOS CANVAS ── */
+        #cosmos { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        /* ── BLOBS ── */
+        .blob { position: fixed; border-radius: 50%; filter: blur(110px); pointer-events: none; z-index: 0; }
+        .blob-1 {
+            width: 500px; height: 500px; top: -150px; left: 50%; transform: translateX(-50%);
+            background: radial-gradient(circle, rgba(212,175,55,0.07) 0%, transparent 70%);
+            animation: blobA 14s ease-in-out infinite alternate;
+        }
+        .blob-2 {
+            width: 300px; height: 300px; bottom: -80px; right: -60px;
+            background: radial-gradient(circle, rgba(100,60,200,0.05) 0%, transparent 70%);
+            animation: blobB 18s ease-in-out infinite alternate;
+        }
+        @keyframes blobA { to { transform: translateX(-50%) scale(1.12) translateY(30px); } }
+        @keyframes blobB { to { transform: translate(-40px,-30px) scale(1.15); } }
+
+        /* ── CARD ── */
+        .card {
+            position: relative; z-index: 1;
+            width: 100%; max-width: 420px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 32px; padding: 48px 36px 40px;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+            backdrop-filter: blur(24px);
+            animation: cardRise 0.9s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        @keyframes cardRise { from { opacity:0; transform: translateY(40px) scale(0.96); } }
+
+        /* Ligne dorée en haut */
+        .card::before {
+            content: '';
+            position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            border-radius: 99px;
+        }
+
+        /* ── ICÔNE WIFI ── */
+        .wifi-icon-wrap {
+            width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 28px;
+            background: rgba(212,175,55,0.07); border: 1px solid var(--border-g);
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            animation: iconPulse 3s ease-in-out infinite;
+        }
+        @keyframes iconPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+            50%      { box-shadow: 0 0 0 18px rgba(212,175,55,0.05); }
+        }
+        .wifi-icon-wrap::after {
+            content: '';
+            position: absolute; inset: -8px; border-radius: 50%;
+            border: 1px solid rgba(212,175,55,0.08);
+            animation: ringPulse 3s 0.5s ease-in-out infinite;
+        }
+        @keyframes ringPulse {
+            0%,100% { transform: scale(1); opacity: 0.5; }
+            50%      { transform: scale(1.1); opacity: 1; }
+        }
+        .wifi-icon-wrap i { font-size: 36px; color: var(--gold); opacity: 0.85; }
+
+        /* ── TEXTE ── */
+        .offline-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
+            font-weight: 700; color: #fff; margin-bottom: 14px;
+            animation: fadeUp 0.7s 0.2s both;
+        }
+        .offline-sub {
+            font-size: 13px; line-height: 1.8; color: var(--dim);
+            margin-bottom: 36px; max-width: 320px; margin-left: auto; margin-right: auto;
+            animation: fadeUp 0.7s 0.3s both;
+        }
+        .offline-sub strong { color: rgba(212,175,55,0.8); font-weight: 600; }
+
+        /* ── FEATURES OFFLINE ── */
+        .offline-features {
+            display: flex; flex-direction: column; gap: 12px;
+            margin-bottom: 36px;
+            animation: fadeUp 0.7s 0.35s both;
+        }
+        .feat-row {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(212,175,55,0.04); border: 1px solid rgba(212,175,55,0.1);
+            border-radius: 14px; padding: 12px 16px; text-align: left;
+        }
+        .feat-row i { color: var(--gold); font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+        .feat-row span { font-size: 12px; color: rgba(255,255,255,0.65); }
+
+        /* ── BOUTONS ── */
+        .btn-group { display: flex; flex-direction: column; gap: 12px; animation: fadeUp 0.7s 0.45s both; }
+
+        .btn-primary {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 16px; border-radius: 18px; border: none;
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+            color: #0a0600; font-family: 'Inter', sans-serif;
+            font-size: 12px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+            cursor: pointer; text-decoration: none;
+            box-shadow: 0 10px 28px rgba(212,175,55,0.3);
+            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+            position: relative; overflow: hidden;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+            transform: translateX(-100%); transition: transform 0.5s;
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(212,175,55,0.4); }
+        .btn-primary:hover::before { transform: translateX(100%); }
+        .btn-primary:active { transform: scale(0.97); }
+
+        .btn-secondary {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 14px; border-radius: 18px;
+            background: transparent; border: 1px solid var(--border);
+            color: var(--dim); font-family: 'Inter', sans-serif;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .btn-secondary:hover { border-color: var(--border-g); color: #fff; background: rgba(212,175,55,0.05); }
+        .btn-secondary:active { transform: scale(0.97); }
+
+        /* ── STATUS ONLINE ── */
+        #online-status {
+            margin-top: 24px; font-size: 10px; font-weight: 600;
+            letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            animation: fadeUp 0.7s 0.55s both;
+        }
+        .status-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239,68,68,0.6);
+            animation: blink 2s ease-in-out infinite;
+        }
+        .status-dot.online { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.6); }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } }
+    </style>
+</head>
+<body>
+
+    <canvas id="cosmos"></canvas>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="card">
+
+        <!-- Icône WiFi pulsante -->
+        <div class="wifi-icon-wrap">
+            <i class="fa-solid fa-wifi-slash"></i>
+        </div>
+
+        <!-- Titre -->
+        <h1 class="offline-title">Mode Hors-Ligne</h1>
+        <p class="offline-sub">
+            Vous n'êtes pas connecté à internet.<br>
+            <strong>SDM Premium</strong> reste disponible pour vos contenus mis en cache.
+        </p>
+
+        <!-- Ce qu'on peut faire offline -->
+        <div class="offline-features">
+            <div class="feat-row">
+                <i class="fa-solid fa-book-open"></i>
+                <span>Lire vos Khassidas téléchargés</span>
+            </div>
+            <div class="feat-row">
+                <i class="fa-solid fa-music"></i>
+                <span>Écouter l'audio mis en cache</span>
+            </div>
+            <div class="feat-row">
+                <i class="fa-solid fa-fingerprint"></i>
+                <span>Utiliser le compteur Zikr</span>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="btn-group">
+            <a href="/" class="btn-primary">
+                <i class="fa-solid fa-house" style="font-size:14px"></i>
+                Retour à l'accueil
+            </a>
+            <button onclick="window.location.reload()" class="btn-secondary">
+                <i class="fa-solid fa-rotate-right" style="font-size:13px"></i>
+                Réessayer la connexion
+            </button>
+        </div>
+
+        <!-- Statut réseau en temps réel -->
+        <div id="online-status">
+            <div class="status-dot" id="status-dot"></div>
+            <span id="status-text">Hors ligne</span>
+        </div>
+
+    </div>
+
+    <script>
+        /* ── ÉTOILES ── */
+        (function(){
+            const c = document.getElementById('cosmos'), ctx = c.getContext('2d');
+            let W, H, P = [];
+            function resize(){ W = c.width = innerWidth; H = c.height = innerHeight; }
+            function mk(){ return { x:Math.random()*W, y:Math.random()*H, r:Math.random()*.8+.2, a:Math.random()*.5+.04, da:(Math.random()*.005+.001)*(Math.random()>.5?1:-1), vx:(Math.random()-.5)*.06, vy:(Math.random()-.5)*.06, gold:Math.random()>.85 }; }
+            resize(); P = Array.from({length:150}, mk);
+            (function draw(){
+                ctx.clearRect(0,0,W,H);
+                P.forEach(p=>{ p.a=Math.max(.04,Math.min(.6,p.a+p.da)); if(p.a>=.6||p.a<=.04)p.da*=-1; p.x=(p.x+p.vx+W)%W; p.y=(p.y+p.vy+H)%H; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=p.gold?`rgba(212,175,55,${p.a*.7})`:`rgba(255,255,255,${p.a*.4})`; ctx.fill(); });
+                requestAnimationFrame(draw);
+            })();
+            window.addEventListener('resize', resize);
+        })();
+
+        /* ── DÉTECTION RÉSEAU ── */
+        const dot  = document.getElementById('status-dot');
+        const text = document.getElementById('status-text');
+        function updateStatus(){
+            if(navigator.onLine){
+                dot.classList.add('online'); text.textContent = 'Connexion rétablie !';
+                setTimeout(()=>{ window.location.href='/'; }, 1500);
+            } else {
+                dot.classList.remove('online'); text.textContent = 'Hors ligne';
+            }
+        }
+        window.addEventListener('online',  updateStatus);
+        window.addEventListener('offline', updateStatus);
+        updateStatus();
+
+        /* ── PWA ── */
+        if('serviceWorker' in navigator){
+            navigator.serviceWorker.register('/sw.js').catch(()=>{});
+        }
+    </script>
+</body>
+</html>

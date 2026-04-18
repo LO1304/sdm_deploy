@@ -3,11 +3,16 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 from bibliotheque import views # Vérifie bien le nom de ton app ici
 
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
+
+    # PWA et Offline
+    path('sw.js', TemplateView.as_view(template_name='sw.js', content_type='application/javascript'), name='sw.js'),
+    path('offline/', TemplateView.as_view(template_name='bibliotheque/offline.html'), name='offline'),
 
     # Accueil et Authentification
     path('', views.home, name='home'),
@@ -19,7 +24,9 @@ urlpatterns = [
     path('profile/', views.profil_view, name='profile'),
     path('abonnement/', views.page_abonnement, name='abonnement'),
     path('paiement-confirmation/', views.paiement_reussi, name='paiement_reussi'),
-    path('favoris/', views.view_favoris, name='view_favoris'),
+    path('wird/<slug:slug>/', views.lire_wird, name='lire_wird'),
+    path('api/wird/save-progress/', views.save_wird_progress, name='save_wird_progress'),
+    path('favoris/', views.view_favoris, name='favoris'),
     path('favoris/toggle/<str:model_name>/<int:object_id>/', views.toggle_favori, name='toggle_favori'),
 
     # Contenu (Sons, Coran, etc.)
@@ -32,7 +39,14 @@ urlpatterns = [
     path('historique/general/', views.voir_historique_general, name='voir_historique_general'),
     path('details/<int:id>/', views.details_contenu, name='details_contenu'),
     path('api/enregistrer-seance/', views.enregistrer_seance, name='enregistrer_seance'),
+    path('api/ecoute-son/<int:id>/', views.enregistrer_ecoute_son, name='enregistrer_ecoute_son'),
     path('api/progression-pdf/', views.sauvegarder_progression_pdf, name='sauvegarder_progression_pdf'),
+    
+    # Recherche globale
+    path('recherche/', views.recherche_globale, name='recherche_globale'),
+
+    # Tableau de bord personnel
+    path('dashboard/', views.dashboard, name='dashboard'),
 ]
 
 # Gestion des fichiers média et statiques en développement

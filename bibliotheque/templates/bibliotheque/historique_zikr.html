@@ -13,13 +13,14 @@
 
     <div class="list-wrapper">
         {% for item in historique %}
-        <div style="background: rgba(255,255,255,0.03); border-left: 3px solid #D4AF37; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="background: rgba(255,255,255,0.02); border-left: 2px solid #D4AF37; border-radius: 16px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05);"
+             data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}50">
             <div>
-                <h4 style="margin: 0; font-size: 15px; color: #efefef;">{{ item.zikr.nom }}</h4>
-                <p style="margin: 3px 0 0; font-size: 10px; color: #666;">{{ item.date_seance|date:"d M Y • H:i" }}</p>
+                <h4 style="margin: 0; font-size: 16px; color: #fff; font-weight: 500;">{{ item.zikr.nom }}</h4>
+                <p style="margin: 5px 0 0; font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">{{ item.date_seance|date:"d M Y • H:i" }}</p>
             </div>
             <div style="text-align: right;">
-                <span style="background: rgba(212,175,55,0.1); color: #D4AF37; padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 14px;">
+                <span class="gold-bg" style="padding: 6px 16px; border-radius: 12px; font-weight: bold; font-size: 16px; color: black;">
                     {{ item.nombre_total }}
                 </span>
             </div>
@@ -39,6 +40,9 @@
         background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+    .gold-bg {
+        background: linear-gradient(135deg, #f5dc6e, #d4af37, #9a7520);
     }
 </style>
 {% endblock %}

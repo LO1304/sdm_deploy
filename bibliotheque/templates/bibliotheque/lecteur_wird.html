@@ -1,0 +1,405 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#040B08">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ wird.titre }} — SDM Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&family=Outfit:wght@200;300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --g1: #d4af37; --g2: #f5dc6e; --g3: #9a7520;
+            --neon: rgba(212,175,55,0.3);
+            --bg: #03040a;
+            --surface: rgba(255,255,255,0.025);
+            --border: rgba(212,175,55,0.15);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            background-image: radial-gradient(circle at 50% 0%, rgba(212,175,55,0.07) 0%, transparent 50%);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 120px;
+        }
+        ::-webkit-scrollbar { width: 2px; }
+        ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 9px; }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex; align-items: center; gap: 14px;
+            padding: 20px 20px 0; max-width: 680px; margin: 0 auto;
+        }
+        .back-btn {
+            width: 42px; height: 42px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--surface); border: 1px solid var(--border);
+            color: rgba(255,255,255,0.5); text-decoration: none; flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .back-btn:hover { background: rgba(212,175,55,0.12); color: var(--g1); border-color: var(--g1); }
+        .topbar-info { flex: 1; min-width: 0; }
+        .topbar-tag {
+            font-size: 9px; text-transform: uppercase; letter-spacing: 0.25em;
+            color: var(--g1); opacity: 0.7; margin-bottom: 3px;
+        }
+        .topbar-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px; color: rgba(255,255,255,0.9);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* ── CONTENT ── */
+        .content { max-width: 680px; margin: 24px auto 0; padding: 0 16px; }
+
+        /* ── INTRO CARD ── */
+        .intro-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px; padding: 22px 20px;
+            margin-bottom: 20px;
+        }
+        .intro-label {
+            font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em;
+            color: rgba(255,255,255,0.3); margin-bottom: 10px;
+        }
+        .intro-text { font-size: 14px; line-height: 1.75; color: rgba(255,255,255,0.6); }
+
+        /* ── TAB BAR ── */
+        .tab-bar {
+            display: flex; gap: 8px; margin-bottom: 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 50px; padding: 5px;
+        }
+        .tab-btn {
+            flex: 1; border: none; border-radius: 50px;
+            padding: 9px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            cursor: pointer; transition: all 0.25s;
+            background: transparent; color: rgba(255,255,255,0.35);
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--g2), var(--g1));
+            color: #000; box-shadow: 0 4px 15px var(--neon);
+        }
+
+        /* ── TEXT PANELS ── */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        .arabic-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px; padding: 30px 22px;
+            margin-bottom: 20px;
+        }
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            font-size: 28px; line-height: 2.2;
+            text-align: right; direction: rtl;
+            color: rgba(255,255,255,0.92);
+        }
+        .latin-panel {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px; padding: 24px 20px;
+            margin-bottom: 20px;
+        }
+        .latin-text {
+            font-size: 15px; line-height: 2;
+            color: rgba(255,255,255,0.75);
+        }
+        .translation-panel {
+            background: linear-gradient(135deg, rgba(212,175,55,0.06), rgba(212,175,55,0.02));
+            border: 1px solid rgba(212,175,55,0.15);
+            border-radius: 24px; padding: 24px 20px;
+            margin-bottom: 20px;
+        }
+        .translation-text { font-size: 14px; line-height: 1.9; color: rgba(255,255,255,0.6); }
+
+        /* ── COMPTEUR ── */
+        .counter-section {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            padding: 16px 16px 28px;
+            background: linear-gradient(to top, rgba(3,4,10,0.98) 70%, transparent);
+            display: flex; align-items: center; gap: 16px;
+            max-width: 680px; margin: 0 auto;
+        }
+        .counter-display {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 12px 18px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .counter-num {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--g2), var(--g1));
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .counter-info { flex: 1; }
+        .counter-label {
+            font-size: 9px; text-transform: uppercase;
+            letter-spacing: 0.2em; color: rgba(255,255,255,0.3);
+        }
+        .counter-goal { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+        .progress-bar-wrap {
+            height: 3px; background: rgba(255,255,255,0.06);
+            border-radius: 9px; margin-top: 8px; overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%; border-radius: 9px;
+            background: linear-gradient(to right, var(--g3), var(--g1));
+            transition: width 0.4s ease;
+        }
+        .tap-btn {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--g2), var(--g1), var(--g3));
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: #000;
+            box-shadow: 0 4px 20px var(--neon);
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+        .tap-btn:active { transform: scale(0.88); box-shadow: 0 0 30px rgba(212,175,55,0.6); }
+        .reset-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.35); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; transition: all 0.2s; flex-shrink: 0;
+        }
+        .reset-btn:hover { color: rgba(255,80,50,0.8); border-color: rgba(255,80,50,0.3); }
+
+        /* ── AUDIO PLAYER ── */
+        .audio-card {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 22px; padding: 18px 20px;
+            margin-bottom: 20px;
+        }
+        .audio-label {
+            font-size: 9px; text-transform: uppercase;
+            letter-spacing: 0.2em; color: rgba(255,255,255,0.3); margin-bottom: 12px;
+        }
+        audio {
+            width: 100%; height: 36px; border-radius: 10px;
+            filter: brightness(0.9);
+        }
+
+        /* ── COMPLETION ── */
+        .complete-badge {
+            display: none;
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+            border: 1px solid rgba(212,175,55,0.4);
+            border-radius: 20px; padding: 16px 20px;
+            text-align: center; margin-bottom: 110px;
+        }
+        .complete-badge.show { display: block; }
+        .complete-badge i { font-size: 24px; color: var(--g1); margin-bottom: 8px; display: block; }
+        .complete-badge p { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR -->
+    <div class="topbar" data-aos="fade-down">
+        <a href="{% url 'liste' 'wird' %}" class="back-btn">
+            <i class="fa-solid fa-arrow-left" style="font-size:12px"></i>
+        </a>
+        <div class="topbar-info">
+            <div class="topbar-tag">Lecteur Wird</div>
+            <div class="topbar-title">{{ wird.titre }}</div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- INTRODUCTION -->
+        {% if wird.introduction %}
+        <div class="intro-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="intro-label">Introduction</div>
+            <div class="intro-text">{{ wird.introduction }}</div>
+        </div>
+        {% endif %}
+
+        <!-- AUDIO -->
+        {% if wird.fichier_audio %}
+        <div class="audio-card" data-aos="fade-up" data-aos-delay="150">
+            <div class="audio-label"><i class="fa-solid fa-volume-high" style="margin-right:6px;color:var(--g1)"></i>Écoute guidée</div>
+            <audio controls preload="none" src="{{ wird.fichier_audio.url }}"></audio>
+        </div>
+        {% endif %}
+
+        <!-- TAB BAR -->
+        <div class="tab-bar" data-aos="fade-up" data-aos-delay="180">
+            {% if wird.texte_arabe or wird.transcription %}
+                {% if wird.texte_arabe %}
+                <button class="tab-btn active" onclick="showTab('arabe', this)">
+                    <i class="fa-solid fa-language" style="margin-right:4px"></i>Arabe
+                </button>
+                {% endif %}
+                {% if wird.transcription %}
+                <button class="tab-btn {% if not wird.texte_arabe %}active{% endif %}" onclick="showTab('latin', this)">
+                    Transcription
+                </button>
+                {% endif %}
+            {% endif %}
+            {% if wird.traduction %}
+            <button class="tab-btn" onclick="showTab('trad', this)">
+                <i class="fa-solid fa-earth-africa" style="margin-right:4px"></i>Sens
+            </button>
+            {% endif %}
+        </div>
+
+        <!-- PANEL ARABE -->
+        {% if wird.texte_arabe %}
+        <div id="panel-arabe" class="panel active" data-aos="fade-up" data-aos-delay="200">
+            <div class="arabic-panel">
+                <div class="arabic-text">{{ wird.texte_arabe }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- PANEL TRANSCRIPTION -->
+        {% if wird.transcription %}
+        <div id="panel-latin" class="panel {% if not wird.texte_arabe %}active{% endif %}">
+            <div class="latin-panel">
+                <div class="latin-text">{{ wird.transcription }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- PANEL TRADUCTION -->
+        {% if wird.traduction %}
+        <div id="panel-trad" class="panel">
+            <div class="translation-panel">
+                <div class="translation-text">{{ wird.traduction }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- BADGE COMPLÉTION -->
+        <div class="complete-badge" id="completeBadge" data-aos="zoom-in">
+            <i class="fa-solid fa-star"></i>
+            <p>Mashallah ! Vous avez complété <strong>{{ wird.nombre_repetitions }}</strong> répétitions.<br>
+               Que Allah accepte votre dhikr. 🌙</p>
+        </div>
+
+    </div>
+
+    <!-- COMPTEUR FIXE EN BAS -->
+    <div class="counter-section">
+        <div class="counter-display">
+            <div class="counter-num" id="counterNum">0</div>
+            <div class="counter-info">
+                <div class="counter-label">Répétitions</div>
+                <div class="counter-goal">Objectif : {{ wird.nombre_repetitions }}</div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+                </div>
+            </div>
+        </div>
+        <button class="tap-btn" id="tapBtn" onclick="increment()" title="Compter">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+        <button class="reset-btn" onclick="resetCounter()" title="Réinitialiser">
+            <i class="fa-solid fa-rotate-right"></i>
+        </button>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 700, once: true, easing: 'ease-out-cubic' });
+
+        const GOAL = {{ wird.nombre_repetitions }};
+        const STORAGE_KEY = 'wird_count_{{ wird.id }}';
+
+        let count = parseInt(localStorage.getItem(STORAGE_KEY)) || 0;
+        const numEl    = document.getElementById('counterNum');
+        const fillEl   = document.getElementById('progressFill');
+        const tapBtn   = document.getElementById('tapBtn');
+        const badge    = document.getElementById('completeBadge');
+
+        function render() {
+            numEl.textContent = count;
+            const pct = Math.min(count / GOAL * 100, 100);
+            fillEl.style.width = pct + '%';
+
+            if (count >= GOAL && !badge.classList.contains('show')) {
+                badge.classList.add('show');
+                badge.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (navigator.vibrate) navigator.vibrate([50, 30, 80]);
+            }
+        }
+
+        function increment() {
+            count++;
+            localStorage.setItem(STORAGE_KEY, count);
+
+            // Animation du bouton
+            tapBtn.style.transform = 'scale(0.85)';
+            setTimeout(() => tapBtn.style.transform = 'scale(1)', 120);
+
+            // Vibration légère
+            if (navigator.vibrate) navigator.vibrate(30);
+
+            render();
+        }
+
+        function resetCounter() {
+            if (count === 0) return;
+            if (!confirm('Réinitialiser le compteur ?')) return;
+            count = 0;
+            badge.classList.remove('show');
+            localStorage.setItem(STORAGE_KEY, 0);
+            render();
+        }
+
+        function showTab(panelId, btn) {
+            // Désactiver tous les panels
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            // Activer le bon
+            const panel = document.getElementById('panel-' + panelId);
+            if (panel) panel.classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Init
+        render();
+    </script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        console.log('ServiceWorker registration successful');
+      }, function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+</script>
+</body>
+</html>

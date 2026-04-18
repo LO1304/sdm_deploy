@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#03040a">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>Recherche — SDM Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37; --gold-lt: #f5dc6e; --gold-dk: #9a7520;
+            --bg: #03040a; --s1: rgba(255,255,255,0.04); --s2: rgba(255,255,255,0.07);
+            --border: rgba(255,255,255,0.07); --border-g: rgba(212,175,55,0.18);
+            --text: #f0f0f0; --dim: rgba(255,255,255,0.38); --nav-h: 70px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+            min-height: 100vh; padding-bottom: calc(var(--nav-h) + 30px);
+            overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(212,175,55,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(90,50,200,0.04) 0%, transparent 50%);
+        }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 9px; }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            position: sticky; top: 0; z-index: 50;
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px;
+            background: rgba(3,4,10,0.9);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            max-width: 720px; margin: 0 auto;
+        }
+        .back-btn {
+            width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--s1); border: 1px solid var(--border);
+            color: var(--dim); text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+        .back-btn:hover { background: rgba(212,175,55,0.1); color: var(--gold); border-color: var(--border-g); transform: translateX(-3px); }
+
+        /* ── BARRE DE RECHERCHE ── */
+        .search-form { flex: 1; position: relative; }
+        .search-icon {
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+            color: var(--gold); font-size: 13px; pointer-events: none; z-index: 2;
+            opacity: 0.7;
+        }
+        .search-input {
+            width: 100%;
+            background: rgba(212,175,55,0.05);
+            border: 1px solid var(--border-g);
+            border-radius: 14px;
+            padding: 13px 52px 13px 42px;
+            font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text);
+            outline: none;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .search-input::placeholder { color: rgba(255,255,255,0.3); }
+        .search-input:focus {
+            background: rgba(212,175,55,0.07);
+            border-color: rgba(212,175,55,0.4);
+            box-shadow: 0 0 0 4px rgba(212,175,55,0.08), 0 6px 24px rgba(0,0,0,0.4);
+        }
+        .search-submit {
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+            border: none; border-radius: 9px;
+            padding: 7px 14px; font-size: 10px; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: #080600; cursor: pointer; transition: all 0.3s;
+        }
+        .search-submit:hover { transform: translateY(-50%) scale(1.06); box-shadow: 0 4px 14px rgba(212,175,55,0.3); }
+
+        /* ── LAYOUT ── */
+        .content { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 28px 16px; }
+
+        /* ── META ── */
+        .search-meta {
+            font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--dim);
+            margin-bottom: 28px;
+            animation: fadeUp 0.5s both;
+        }
+        .search-meta strong { color: var(--gold); font-weight: 700; }
+
+        /* ── SECTION ── */
+        .section { margin-bottom: 32px; animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+
+        .section-hdr {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+        }
+        .section-icon {
+            width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; color: var(--gold);
+            background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.18);
+        }
+        .section-label { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+        .section-count {
+            font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--dim); background: var(--s2); border: 1px solid var(--border);
+            border-radius: 99px; padding: 3px 10px;
+        }
+        .section-divider {
+            height: 1px; margin-bottom: 12px;
+            background: linear-gradient(to right, rgba(212,175,55,0.2), transparent);
+        }
+
+        /* ── ITEMS RÉSULTATS ── */
+        .result-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 16px; border-radius: 16px;
+            background: var(--s1); border: 1px solid var(--border);
+            text-decoration: none; color: var(--text);
+            margin-bottom: 8px;
+            transition: all 0.32s cubic-bezier(0.16,1,0.3,1);
+            opacity: 0; transform: translateY(12px);
+            animation: fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .result-item:hover {
+            border-color: var(--border-g);
+            background: rgba(212,175,55,0.05);
+            transform: translateX(5px);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+        }
+        .result-thumb {
+            width: 42px; height: 42px; border-radius: 13px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: var(--gold);
+            background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.02));
+            border: 1px solid rgba(212,175,55,0.18);
+            transition: transform 0.32s;
+        }
+        .result-item:hover .result-thumb { transform: scale(1.06) rotate(-3deg); }
+        .result-title { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.9); margin-bottom: 3px; }
+        .result-sub { font-size: 10px; color: var(--dim); letter-spacing: 0.08em; text-transform: uppercase; }
+        .result-arrow {
+            margin-left: auto; color: rgba(255,255,255,0.15); font-size: 10px; flex-shrink: 0;
+            transition: color 0.3s, transform 0.3s;
+        }
+        .result-item:hover .result-arrow { color: var(--gold); transform: translateX(4px); }
+
+        /* ── ÉTAT VIDE ── */
+        .empty-state {
+            text-align: center; padding: 70px 20px;
+            animation: fadeUp 0.7s both;
+        }
+        .empty-wrap {
+            width: 80px; height: 80px; border-radius: 26px;
+            background: var(--s1); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; color: var(--dim); margin: 0 auto 20px;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+        @keyframes iconFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        .empty-title { font-size: 17px; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+        .empty-sub { font-size: 12px; color: var(--dim); line-height: 1.7; }
+
+        /* ── LANDING (sans requête) ── */
+        .landing { animation: fadeUp 0.6s both; }
+        .landing-header { text-align: center; margin-bottom: 36px; }
+        .landing-title {
+            font-size: clamp(20px,5vw,28px); font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(130deg, var(--gold-lt), var(--gold));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin-bottom: 10px;
+        }
+        .landing-sub { font-size: 13px; color: var(--dim); }
+
+        .quick-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+        }
+        @media (min-width: 480px) { .quick-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .quick-card {
+            display: flex; align-items: center; gap: 14px;
+            padding: 18px 16px; border-radius: 18px;
+            background: var(--s1); border: 1px solid var(--border);
+            text-decoration: none; color: var(--text);
+            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+            opacity: 0; transform: translateY(14px);
+            animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .quick-card:nth-child(1){animation-delay:0.05s}
+        .quick-card:nth-child(2){animation-delay:0.1s}
+        .quick-card:nth-child(3){animation-delay:0.15s}
+        .quick-card:nth-child(4){animation-delay:0.2s}
+        .quick-card:hover {
+            border-color: var(--border-g);
+            background: rgba(212,175,55,0.06);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+        }
+        .quick-icon {
+            width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: var(--gold);
+            background: linear-gradient(135deg, rgba(212,175,55,0.14), rgba(212,175,55,0.02));
+            border: 1px solid rgba(212,175,55,0.18);
+            transition: transform 0.35s;
+        }
+        .quick-card:hover .quick-icon { transform: scale(1.1) rotate(-4deg); }
+        .quick-label { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+        .quick-sub { font-size: 10px; color: var(--dim); letter-spacing: 0.05em; }
+
+        /* ── NAV ── */
+        .nav-island {
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 32px); max-width: 420px; height: var(--nav-h); border-radius: 99px;
+            background: rgba(8,10,20,0.9);
+            backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+            display: flex; align-items: center; justify-content: space-around;
+            padding: 0 12px; z-index: 100;
+        }
+        .nav-item {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 4px; text-decoration: none; color: rgba(255,255,255,0.3);
+            transition: all 0.3s; position: relative; height: 100%;
+        }
+        .nav-item i { font-size: 20px; transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+        .nav-item.active { color: var(--gold); }
+        .nav-item.active i { transform: translateY(-8px); filter: drop-shadow(0 4px 8px rgba(212,175,55,0.4)); }
+        .nav-dot { position: absolute; bottom: 12px; width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0; transform: scale(0); transition: all 0.3s; }
+        .nav-item.active .nav-dot { opacity: 1; transform: scale(1); }
+
+        @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <a href="{% url 'home' %}" class="back-btn">
+            <i class="fa-solid fa-arrow-left" style="font-size:12px"></i>
+        </a>
+        <form method="GET" action="{% url 'recherche_globale' %}" class="search-form">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" name="q" class="search-input"
+                   placeholder="Khassida, Sourate, Zikr…"
+                   value="{{ query }}" autofocus autocomplete="off">
+            <button type="submit" class="search-submit">Go</button>
+        </form>
+    </div>
+
+    <div class="content">
+
+        {% if query %}
+            <!-- MÉTA -->
+            <div class="search-meta">
+                {% if total > 0 %}
+                    <strong>{{ total }}</strong> résultat{{ total|pluralize }} pour « {{ query }} »
+                {% else %}
+                    Aucun résultat pour « {{ query }} »
+                {% endif %}
+            </div>
+
+            {% if total > 0 %}
+                {% for type, data in resultats.items %}
+                {% if data.items %}
+                <div class="section" style="animation-delay:0.05s">
+                    <div class="section-hdr">
+                        <div class="section-icon"><i class="fa-solid {{ data.icon }}"></i></div>
+                        <span class="section-label">{{ type }}</span>
+                        <span class="section-count">{{ data.items.count }}</span>
+                    </div>
+                    <div class="section-divider"></div>
+
+                    {% for item in data.items %}
+                    <a href="{% if data.url_name == 'lire_pdf' %}{% url 'lire_pdf' data.categorie item.id %}{% elif data.url_name == 'zikr_compteur' %}{% url 'zikr_compteur' item.id %}{% elif data.url_name == 'liste_sons' %}{% url 'liste_sons' %}?q={{ query }}{% else %}{% url 'liste' data.categorie %}?search={{ query }}{% endif %}"
+                       class="result-item" style="animation-delay: {{ forloop.counter0 }}5ms">
+                        <div class="result-thumb">
+                            <i class="fa-solid {{ data.icon }}"></i>
+                        </div>
+                        <div style="flex:1;min-width:0">
+                            <div class="result-title">{{ item.titre }}</div>
+                            <div class="result-sub">{% if item.auteur %}{{ item.auteur }}{% else %}{{ type }}{% endif %}</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right result-arrow"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endfor %}
+
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-wrap"><i class="fa-solid fa-magnifying-glass"></i></div>
+                    <div class="empty-title">Rien trouvé pour « {{ query }} »</div>
+                    <p class="empty-sub">Vérifiez l'orthographe ou essayez un autre terme.<br>Ex : « Fatiha », « Moussa Mbacké », « Subhan ».</p>
+                </div>
+            {% endif %}
+
+        {% else %}
+            <!-- LANDING PAGE RECHERCHE -->
+            <div class="landing">
+                <div class="landing-header">
+                    <h1 class="landing-title">Explorer la Collection</h1>
+                    <p class="landing-sub">Tapez un nom, un titre ou un mot-clé pour commencer</p>
+                </div>
+
+                <div class="quick-grid">
+                    <a href="{% url 'liste' 'khassida' %}" class="quick-card">
+                        <div class="quick-icon"><i class="fa-solid fa-book-open"></i></div>
+                        <div>
+                            <div class="quick-label">Khassidas</div>
+                            <div class="quick-sub">Poèmes de louanges</div>
+                        </div>
+                    </a>
+                    <a href="{% url 'liste' 'coran' %}" class="quick-card">
+                        <div class="quick-icon"><i class="fa-solid fa-quran"></i></div>
+                        <div>
+                            <div class="quick-label">Coran</div>
+                            <div class="quick-sub">Le Saint Livre</div>
+                        </div>
+                    </a>
+                    <a href="{% url 'liste_sons' %}" class="quick-card">
+                        <div class="quick-icon" style="color:#10B981;background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(16,185,129,.02));border-color:rgba(16,185,129,.18)">
+                            <i class="fa-solid fa-headphones"></i>
+                        </div>
+                        <div>
+                            <div class="quick-label">Sons & Audio</div>
+                            <div class="quick-sub">Récitations et plus</div>
+                        </div>
+                    </a>
+                    <a href="{% url 'liste' 'zikr' %}" class="quick-card">
+                        <div class="quick-icon"><i class="fa-solid fa-hands-praying"></i></div>
+                        <div>
+                            <div class="quick-label">Zikrs</div>
+                            <div class="quick-sub">Invocations guidées</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- NAV -->
+    <nav class="nav-island">
+        <a href="{% url 'home' %}" class="nav-item"><i class="fa-solid fa-house-chimney"></i><div class="nav-dot"></div></a>
+        <a href="{% url 'liste' 'khassida' %}" class="nav-item"><i class="fa-solid fa-book-open"></i><div class="nav-dot"></div></a>
+        <a href="{% url 'dashboard' %}" class="nav-item"><i class="fa-solid fa-chart-line"></i><div class="nav-dot"></div></a>
+        <a href="{% url 'favoris' %}" class="nav-item"><i class="fa-solid fa-heart"></i><div class="nav-dot"></div></a>
+        <a href="{% url 'profile' %}" class="nav-item"><i class="fa-solid fa-user"></i><div class="nav-dot"></div></a>
+    </nav>
+
+    <script>
+        const inp = document.querySelector('.search-input');
+        if (inp && !inp.value) setTimeout(() => inp.focus(), 200);
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js')); }
+    </script>
+</body>
+</html>

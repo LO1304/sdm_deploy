@@ -1,228 +1,596 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
+    <!-- PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#040B08">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lecteur - {{ document.titre }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Lecteur Premium - {{ document.titre }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
-        body { background-color: #050505; color: #fff; margin: 0; overflow: hidden; display:flex; flex-direction:column; height: 100vh; }
-        .gold-text { color: #d4af37; }
-        .gold-border { border-color: rgba(212,175,55,0.3); }
-        .gold-bg { background-color: #d4af37; color: #000; }
-        .nav-header { background: rgba(0,0,0,0.9); flex-shrink: 0; }
-        
-        #pdf-viewer-container {
-            flex-grow: 1;
-            overflow: auto;
-            display: flex;
-            justify-content: center;
-            background-color: #111;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --bg: #030303; --surface: rgba(20,20,20,0.65); --surface-light: rgba(40,40,40,0.6);
+            --text: #f0f0f0; --dim: #888888; --accent: #d4af37; --accent-glow: rgba(212,175,55,0.4);
+            --border: rgba(255,255,255,0.08); --border-focus: rgba(212,175,55,0.3);
+            --sh: 0 10px 40px -10px rgba(0,0,0,0.8);
+        }
+        [data-theme="sepia"] {
+            --bg: #f4ecdf; --surface: rgba(240,230,210,0.75); --surface-light: rgba(230,220,195,0.9);
+            --text: #4a3b2c; --dim: #8b735b; --accent: #b06a2c; --accent-glow: rgba(176,106,44,0.3);
+            --border: rgba(139,69,19,0.15); --border-focus: rgba(176,106,44,0.4);
+        }
+        [data-theme="paper"] {
+            --bg: #fdfdfd; --surface: rgba(250,250,250,0.85); --surface-light: rgba(240,240,240,1);
+            --text: #111111; --dim: #666666; --accent: #222222; --accent-glow: rgba(0,0,0,0.15);
+            --border: rgba(0,0,0,0.1); --border-focus: rgba(0,0,0,0.3);
         }
 
-        canvas {
-            max-width: 100%;
-            height: auto;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            margin: 10px 0;
-            border-radius: 4px;
+        body {
+            background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif;
+            margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh;
+            transition: background-color 0.5s ease;
         }
 
-        .controls {
-            background: rgba(10,10,10,0.95);
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid rgba(212,175,55,0.3);
-            flex-shrink: 0;
-            z-index: 10;
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: var(--surface);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border);
+            box-shadow: var(--sh);
         }
 
-        .btn-control {
-            background: #222;
-            color: #d4af37;
-            border: 1px solid rgba(212,175,55,0.5);
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-        .btn-control:active { background: #d4af37; color: #000; }
-        .btn-control:disabled { opacity: 0.3; cursor: not-allowed; }
+        .accent-text { color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
 
-        /* Modal Overlay */
-        #resume-modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 100;
+        /* Modals */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.3s; 
         }
-        .hidden { display: none !important; }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-card { 
+            background: var(--surface-light); border: 1px solid var(--border); padding: 32px; border-radius: 24px; 
+            width: 90%; max-width: 340px; text-align: center; color: var(--text); box-shadow: 0 24px 64px rgba(0,0,0,0.8);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        }
+
+        /* Progress Bar */
+        #top-prog { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: var(--accent); box-shadow: 0 0 10px var(--accent-glow); z-index: 2000; transition: width 0.3s ease; }
+        .v-prog-container { display: none; }
+
+        /* Floating Header & Footer */
+        .reader-ui { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; }
+        .floating-header {
+            position: fixed; top: 16px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 700px;
+            border-radius: 20px; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px;
+        }
+        .floating-header.hide-up { transform: translate(-50%, -150%); opacity: 0; }
+
+        .floating-footer {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 700px;
+            border-radius: 28px; padding: 16px; display: flex; flex-direction: column; gap: 16px;
+        }
+        .floating-footer.hide-down { transform: translate(-50%, 150%); opacity: 0; }
+
+        /* Buttons & Sliders */
+        .btn-icon {
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            background: transparent; color: var(--text); border: none; transition: 0.2s; cursor: pointer;
+        }
+        .btn-icon:hover { background: var(--surface-light); color: var(--accent); }
+        .btn-icon.active, .theme-opt.active, #m-p.active, #m-s.active { 
+            background: rgba(128,128,128,0.15) !important; color: var(--accent) !important; box-shadow: inset 0 0 0 1px var(--border-focus); 
+        }
+
+        .btn-primary { background: var(--surface-light); border: 1px solid var(--border); border-radius: 16px; padding: 12px; display: flex; align-items: center; justify-content: center; transition: 0.2s; cursor: pointer; flex: 1; color: var(--text); font-size: 13px; font-weight: 500;}
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-primary:hover { border-color: var(--border-focus); color: var(--accent); }
+
+        .speed-slider { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: rgba(128,128,128,0.3); flex: 1; outline: none; }
+        .speed-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--accent); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); transition: transform 0.1s; }
+        .speed-slider::-webkit-slider-thumb:active { transform: scale(1.3); }
+
+        /* VIEWPORT */
+        #viewport {
+            flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; align-items: center;
+            background-color: auto; padding: 90px 0; position: relative; scroll-behavior: auto; -webkit-overflow-scrolling: touch;
+        }
+        #viewport::-webkit-scrollbar { display: none; }
+        #viewport { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .canvas-wrapper { position: relative; margin-bottom: 24px; display: flex; justify-content: center; width: 100%; transition: opacity 0.3s; }
+        canvas { max-width: 95%; height: auto; box-shadow: var(--sh); border-radius: 8px; transition: opacity 0.4s; }
+        .page-enter { opacity: 0; transform: translateY(15px); }
+
+        .loader-ring { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 10; display: none; }
+        .loader-ring.show { display: block; }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed; left: -320px; top: 0; bottom: 0; width: 320px; z-index: 3000;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); padding: 32px 24px; overflow-y: auto; border-radius: 0 24px 24px 0;
+        }
+        .sidebar.open { transform: translateX(320px); }
+        .outline-item { 
+            padding: 14px; border-radius: 12px; margin-bottom: 8px; font-size: 13px; color: var(--dim); 
+            cursor: pointer; transition: 0.2s; border: 1px solid transparent; background: transparent;
+        }
+        .outline-item:hover { border-color: var(--border-focus); color: var(--text); background: var(--surface-light); }
     </style>
 </head>
-<body>
+<body class="page-mode">
 
-    <div class="nav-header h-[60px] flex items-center px-4 justify-between border-b gold-border">
-        <a href="javascript:history.back()" class="gold-text p-2">
-            <i class="fa-solid fa-arrow-left text-xl"></i>
-        </a>
-        <h1 class="text-xs font-bold uppercase tracking-widest gold-text truncate px-4 text-center">
-            {{ document.titre }}
-        </h1>
-        <div class="w-10"></div> 
-    </div>
+    <div id="top-prog"></div>
+    <div class="v-prog-container" id="v-prog-wrap"><div class="v-prog-bar" id="v-prog-bar"></div></div>
 
-    <!-- Mode Audio si pas de PDF -->
-    {% if not document.fichier_pdf and document.fichier_audio %}
-        <iframe src="{{ document.fichier_audio.url }}#toolbar=0" class="w-full h-full border-none flex-grow"></iframe>
-    {% elif document.fichier_pdf %}
+    <!-- SIDEBAR -->
+    <aside class="sidebar glass-panel" id="sidebar">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="accent-text font-semibold tracking-[0.15em] text-xs uppercase">TABLE DES MATIÈRES</h2>
+            <button onclick="toggleSidebar()" class="btn-icon w-8 h-8"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="outline-list">
+            <p class="text-xs text-dim text-center mt-10">Aucun sommaire disponible</p>
+        </div>
+    </aside>
 
-        <div id="pdf-viewer-container">
-            <canvas id="pdf-canvas"></canvas>
+    <!-- FLOATING HEADER -->
+    <header class="reader-ui floating-header glass-panel" id="header">
+        <a href="javascript:history.back()" class="btn-icon"><i class="fa-solid fa-arrow-left"></i></a>
+        
+        <div class="flex flex-col items-center flex-1 overflow-hidden px-2">
+            <h1 class="text-xs font-semibold text-[var(--text)] uppercase tracking-wider truncate w-full text-center">{{ document.titre }}</h1>
+            <p class="text-[9px] text-dim font-medium tracking-widest mt-0.5"><span id="top-page-num" class="text-[var(--text)]">1</span> / <span id="max-page-num">1</span></p>
         </div>
 
-        <div class="controls">
-            <button id="prev-page" class="btn-control"><i class="fa-solid fa-chevron-left text-lg"></i></button>
-            <div class="text-sm tracking-widest bg-[#1a1a1a] px-4 py-2 rounded-lg border border-[#333]">
-                <span class="gold-text font-bold" id="page-num">-</span> <span class="text-gray-500 mx-1">/</span> <span id="page-count" class="text-gray-400">-</span>
+        <div class="flex items-center gap-1">
+            <button onclick="toggleSearch()" class="btn-icon w-8 h-8"><i class="fa-solid fa-magnifying-glass text-sm"></i></button>
+            <button onclick="toggleSidebar()" class="btn-icon w-8 h-8"><i class="fa-solid fa-list text-sm"></i></button>
+        </div>
+        
+        <!-- Search Dropdown -->
+        <div id="search-bar" class="hidden absolute top-[calc(100%+12px)] left-0 right-0 glass-panel rounded-2xl p-2 flex items-center gap-2 animate-in slide-in-from-top-2">
+            <input type="text" id="search-input" class="bg-transparent border-none outline-none flex-1 text-sm px-3 text-[var(--text)] placeholder-[var(--dim)]" placeholder="Rechercher dans le texte...">
+            <button onclick="performSearch()" class="p-2 w-10 h-10 rounded-xl bg-[var(--surface-light)] text-[var(--text)] hover:text-[var(--accent)] transition"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </header>
+
+    <!-- VIEWPORT -->
+    <main id="viewport" onclick="handleTap(event)">
+        <div class="loader-ring" id="loader"><i class="fa-solid fa-circle-notch fa-spin text-3xl accent-text opacity-80"></i></div>
+        <div id="main-container"></div>
+    </main>
+
+    <!-- FLOATING FOOTER -->
+    <footer class="reader-ui floating-footer glass-panel" id="footer">
+        
+        <!-- AUDIO PLAYER ROW -->
+        <div id="audio-bar" class="hidden flex items-center justify-between gap-3 bg-[var(--surface-light)] rounded-[16px] border border-[var(--border)] p-2 mb-2">
+            <div class="flex-1 flex items-center gap-2 overflow-hidden">
+                <i class="fa-solid fa-music text-[var(--accent)] text-xs ml-2"></i>
+                <select id="audio-select" class="bg-transparent border-none text-[10px] font-bold uppercase tracking-widest outline-none text-[var(--text)] w-full truncate cursor-pointer" onchange="loadReaderAudio(this.value)">
+                    <option value="" class="bg-[#111] text-gray-400">Choisir un fond sonore...</option>
+                    {% if document.fichier_audio %}
+                    <option value="{{ document.fichier_audio.url }}" class="bg-[#111] text-[#d4af37]">Audio Récitation (Coran)</option>
+                    {% endif %}
+                    {% for s in sons %}
+                    <option value="{{ s.fichier_audio.url }}" class="bg-[#111]">{{ s.titre }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <button id="next-page" class="btn-control"><i class="fa-solid fa-chevron-right text-lg"></i></button>
+            <button onclick="toggleReaderPlay()" class="btn-icon w-8 h-8 rounded-full bg-[var(--accent)] text-black shadow-lg flex-shrink-0"><i id="reader-pp-icon" class="fa-solid fa-play text-xs pl-0.5"></i></button>
+        </div>
+        
+        <!-- Slider Area -->
+        <div class="flex flex-col gap-1 items-center px-1">
+            <input type="range" id="page-slider" class="speed-slider w-full" min="1" max="1" value="1" oninput="onSliderMove(this.value)" onchange="onSliderChange(this.value)">
         </div>
 
-        <!-- Modale de reprise -->
-        <div id="resume-modal" class="hidden">
-            <div class="bg-[#111] border border-[#d4af37] p-6 rounded-xl max-w-xs text-center shadow-2xl mx-4">
-                <i class="fa-solid fa-bookmark text-4xl gold-text mb-4"></i>
-                <h2 class="text-lg font-bold mb-2">Reprendre la lecture ?</h2>
-                <p class="text-sm text-gray-400 mb-6">Vous étiez arrivé(e) à la page <span id="resume-page-num" class="gold-text font-bold">...</span> lors de votre dernière visite.</p>
-                <div class="flex flex-col gap-3">
-                    <button id="btn-resume" class="gold-bg text-black font-bold py-3 rounded-lg shadow-lg">Reprendre à cette page</button>
-                    <button id="btn-restart" class="border border-gray-600 text-gray-300 py-3 rounded-lg hover:bg-gray-800">Recommencer au début</button>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
-            const url = "{{ document.fichier_pdf.url }}";
-            let pdfDoc = null;
-            let pageNum = 1;
-            let pageIsRendering = false;
-            let pageNumIsPending = null;
-            const targetPageReprise = parseInt("{{ page_reprise|default:1 }}"); 
-
-            // Elements
-            const canvas = document.getElementById('pdf-canvas');
-            const ctx = canvas.getContext('2d');
-            const resumeModal = document.getElementById('resume-modal');
-
-            // Render Page
-            const renderPage = num => {
-                pageIsRendering = true;
-                pdfDoc.getPage(num).then(page => {
-                    // Calcul d'une échelle responsive : 
-                    // Echelle de base 1.5 pour bonne définition, le CSS le réduit à max 100%.
-                    const viewport = page.getViewport({ scale: 2.0 });
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-
-                    const renderCtx = { canvasContext: ctx, viewport: viewport };
-
-                    page.render(renderCtx).promise.then(() => {
-                        pageIsRendering = false;
-                        if (pageNumIsPending !== null) {
-                            renderPage(pageNumIsPending);
-                            pageNumIsPending = null;
-                        }
-                    });
-
-                    document.getElementById('page-num').textContent = num;
-                    document.getElementById('prev-page').disabled = num <= 1;
-                    document.getElementById('next-page').disabled = num >= pdfDoc.numPages;
-                    
-                    document.getElementById('pdf-viewer-container').scrollTop = 0;
-                    
-                    // Enregistrer progression AJAX
-                    saveProgress(num);
-                });
-            };
-
-            const queueRenderPage = num => {
-                if (pageIsRendering) {
-                    pageNumIsPending = num;
-                } else {
-                    renderPage(num);
-                }
-            };
-
-            const showPrevPage = () => {
-                if (pageNum <= 1) return;
-                pageNum--;
-                queueRenderPage(pageNum);
-            };
-
-            const showNextPage = () => {
-                if (pageNum >= pdfDoc.numPages) return;
-                pageNum++;
-                queueRenderPage(pageNum);
-            };
-
-            // Loading PDF
-            pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
-                pdfDoc = pdfDoc_;
-                document.getElementById('page-count').textContent = pdfDoc.numPages;
-
-                // Verifier la reprise
-                if(targetPageReprise > 1 && targetPageReprise <= pdfDoc.numPages) {
-                    document.getElementById('resume-page-num').textContent = targetPageReprise;
-                    resumeModal.classList.remove('hidden');
-                } else {
-                    renderPage(pageNum);
-                }
-            }).catch(err => {
-                console.error("Erreur PDF:", err);
-            });
-
-            // Boutons modale
-            document.getElementById('btn-resume').addEventListener('click', () => {
-                resumeModal.classList.add('hidden');
-                pageNum = targetPageReprise;
-                renderPage(pageNum);
-            });
-            document.getElementById('btn-restart').addEventListener('click', () => {
-                resumeModal.classList.add('hidden');
-                pageNum = 1;
-                renderPage(pageNum);
-            });
-
-            // Events Pagination
-            document.getElementById('prev-page').addEventListener('click', showPrevPage);
-            document.getElementById('next-page').addEventListener('click', showNextPage);
+        <!-- Controls Row -->
+        <div class="flex items-center justify-between mt-1">
             
-            // Sauvegarde AJAX silencieuse
-            function saveProgress(page) {
-                fetch('/api/progression-pdf/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        categorie: "{{ categorie }}",
-                        id: {{ document.id }},
-                        page: page
-                    })
-                }).catch(e => console.log(e));
-            }
-        </script>
+            <!-- View Mode & Audio -->
+            <div class="flex gap-1 bg-[var(--surface-light)] p-1 rounded-[16px] border border-[var(--border)]">
+                <button onclick="setReadingMode('page')" id="m-p" class="w-10 h-10 rounded-[12px] flex items-center justify-center text-dim transition-all active:scale-95 active"><i class="fa-solid fa-book-open"></i></button>
+                <button onclick="setReadingMode('scroll')" id="m-s" class="w-10 h-10 rounded-[12px] flex items-center justify-center text-dim transition-all active:scale-95"><i class="fa-solid fa-scroll"></i></button>
+                <button onclick="toggleAudioBar()" id="btn-audio" class="w-10 h-10 rounded-[12px] flex items-center justify-center text-dim hover:text-[var(--accent)] transition-all active:scale-95"><i class="fa-solid fa-headphones"></i></button>
+            </div>
 
-    {% else %}
-        <div class="flex flex-col items-center justify-center h-full opacity-30 mt-20">
-            <i class="fa-solid fa-file-circle-exclamation text-5xl mb-4 text-[#d4af37]"></i>
-            <p>Documents introuvables.</p>
+            <!-- Auto Scroll -->
+            <div id="speed-ctrl" class="hidden flex items-center gap-2 flex-1 mx-4 bg-[var(--surface-light)] p-1.5 rounded-[16px] border border-[var(--border)]">
+                <button onclick="adjSpeed(-1)" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--surface)] text-dim hover:text-[var(--text)]"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                <div class="flex flex-col items-center justify-center flex-1 gap-1">
+                    <input type="range" id="scroll-speed" class="speed-slider w-full" min="1" max="50" value="10" oninput="updateSpeedLabel()">
+                    <span id="speed-val" class="text-[8px] font-bold text-dim uppercase tracking-widest hidden">1.0x</span>
+                </div>
+                <button onclick="adjSpeed(1)" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--surface)] text-dim hover:text-[var(--text)]"><i class="fa-solid fa-plus text-[10px]"></i></button>
+            </div>
+            
+            <button onclick="toggleAutoScroll()" id="as-btn" class="w-12 h-12 rounded-full bg-[var(--surface-light)] border border-[var(--border)] flex items-center justify-center transition-all transform active:scale-95 hover:shadow-lg text-[var(--accent)]"><i class="fa-solid fa-play"></i></button>
+
+            <!-- Theme Switcher -->
+            <div class="flex gap-1 bg-[var(--surface-light)] p-1 rounded-[16px] border border-[var(--border)] relative">
+                <div class="theme-opt active w-10 h-10 rounded-[12px] flex items-center justify-center cursor-pointer text-dim hover:text-[var(--text)]" onclick="setTheme('dark', this)" title="Mode Sombre"><i class="fa-solid fa-moon"></i></div>
+                <div class="theme-opt w-10 h-10 rounded-[12px] flex items-center justify-center cursor-pointer text-dim hover:text-[var(--text)]" onclick="setTheme('sepia', this)" title="Mode Sépia"><i class="fa-solid fa-coffee"></i></div>
+                <div class="theme-opt w-10 h-10 rounded-[12px] flex items-center justify-center cursor-pointer text-dim hover:text-[var(--text)]" onclick="setTheme('paper', this)" title="Mode Papier"><i class="fa-solid fa-sun text-sm"></i></div>
+            </div>
         </div>
-    {% endif %}
 
+        <!-- Pagination / Zoom Row -->
+        <div id="nav-btns" class="flex gap-3 h-12">
+            <button onclick="changePage(-1)" id="prev-btn" class="btn-primary flex-1"><i class="fa-solid fa-chevron-left mr-2"></i> Précédent</button>
+            
+            <div class="flex items-center justify-center w-28 gap-3 bg-[var(--surface-light)] rounded-[16px] border border-[var(--border)]">
+                <button onclick="changeZoom(-0.2)" class="text-dim hover:text-[var(--text)] p-2"><i class="fa-solid fa-minus text-xs"></i></button>
+                <span class="text-xs font-semibold text-center w-10" id="z-val">100%</span>
+                <button onclick="changeZoom(0.2)" class="text-dim hover:text-[var(--text)] p-2"><i class="fa-solid fa-plus text-xs"></i></button>
+            </div>
+
+            <button onclick="changePage(1)" id="next-btn" class="btn-primary flex-1">Suivant <i class="fa-solid fa-chevron-right ml-2"></i></button>
+        </div>
+    </footer>
+
+    <!-- RESUME MODAL -->
+    <div id="resume-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="w-16 h-16 bg-[var(--surface-light)] rounded-full flex items-center justify-center mx-auto mb-6 border border-[var(--border)] shadow-lg">
+                <i class="fa-solid fa-bookmark text-2xl accent-text"></i>
+            </div>
+            <h3 class="font-semibold text-xl mb-2 text-[var(--text)]">Reprise de lecture</h3>
+            <p class="text-xs text-dim mb-8">Voulez-vous reprendre à la page <span id="res-num" class="text-[var(--text)] font-bold">...</span> ?</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="doResume(true)" class="py-3.5 bg-[var(--accent)] text-black font-semibold rounded-[16px] shadow-lg hover:opacity-90 transition">Continuer la lecture</button>
+                <button onclick="doResume(false)" class="py-3.5 bg-[var(--surface-light)] border border-[var(--border)] rounded-[16px] text-dim text-sm font-medium hover:text-[var(--text)] hover:bg-[var(--surface)] transition">Recommencer au début</button>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="reader-aud" preload="metadata" loop></audio>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        const PDF_URL = "{{ document.fichier_pdf.url }}";
+        const DOC_ID = "{{ document.id }}";
+        const CAT = "{{ categorie }}";
+        const RESUME_PAGE = parseInt("{{ page_reprise|default:1 }}");
+
+        let pdfDoc = null;
+        let pNum = 1, zoom = 1.0, mode = 'page', uiVisible = true, busy = false;
+        let asActive = false, asRaf = null, saveTimeout = null;
+        const container = document.getElementById('main-container'), vport = document.getElementById('viewport');
+        let observer = null;
+
+        // INIT
+        async function init() {
+            try {
+                pdfDoc = await pdfjsLib.getDocument(PDF_URL).promise;
+                document.getElementById('max-page-num').innerText = pdfDoc.numPages;
+                document.getElementById('page-slider').max = pdfDoc.numPages;
+                
+                renderOutlines();
+
+                if (RESUME_PAGE > 1) {
+                    document.getElementById('res-num').innerText = RESUME_PAGE;
+                    document.getElementById('resume-modal').classList.add('show');
+                } else { render(); }
+            } catch (e) { console.error(e); alert("Erreur lors du chargement du document."); }
+        }
+
+        function setReadingMode(m) {
+            mode = m;
+            document.body.className = m + '-mode';
+            document.getElementById('m-p').classList.toggle('active', m === 'page');
+            document.getElementById('m-s').classList.toggle('active', m === 'scroll');
+            document.getElementById('nav-btns').style.display = (m === 'page' ? 'flex' : 'none');
+            document.getElementById('speed-ctrl').classList.toggle('hidden', m !== 'scroll');
+            if(m === 'page') stopAutoScroll();
+            render();
+        }
+
+        async function render() {
+            container.innerHTML = '';
+            if (observer) observer.disconnect();
+            
+            if (mode === 'page') renderSingle(pNum);
+            else renderScroll();
+        }
+
+        async function renderSingle(num) {
+            if (busy) return; busy = true;
+            document.getElementById('loader').classList.add('show');
+            
+            const page = await pdfDoc.getPage(num);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.classList.add('page-enter');
+            
+            const bVp = page.getViewport({ scale: 1 });
+            const s = (zoom * vport.clientWidth) / bVp.width;
+            const vp = page.getViewport({ scale: s });
+            canvas.height = vp.height; canvas.width = vp.width;
+
+            await page.render({ canvasContext: ctx, viewport: vp }).promise;
+            
+            container.innerHTML = '';
+            const wrap = document.createElement('div'); wrap.className = 'canvas-wrapper';
+            wrap.appendChild(canvas);
+            container.appendChild(wrap);
+
+            setTimeout(() => canvas.classList.remove('page-enter'), 50);
+            updateUI(num);
+            document.getElementById('loader').classList.remove('show');
+            busy = false;
+        }
+
+        async function renderScroll() {
+            container.innerHTML = '';
+            
+            observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const p = parseInt(entry.target.dataset.p);
+                    if (entry.isIntersecting) {
+                        loadPage(entry.target);
+                        if (entry.intersectionRatio > 0.5) updateUI(p);
+                    }
+                });
+            }, { 
+                root: vport,
+                rootMargin: '1000px 0px', 
+                threshold: [0, 0.5, 1] 
+            });
+
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                const wrap = document.createElement('div');
+                wrap.className = 'canvas-wrapper';
+                wrap.id = `p-${i}`; wrap.dataset.p = i;
+                wrap.style.minHeight = '100px'; 
+                wrap.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin opacity-10 py-20 text-[var(--accent)]"></i>';
+                container.appendChild(wrap);
+                observer.observe(wrap);
+            }
+        }
+
+        async function loadPage(w) {
+            if (w.querySelector('canvas') || w.dataset.loading) return;
+            w.dataset.loading = "true";
+            
+            const p = await pdfDoc.getPage(parseInt(w.dataset.p));
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const bVp = p.getViewport({ scale: 1 });
+            const s = (zoom * vport.clientWidth) / bVp.width;
+            const vp = p.getViewport({ scale: s });
+            
+            w.style.minHeight = vp.height + 'px';
+            canvas.height = vp.height; canvas.width = vp.width;
+            
+            await p.render({ canvasContext: ctx, viewport: vp }).promise;
+            w.innerHTML = ''; w.appendChild(canvas);
+            delete w.dataset.loading;
+        }
+
+        function updateUI(n) {
+            if (pNum === n) return;
+            pNum = n;
+            document.getElementById('top-page-num').innerText = n;
+            document.getElementById('page-slider').value = n;
+            
+            document.getElementById('top-prog').style.width = `${(n / pdfDoc.numPages) * 100}%`;
+            
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => save(n), 2000);
+        }
+
+        function changePage(d) {
+            const n = pNum + d;
+            if (n >= 1 && n <= pdfDoc.numPages) renderSingle(n);
+        }
+
+        function onSliderChange(v) { 
+            const n = parseInt(v);
+            if (mode === 'page') renderSingle(n);
+            else { document.getElementById(`p-${n}`).scrollIntoView({ behavior: 'smooth' }); }
+        }
+
+        function onSliderMove(v) { document.getElementById('top-page-num').innerText = v; }
+
+        function setTheme(t, e) {
+            document.documentElement.setAttribute('data-theme', t);
+            document.querySelectorAll('.theme-opt').forEach(o => o.classList.remove('active'));
+            e.classList.add('active');
+        }
+
+        function changeZoom(d) {
+            zoom = Math.max(0.6, Math.min(3, zoom + d));
+            document.getElementById('z-val').innerText = `${Math.round(zoom * 100)}%`;
+            render();
+        }
+
+        // AUTO SCROLL
+        function toggleAutoScroll() {
+            asActive = !asActive;
+            const btn = document.getElementById('as-btn');
+            const ctrl = document.getElementById('speed-ctrl');
+            
+            btn.innerHTML = asActive ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play ml-1"></i>';
+            btn.classList.toggle('active', asActive);
+            ctrl.classList.toggle('hidden', !asActive);
+            
+            if (asActive) {
+                if (mode !== 'scroll') setReadingMode('scroll');
+                lastTime = performance.now();
+                runAutoScroll(lastTime);
+            } else stopAutoScroll();
+        }
+
+        let lastTime = 0;
+        function runAutoScroll(time) {
+            if (!asActive) return;
+            const delta = time - lastTime;
+            lastTime = time;
+            
+            const speed = parseFloat(document.getElementById('scroll-speed').value) / 10;
+            vport.scrollTop += (speed * (delta / 16.6)); 
+            asRaf = requestAnimationFrame(runAutoScroll);
+        }
+
+        function stopAutoScroll() { asActive = false; cancelAnimationFrame(asRaf); }
+
+        function adjSpeed(d) {
+            const el = document.getElementById('scroll-speed');
+            let val = parseInt(el.value) + (d * 5);
+            val = Math.max(1, Math.min(50, val));
+            el.value = val;
+            updateSpeedLabel();
+        }
+
+        function updateSpeedLabel() {
+            const val = document.getElementById('scroll-speed').value;
+            const v = document.getElementById('speed-val');
+            v.innerText = `Vitesse: ${(val / 10).toFixed(1)}x`;
+        }
+
+        function handleTap(e) {
+            if (e.target.tagName !== 'CANVAS') return;
+            uiVisible = !uiVisible;
+            document.getElementById('header').classList.toggle('hide-up', !uiVisible);
+            document.getElementById('footer').classList.toggle('hide-down', !uiVisible);
+        }
+
+        function doResume(r) {
+            document.getElementById('resume-modal').classList.remove('show');
+            pNum = r ? RESUME_PAGE : 1;
+            render();
+        }
+
+        function save(p) {
+            fetch('/api/progression-pdf/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ categorie: CAT, id: DOC_ID, page: p })
+            }).catch(() => {});
+        }
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+        async function renderOutlines() {
+            const list = document.getElementById('outline-list');
+            try {
+                const outlines = await pdfDoc.getOutline();
+                if (outlines && outlines.length > 0) {
+                    list.innerHTML = '';
+                    outlines.forEach(obj => {
+                        const div = document.createElement('div');
+                        div.className = 'outline-item';
+                        div.innerText = obj.title;
+                        div.onclick = async () => {
+                            const dest = await pdfDoc.getDestination(obj.dest);
+                            const idx = await pdfDoc.getPageIndex(dest[0]);
+                            toggleSidebar();
+                            if (mode === 'page') renderSingle(idx + 1);
+                            else document.getElementById(`p-${idx + 1}`).scrollIntoView();
+                        };
+                        list.appendChild(div);
+                    });
+                }
+            } catch (e) {
+                list.innerHTML = '<p class="text-xs text-dim text-center mt-10">Sommaire non disponible</p>';
+            }
+        }
+
+        function toggleSearch() {
+            const bar = document.getElementById('search-bar');
+            bar.classList.toggle('hidden');
+            if (!bar.classList.contains('hidden')) document.getElementById('search-input').focus();
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            if (!query) return;
+
+            document.getElementById('loader').classList.add('show');
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                const page = await pdfDoc.getPage(i);
+                const content = await page.getTextContent();
+                const text = content.items.map(item => item.str).join(' ').toLowerCase();
+
+                if (text.includes(query)) {
+                    if (mode === 'page') renderSingle(i);
+                    else document.getElementById(`p-${i}`).scrollIntoView({ behavior: 'smooth' });
+                    toggleSearch();
+                    document.getElementById('loader').classList.remove('show');
+                    return;
+                }
+            }
+            alert("Aucun résultat trouvé.");
+            document.getElementById('loader').classList.remove('show');
+        }
+
+        init();
+
+        // LECTEUR AUDIO INTEGRE
+        const rAud = document.getElementById('reader-aud');
+        const rIcon = document.getElementById('reader-pp-icon');
+        let rAudioLoaded = false;
+
+        function toggleAudioBar() {
+            const bar = document.getElementById('audio-bar');
+            bar.classList.toggle('hidden');
+            document.getElementById('btn-audio').classList.toggle('active');
+        }
+
+        function loadReaderAudio(url) {
+            if(!url) {
+                rAud.pause();
+                rAud.src = "";
+                rIcon.className = "fa-solid fa-play text-xs pl-0.5";
+                rAudioLoaded = false;
+                return;
+            }
+            rAud.src = url;
+            rAud.play().then(() => {
+                rAudioLoaded = true;
+                rIcon.className = "fa-solid fa-pause text-xs";
+            }).catch(e => console.error("Lecture impossible", e));
+        }
+
+        function toggleReaderPlay() {
+            if(!rAud.src || !rAudioLoaded) {
+                // If there's a selected url but not loaded
+                const sel = document.getElementById('audio-select');
+                if(sel.value) loadReaderAudio(sel.value);
+                return;
+            }
+            if(rAud.paused) {
+                rAud.play();
+                rIcon.className = "fa-solid fa-pause text-xs";
+            } else {
+                rAud.pause();
+                rIcon.className = "fa-solid fa-play text-xs pl-0.5";
+            }
+        }
+    </script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        console.log('ServiceWorker registration successful');
+      }, function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+</script>
 </body>
 </html>

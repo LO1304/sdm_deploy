@@ -74,14 +74,47 @@ class ProgressionLecture(models.Model):
 #wird
 class Wird(models.Model):
     titre=models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True, blank=True, null=True)
+    auteur = models.CharField(max_length=255, default="Cheikh Ahmadou Bamba")
     introduction=models.TextField()
-    transcription=models.TextField(help_text="Transcription")
-    traduction=models.TextField(help_text="Traduction")
+    description_courte = models.TextField(blank=True, help_text="Résumé pour la liste")
+    image_couverture = models.ImageField(upload_to='wirds/', blank=True, null=True)
+    
+    # On garde les anciens champs pour compatibilité, mais on utilisera EtapeWird pour la v5
+    transcription=models.TextField(blank=True, help_text="Transcription")
+    traduction=models.TextField(blank=True, help_text="Traduction")
     nombre_repetitions=models.IntegerField(default=100)
     fichier_audio = models.FileField(upload_to='audios/wird',blank=True,null=True)
     
     def __str__(self):
         return self.titre
+
+class EtapeWird(models.Model):
+    TYPES = [
+        ('prep', 'Préparation'), ('protec', 'Protection'), ('invoc', 'Invocation'),
+        ('istighfar', 'Istighfar'), ('shahada', 'Shahada'), ('salawat', 'Salawat'),
+        ('tawheed', 'Tawheed'), ('cloture', 'Clôture'), ('quranic', 'Quranique')
+    ]
+    wird = models.ForeignKey(Wird, on_delete=models.CASCADE, related_name='etapes')
+    numero = models.PositiveIntegerField()
+    titre_arabe = models.CharField(max_length=255)
+    titre_francais = models.CharField(max_length=255)
+    texte_arabe = models.TextField()
+    transliteration = models.TextField(blank=True)
+    traduction_francais = models.TextField(blank=True)
+    repetitions = models.PositiveIntegerField(default=1)
+    duree_estimee = models.PositiveIntegerField(default=1, help_text="Minutes")
+    notes_spirituelles = models.TextField(blank=True)
+    type = models.CharField(max_length=20, choices=TYPES, default='invoc')
+    conseil_spirituel = models.TextField(blank=True)
+    fichier_audio = models.FileField(upload_to='audios/etapes/', blank=True, null=True)
+
+    class Meta:
+        ordering = ['numero']
+        unique_together = ('wird', 'numero')
+
+    def __str__(self):
+        return f"{self.wird.titre} - Etape {self.numero}: {self.titre_francais}"
     
 
 #Contenu du jour 
@@ -140,7 +173,7 @@ class Son(models.Model):
     )
     # Utilisation de la fonction dynamique pour le rangement
     # Remplace ta ligne actuelle par celle-ci :
-    fichier_audio = models.FileField(upload_to='sons/', storage=VideoMediaCloudinaryStorage())
+    fichier_audio = models.FileField(upload_to='sons/')
     date_ajout = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -237,3 +270,25 @@ class Favori(models.Model):
 
     def __str__(self):
         return f"{self.user.username} a ajouté {self.content_object} à ses favoris"
+class HistoriqueWird(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    wird = models.ForeignKey(Wird, on_delete=models.CASCADE)
+    etape_max = models.PositiveIntegerField(default=1)
+    complete = models.BooleanField(default=False)
+    temps_total = models.DurationField(null=True, blank=True)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    derniere_activite = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.wird.titre} ({'Fini' if self.complete else 'En cours'})"
+
+class ProgressionWird(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    wird = models.ForeignKey(Wird, on_delete=models.CASCADE)
+    etape_courante = models.PositiveIntegerField(default=1)
+    repetitions_faites = models.PositiveIntegerField(default=0)
+    temps_ecoule = models.DurationField(null=True, blank=True)
+    derniere_modif = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'wird')

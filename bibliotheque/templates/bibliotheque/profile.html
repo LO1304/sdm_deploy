@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <!-- PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#040B08">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="google" content="notranslate">
 <title>SDM — Mon Profil</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -46,7 +52,7 @@ body {
 /* ╔══════════════════════════════════════╗
    ║  CANVAS ÉTOILES                      ║
    ╚══════════════════════════════════════╝ */
-#stars { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.6; }
+#stars { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.7; }
 
 /* ╔══════════════════════════════════════╗
    ║  BLOBS                               ║
@@ -205,31 +211,42 @@ body {
 /* Avatar */
 .avatar-wrap {
   position:relative; z-index:1;
-  width:90px; height:90px; margin:0 auto 20px;
+  width:96px; height:96px; margin:0 auto 20px;
 }
 .avatar-outer-ring {
-  position:absolute; inset:-6px; border-radius:50%;
-  border:1px solid rgba(212,175,55,0.2);
+  position:absolute; inset:-10px; border-radius:50%;
+  border:1px solid rgba(212,175,55,0.15);
   animation: ringPulseAvatar 3s ease-in-out infinite;
 }
+.avatar-outer-ring::before {
+  content:''; position:absolute; inset:-8px; border-radius:50%;
+  border:1px dashed rgba(212,175,55,0.08);
+  animation: ringPulseAvatar 3s 1s ease-in-out infinite reverse;
+}
 @keyframes ringPulseAvatar {
-  0%,100% { transform:scale(1); opacity:.5; }
-  50%      { transform:scale(1.06); opacity:1; }
+  0%,100% { transform:scale(1); opacity:.4; }
+  50%      { transform:scale(1.08); opacity:1; }
 }
 .avatar-circle {
-  width:90px; height:90px; border-radius:50%;
-  border:2px solid rgba(212,175,55,0.45);
-  background: linear-gradient(145deg, rgba(212,175,55,0.15), rgba(212,175,55,0.04));
-  box-shadow: 0 0 30px rgba(212,175,55,0.18), inset 0 0 20px rgba(212,175,55,0.05);
+  width:96px; height:96px; border-radius:50%;
+  border:2px solid rgba(212,175,55,0.5);
+  background: linear-gradient(145deg, rgba(212,175,55,0.18), rgba(212,175,55,0.04));
+  box-shadow: 0 0 40px rgba(212,175,55,0.22), 0 0 80px rgba(212,175,55,0.08), inset 0 0 20px rgba(212,175,55,0.06);
   display:flex; align-items:center; justify-content:center;
   position:relative; z-index:1;
+  animation: avatarGlow 4s ease-in-out infinite alternate;
+}
+@keyframes avatarGlow {
+  from { box-shadow: 0 0 30px rgba(212,175,55,0.18), inset 0 0 15px rgba(212,175,55,0.04); }
+  to   { box-shadow: 0 0 55px rgba(212,175,55,0.35), 0 0 100px rgba(212,175,55,0.1), inset 0 0 25px rgba(212,175,55,0.08); }
 }
 .avatar-letter {
   font-family: var(--fT);
-  font-size:32px; line-height:1;
+  font-size:38px; line-height:1;
   background: linear-gradient(130deg, var(--g2), var(--g1), var(--g3));
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   background-clip:text;
+  filter: drop-shadow(0 0 12px rgba(212,175,55,0.5));
 }
 
 .profile-username {
@@ -275,15 +292,22 @@ body {
   position:relative; z-index:1;
 }
 .hstat {
-  background:rgba(3,4,10,0.8);
-  padding:14px 8px; text-align:center;
+  background:rgba(3,4,10,0.85);
+  padding:16px 8px; text-align:center;
+  transition: background 0.3s;
 }
+.hstat:hover { background: rgba(212,175,55,0.05); }
 .hstat-val {
-  font-family:var(--fU); font-size:17px; font-weight:500;
-  color:var(--g1); line-height:1; margin-bottom:4px;
+  font-family:var(--fU); font-size:20px; font-weight:600;
+  color:var(--g1); line-height:1; margin-bottom:5px;
+  animation: countUp 1.2s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes countUp {
+  from { opacity:0; transform: translateY(10px) scale(0.8); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
 }
 .hstat-key {
-  font-size:7px; letter-spacing:.15em; text-transform:uppercase;
+  font-size:7px; letter-spacing:.18em; text-transform:uppercase;
   color:var(--dim);
 }
 
@@ -417,28 +441,34 @@ body {
    ╚══════════════════════════════════════╝ */
 .nav {
   position:fixed; bottom:0; left:0; width:100%;
-  height:var(--nav);
-  background:rgba(3,4,10,0.92);
-  border-top:1px solid rgba(212,175,55,0.12);
+  background: rgba(3,4,10,0.92);
+  border-top: 1px solid rgba(212,175,55,0.12);
   backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
   display:flex; align-items:center; justify-content:space-around;
-  padding:0 20px 16px; z-index:100;
+  padding: 0 24px env(safe-area-inset-bottom, 16px);
+  height: calc(var(--nav) + env(safe-area-inset-bottom, 0px));
+  z-index:100;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
 }
 .nav-item {
   display:flex; flex-direction:column; align-items:center; gap:5px;
-  text-decoration:none; color:var(--dim); padding:8px 18px;
-  position:relative; transition:color .2s;
+  text-decoration:none; color:var(--dim); padding:10px 18px;
+  position:relative; transition:color .3s, transform .3s;
+  border-radius: 16px;
 }
+.nav-item:active { transform: scale(0.88); }
 .nav-item.active { color:var(--g1); }
 .nav-item.active::before {
-  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
-  width:24px; height:2px; border-radius:99px;
+  content:''; position:absolute; top:-1px; left:50%; transform:translateX(-50%);
+  width:28px; height:2px; border-radius:99px;
   background:linear-gradient(90deg, transparent, var(--g1), transparent);
+  box-shadow: 0 0 8px rgba(212,175,55,0.5);
   animation:navIn .4s ease both;
 }
-@keyframes navIn { from{width:0;opacity:0} to{width:24px;opacity:1} }
-.nav-item i { font-size:18px; }
-.nav-item span { font-size:7px; letter-spacing:.15em; text-transform:uppercase; font-weight:500; }
+@keyframes navIn { from{width:0;opacity:0} to{width:28px;opacity:1} }
+.nav-item i { font-size:20px; transition: transform 0.3s; }
+.nav-item.active i { transform: translateY(-1px); }
+.nav-item span { font-size:7px; letter-spacing:.15em; text-transform:uppercase; font-weight:600; }
 
 /* ╔══════════════════════════════════════╗
    ║  TOASTS                              ║
@@ -733,23 +763,28 @@ body {
 </nav>
 
 <script>
-/* ── ÉTOILES ── */
+/* ── ÉTOILES (mix or + blanc) ── */
 (function(){
   const c=document.getElementById('stars'),ctx=c.getContext('2d');
   let W,H,S=[];
   const resize=()=>{W=c.width=innerWidth;H=c.height=innerHeight;};
-  const mk=()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.2,a:Math.random(),
+  const mk=()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.1+.2,
+    a:Math.random()*.55+.04,
     da:(Math.random()*.004+.001)*(Math.random()>.5?1:-1),
-    vx:(Math.random()-.5)*.08,vy:(Math.random()-.5)*.08});
-  const init=()=>{resize();S=Array.from({length:160},mk);};
+    vx:(Math.random()-.5)*.07,vy:(Math.random()-.5)*.07,
+    gold: Math.random() > .8 });
+  const init=()=>{resize();S=Array.from({length:180},mk);};
   const draw=()=>{
     ctx.clearRect(0,0,W,H);
     S.forEach(s=>{
-      s.a=Math.max(.05,Math.min(1,s.a+s.da));
-      if(s.a>=1||s.a<=.05)s.da*=-1;
+      s.a=Math.max(.04,Math.min(.6,s.a+s.da));
+      if(s.a>=.6||s.a<=.04)s.da*=-1;
       s.x=(s.x+s.vx+W)%W; s.y=(s.y+s.vy+H)%H;
       ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(212,175,55,${s.a*.55})`;ctx.fill();
+      ctx.fillStyle = s.gold
+        ? `rgba(212,175,55,${s.a*.7})`
+        : `rgba(255,255,255,${s.a*.4})`;
+      ctx.fill();
     });
     requestAnimationFrame(draw);
   };
@@ -776,6 +811,19 @@ function closeToast(el){
 document.querySelectorAll('.sdm-toast').forEach((t,i)=>{
   setTimeout(()=>closeToast(t), 4000 + i*600);
 });
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        console.log('ServiceWorker registration successful');
+      }, function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
 </script>
 </body>
 </html>

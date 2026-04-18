@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <!-- PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#040B08">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SDM — {{ wird.titre }}</title>
+    
+    <!-- Fonts: Inter for UI, Amiri for Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mouride: {
+                            900: '#040B08',
+                            800: '#081711',
+                            surface: 'rgba(12, 34, 25, 0.45)',
+                        },
+                        gold: {
+                            400: '#FDE047',
+                            500: '#D4AF37',
+                            600: '#A68A28',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif'],
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
+                        'glow': '0 0 40px rgba(212, 175, 55, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body { 
+            background-color: #040B08; 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% -20%, rgba(212, 175, 55, 0.1) 0%, transparent 60%);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glass {
+            background: rgba(8, 23, 17, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Tapping Circle */
+        .wp-counter-ring { position: relative; width: 100%; max-width: 250px; aspect-ratio: 1; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+        .wp-counter-ring svg { position: absolute; top:0; left:0; width:100%; height:100%; transform: rotate(-90deg); filter: drop-shadow(0 0 10px rgba(212,175,55,0.3)); }
+        .ring-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 3; }
+        .ring-progress { fill: none; stroke: #D4AF37; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 283; transition: stroke-dashoffset 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .tap-btn-core {
+            width: 72%; height: 72%; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #D4AF37, #A68A28);
+            border: 6px solid #040B08;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 0 40px rgba(212,175,55,0.3), inset 0 2px 10px rgba(255,255,255,0.4);
+            cursor: pointer; transition: all 0.1s;
+            position: relative; z-index: 10;
+            outline: none; -webkit-tap-highlight-color: transparent;
+        }
+        .tap-btn-core:active { transform: scale(0.92); box-shadow: 0 0 20px rgba(212,175,55,0.5), inset 0 2px 5px rgba(255,255,255,0.2); }
+        
+        /* Pulse Animation around the button */
+        .tap-pulse {
+            position: absolute; width: 72%; height: 72%; border-radius: 50%;
+            border: 2px solid rgba(212,175,55,0.4);
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            pointer-events: none;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+        
+        /* Typography */
+        .ar-text { font-family: 'Amiri', serif; line-height: 2.2; }
+    </style>
+</head>
+<body class="selection:bg-gold-500 selection:text-black pb-10">
+
+<div class="max-w-3xl mx-auto px-5 pt-8 md:pt-12" id="wird-app">
+
+    <!-- HEADER -->
+    <header class="flex items-center justify-between mb-8" data-aos="fade-down">
+        <a href="{% url 'home' %}" class="w-12 h-12 rounded-2xl glass flex items-center justify-center text-white/70 hover:text-gold-500 transition-colors border border-white/10 active:scale-95">
+            <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        <div class="text-center">
+            <h1 class="text-xs md:text-sm font-bold tracking-[0.2em] text-gold-500 uppercase">{{ wird.titre }}</h1>
+            <p class="text-[10px] font-semibold text-white/40 tracking-widest mt-1">ÉTAPE <span id="current-step-num" class="text-white">1</span> / {{ etapes|length }}</p>
+        </div>
+        <div class="w-12 h-12 rounded-2xl glass flex flex-col items-center justify-center border border-white/10">
+            <i class="fa-regular fa-clock text-[10px] text-white/40 mb-0.5"></i>
+            <span class="text-[10px] font-mono font-bold text-white/90" id="global-timer">00:00</span>
+        </div>
+    </header>
+
+    <!-- CONTENT CARD -->
+    <main class="glass rounded-[32px] p-6 text-center md:p-10 mb-8 shadow-glass relative overflow-hidden" data-aos="zoom-in" data-aos-delay="100">
+        <!-- Decoration -->
+        <div class="absolute -top-16 -right-16 w-32 h-32 bg-gold-500/10 blur-[50px] rounded-full pointer-events-none"></div>
+
+        <div class="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold tracking-widest text-gold-400 uppercase mb-6" id="step-type">
+            INVOCATION
+        </div>
+        
+        <h2 class="text-lg md:text-xl font-bold text-white tracking-tight mb-2" id="step-title-fr">Chargement...</h2>
+        <h3 class="font-arabic text-2xl md:text-3xl text-gold-500 mb-8" id="step-title-ar">...</h3>
+
+        <div class="mb-8">
+            <p class="ar-text text-3xl md:text-4xl text-white drop-shadow-md" dir="rtl" id="text-ar">...</p>
+        </div>
+
+        <div class="max-w-xl mx-auto space-y-4">
+            <p class="text-[13px] md:text-sm md:leading-relaxed font-medium italic text-white/50 leading-relaxed" id="text-trans">...</p>
+            <div class="w-12 h-[1px] bg-gold-500/30 mx-auto"></div>
+            <p class="text-[14px] md:text-base md:leading-relaxed font-medium text-white/90 leading-relaxed" id="text-trad">...</p>
+        </div>
+    </main>
+
+    <!-- INTERACTION & COUNTER -->
+    <div class="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12" data-aos="fade-up" data-aos-delay="200">
+        
+        <!-- TAP CIRCLE -->
+        <div class="flex-shrink-0 w-full md:w-auto relative flex justify-center mb-6 md:mb-0">
+            <div class="wp-counter-ring group">
+                <div class="tap-pulse"></div>
+                <!-- SVG Circle parameters adjusted in JS (stroke-dashoffset range 0-283 for r=45) -->
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" class="ring-bg"></circle>
+                    <circle cx="50" cy="50" r="45" class="ring-progress" id="progress-circle"></circle>
+                </svg>
+                <button class="tap-btn-core" id="tap-btn">
+                    <span id="current-count" class="text-6xl font-black text-white tracking-tighter mt-3 drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)] leading-none">0</span>
+                    <span class="text-xs font-black text-white/80 uppercase tracking-widest mt-1 mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">/ <span id="target-count">70</span></span>
+                </button>
+                <p class="absolute -bottom-6 w-full text-center text-[10px] font-bold text-gold-500/50 uppercase tracking-[0.2em] pointer-events-none">Appuyez ici</p>
+            </div>
+        </div>
+        
+        <!-- NAVIGATION -->
+        <div class="flex-1 w-full max-w-sm mx-auto flex flex-col gap-5">
+            <div class="flex items-center gap-3">
+                <button class="flex-1 glass py-4 rounded-xl flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none hover:text-white" id="prev-btn" disabled>
+                    <i class="fa-solid fa-backward-step"></i> Précédent
+                </button>
+                <button class="flex-1 bg-gradient-to-r from-gold-400 to-gold-600 py-4 rounded-xl flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-[#040B08] active:scale-95 transition-all shadow-[0_10px_20px_rgba(212,175,55,0.2)] disabled:opacity-30 disabled:pointer-events-none" id="next-btn">
+                    Suivant <i class="fa-solid fa-forward-step"></i>
+                </button>
+            </div>
+            
+            <div class="w-full">
+                <div class="flex justify-between text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5 px-1">
+                    <span>Progression globale</span>
+                    <span id="global-percent">0%</span>
+                </div>
+                <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden flex">
+                    <div class="h-full bg-gold-500 transition-all duration-500 ease-out" id="global-progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ once: true, offset: 20 });
+
+    const ETAPES = [
+        {% for etape in etapes %}
+        {
+            id: {{ etape.id }},
+            num: {{ etape.numero }},
+            titleFr: "{{ etape.titre_francais|escapejs }}",
+            titleAr: "{{ etape.titre_arabe|escapejs }}",
+            textAr: "{{ etape.texte_arabe|escapejs }}",
+            trans: "{{ etape.transliteration|escapejs }}",
+            trad: "{{ etape.traduction_francais|escapejs }}",
+            rep: {{ etape.repetitions }},
+            type: "{{ etape.type|escapejs }}"
+        },
+        {% endfor %}
+    ];
+
+    let currentIdx = {{ progression.etape_courante|default:1 }} - 1;
+    let count = {{ progression.repetitions_faites|default:0 }};
+    let startTime = Date.now();
+    let elapsed = 0;
+    const wirdId = {{ wird.id|default:0 }};
+    const circleLength = 283; // 2 * PI * 45
+
+    function updateUI() {
+        if (!ETAPES.length) return;
+        const step = ETAPES[currentIdx];
+
+        document.getElementById('current-step-num').innerText = step.num;
+        document.getElementById('step-type').innerText = step.type;
+        document.getElementById('step-title-fr').innerText = step.titleFr;
+        document.getElementById('step-title-ar').innerText = step.titleAr;
+        document.getElementById('text-ar').innerText = step.textAr;
+        document.getElementById('text-trans').innerText = step.trans;
+        document.getElementById('text-trad').innerText = step.trad;
+        
+        document.getElementById('current-count').innerText = count;
+        document.getElementById('target-count').innerText = step.rep;
+        
+        const pct = count / step.rep;
+        const offset = circleLength - (pct * circleLength);
+        document.getElementById('progress-circle').style.strokeDashoffset = offset;
+
+        document.getElementById('prev-btn').disabled = (currentIdx === 0);
+        document.getElementById('next-btn').disabled = (currentIdx === ETAPES.length - 1 && count < step.rep);
+
+        const globalProgPct = ((currentIdx + (count/step.rep)) / ETAPES.length) * 100;
+        document.getElementById('global-progress-bar').style.width = globalProgPct + '%';
+        document.getElementById('global-percent').innerText = Math.round(globalProgPct) + '%';
+
+        if(wirdId > 0) saveProgress();
+    }
+
+    let autoNextTimeout = null;
+
+    function tap() {
+        const step = ETAPES[currentIdx];
+        if(!step) return;
+        if (count < step.rep) {
+            count++;
+            if (navigator.vibrate) navigator.vibrate(20);
+            
+            updateUI(); // Met à jour l'IU avec le nouveau compte
+
+            if (count === step.rep) {
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                
+                // Passage automatique à l'étape suivante
+                if (autoNextTimeout) clearTimeout(autoNextTimeout);
+                autoNextTimeout = setTimeout(() => {
+                    nextStep();
+                }, 800); // 800ms de délai pour laisser l'utilisateur voir qu'il a fini l'étape
+            }
+        }
+    }
+
+    function nextStep() {
+        if (autoNextTimeout) clearTimeout(autoNextTimeout);
+        if (currentIdx < ETAPES.length - 1) {
+            currentIdx++;
+            count = 0;
+            updateUI();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    }
+
+    function prevStep() {
+        if (autoNextTimeout) clearTimeout(autoNextTimeout);
+        if (currentIdx > 0) {
+            currentIdx--;
+            count = 0; 
+            updateUI();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    }
+
+    function saveProgress() {
+        fetch("{% url 'save_wird_progress' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                wird_id: wirdId,
+                etape: ETAPES[currentIdx].num,
+                reps: count
+            })
+        }).catch(e => console.log('Hors ligne ou erreur API'));
+    }
+
+    setInterval(() => {
+        elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+        const s = String(elapsed % 60).padStart(2, '0');
+        document.getElementById('global-timer').innerText = m + ':' + s;
+    }, 1000);
+
+    document.getElementById('tap-btn').addEventListener('click', tap);
+    document.getElementById('next-btn').addEventListener('click', nextStep);
+    document.getElementById('prev-btn').addEventListener('click', prevStep);
+
+    updateUI();
+</script>
+
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        console.log('ServiceWorker registration successful');
+      }, function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+</script>
+</body>
+</html>

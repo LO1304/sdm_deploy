@@ -2,117 +2,407 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <!-- PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#03040a">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription - SDM Premium</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta name="google" content="notranslate">
+    <meta name="description" content="Rejoindre SDM Premium — La bibliothèque spirituelle Mouride">
+    <title>Inscription — SDM Premium</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
     <style>
         :root {
-            --gold: #d4af37;
-            --dark: #05070a;
+            --gold:    #d4af37;
+            --gold-lt: #f5dc6e;
+            --gold-dk: #9a7520;
+            --bg:      #03040a;
+            --border:  rgba(212,175,55,0.18);
+            --text:    #f0f0f0;
+            --dim:     rgba(255,255,255,0.35);
         }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--dark);
-            color: white;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-        .font-gold {
-            font-family: 'Cormorant Garamond', serif;
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.3); border-radius: 9px; }
+
+        #cosmos { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        .blob {
+            position: fixed; border-radius: 50%;
+            filter: blur(100px); pointer-events: none; z-index: 0;
         }
-        .btn-glow {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .blob-1 {
+            width: 500px; height: 500px; top: -150px; left: -100px;
+            background: radial-gradient(circle, rgba(212,175,55,0.07) 0%, transparent 70%);
+            animation: blobDrift1 18s ease-in-out infinite alternate;
         }
-        .btn-glow:hover {
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
-            transform: translateY(-3px);
+        .blob-2 {
+            width: 400px; height: 400px; bottom: -100px; right: -100px;
+            background: radial-gradient(circle, rgba(90,50,200,0.06) 0%, transparent 70%);
+            animation: blobDrift2 22s ease-in-out infinite alternate;
         }
-        /* Floating label transition */
-        .peer:focus ~ label,
-        .peer:not(:placeholder-shown) ~ label {
-            transform: translateY(-1.5rem) scale(0.85);
-            color: var(--gold);
+        @keyframes blobDrift1 { to { transform: translate(80px, 60px) scale(1.1); } }
+        @keyframes blobDrift2 { to { transform: translate(-60px, -40px) scale(1.15); } }
+
+        /* LAYOUT */
+        .auth-wrapper {
+            position: relative; z-index: 1;
+            min-height: 100vh;
+            display: flex; align-items: stretch;
         }
-        .fade-in {
-            animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
+
+        /* PANNEAU FORMULAIRE */
+        .form-panel {
+            flex: 1;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 50px 40px;
+            max-width: 560px;
+            min-width: 320px;
+            position: relative;
         }
-        .delay-100 { animation-delay: 100ms; }
-        .delay-200 { animation-delay: 200ms; }
-        .delay-300 { animation-delay: 300ms; }
-        @keyframes fadeIn {
+        @media (max-width: 1023px) { .form-panel { max-width: 100%; width: 100%; } }
+        .form-panel::after {
+            content: ''; position: absolute; right: 0; top: 10%; bottom: 10%;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--border), transparent);
+            display: none;
+        }
+        @media (min-width: 1024px) { .form-panel::after { display: block; } }
+
+        .form-inner { width: 100%; max-width: 380px; }
+
+        /* Logo */
+        .sdm-logo {
+            text-align: center; margin-bottom: 44px;
+            animation: logoReveal 1.2s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        @keyframes logoReveal {
+            from { opacity: 0; transform: translateY(-30px) scale(0.9); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .logo-ornement {
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; margin-bottom: 14px;
+        }
+        .orn-line {
+            height: 1px; width: 36px;
+            background: linear-gradient(90deg, transparent, var(--gold));
+        }
+        .orn-line.r { background: linear-gradient(90deg, var(--gold), transparent); }
+        .orn-gem {
+            width: 6px; height: 6px; border: 1px solid var(--gold);
+            transform: rotate(45deg); background: rgba(212,175,55,0.25);
+            animation: gemPulse 2s ease-in-out infinite alternate;
+        }
+        @keyframes gemPulse {
+            from { box-shadow: 0 0 6px rgba(212,175,55,0.4); }
+            to   { box-shadow: 0 0 18px rgba(212,175,55,0.8), 0 0 35px rgba(212,175,55,0.3); }
+        }
+        .logo-text {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 900;
+            background: linear-gradient(130deg, var(--gold-lt) 0%, var(--gold) 50%, var(--gold-dk) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.1em; line-height: 1;
+            filter: drop-shadow(0 0 30px rgba(212,175,55,0.4));
+        }
+        .logo-sub {
+            font-size: 8px; letter-spacing: 0.42em; text-transform: uppercase;
+            color: var(--dim); margin-top: 10px;
+        }
+
+        .form-title {
+            font-size: 12px; font-weight: 400; letter-spacing: 0.3em;
+            text-transform: uppercase; color: var(--dim);
+            text-align: center; margin-bottom: 32px;
+            animation: fadeUp 0.8s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        /* Erreur globale */
+        .error-box {
+            background: rgba(220,53,69,0.08);
+            border: 1px solid rgba(220,53,69,0.25);
+            border-radius: 12px; padding: 12px 16px;
+            margin-bottom: 24px;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 12px; color: #ff7b7b;
+            animation: fadeUp 0.5s both;
+        }
+
+        /* Champs django — override */
+        .field-group {
+            position: relative; margin-bottom: 20px;
+            animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .field-group label {
+            display: block;
+            font-size: 9px; font-weight: 600;
+            letter-spacing: 0.18em; text-transform: uppercase;
+            color: var(--dim); margin-bottom: 8px;
+        }
+        .field-group input, .field-group select {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 15px 18px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px; color: var(--text);
+            outline: none;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .field-group input::placeholder { color: rgba(255,255,255,0.25); }
+        .field-group input:focus, .field-group select:focus {
+            background: rgba(212,175,55,0.05);
+            border-color: rgba(212,175,55,0.4);
+            box-shadow: 0 0 0 4px rgba(212,175,55,0.06), 0 6px 24px rgba(0,0,0,0.3);
+        }
+        .field-errors {
+            margin-top: 6px; font-size: 11px; color: #ff7b7b;
+        }
+        .field-errors ul { list-style: none; }
+
+        /* Bouton */
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+            border: none; border-radius: 14px;
+            padding: 17px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 0.25em; text-transform: uppercase;
+            color: #080600;
+            cursor: pointer;
+            position: relative; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+            box-shadow: 0 8px 30px rgba(212,175,55,0.25);
+            animation: fadeUp 0.8s 0.5s cubic-bezier(0.16,1,0.3,1) both;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-top: 8px;
+        }
+        .btn-submit::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%); transition: transform 0.6s;
+        }
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(212,175,55,0.4); }
+        .btn-submit:hover::before { transform: translateX(100%); }
+        .btn-submit:active { transform: translateY(-1px) scale(0.99); }
+
+        .auth-link {
+            text-align: center; margin-top: 28px;
+            font-size: 12px; color: var(--dim);
+            animation: fadeUp 0.8s 0.6s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .auth-link a {
+            color: var(--gold); text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(212,175,55,0.3);
+            padding-bottom: 1px;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .auth-link a:hover { color: var(--gold-lt); border-color: var(--gold-lt); }
+
+        /* PANNEAU VISUEL */
+        .visual-panel {
+            flex: 1.2;
+            display: none;
+            position: relative; overflow: hidden;
+            background: radial-gradient(ellipse at 60% 40%, rgba(15,35,25,1) 0%, rgba(3,4,10,1) 100%);
+        }
+        @media (min-width: 1024px) { .visual-panel { display: flex; align-items: center; justify-content: center; } }
+
+        .geo-ring {
+            position: absolute; border-radius: 50%; border: 1px solid;
+            animation: rotateSlow linear infinite;
+        }
+        .geo-ring-1 { width: 600px; height: 600px; left: -100px; top: -100px; border-color: rgba(212,175,55,0.04); animation-duration: 80s; }
+        .geo-ring-2 { width: 400px; height: 400px; right: -50px; bottom: -50px; border-color: rgba(212,175,55,0.06); animation-duration: 60s; animation-direction: reverse; }
+        @keyframes rotateSlow { to { transform: rotate(360deg); } }
+
+        .visual-orb {
+            position: absolute; width: 300px; height: 300px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%);
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            filter: blur(40px);
+            animation: orbPulse 6s ease-in-out infinite;
+        }
+        @keyframes orbPulse {
+            0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.8; }
+            50%       { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
+        }
+
+        .visual-content {
+            position: relative; z-index: 1;
+            text-align: center; padding: 60px 40px; max-width: 460px;
+        }
+        .visual-icon-wrap {
+            width: 90px; height: 90px; border-radius: 28px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.04));
+            border: 1px solid rgba(212,175,55,0.25);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px; color: var(--gold);
+            margin: 0 auto 32px;
+            box-shadow: 0 0 50px rgba(212,175,55,0.15);
+            animation: iconFloat 4s ease-in-out infinite;
+        }
+        @keyframes iconFloat {
+            0%,100% { transform: translateY(0); box-shadow: 0 0 50px rgba(212,175,55,0.15); }
+            50%      { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(212,175,55,0.25); }
+        }
+        .visual-heading {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: clamp(1.4rem, 3vw, 1.9rem);
+            background: linear-gradient(130deg, #fff 0%, var(--gold-lt) 50%, var(--gold) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin-bottom: 20px; line-height: 1.3;
+        }
+        .visual-desc {
+            font-size: 13px; line-height: 1.8;
+            color: rgba(255,255,255,0.5); font-weight: 300;
+            max-width: 320px; margin: 0 auto;
+        }
+        .gold-divider {
+            width: 50px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 24px auto;
+        }
+
+        /* Django form fields fix */
+        .helptext { display: none; }
+        .errorlist { list-style: none; color: #ff7b7b; font-size: 11px; margin-top: 5px; }
+
+        @keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        /* Styling django help texts and errors */
-        .helptext { display: none; } /* Hide default django help text visually if needed, or style it */
-        .errorlist { color: #f87171; font-size: 0.75rem; margin-top: 0.5rem; list-style-type: none; padding: 0; }
     </style>
 </head>
-<body class="min-h-screen flex">
-    
-    <!-- Left panel (Form) -->
-    <div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-16 xl:p-24 relative z-10 bg-[#05070a] shadow-[10px_0_50px_rgba(0,0,0,0.5)] overflow-y-auto">
-        
-        <div class="w-full max-w-md my-auto">
-            <div class="text-center mb-12 fade-in">
-                <h1 class="text-5xl font-gold text-[#d4af37] mb-3 font-bold tracking-widest drop-shadow-[0_0_15px_rgba(212,175,55,0.3)]">SDM</h1>
-                <p class="text-xs tracking-[0.4em] text-white/40 uppercase">Rejoindre la collection</p>
-            </div>
+<body>
+    <canvas id="cosmos"></canvas>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
 
-            <form method="post" class="space-y-8">
-                {% csrf_token %}
-                
+    <div class="auth-wrapper">
+
+        <!-- FORMULAIRE -->
+        <div class="form-panel">
+            <div class="form-inner">
+
+                <div class="sdm-logo">
+                    <div class="logo-ornement">
+                        <div class="orn-line"></div>
+                        <div class="orn-gem"></div>
+                        <div class="orn-line r"></div>
+                    </div>
+                    <div class="logo-text">SDM</div>
+                    <p class="logo-sub">Rejoindre la collection</p>
+                </div>
+
+                <p class="form-title">Créer un compte</p>
+
                 {% if form.non_field_errors %}
-                <div class="fade-in bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm text-center backdrop-blur-sm mb-6">
-                    {{ form.non_field_errors }}
+                <div class="error-box">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>{{ form.non_field_errors.0 }}</span>
                 </div>
                 {% endif %}
 
-                {% for field in form %}
-                <div class="relative fade-in" style="animation-delay: {{ forloop.counter|add:1 }}00ms;">
-                    {{ field }}
-                    <label for="{{ field.id_for_label }}" class="absolute left-0 top-3 text-white/40 text-sm transition-all duration-300 pointer-events-none peer-focus:text-[#d4af37] origin-left">
-                        {{ field.label }}
-                    </label>
-                    {% if field.errors %}
-                        {{ field.errors }}
-                    {% endif %}
-                </div>
-                {% endfor %}
+                <form method="post">
+                    {% csrf_token %}
 
-                <div class="pt-6 fade-in delay-300">
-                    <button type="submit" class="btn-glow w-full bg-[#d4af37] text-black py-4 rounded-xl font-bold tracking-[0.2em] uppercase text-xs">
+                    {% for field in form %}
+                    <div class="field-group" style="animation-delay: {{ forloop.counter }}00ms">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="field-errors">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-user-plus"></i>
                         Créer mon compte
                     </button>
-                </div>
-            </form>
+                </form>
 
-            <div class="mt-12 text-center fade-in delay-300 pb-8">
-                <p class="text-white/40 text-xs tracking-wider">
-                    Déjà inscrit ? 
-                    <a href="{% url 'login' %}" class="text-[#d4af37] hover:text-white transition-colors ml-2 font-medium border-b border-[#d4af37]/30 pb-1 hover:border-white">Se connecter</a>
+                <div class="auth-link">
+                    Déjà inscrit ?
+                    <a href="{% url 'login' %}">Se connecter</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANNEAU VISUEL -->
+        <div class="visual-panel">
+            <div class="geo-ring geo-ring-1"></div>
+            <div class="geo-ring geo-ring-2"></div>
+            <div class="visual-orb"></div>
+
+            <div class="visual-content">
+                <div class="visual-icon-wrap">
+                    <i class="fa-solid fa-star-and-crescent"></i>
+                </div>
+                <h2 class="visual-heading">Votre Chemin<br>Spirituel Commence</h2>
+                <div class="gold-divider"></div>
+                <p class="visual-desc">
+                    Mémorisez, écoutez et apprenez. SDM Premium offre un accès fluide à une bibliothèque complète d'outils et de savoirs spirituels Mouride.
                 </p>
             </div>
         </div>
+
     </div>
 
-    <!-- Right panel (Image) -->
-    <div class="hidden lg:flex lg:w-1/2 relative bg-[#0a0d14] overflow-hidden items-center justify-center">
-        <div class="absolute inset-0 bg-gradient-to-r from-[#05070a] via-transparent to-transparent z-10 w-32"></div>
-         <div class="absolute inset-0 bg-gradient-to-t from-[#05070a] via-transparent to-transparent z-10 h-full"></div>
-        <img src="{% static 'images/auth_bg.png' %}" alt="SDM Bibliotheque Background" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen scale-105 transition-transform duration-[20s] ease-in-out hover:scale-110">
-        
-        <!-- Elegant floating element instead of just text -->
-        <div class="relative z-20 fade-in delay-300 w-3/4 max-w-lg p-10 border border-white/5 bg-white/5 backdrop-blur-lg rounded-3xl shadow-[0_0_50px_rgba(212,175,55,0.05)] text-center">
-            <svg class="w-12 h-12 text-[#d4af37] mx-auto mb-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            <h2 class="font-gold text-4xl text-[#d4af37] mb-4">Votre Chemin<br>Spirituel Commence</h2>
-            <p class="text-white/60 text-sm leading-relaxed font-light">
-                Mémorisez, écoutez et apprenez. SDM Premium offre un accès fluide à une bibliothèque complète d'outils et de savoirs spirituels.
-            </p>
-        </div>
-    </div>
+    <script>
+        (function() {
+            const canvas = document.getElementById('cosmos');
+            const ctx = canvas.getContext('2d');
+            let W, H, P = [];
+            function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+            function mk() {
+                return { x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.2+0.3,
+                    a: Math.random()*0.5+0.05, da: (Math.random()*0.004+0.001)*(Math.random()>.5?1:-1),
+                    vx:(Math.random()-.5)*.1, vy:(Math.random()-.5)*.1,
+                    c: Math.random()>.8 ? '212,175,55' : '255,255,255' };
+            }
+            function init() { resize(); P = Array.from({length:180}, mk); }
+            function draw() {
+                ctx.clearRect(0,0,W,H);
+                P.forEach(p=>{
+                    p.a = Math.max(0.05,Math.min(0.65,p.a+p.da));
+                    if(p.a>=0.65||p.a<=0.05) p.da*=-1;
+                    p.x=(p.x+p.vx+W)%W; p.y=(p.y+p.vy+H)%H;
+                    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+                    ctx.fillStyle=`rgba(${p.c},${p.a})`; ctx.fill();
+                });
+                requestAnimationFrame(draw);
+            }
+            init(); draw();
+            window.addEventListener('resize', resize);
+        })();
+    </script>
 
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js'); });
+        }
+    </script>
 </body>
 </html>
