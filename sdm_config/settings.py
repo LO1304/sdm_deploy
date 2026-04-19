@@ -2,37 +2,33 @@ import os
 import environ
 from pathlib import Path
 
-# 1. Initialisation d'environ
-env = environ.Env(
-    DEBUG=(bool, False)
-)
+# ── Initialisation d'environ ──
+env = environ.Env(DEBUG=(bool, False))
 
-# 2. Chemin de base du projet
+# ── Chemin de base du projet ──
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 3. Lecture du fichier .env (uniquement en local)
-# Sur Render, les variables sont lues directement dans l'onglet Environment
+# ── Lecture du fichier .env (local et PythonAnywhere) ──
 dot_env_path = os.path.join(BASE_DIR, '.env')
 if os.path.exists(dot_env_path):
     environ.Env.read_env(dot_env_path)
 
-# --- PARAMÈTRES DE SÉCURITÉ ---
+# ── SÉCURITÉ ──
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
-# On garde les hôtes locaux, Render et PythonAnywhere
 ALLOWED_HOSTS = [
-    'sdm-mouride.onrender.com', 
-    'sdm-mouride-2jbn.onrender.com', 
-    '.onrender.com', 
+    'sdm-mouride.onrender.com',
+    'sdm-mouride-2jbn.onrender.com',
+    '.onrender.com',
     '.pythonanywhere.com',
-    'localhost', 
-    '127.0.0.1'
+    'localhost',
+    '127.0.0.1',
 ]
 
-# --- APPLICATIONS INSTALLÉES ---
+# ── APPLICATIONS ──
 INSTALLED_APPS = [
-    'cloudinary_storage',  # TOUJOURS en premier pour les fichiers statiques
+    'cloudinary_storage',   # TOUJOURS en premier
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,12 +36,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cloudinary',
-    'bibliotheque', 
+    'bibliotheque',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Gestion des fichiers statiques
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,12 +72,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sdm_config.wsgi.application'
 
-# --- BASE DE DONNÉES ---
-# Note : SQLite s'efface à chaque redémarrage sur Render. 
-# À l'avenir, une base PostgreSQL (ex: Neon ou Render DB) sera préférable.
-import os
-
-# Si on est sur Render et qu'une DATABASE_URL existe, on l'utilise, sinon SQLite
+# ── BASE DE DONNÉES ──
+# Render avec PostgreSQL → sinon SQLite (local et PythonAnywhere)
 if 'RENDER' in os.environ and 'DATABASE_URL' in os.environ:
     import dj_database_url
     DATABASES = {
@@ -94,27 +86,14 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
-# --- INTERNATIONALISATION ---
+
+# ── INTERNATIONALISATION ──
 LANGUAGE_CODE = 'fr-fr'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# --- CONFIGURATION CLOUDINARY ---
-# --- CONFIGURATION CLOUDINARY ---
-# --- CONFIGURATION CLOUDINARY ---
-# On utilise .get() ou un default pour éviter le crash "KeyError" sur ton PC
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='local'),
-    'API_KEY': env('CLOUDINARY_API_KEY', default='local'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET', default='local'),
-    'SECURE': True,
-}
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
-
-# ── STOCKAGE CLOUDINARY (production Render) / local sinon ──
+# ── CLOUDINARY (une seule définition propre) ──
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='local'),
     'API_KEY':    env('CLOUDINARY_API_KEY',    default='local'),
@@ -123,19 +102,22 @@ CLOUDINARY_STORAGE = {
     'RESOURCE_TYPE': 'auto',
 }
 
+# ── FICHIERS STATIQUES & MEDIA ──
+STATIC_URL  = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
+MEDIA_URL   = '/media/'
+MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
+
+# Stockage : Cloudinary uniquement sur Render, local sinon
 if 'RENDER' in os.environ:
     STATICFILES_STORAGE  = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
 else:
-    # En local, on reste simple pour ne pas dépendre d'Internet
-    STATICFILES_STORAGE  = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    STATICFILES_STORAGE  = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
-MEDIA_URL  = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# --- AUTRES PARAMÈTRES ---
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# ── AUTRES ──
+DEFAULT_AUTO_FIELD  = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL  = '/collection/son/'
 LOGOUT_REDIRECT_URL = 'login'
-LOGIN_URL           = 'login'
+LOGIN_URL           = 'login'
