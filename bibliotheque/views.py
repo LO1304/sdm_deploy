@@ -31,7 +31,7 @@ def home(request):
     # Récupérer la dernière lecture pour le bouton "Reprendre"
     derniere_progression = ProgressionLecture.objects.filter(user=request.user).order_by('-derniere_mise_a_jour').first()
     derniere_lecture = None
-    if derniere_progression:
+    if derniere_progression and derniere_progression.content_object:
         derniere_lecture = {
             'obj': derniere_progression.content_object,
             'page': derniere_progression.page_actuelle,
