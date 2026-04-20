@@ -95,9 +95,9 @@ USE_TZ = True
 
 # ── CLOUDINARY (une seule définition propre) ──
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='local'),
-    'API_KEY':    env('CLOUDINARY_API_KEY',    default='local'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET', default='local'),
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='dcajqzg2h'),
+    'API_KEY':    env('CLOUDINARY_API_KEY',    default='138657288257876'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET', default='8trLcatgU47lqR6ewysOQ9tAiKY'),
     'SECURE': True,
     'RESOURCE_TYPE': 'auto',
 }
@@ -108,11 +108,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
 MEDIA_URL   = '/media/'
 MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
 
-# Stockage : Cloudinary sur Render et PA, local sinon
-if env('CLOUDINARY_CLOUD_NAME', default='local') != 'local':
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
-else:
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+# Toujours utiliser Cloudinary pour les Medias
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
 
 # Fichiers Statiques : Cloudinary sur Render, WhiteNoise (ultra-rapide) sur PythonAnywhere
 if 'RENDER' in os.environ:
