@@ -104,10 +104,7 @@ CLOUDINARY_STORAGE = {
 
 # Fichiers Statiques & Media
 STATIC_URL  = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'bibliotheque', 'static'),
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
 
 STATICFILES_FINDERS = [
