@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     # C'est ICI que tu inclus l'application 'bibliotheque'
+    path('api/', include('bibliotheque.api_urls')),
     path('', include('bibliotheque.urls')),
 ]
 

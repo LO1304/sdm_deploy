@@ -4,6 +4,8 @@ set -o errexit
 
 pip install -r requirements.txt
 
+# Créer les fichiers de migration s'il y a de nouveaux changements
+python manage.py makemigrations
 python manage.py migrate
 
 # Collecte des fichiers statiques pour WhiteNoise et Cloudinary
