@@ -15,7 +15,8 @@ if os.path.exists(dot_env_path):
 
 # ── SÉCURITÉ ──
 SECRET_KEY = env('SECRET_KEY', default='change-me-in-production')
-DEBUG = env.bool('DEBUG', default=False)
+# SECURITÉ : Ne pas laisser en True en production !
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'sdm-mouride.onrender.com',
