@@ -1,18 +1,23 @@
 #!/usr/bin/env bash
-# exit on error
+# ══════════════════════════════════════════════
+# SDM Mouride — Script de build pour Render
+# ══════════════════════════════════════════════
 set -o errexit
 
+echo "═══ Installation des dépendances ═══"
+pip install --upgrade pip
 pip install -r requirements.txt
 
-# Créer les fichiers de migration s'il y a de nouveaux changements
-python manage.py makemigrations
-python manage.py migrate
+echo "═══ Migrations de la base de données ═══"
+python manage.py makemigrations --noinput
+python manage.py migrate --noinput
 
-# Collecte des fichiers statiques pour WhiteNoise et Cloudinary
-python manage.py collectstatic --no-input
+echo "═══ Collecte des fichiers statiques ═══"
+python manage.py collectstatic --noinput
 
-# Création de l'admin (avec mot de passe sécurisé)
-if [ "$CREATE_SUPERUSER" ]; then
-  export DJANGO_SUPERUSER_PASSWORD="Lo13042002"
-  python manage.py createsuperuser --no-input --username "moustapha" --email "cheikhmouhamadoumoustaphalo@gmail.com"
+echo "═══ Création du superutilisateur (si demandé) ═══"
+if [ "$CREATE_SUPERUSER" = "true" ]; then
+  python manage.py createsuperuser --no-input --username "moustapha" --email "cheikhmouhamadoumoustaphalo@gmail.com" || true
 fi
+
+echo "═══ Build terminé avec succès ! ═══"

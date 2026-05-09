@@ -1,53 +1,17 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <link rel="manifest" href="/static/manifest.json">
-    <meta name="theme-color" content="#03040a">
-    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SDM — Bibliothèque Sonore</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
-    <style>
+{% extends 'bibliotheque/layout.html' %}
+
+{% block title %}SDM — Bibliothèque Sonore{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+<style>
         :root {
-            --gold: #d4af37; --gold-lt: #f5dc6e; --gold-dk: #9a7520;
-            --bg: #03040a; --surface: rgba(255,255,255,0.04);
+            --surface: rgba(255,255,255,0.04);
             --border: rgba(255,255,255,0.07); --border-g: rgba(212,175,55,0.22);
             --text: #f0f0f0; --dim: rgba(255,255,255,0.38);
             --player-h: 220px;
         }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; }
-        body {
-            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
-            min-height: 100dvh; overflow-x: hidden;
-            padding-bottom: calc(var(--player-h) + 40px);
-            -webkit-tap-highlight-color: transparent;
-            -webkit-font-smoothing: antialiased;
-        }
-        ::-webkit-scrollbar { width: 2px; }
-        ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 9px; }
-
-        /* ── CANVAS FOND ── */
-        #cosmos { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-
-        /* ── BLOBS ── */
-        .blob { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
-        .blob-1 {
-            width: 600px; height: 600px; top: -200px; left: 50%; transform: translateX(-50%);
-            background: radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%);
-            animation: blobA 18s ease-in-out infinite alternate;
-        }
-        .blob-2 {
-            width: 350px; height: 350px; bottom: var(--player-h); right: -80px;
-            background: radial-gradient(circle, rgba(16,185,129,0.04) 0%, transparent 70%);
-            animation: blobB 22s ease-in-out infinite alternate;
-        }
-        @keyframes blobA { to { transform: translateX(-50%) scale(1.15) translateY(40px); } }
-        @keyframes blobB { to { transform: translate(-60px, -50px) scale(1.2); } }
+        body { padding-bottom: calc(var(--player-h) + 40px); }
 
         /* ── LAYOUT ── */
         .wrapper { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 0 16px; }
@@ -358,13 +322,12 @@
         }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
-</head>
-<body>
+</style>
+{% endblock %}
 
-<canvas id="cosmos"></canvas>
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
+{% block wrapper_classes %}{% endblock %}
 
+{% block content %}
 <div id="toast">Message</div>
 <audio id="aud" preload="metadata"></audio>
 
@@ -503,35 +466,10 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-/* ══ CANVAS ÉTOILES ══ */
-(function(){
-    const c = document.getElementById('cosmos'), ctx = c.getContext('2d');
-    let W, H, P = [];
-    function resize(){ W = c.width = innerWidth; H = c.height = innerHeight; }
-    function mk(){
-        return { x:Math.random()*W, y:Math.random()*H, r:Math.random()*.9+.2,
-            a:Math.random()*.5+.04, da:(Math.random()*.004+.001)*(Math.random()>.5?1:-1),
-            vx:(Math.random()-.5)*.06, vy:(Math.random()-.5)*.06,
-            gold: Math.random()>.85 };
-    }
-    resize(); P = Array.from({length:180}, mk);
-    (function draw(){
-        ctx.clearRect(0,0,W,H);
-        P.forEach(p=>{
-            p.a = Math.max(.04, Math.min(.6, p.a+p.da));
-            if(p.a>=.6||p.a<=.04) p.da*=-1;
-            p.x=(p.x+p.vx+W)%W; p.y=(p.y+p.vy+H)%H;
-            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-            ctx.fillStyle = p.gold ? `rgba(212,175,55,${p.a*.7})` : `rgba(255,255,255,${p.a*.4})`;
-            ctx.fill();
-        });
-        requestAnimationFrame(draw);
-    })();
-    window.addEventListener('resize', resize);
-})();
-
 /* ══ PLAYER STATE ══ */
 const aud      = document.getElementById('aud');
 const player   = document.getElementById('audio-player');
@@ -789,14 +727,8 @@ function setMediaSession(el){
     navigator.mediaSession.setActionHandler('nexttrack', window.playNext);
 }
 
-/* ══ SERVICE WORKER ══ */
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(()=>{});
-}
-
 /* Init waveform size */
 window.addEventListener('resize', ()=> drawWaveform(parseFloat(seekEl.value)/1000));
 resizeWaveform();
 </script>
-</body>
-</html>
+{% endblock %}

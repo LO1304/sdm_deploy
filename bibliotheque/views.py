@@ -369,6 +369,8 @@ def view_favoris(request):
     }
     
     for favori in favoris:
+        if favori.content_object is None:
+            continue
         if favori.content_type.model == 'khassida':
             favoris_by_type['Khassida'].append(favori.content_object)
         elif favori.content_type.model == 'zikr':

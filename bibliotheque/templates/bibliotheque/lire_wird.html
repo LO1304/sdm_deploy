@@ -234,7 +234,16 @@
         document.getElementById('progress-circle').style.strokeDashoffset = offset;
 
         document.getElementById('prev-btn').disabled = (currentIdx === 0);
-        document.getElementById('next-btn').disabled = (currentIdx === ETAPES.length - 1 && count < step.rep);
+
+        const nextBtn = document.getElementById('next-btn');
+        if (currentIdx === ETAPES.length - 1 && count === step.rep) {
+            // À la toute fin, le bouton Suivant devient "Recommencer"
+            nextBtn.innerHTML = 'Recommencer <i class="fa-solid fa-rotate-right"></i>';
+            nextBtn.disabled = false;
+        } else {
+            nextBtn.innerHTML = 'Suivant <i class="fa-solid fa-forward-step"></i>';
+            nextBtn.disabled = (currentIdx === ETAPES.length - 1 && count < step.rep);
+        }
 
         const globalProgPct = ((currentIdx + (count/step.rep)) / ETAPES.length) * 100;
         document.getElementById('global-progress-bar').style.width = globalProgPct + '%';
@@ -257,11 +266,13 @@
             if (count === step.rep) {
                 if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 
-                // Passage automatique à l'étape suivante
-                if (autoNextTimeout) clearTimeout(autoNextTimeout);
-                autoNextTimeout = setTimeout(() => {
-                    nextStep();
-                }, 800); // 800ms de délai pour laisser l'utilisateur voir qu'il a fini l'étape
+                // Si on est à la dernière étape, on n'auto-next pas pour forcer la validation manuelle
+                if (currentIdx < ETAPES.length - 1) {
+                    if (autoNextTimeout) clearTimeout(autoNextTimeout);
+                    autoNextTimeout = setTimeout(() => {
+                        nextStep();
+                    }, 800); // 800ms de délai pour laisser l'utilisateur voir qu'il a fini l'étape
+                }
             }
         }
     }
@@ -271,6 +282,13 @@
         if (currentIdx < ETAPES.length - 1) {
             currentIdx++;
             count = 0;
+            updateUI();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        } else if (currentIdx === ETAPES.length - 1 && count === ETAPES[currentIdx].rep) {
+            // L'utilisateur valide la fin, on boucle à zéro !
+            currentIdx = 0;
+            count = 0;
+            startTime = Date.now();
             updateUI();
             window.scrollTo({top: 0, behavior: 'smooth'});
         }

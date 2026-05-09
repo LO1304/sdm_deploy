@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#040B08">
+    <title>{% block title %}SDM Premium{% endblock %}</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/icons/icon-192x192.png' %}">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Animations AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS (via CDN comme existant) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mouride: {
+                            900: '#040B08', 800: '#081711', 700: '#0C2219',
+                            surface: 'rgba(12, 34, 25, 0.45)', light: 'rgba(255, 255, 255, 0.05)',
+                        },
+                        gold: {
+                            400: '#FDE047', 500: '#D4AF37', 600: '#A68A28',
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], arabic: ['Amiri', 'serif'], },
+                    boxShadow: { glass: '0 8px 32px 0 rgba(0, 0, 0, 0.5)', glow: '0 0 20px rgba(212, 175, 55, 0.3)', }
+                }
+            }
+        }
+    </script>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{% static 'css/sdm_theme.css' %}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="antialiased selection:bg-gold-500 selection:text-black">
+
+    <!-- FOND ÉTOILÉ (Global) -->
+    <canvas id="sdm-cosmos"></canvas>
+
+    <!-- TOAST MESSAGES (Global) -->
+    {% if messages %}
+    <div class="toast-container" id="toast-wrapper">
+        {% for message in messages %}
+        <div class="toast-msg glass w-full p-4 rounded-2xl flex items-center gap-4 shadow-glass border-l-4 
+            {% if message.tags == 'error' %}border-l-red-500{% elif message.tags == 'info' %}border-l-blue-400{% else %}border-l-gold-500{% endif %}" role="alert">
+            <div class="flex-shrink-0">
+                {% if message.tags == 'error' %}<i class="fa-solid fa-circle-exclamation text-red-500 text-xl"></i>
+                {% elif message.tags == 'info' %}<i class="fa-solid fa-circle-info text-blue-400 text-xl"></i>
+                {% else %}<i class="fa-solid fa-circle-check text-gold-500 text-xl"></i>{% endif %}
+            </div>
+            <div class="flex-1 text-sm font-medium text-white/90">{{ message }}</div>
+            <button onclick="dismissToast(this.closest('.toast-msg'))" class="text-white/40 hover:text-white/80 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Contenu Principal -->
+    <div class="site-wrapper {% block wrapper_classes %}max-w-6xl mx-auto pt-6 px-5 md:px-8 lg:px-12{% endblock %}">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- BOTTOM FLOATING NAVIGATION (ISLAND) -->
+    {% block bottom_nav %}
+    <nav class="nav-island">
+        <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}">
+            <i class="fa-solid fa-house-chimney"></i><div class="nav-item-indicator"></div>
+        </a>
+        <a href="{% url 'liste' 'khassida' %}" class="nav-item {% if 'khassida' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-book-open"></i><div class="nav-item-indicator"></div>
+        </a>
+        <a href="{% url 'dashboard' %}" class="nav-item relative">
+            <div class="absolute -top-6 w-14 h-14 bg-gradient-to-tr from-[#10B981] to-emerald-400 rounded-full flex items-center justify-center shadow-[0_10px_20px_rgba(16,185,129,0.3)] border-4 border-[#081711] text-white">
+                <i class="fa-solid fa-chart-line text-[22px]" style="transform:none; background:none; -webkit-text-fill-color:white; filter:none;"></i>
+            </div>
+        </a>
+        <a href="{% url 'favoris' %}" class="nav-item {% if 'favoris' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-heart"></i><div class="nav-item-indicator"></div>
+        </a>
+        <a href="{% url 'profile' %}" class="nav-item {% if 'profile' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-user"></i><div class="nav-item-indicator"></div>
+        </a>
+    </nav>
+    {% endblock %}
+
+    <!-- Scripts Globaux -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{% static 'js/sdm_main.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

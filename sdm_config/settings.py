@@ -8,13 +8,13 @@ env = environ.Env(DEBUG=(bool, False))
 # ── Chemin de base du projet ──
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ── Lecture du fichier .env (local et PythonAnywhere) ──
+# ── Lecture du fichier .env (local uniquement) ──
 dot_env_path = os.path.join(BASE_DIR, '.env')
 if os.path.exists(dot_env_path):
     environ.Env.read_env(dot_env_path)
 
 # ── SÉCURITÉ ──
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY', default='change-me-in-production')
 DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = [
@@ -24,6 +24,13 @@ ALLOWED_HOSTS = [
     '.pythonanywhere.com',
     'localhost',
     '127.0.0.1',
+]
+
+# ── CSRF Protection pour Render (HTTPS) ──
+CSRF_TRUSTED_ORIGINS = [
+    'https://sdm-mouride.onrender.com',
+    'https://sdm-mouride-2jbn.onrender.com',
+    'https://*.onrender.com',
 ]
 
 # ── APPLICATIONS ──
@@ -77,11 +84,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sdm_config.wsgi.application'
 
 # ── BASE DE DONNÉES ──
-# Render avec PostgreSQL → sinon SQLite (local et PythonAnywhere)
-if 'RENDER' in os.environ and 'DATABASE_URL' in os.environ:
+# Render avec PostgreSQL → sinon SQLite (local)
+if 'DATABASE_URL' in os.environ:
     import dj_database_url
     DATABASES = {
-        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+        )
     }
 else:
     DATABASES = {
@@ -97,7 +107,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# ── CLOUDINARY (une seule définition propre) ──
+# ── CLOUDINARY (pour les fichiers média : PDF, audio, images) ──
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='dcajqzg2h'),
     'API_KEY':    env('CLOUDINARY_API_KEY',    default='138657288257876'),
@@ -106,7 +116,7 @@ CLOUDINARY_STORAGE = {
     'RESOURCE_TYPE': 'auto',
 }
 
-# Fichiers Statiques & Media
+# ── Fichiers Statiques & Media ──
 STATIC_URL  = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build')
@@ -119,14 +129,15 @@ STATICFILES_FINDERS = [
 MEDIA_URL   = '/media/'
 MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
 
-# Toujours utiliser Cloudinary pour les Medias
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
-
-# Fichiers Statiques : Cloudinary sur Render, WhiteNoise (ultra-rapide) sur PythonAnywhere
-if 'RENDER' in os.environ:
-    STATICFILES_STORAGE  = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-else:
-    STATICFILES_STORAGE  = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# ── Storage Configuration (Django 6.0+ compatible) ──
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.RawMediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # ── AUTRES ──
 DEFAULT_AUTO_FIELD  = 'django.db.models.BigAutoField'

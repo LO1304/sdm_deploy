@@ -1,928 +1,487 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="fr" class="dark">
-<head>
-    <!-- PWA -->
-    <link rel="manifest" href="/static/manifest.json">
-    <meta name="theme-color" content="#040B08">
-    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+{% extends 'bibliotheque/layout.html' %}
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SDM — Accueil Mouride Premium</title>
-    
-    <!-- Fonts: Inter for UI, Aref Ruqaa or Amiri for Arabic -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Animations -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+{% block title %}SDM — Accueil Mouride Premium{% endblock %}
 
-    <!-- Tailwind Config for Custom Colors -->
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        mouride: {
-                            900: '#040B08', /* Abyss Green-Black */
-                            800: '#081711', /* Deep Emerald Black */
-                            700: '#0C2219', /* Dark Emerald */
-                            surface: 'rgba(12, 34, 25, 0.45)', /* Glass Surface */
-                            light: 'rgba(255, 255, 255, 0.05)',
-                        },
-                        gold: {
-                            400: '#FDE047',
-                            500: '#D4AF37', /* True Gold */
-                            600: '#A68A28',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        arabic: ['Amiri', 'serif'],
-                    },
-                    boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
-                        'glow': '0 0 20px rgba(212, 175, 55, 0.3)',
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        :root {
-            --nav-height: 85px;
-            --gold: #d4af37; --gold-lt: #f5dc6e; --gold-dk: #9a7520;
-        }
-
-        /* Base Resets */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        /* ── CANVAS FOND ── */
-        #sdm-cosmos {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        }
-
-        body {
-            background-color: #030408;
-            color: #ffffff;
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-            padding-bottom: calc(var(--nav-height) + 20px);
-            position: relative;
-        }
-
-        /* Blobs décoratifs */
-        body::before, body::after {
-            content: ''; position: fixed; border-radius: 50%;
-            filter: blur(130px); pointer-events: none; z-index: 0;
-        }
-        body::before {
-            width: 700px; height: 700px; top: -200px; left: -150px;
-            background: radial-gradient(circle, rgba(212,175,55,0.055) 0%, transparent 70%);
-            animation: blobHome1 22s ease-in-out infinite alternate;
-        }
-        body::after {
-            width: 500px; height: 500px; bottom: 0; right: -100px;
-            background: radial-gradient(circle, rgba(16,185,129,0.035) 0%, transparent 70%);
-            animation: blobHome2 28s ease-in-out infinite alternate;
-        }
-        @keyframes blobHome1 { to { transform: translate(100px, 80px) scale(1.15); } }
-        @keyframes blobHome2 { to { transform: translate(-80px, -60px) scale(1.2); } }
-
-        /* Clean Scrollbars */
-        ::-webkit-scrollbar { width: 0; height: 0; display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Glassmorphism Classes */
-        .glass {
-            background: rgba(12, 34, 25, 0.5);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        .glass-gold {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.02));
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-
-        /* Typography Highlights */
-        .text-gradient-gold {
-            background: linear-gradient(130deg, #FDE047 0%, #D4AF37 50%, #A68A28 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Horizontal Scroll Snap */
-        .snap-x-mandatory {
-            scroll-snap-type: x mandatory;
-        }
-        .snap-center {
-            scroll-snap-align: center;
-        }
-
-        /* Custom UI Components */
-        .nav-island {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 32px);
-            max-width: 420px;
-            height: 65px;
-            border-radius: 99px;
-            background: rgba(8, 23, 17, 0.85); /* Deep emerald glass */
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 10px;
-            z-index: 999;
-        }
-
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #6b7280;
-            text-decoration: none;
-            position: relative;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .nav-item.active {
-            color: #D4AF37;
-        }
-
-        .nav-item i {
-            font-size: 22px;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .nav-item.active i {
-            transform: translateY(-12px);
-            background: linear-gradient(130deg, #FDE047 0%, #D4AF37 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 4px 10px rgba(212, 175, 55, 0.4));
-        }
-
-        .nav-item-indicator {
-            position: absolute;
-            bottom: 12px;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background-color: #D4AF37;
-            opacity: 0;
-            transform: scale(0);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .nav-item.active .nav-item-indicator {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* Toast Animation Customization */
-        @keyframes toastSlideIn {
-            0% { transform: translateY(-100%) translateX(-50%) scale(0.9); opacity: 0; }
-            100% { transform: translateY(0) translateX(-50%) scale(1); opacity: 1; }
-        }
-        @keyframes toastFadeOut {
-            0% { opacity: 1; transform: translateY(0) translateX(-50%); }
-            100% { opacity: 0; transform: translateY(-20px) translateX(-50%); }
-        }
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            width: 90%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .toast-msg {
-            animation: toastSlideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-        .toast-msg.hiding {
-            animation: toastFadeOut 0.4s forwards;
-        }
-
-        /* Abstract Pattern Background for Hero */
-        .hero-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-
-        /* ── ICÔNES CATÉGORIES ── */
-        /* Override : glow + lift ultra fluide */
-        .action-btn {
-            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-        }
-        .action-btn:active { transform: scale(0.93); }
-
-        /* Icon container gold glow on hover */
-        .action-btn > div {
-            transition: transform 0.45s cubic-bezier(0.16,1,0.3,1),
-                        box-shadow 0.45s cubic-bezier(0.16,1,0.3,1),
-                        border-color 0.3s ease;
-        }
-        .action-btn:hover > div {
-            transform: translateY(-10px) scale(1.06) !important;
-            box-shadow: 0 18px 40px rgba(212,175,55,0.25), 0 0 0 1px rgba(212,175,55,0.2) !important;
-            border-color: rgba(212,175,55,0.45) !important;
-        }
-        .action-btn i {
-            transition: transform 0.45s cubic-bezier(0.16,1,0.3,1),
-                        filter 0.4s;
-        }
-        .action-btn:hover i {
-            transform: scale(1.15);
-            filter: drop-shadow(0 0 10px rgba(212,175,55,0.5));
-        }
-        .action-btn p {
-            transition: color 0.3s, transform 0.4s;
-        }
-        .action-btn:hover p {
-            color: #f5dc6e !important;
-            transform: translateY(2px);
-        }
-
-        /* ── SECTION LABELS ── */
-        .sdm-section-label {
-            display: flex; align-items: center; gap: 10px;
-            margin-bottom: 20px; margin-left: 2px;
-        }
-        .sdm-section-label::after {
-            content: ''; flex: 1; height: 1px;
-            background: linear-gradient(to right, rgba(212,175,55,0.1), transparent);
-        }
-
-        /* ── WIDGET REPRISE / DERNIER SON ── */
-        .resume-card {
-            position: relative; overflow: hidden;
-        }
-        .resume-card::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(212,175,55,0.04), transparent);
-            opacity: 0; transition: opacity 0.35s;
-        }
-        .resume-card:hover::before { opacity: 1; }
-
-        /* ── PRAYER HERO ── */
-        .prayer-hero-card {
-            position: relative;
-            animation: heroRise 1s 0.3s cubic-bezier(0.16,1,0.3,1) both;
-        }
-        @keyframes heroRise {
-            from { opacity: 0; transform: translateY(30px) scale(0.97); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* ── PRAYER SLOTS ── */
-        .ph-slot {
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1) !important;
-            cursor: pointer;
-        }
-        .ph-slot.active {
-            background: rgba(212,175,55,0.12) !important;
-            border-color: rgba(212,175,55,0.35) !important;
-            box-shadow: 0 0 20px rgba(212,175,55,0.15) !important;
-            transform: translateY(-2px);
-        }
-        .ph-slot:hover:not(.active) {
-           background: rgba(255,255,255,0.08) !important;
-           transform: translateY(-1px);
-        }
-
-        /* ── ARABIC VERSET GLOW ── */
-        .text-shadow-glow {
-            filter: drop-shadow(0 0 20px rgba(212,175,55,0.2));
-            animation: arabicGlow 4s ease-in-out infinite alternate;
-        }
-        @keyframes arabicGlow {
-            from { filter: drop-shadow(0 0 10px rgba(212,175,55,0.1)); }
-            to   { filter: drop-shadow(0 0 28px rgba(212,175,55,0.35)); }
-        }
-
-        /* ── HEADER AOS OVERRIDE ── */
-        [data-aos] { backface-visibility: hidden; }
-
-        /* Tout le contenu est au-dessus du canvas */
-        .max-w-6xl, nav { position: relative; z-index: 1; }
-
-    </style>
-</head>
-<body class="antialiased selection:bg-gold-500 selection:text-black">
-
-    <!-- FOND ÉTOILÉ -->
-    <canvas id="sdm-cosmos"></canvas>
-
+{% block content %}
     <!-- AUDIO PLAYER (Adhan) -->
     <audio id="adhan-player" preload="auto" crossorigin="anonymous">
        <source src="{{ config.fichier_adhan.url|default:'https://archive.org/download/MakkahAzan/Makkah-Azan.mp3' }}" type="audio/mpeg">
     </audio>
 
-    <!-- TOAST MESSAGES -->
-    {% if messages %}
-    <div class="toast-container" id="toast-wrapper">
-        {% for message in messages %}
-        <div class="toast-msg glass w-full p-4 rounded-2xl flex items-center gap-4 shadow-glass border-l-4 
-            {% if message.tags == 'error' %}border-l-red-500{% elif message.tags == 'info' %}border-l-blue-400{% else %}border-l-gold-500{% endif %}" role="alert">
-            <div class="flex-shrink-0">
-                {% if message.tags == 'error' %}
-                    <i class="fa-solid fa-circle-exclamation text-red-500 text-xl"></i>
-                {% elif message.tags == 'info' %}
-                    <i class="fa-solid fa-circle-info text-blue-400 text-xl"></i>
-                {% else %}
-                    <i class="fa-solid fa-circle-check text-gold-500 text-xl"></i>
-                {% endif %}
-            </div>
-            <div class="flex-1 text-sm font-medium text-white/90">{{ message }}</div>
-            <button onclick="dismissToast(this.closest('.toast-msg'))" class="text-white/40 hover:text-white/80 transition-colors">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+    <!-- HEADER -->
+    <header class="flex justify-between items-center mb-8" data-aos="fade-down" data-aos-duration="1000">
+        <div>
+            {% if user.is_authenticated %}
+            <p class="text-[10px] md:text-xs font-bold tracking-widest text-gold-500 uppercase mb-1">Assalamou Alaykoum</p>
+            <h1 class="text-2xl md:text-4xl font-bold text-white tracking-tight capitalize">{{ user.username }}</h1>
+            {% else %}
+            <h1 class="text-2xl md:text-4xl font-bold text-white tracking-tight text-gradient-gold">SDM Premium</h1>
+            <p class="text-[10px] md:text-xs font-bold tracking-widest text-white/50 uppercase mt-1">Sopey Dialibatoul Marakhib</p>
+            {% endif %}
         </div>
-        {% endfor %}
+        <a href="{% url 'profile' %}" class="w-12 h-12 md:w-14 md:h-14 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold-500/50 transition-colors shadow-lg">
+            <i class="fa-solid fa-user text-lg md:text-xl text-white/70"></i>
+        </a>
+    </header>
+
+    <!-- SEARCH BAR (Floating iOS Style) -->
+    <div class="mb-8 md:mb-12 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100" data-aos-duration="1000">
+        <form action="{% url 'recherche_globale' %}" method="GET" class="relative group">
+            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                <i class="fa-solid fa-magnifying-glass text-white/40 group-focus-within:text-gold-500 transition-colors"></i>
+            </div>
+            <input type="text" name="q" placeholder="Rechercher Khassida, Coran, audio..." 
+                class="w-full glass bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-16 text-sm text-white placeholder-white/40 focus:outline-none focus:bg-white/10 focus:border-gold-500/50 focus:ring-4 focus:ring-gold-500/10 transition-all shadow-glass">
+            <button type="submit" class="absolute inset-y-1.5 right-1.5 bg-gradient-to-r from-gold-400 to-gold-600 text-black text-xs font-bold px-4 rounded-xl hover:scale-105 active:scale-95 transition-transform">
+                GO
+            </button>
+        </form>
+    </div>
+
+    <!-- HERO PRAYER CARD (Masterpiece) -->
+    <style>
+        /* CSS spécifique à l'index conservé ici pour ne pas polluer le global */
+        .hero-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .ph-slot { transition: all 0.4s cubic-bezier(0.16,1,0.3,1) !important; cursor: pointer; }
+        .ph-slot.active { background: rgba(212,175,55,0.12) !important; border-color: rgba(212,175,55,0.35) !important; box-shadow: 0 0 20px rgba(212,175,55,0.15) !important; transform: translateY(-2px); }
+        .ph-slot:hover:not(.active) { background: rgba(255,255,255,0.08) !important; transform: translateY(-1px); }
+        .text-shadow-glow { filter: drop-shadow(0 0 20px rgba(212,175,55,0.2)); animation: arabicGlow 4s ease-in-out infinite alternate; }
+        @keyframes arabicGlow { from { filter: drop-shadow(0 0 10px rgba(212,175,55,0.1)); } to { filter: drop-shadow(0 0 28px rgba(212,175,55,0.35)); } }
+        .action-btn { transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+        .action-btn:active { transform: scale(0.93); }
+        .action-btn > div { transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), box-shadow 0.45s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease; }
+        .action-btn:hover > div { transform: translateY(-10px) scale(1.06) !important; box-shadow: 0 18px 40px rgba(212,175,55,0.25), 0 0 0 1px rgba(212,175,55,0.2) !important; border-color: rgba(212,175,55,0.45) !important; }
+        .action-btn i { transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), filter 0.4s; }
+        .action-btn:hover i { transform: scale(1.15); filter: drop-shadow(0 0 10px rgba(212,175,55,0.5)); }
+        .action-btn p { transition: color 0.3s, transform 0.4s; }
+        .action-btn:hover p { color: #f5dc6e !important; transform: translateY(2px); }
+    </style>
+
+    <div class="relative w-full rounded-[32px] overflow-hidden shadow-2xl mb-12 md:px-6" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="1200">
+        <!-- Backgrounds -->
+        <div class="absolute inset-0 bg-gradient-to-br from-[#0c2a1e] to-[#040B08] z-0"></div>
+        <div class="absolute inset-0 hero-pattern opacity-50 mix-blend-overlay z-0"></div>
+        <div class="absolute -top-24 -right-24 w-64 h-64 md:w-96 md:h-96 bg-gold-500/20 rounded-full blur-[80px] z-0"></div>
+        
+        <!-- Card Content -->
+        <div class="relative z-10 p-6 md:p-10 border border-white/10 rounded-[32px] glass h-full flex flex-col justify-between">
+            
+            <!-- Top Row: Location & Qibla -->
+            <div class="flex justify-between items-start mb-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/5">
+                        <i class="fa-solid fa-location-dot text-[10px] text-gold-500"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold tracking-widest text-white/50 uppercase">Position</p>
+                        <p class="text-sm font-semibold text-white/90 truncate max-w-[120px]" id="loc-city">Touba</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <!-- Qibla Compas -->
+                    <button onclick="updateQibla()" class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1 active:scale-90 transition-transform hover:bg-white/10">
+                        <i id="compass" class="fa-solid fa-location-arrow text-gold-500 text-sm transition-transform duration-1000" style="transform: rotate(45deg);"></i>
+                    </button>
+                    <!-- Adhan Toggle -->
+                    <button id="adhan-toggle" onclick="toggleAdhan()" class="w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300">
+                        <i id="adhan-icon" class="fa-solid fa-bell text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Center: Clock & Next Prayer Countdown -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+                <div>
+                    <p class="text-[10px] md:text-xs font-bold tracking-widest text-gold-500/80 uppercase mb-2">Prochaine prière : <span id="next-name" class="text-gold-500">Maghrib</span></p>
+                    <!-- Countdown massive font -->
+                    <div class="flex items-baseline gap-2">
+                        <p id="countdown" class="text-5xl md:text-7xl font-light tracking-tighter text-white tabular-nums drop-shadow-lg">--:--</p>
+                        <p class="text-lg md:text-2xl font-medium tracking-tight text-white/50 mb-1" id="countdown-sec">--</p>
+                    </div>
+                </div>
+                <div class="text-right flex items-center justify-end">
+                    <i class="fa-regular fa-clock text-white/20 text-3xl mr-4 hidden md:block"></i>
+                    <p id="clock" class="text-xl md:text-4xl font-medium tracking-tight text-white/40 tabular-nums">--:--</p>
+                </div>
+            </div>
+
+            <!-- Bottom: Prayer Times Slots -->
+            <div class="grid grid-cols-5 gap-2 md:gap-4 w-full">
+                <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Fajr">
+                    <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
+                    <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Fajr</p>
+                    <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
+                </div>
+                <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Dhuhr">
+                    <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
+                    <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Dhuhr</p>
+                    <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
+                </div>
+                <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Asr">
+                    <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
+                    <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Asr</p>
+                    <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
+                </div>
+                <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Maghrib">
+                    <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
+                    <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Magh</p>
+                    <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
+                </div>
+                <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Isha">
+                    <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
+                    <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Isha</p>
+                    <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CONTINUE READING (If exists) - Apple Widget Style -->
+    {% if derniere_lecture %}
+    <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="300" data-aos-duration="1000">
+        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-3 md:mb-5 ml-1 flex items-center gap-2">
+            <i class="fa-solid fa-book-open text-gold-500 text-[10px] md:text-xs"></i> Reprendre
+        </h2>
+        <a href="{% url 'lire_pdf' derniere_lecture.categorie derniere_lecture.obj.id %}" class="block glass rounded-3xl p-4 md:p-6 flex items-center justify-between group hover:border-gold-500/30 transition-all">
+            <div class="flex items-center gap-4 md:gap-6 overflow-hidden">
+                <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-gold-400/20 to-gold-600/5 flex flex-shrink-0 items-center justify-center border border-gold-500/20">
+                    <i class="fa-solid fa-book-quran text-gold-500 text-lg md:text-2xl group-hover:scale-110 transition-transform"></i>
+                </div>
+                <div class="overflow-hidden">
+                    <p class="text-[10px] md:text-xs uppercase font-bold text-gold-500 tracking-widest mb-1 md:mb-2">LECTURE EN COURS</p>
+                    <p class="text-sm md:text-xl font-semibold text-white/90 truncate w-[180px] md:w-[400px]">{{ derniere_lecture.obj.titre }}</p>
+                </div>
+            </div>
+            <div class="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-black transition-colors flex-shrink-0">
+                <i class="fa-solid fa-play text-[10px] md:text-sm ml-0.5 md:ml-1"></i>
+            </div>
+        </a>
     </div>
     {% endif %}
 
-    <div class="max-w-6xl mx-auto relative pt-6 px-5 md:px-8 lg:px-12">
-
-        <!-- HEADER -->
-        <header class="flex justify-between items-center mb-8" data-aos="fade-down" data-aos-duration="1000">
-            <div>
-                {% if user.is_authenticated %}
-                <p class="text-[10px] md:text-xs font-bold tracking-widest text-gold-500 uppercase mb-1">Assalamou Alaykoum</p>
-                <h1 class="text-2xl md:text-4xl font-bold text-white tracking-tight capitalize">{{ user.username }}</h1>
-                {% else %}
-                <h1 class="text-2xl md:text-4xl font-bold text-white tracking-tight text-gradient-gold">SDM Premium</h1>
-                <p class="text-[10px] md:text-xs font-bold tracking-widest text-white/50 uppercase mt-1">Sopey Dialibatoul Marakhib</p>
-                {% endif %}
-            </div>
-            <a href="{% url 'profile' %}" class="w-12 h-12 md:w-14 md:h-14 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold-500/50 transition-colors shadow-lg">
-                <i class="fa-solid fa-user text-lg md:text-xl text-white/70"></i>
-            </a>
-        </header>
-
-        <!-- SEARCH BAR (Floating iOS Style) -->
-        <div class="mb-8 md:mb-12 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100" data-aos-duration="1000">
-            <form action="{% url 'recherche_globale' %}" method="GET" class="relative group">
-                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                    <i class="fa-solid fa-magnifying-glass text-white/40 group-focus-within:text-gold-500 transition-colors"></i>
+    <!-- DERNIER SON ECOUTE (If exists) -->
+    {% if dernier_son %}
+    <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="350" data-aos-duration="1000">
+        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-3 md:mb-5 ml-1 flex items-center gap-2">
+            <i class="fa-solid fa-headphones text-gold-500 text-[10px] md:text-xs"></i> Dernière Écoute
+        </h2>
+        <a href="{% url 'liste_sons' %}" class="block glass rounded-3xl p-4 md:p-6 flex items-center justify-between group hover:border-gold-500/30 transition-all">
+            <div class="flex items-center gap-4 md:gap-6 overflow-hidden">
+                <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-[#10B981]/10 to-[#040B08] flex flex-shrink-0 items-center justify-center border border-[#10B981]/20">
+                    <i class="fa-solid fa-music text-[#10B981] text-lg md:text-2xl group-hover:scale-110 transition-transform"></i>
                 </div>
-                <input type="text" name="q" placeholder="Rechercher Khassida, Coran, audio..." 
-                    class="w-full glass bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-16 text-sm text-white placeholder-white/40 focus:outline-none focus:bg-white/10 focus:border-gold-500/50 focus:ring-4 focus:ring-gold-500/10 transition-all shadow-glass">
-                <button type="submit" class="absolute inset-y-1.5 right-1.5 bg-gradient-to-r from-gold-400 to-gold-600 text-black text-xs font-bold px-4 rounded-xl hover:scale-105 active:scale-95 transition-transform">
-                    GO
-                </button>
-            </form>
-        </div>
+                <div class="overflow-hidden">
+                    <p class="text-[10px] md:text-xs uppercase font-bold text-[#10B981] tracking-widest mb-1 md:mb-2">SON EN COURS</p>
+                    <p class="text-sm md:text-xl font-semibold text-white/90 truncate w-[180px] md:w-[400px]">{{ dernier_son.titre }}</p>
+                    <p class="text-[9px] md:text-[10px] text-white/50 uppercase tracking-widest truncate mt-0.5">{{ dernier_son.auteur_voix|default:dernier_son.get_categorie_display }}</p>
+                </div>
+            </div>
+            <div class="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#10B981] group-hover:text-black transition-colors flex-shrink-0">
+                <i class="fa-solid fa-play text-[10px] md:text-sm ml-0.5 md:ml-1"></i>
+            </div>
+        </a>
+    </div>
+    {% endif %}
 
-        <!-- HERO PRAYER CARD (Masterpiece) -->
-        <div class="relative w-full rounded-[32px] overflow-hidden shadow-2xl mb-12 md:px-6" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="1200">
-            <!-- Backgrounds -->
-            <div class="absolute inset-0 bg-gradient-to-br from-[#0c2a1e] to-[#040B08] z-0"></div>
-            <div class="absolute inset-0 hero-pattern opacity-50 mix-blend-overlay z-0"></div>
-            <div class="absolute -top-24 -right-24 w-64 h-64 md:w-96 md:h-96 bg-gold-500/20 rounded-full blur-[80px] z-0"></div>
+    <!-- HORIZONTAL EXPLORER ROW (Mouride Features) -->
+    <div class="mb-12 overflow-hidden" data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
+        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-5 ml-1 flex items-center gap-2">
+            <i class="fa-solid fa-compass text-gold-500 text-[10px] md:text-xs"></i> Explorer
+        </h2>
+        <!-- Scrollable container -->
+        <div class="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x-mandatory pb-4 pt-1 -mx-5 px-5 md:mx-0 md:px-0 md:justify-center">
             
-            <!-- Card Content -->
-            <div class="relative z-10 p-6 md:p-10 border border-white/10 rounded-[32px] glass h-full flex flex-col justify-between">
-                
-                <!-- Top Row: Location & Qibla -->
-                <div class="flex justify-between items-start mb-6">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/5">
-                            <i class="fa-solid fa-location-dot text-[10px] text-gold-500"></i>
-                        </div>
-                        <div>
-                            <p class="text-[9px] font-bold tracking-widest text-white/50 uppercase">Position</p>
-                            <p class="text-sm font-semibold text-white/90 truncate max-w-[120px]" id="loc-city">Touba</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <!-- Qibla Compas -->
-                        <button onclick="updateQibla()" class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1 active:scale-90 transition-transform hover:bg-white/10">
-                            <i id="compass" class="fa-solid fa-location-arrow text-gold-500 text-sm transition-transform duration-1000" style="transform: rotate(45deg);"></i>
-                        </button>
-                        <!-- Adhan Toggle -->
-                        <button id="adhan-toggle" onclick="toggleAdhan()" class="w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300">
-                            <i id="adhan-icon" class="fa-solid fa-bell text-sm"></i>
-                        </button>
-                    </div>
+            <!-- YOUTUBE LINK -->
+            <a href="https://www.youtube.com/@electronikservices" target="_blank" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
+                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] bg-gradient-to-b from-red-600/20 to-[#040B08] border border-red-600/30 flex items-center justify-center shadow-[0_10px_20px_-10px_rgba(220,38,38,0.4)] group-hover:-translate-y-1 md:group-hover:-translate-y-2 transition-all">
+                    <i class="fa-brands fa-youtube text-2xl md:text-4xl text-red-500 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]"></i>
+                    <span class="absolute -top-1 -right-1 flex h-3 w-3 md:h-4 md:w-4">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 md:h-4 md:w-4 bg-red-600"></span>
+                    </span>
                 </div>
-
-                <!-- Center: Clock & Next Prayer Countdown -->
-                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
-                    <div>
-                        <p class="text-[10px] md:text-xs font-bold tracking-widest text-gold-500/80 uppercase mb-2">Prochaine prière : <span id="next-name" class="text-gold-500">Maghrib</span></p>
-                        <!-- Countdown massive font -->
-                        <div class="flex items-baseline gap-2">
-                            <p id="countdown" class="text-5xl md:text-7xl font-light tracking-tighter text-white tabular-nums drop-shadow-lg">--:--</p>
-                            <p class="text-lg md:text-2xl font-medium tracking-tight text-white/50 mb-1" id="countdown-sec">--</p>
-                        </div>
-                    </div>
-                    <div class="text-right flex items-center justify-end">
-                        <i class="fa-regular fa-clock text-white/20 text-3xl mr-4 hidden md:block"></i>
-                        <p id="clock" class="text-xl md:text-4xl font-medium tracking-tight text-white/40 tabular-nums">--:--</p>
-                    </div>
-                </div>
-
-                <!-- Bottom: Prayer Times Slots -->
-                <div class="grid grid-cols-5 gap-2 md:gap-4 w-full">
-                    <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Fajr">
-                        <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
-                        <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Fajr</p>
-                        <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
-                    </div>
-                    <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Dhuhr">
-                        <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
-                        <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Dhuhr</p>
-                        <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
-                    </div>
-                    <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Asr">
-                        <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
-                        <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Asr</p>
-                        <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
-                    </div>
-                    <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Maghrib">
-                        <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
-                        <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Magh</p>
-                        <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
-                    </div>
-                    <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Isha">
-                        <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
-                        <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Isha</p>
-                        <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- CONTINUE READING (If exists) - Apple Widget Style -->
-        {% if derniere_lecture %}
-        <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="300" data-aos-duration="1000">
-            <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-3 md:mb-5 ml-1 flex items-center gap-2">
-                <i class="fa-solid fa-book-open text-gold-500 text-[10px] md:text-xs"></i> Reprendre
-            </h2>
-            <a href="{% url 'lire_pdf' derniere_lecture.categorie derniere_lecture.obj.id %}" class="block glass rounded-3xl p-4 md:p-6 flex items-center justify-between group hover:border-gold-500/30 transition-all">
-                <div class="flex items-center gap-4 md:gap-6 overflow-hidden">
-                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-gold-400/20 to-gold-600/5 flex flex-shrink-0 items-center justify-center border border-gold-500/20">
-                        <i class="fa-solid fa-book-quran text-gold-500 text-lg md:text-2xl group-hover:scale-110 transition-transform"></i>
-                    </div>
-                    <div class="overflow-hidden">
-                        <p class="text-[10px] md:text-xs uppercase font-bold text-gold-500 tracking-widest mb-1 md:mb-2">LECTURE EN COURS</p>
-                        <p class="text-sm md:text-xl font-semibold text-white/90 truncate w-[180px] md:w-[400px]">{{ derniere_lecture.obj.titre }}</p>
-                    </div>
-                </div>
-                <div class="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-black transition-colors flex-shrink-0">
-                    <i class="fa-solid fa-play text-[10px] md:text-sm ml-0.5 md:ml-1"></i>
-                </div>
+                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center leading-tight">YouTube</p>
             </a>
-        </div>
-        {% endif %}
 
-        <!-- DERNIER SON ECOUTE (If exists) -->
-        {% if dernier_son %}
-        <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="350" data-aos-duration="1000">
-            <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-3 md:mb-5 ml-1 flex items-center gap-2">
-                <i class="fa-solid fa-headphones text-gold-500 text-[10px] md:text-xs"></i> Dernière Écoute
-            </h2>
-            <a href="{% url 'liste_sons' %}" class="block glass rounded-3xl p-4 md:p-6 flex items-center justify-between group hover:border-gold-500/30 transition-all">
-                <div class="flex items-center gap-4 md:gap-6 overflow-hidden">
-                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-[#10B981]/10 to-[#040B08] flex flex-shrink-0 items-center justify-center border border-[#10B981]/20">
-                        <i class="fa-solid fa-music text-[#10B981] text-lg md:text-2xl group-hover:scale-110 transition-transform"></i>
-                    </div>
-                    <div class="overflow-hidden">
-                        <p class="text-[10px] md:text-xs uppercase font-bold text-[#10B981] tracking-widest mb-1 md:mb-2">SON EN COURS</p>
-                        <p class="text-sm md:text-xl font-semibold text-white/90 truncate w-[180px] md:w-[400px]">{{ dernier_son.titre }}</p>
-                        <p class="text-[9px] md:text-[10px] text-white/50 uppercase tracking-widest truncate mt-0.5">{{ dernier_son.auteur_voix|default:dernier_son.get_categorie_display }}</p>
-                    </div>
+            <a href="{% url 'liste' 'khassida' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
+                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
+                    <i class="fa-solid fa-book-open text-2xl md:text-4xl text-gold-500"></i>
                 </div>
-                <div class="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#10B981] group-hover:text-black transition-colors flex-shrink-0">
-                    <i class="fa-solid fa-play text-[10px] md:text-sm ml-0.5 md:ml-1"></i>
-                </div>
+                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Khassida</p>
             </a>
-        </div>
-        {% endif %}
 
-        <!-- HORIZONTAL EXPLORER ROW (Mouride Features) -->
-        <div class="mb-12 overflow-hidden" data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
-            <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-5 ml-1 flex items-center gap-2">
-                <i class="fa-solid fa-compass text-gold-500 text-[10px] md:text-xs"></i> Explorer
-            </h2>
-            <!-- Scrollable container -->
-            <div class="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x-mandatory pb-4 pt-1 -mx-5 px-5 md:mx-0 md:px-0 md:justify-center">
-                
-                <!-- YOUTUBE LINK -->
-                <a href="https://www.youtube.com/@electronikservices" target="_blank" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                    <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] bg-gradient-to-b from-red-600/20 to-[#040B08] border border-red-600/30 flex items-center justify-center shadow-[0_10px_20px_-10px_rgba(220,38,38,0.4)] group-hover:-translate-y-1 md:group-hover:-translate-y-2 transition-all">
-                        <i class="fa-brands fa-youtube text-2xl md:text-4xl text-red-500 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]"></i>
-                        <span class="absolute -top-1 -right-1 flex h-3 w-3 md:h-4 md:w-4">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-3 w-3 md:h-4 md:w-4 bg-red-600"></span>
-                        </span>
-                    </div>
-                    <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center leading-tight">YouTube</p>
-                </a>
-
-                <a href="{% url 'liste' 'khassida' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                    <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
-                        <i class="fa-solid fa-book-open text-2xl md:text-4xl text-gold-500"></i>
-                    </div>
-                    <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Khassida</p>
-                </a>
-
-                <a href="{% url 'liste' 'coran' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                    <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
-                        <i class="fa-solid fa-quran text-2xl md:text-4xl text-white/90"></i>
-                    </div>
-                    <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Coran</p>
-                </a>
-                
-                <a href="{% url 'liste' 'zikr' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                    <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
-                        <i class="fa-solid fa-fingerprint text-2xl md:text-4xl text-gold-500"></i>
-                    </div>
-                    <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Zikr</p>
-                </a>
-
-                <a href="{% url 'liste' 'wird' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                    <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
-                        <i class="fa-solid fa-braille text-2xl md:text-4xl text-white/90"></i>
-                    </div>
-                    <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Wird</p>
-                </a>
-
-                <a href="{% url 'liste' 'son' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                    <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
-                        <i class="fa-solid fa-headphones text-2xl md:text-4xl text-gold-500"></i>
-                    </div>
-                    <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Audio</p>
-                </a>
-            </div>
-        </div>
-
-        <!-- DAILY SPIRITUALITY (Verset + Rappel Stack or Grid) -->
-        <div class="mb-14" data-aos="fade-up" data-aos-delay="500" data-aos-duration="1000">
-            <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-5 ml-1 flex items-center gap-2">
-                <i class="fa-solid fa-moon text-gold-500 text-[10px] md:text-xs"></i> Spiritualité Quotidienne
-            </h2>
+            <a href="{% url 'liste' 'coran' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
+                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
+                    <i class="fa-solid fa-quran text-2xl md:text-4xl text-white/90"></i>
+                </div>
+                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Coran</p>
+            </a>
             
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-                <!-- Verse Card (Gorgeous Arabic Typography) -->
-                <div class="glass-gold rounded-[28px] p-6 md:p-10 relative overflow-hidden lg:col-span-2 flex flex-col justify-center">
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-gold-400/20 blur-3xl rounded-full"></div>
-                    <!-- Mini icon top left -->
-                    <div class="w-8 h-8 rounded-full bg-black/20 border border-gold-500/20 flex items-center justify-center mb-5">
-                        <i class="fa-solid fa-quote-left text-xs text-gold-400"></i>
-                    </div>
-                    <div class="text-center font-arabic text-3xl md:text-5xl text-white leading-loose md:leading-relaxed text-shadow-glow py-2 px-2" dir="rtl">
-                        {{ contenu.verset_du_jour|default:"بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ" }}
-                    </div>
-                    <div class="mt-6 text-center">
-                        <div class="inline-block px-4 py-1.5 rounded-full border border-gold-400/30 bg-black/20 text-[9px] font-bold uppercase tracking-widest text-gold-400">
-                            Verset du Jour
-                        </div>
-                    </div>
+            <a href="{% url 'liste' 'zikr' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
+                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
+                    <i class="fa-solid fa-fingerprint text-2xl md:text-4xl text-gold-500"></i>
                 </div>
+                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Zikr</p>
+            </a>
 
-                <!-- Right Column: Rappel & Beuyitt (Stacked via flex or grid on desktop) -->
-                <div class="flex flex-col gap-6 w-full h-full lg:col-span-1">
-                    <!-- Rappel Card -->
-                    <div class="glass rounded-[28px] p-6 md:p-8 border border-white/5 relative flex-1 flex flex-col justify-center">
-                        <p class="text-[13px] md:text-base font-medium text-white/70 leading-relaxed text-center">
-                            {{ contenu.rappel_dujour|default:"La sagesse est une lumière pour le cœur de celui qui cherche la vérité chaque jour." }}
-                        </p>
-                        <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mt-6 mb-4"></div>
-                        <p class="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-center text-white/30">Rappel</p>
-                    </div>
-
-                    <!-- Beuyitt Card -->
-                    <div class="glass rounded-[28px] p-6 md:p-8 border border-white/5 relative flex-1 flex flex-col justify-center">
-                        <p class="text-sm md:text-[15px] italic font-medium text-white/80 leading-relaxed text-center font-serif px-2">
-                            "{{ contenu.beuyit_du_jour|default:'La poésie divine nourrit l\'âme du croyant sincère, l\'élevant vers son Seigneur.' }}"
-                        </p>
-                        <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-gold-500/50 to-transparent mx-auto mt-6 mb-4"></div>
-                        <p class="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-center text-white/30">Beuyitt du Jour</p>
-                    </div>
+            <a href="{% url 'liste' 'wird' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
+                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
+                    <i class="fa-solid fa-braille text-2xl md:text-4xl text-white/90"></i>
                 </div>
-            </div>
+                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Wird</p>
+            </a>
+
+            <a href="{% url 'liste_sons' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
+                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
+                    <i class="fa-solid fa-headphones text-2xl md:text-4xl text-gold-500"></i>
+                </div>
+                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Audio</p>
+            </a>
         </div>
-
-        <!-- PREMIUM UPSELL BANNER -->
-        {% if not user.profile.est_premium %}
-        <div class="mb-14" data-aos="zoom-in-up" data-aos-delay="600" data-aos-duration="1200">
-            <div class="relative bg-gradient-to-br from-gray-900 to-black rounded-[32px] p-1 border border-gold-500/30 overflow-hidden shadow-[0_10px_40px_rgba(212,175,55,0.15)] group">
-                <!-- Animated border effect via pseudo element -->
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold-500/20 to-transparent w-[200%] animate-[spin_4s_linear_infinite] group-hover:opacity-100 opacity-50 block" style="animation: slide 3s infinite linear; background-size: 50% 100%;"></div>
-                
-                <div class="relative bg-[#060b09] rounded-[28px] p-6 md:p-12 pt-8 z-10 flex flex-col md:flex-row items-center justify-between text-center md:text-left gap-8">
-                    <div class="absolute top-0 inset-x-0 h-32 md:h-full md:w-1/2 bg-gradient-to-b md:bg-gradient-to-r from-gold-500/10 to-transparent pointer-events-none"></div>
-                    
-                    <div class="flex-1 max-w-lg">
-                        <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center mx-auto md:mx-0 mb-5 shadow-[0_0_30px_rgba(212,175,55,0.4)]">
-                            <i class="fa-solid fa-crown text-black text-xl md:text-2xl"></i>
-                        </div>
-                        
-                        <h3 class="text-2xl md:text-4xl font-bold text-white tracking-tight mb-3">SDM <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-gold-600">Premium</span></h3>
-                        <div class="inline-block border border-white/10 rounded-full px-4 py-1.5 mb-6 md:mb-8 bg-white/5">
-                            <p class="text-xs md:text-sm font-semibold text-white/60 uppercase tracking-widest">Mode Mouride Intégral</p>
-                        </div>
-                        
-                        <ul class="w-full text-left space-y-4 mb-8 md:mb-0">
-                            <li class="flex items-center gap-4 text-sm md:text-base text-white/80 font-medium"><div class="w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-[10px] text-gold-500"></i></div> Khassidas & Audios en accès Total</li>
-                            <li class="flex items-center gap-4 text-sm md:text-base text-white/80 font-medium"><div class="w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-[10px] text-gold-500"></i></div> Téléchargements libres (Mode hors-ligne)</li>
-                            <li class="flex items-center gap-4 text-sm md:text-base text-white/80 font-medium"><div class="w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-[10px] text-gold-500"></i></div> Navigation pure et sans publicité</li>
-                        </ul>
-                    </div>
-
-                    <div class="md:min-w-[280px] w-full flex flex-col items-center md:items-end justify-center">
-                        <p class="text-[10px] md:text-xs uppercase font-bold text-white/40 mb-2 md:pr-2">Seulement</p>
-                        <div class="flex items-start justify-center gap-1.5 mb-6 md:pr-2">
-                            <span class="text-4xl md:text-5xl font-black text-white">490</span>
-                            <span class="text-sm md:text-base font-bold text-gold-500 mt-2 md:mt-3">FCFA<span class="text-[10px] md:text-xs text-white/30 font-normal">/mois</span></span>
-                        </div>
-
-                        <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/?amount=490." class="w-full py-4 md:py-5 rounded-[20px] bg-gradient-to-r from-gold-400 to-gold-600 font-bold text-black md:text-lg shadow-[0_10px_20px_rgba(212,175,55,0.3)] hover:shadow-[0_15px_30px_rgba(212,175,55,0.4)] hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
-                            Débloquer Premium <i class="fa-solid fa-arrow-right text-sm md:text-base"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <style>
-                @keyframes slide { 0% { background-position: -100% 0; } 100% { background-position: 200% 0; } }
-            </style>
-        </div>
-        {% endif %}
-
     </div>
 
-    <!-- BOTTOM FLOATING NAVIGATION (ISLAND) -->
-    <nav class="nav-island">
-        <a href="/" class="nav-item active">
-            <i class="fa-solid fa-house-chimney"></i>
-            <div class="nav-item-indicator"></div>
-        </a>
-        <a href="{% url 'liste' 'khassida' %}" class="nav-item">
-            <i class="fa-solid fa-book-open"></i>
-            <div class="nav-item-indicator"></div>
-        </a>
-        <a href="{% url 'dashboard' %}" class="nav-item relative">
-            <!-- Center standout button styling -->
-            <div class="absolute -top-6 w-14 h-14 bg-gradient-to-tr from-[#10B981] to-emerald-400 rounded-full flex items-center justify-center shadow-[0_10px_20px_rgba(16,185,129,0.3)] border-4 border-[#081711] text-white">
-                <i class="fa-solid fa-chart-line text-[22px]" style="transform:none; background:none; -webkit-text-fill-color:white; filter:none;"></i>
+    <!-- DAILY SPIRITUALITY (Verset + Rappel Stack or Grid) -->
+    <div class="mb-14" data-aos="fade-up" data-aos-delay="500" data-aos-duration="1000">
+        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-5 ml-1 flex items-center gap-2">
+            <i class="fa-solid fa-moon text-gold-500 text-[10px] md:text-xs"></i> Spiritualité Quotidienne
+        </h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+            <!-- Verse Card (Gorgeous Arabic Typography) -->
+            <div class="glass-gold rounded-[28px] p-6 md:p-10 relative overflow-hidden lg:col-span-2 flex flex-col justify-center">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-gold-400/20 blur-3xl rounded-full"></div>
+                <!-- Mini icon top left -->
+                <div class="w-8 h-8 rounded-full bg-black/20 border border-gold-500/20 flex items-center justify-center mb-5">
+                    <i class="fa-solid fa-quote-left text-xs text-gold-400"></i>
+                </div>
+                <div class="text-center font-arabic text-3xl md:text-5xl text-white leading-loose md:leading-relaxed text-shadow-glow py-2 px-2" dir="rtl">
+                    {{ contenu.verset_du_jour|default:"بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ" }}
+                </div>
+                <div class="mt-6 text-center">
+                    <div class="inline-block px-4 py-1.5 rounded-full border border-gold-400/30 bg-black/20 text-[9px] font-bold uppercase tracking-widest text-gold-400">
+                        Verset du Jour
+                    </div>
+                </div>
             </div>
-        </a>
-        <a href="{% url 'favoris' %}" class="nav-item">
-            <i class="fa-solid fa-heart"></i>
-            <div class="nav-item-indicator"></div>
-        </a>
-        <a href="{% url 'profile' %}" class="nav-item">
-            <i class="fa-solid fa-user"></i>
-            <div class="nav-item-indicator"></div>
-        </a>
-    </nav>
 
+            <!-- Right Column: Rappel & Beuyitt (Stacked via flex or grid on desktop) -->
+            <div class="flex flex-col gap-6 w-full h-full lg:col-span-1">
+                <!-- Rappel Card -->
+                <div class="glass rounded-[28px] p-6 md:p-8 border border-white/5 relative flex-1 flex flex-col justify-center">
+                    <p class="text-[13px] md:text-base font-medium text-white/70 leading-relaxed text-center">
+                        {{ contenu.rappel_dujour|default:"La sagesse est une lumière pour le cœur de celui qui cherche la vérité chaque jour." }}
+                    </p>
+                    <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mt-6 mb-4"></div>
+                    <p class="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-center text-white/30">Rappel</p>
+                </div>
 
-    <!-- SCRIPTS -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        // Init AOS
-        AOS.init({
-            once: true,
-            offset: 10,
-            duration: 800,
-            easing: 'ease-out-cubic',
-        });
+                <!-- Beuyitt Card -->
+                <div class="glass rounded-[28px] p-6 md:p-8 border border-white/5 relative flex-1 flex flex-col justify-center">
+                    <p class="text-sm md:text-[15px] italic font-medium text-white/80 leading-relaxed text-center font-serif px-2">
+                        "{{ contenu.beuyit_du_jour|default:'La poésie divine nourrit l\'âme du croyant sincère, l\'élevant vers son Seigneur.' }}"
+                    </p>
+                    <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-gold-500/50 to-transparent mx-auto mt-6 mb-4"></div>
+                    <p class="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-center text-white/30">Beuyitt du Jour</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        /* ── CANVAS ÉTOILES ── */
-        (function () {
-            const c = document.getElementById('sdm-cosmos');
-            if (!c) return;
-            const ctx = c.getContext('2d');
-            let W, H, P = [];
-            function resize() { W = c.width = innerWidth; H = c.height = innerHeight; }
-            function mk() {
-                return {
-                    x: Math.random() * W, y: Math.random() * H,
-                    r: Math.random() * 1.1 + 0.25,
-                    a: Math.random() * 0.55 + 0.04,
-                    da: (Math.random() * 0.004 + 0.001) * (Math.random() > .5 ? 1 : -1),
-                    vx: (Math.random() - .5) * .07,
-                    vy: (Math.random() - .5) * .07,
-                    gold: Math.random() > .82
-                };
-            }
-            function init() { resize(); P = Array.from({ length: 200 }, mk); }
-            function draw() {
-                ctx.clearRect(0, 0, W, H);
-                P.forEach(p => {
-                    p.a = Math.max(.04, Math.min(.6, p.a + p.da));
-                    if (p.a >= .6 || p.a <= .04) p.da *= -1;
-                    p.x = (p.x + p.vx + W) % W;
-                    p.y = (p.y + p.vy + H) % H;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fillStyle = p.gold
-                        ? `rgba(212,175,55,${p.a * .7})`
-                        : `rgba(255,255,255,${p.a * .45})`;
-                    ctx.fill();
-                });
-                requestAnimationFrame(draw);
-            }
-            init(); draw();
-            window.addEventListener('resize', resize);
-        })();
-
-        // Toast Dismiss
-        function dismissToast(el) {
-            el.classList.add('hiding');
-            el.addEventListener('animationend', () => { el.remove(); });
-        }
-        setTimeout(() => {
-            document.querySelectorAll('.toast-msg').forEach((el, i) => {
-                setTimeout(() => { dismissToast(el); }, i * 300);
-            });
-        }, 5000);
-
-        /* CLOCK + ADHAN LOGIC */
-        let PT = {Fajr:'05:30', Dhuhr:'13:15', Asr:'16:45', Maghrib:'19:20', Isha:'20:30'}; 
-        const DEF_LAT = 14.86; const DEF_LNG = -15.88; const DEF_CITY = "Touba"; 
-        
-        // Load Adhan state
-        let adhanEnabled = localStorage.getItem('adhanEnabled') !== 'false';
-        const ap = document.getElementById('adhan-player');
-        const toggleBtn = document.getElementById('adhan-toggle');
-        const toggleIcon = document.getElementById('adhan-icon');
-        
-        function updateAdhanUI() {
-            if(adhanEnabled){
-                toggleBtn.className = "w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300 bg-gold-500/20 border-gold-500/40 text-gold-500 shadow-[0_0_15px_rgba(212,175,55,0.2)]";
-                toggleIcon.className = "fa-solid fa-bell text-sm";
-            } else {
-                toggleBtn.className = "w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300 bg-white/5 border-white/10 text-white/40 hover:bg-white/10";
-                toggleIcon.className = "fa-solid fa-bell-slash text-sm";
-            }
-        }
-        updateAdhanUI();
-
-        function toggleAdhan() {
-            adhanEnabled = !adhanEnabled;
-            localStorage.setItem('adhanEnabled', adhanEnabled);
-            updateAdhanUI();
-            if(adhanEnabled) {
-                ap.play().then(() => { ap.pause(); ap.currentTime = 0; }).catch(() => {});
-            }
-        }
-
-        // Location & Praying API
-        function updateUISlots() {
-            document.querySelector('.ph-slot[data-prayer="Fajr"] .slot-time').textContent = PT.Fajr;
-            document.querySelector('.ph-slot[data-prayer="Dhuhr"] .slot-time').textContent = PT.Dhuhr;
-            document.querySelector('.ph-slot[data-prayer="Asr"] .slot-time').textContent = PT.Asr;
-            document.querySelector('.ph-slot[data-prayer="Maghrib"] .slot-time').textContent = PT.Maghrib;
-            document.querySelector('.ph-slot[data-prayer="Isha"] .slot-time').textContent = PT.Isha;
-        }
-
-        async function fetchPrayers(lat, lng) {
-            const cacheKey = `prayer_${new Date().toDateString()}_${lat.toFixed(2)}_${lng.toFixed(2)}`;
-            const cached = localStorage.getItem(cacheKey);
-            if(cached) { PT = JSON.parse(cached); updateUISlots(); tick(); return; }
-            try {
-                const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=3`);
-                const data = await res.json();
-                if(data.code === 200) {
-                    PT = data.data.timings;
-                    localStorage.setItem(cacheKey, JSON.stringify(PT));
-                    updateUISlots(); tick();
-                }
-            } catch(e) { updateUISlots(); tick(); }
-        }
-
-        async function fetchCity(lat, lng) {
-            const cacheKey = `city_${lat.toFixed(2)}_${lng.toFixed(2)}`;
-            const cached = localStorage.getItem(cacheKey);
-            if(cached) { document.getElementById('loc-city').textContent = cached; return; }
-            try {
-                const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=fr`);
-                const data = await res.json();
-                const city = data.city || data.locality || DEF_CITY;
-                document.getElementById('loc-city').textContent = city;
-                localStorage.setItem(cacheKey, city);
-            } catch(e) { document.getElementById('loc-city').textContent = DEF_CITY; }
-        }
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    fetchCity(pos.coords.latitude, pos.coords.longitude);
-                    fetchPrayers(pos.coords.latitude, pos.coords.longitude);
-                },
-                (err) => { fetchPrayers(DEF_LAT, DEF_LNG); }
-            );
-        } else {
-            fetchPrayers(DEF_LAT, DEF_LNG);
-        }
-
-        // TICK
-        function toMins(t){if(!t||!t.includes(':'))return Infinity;const[h,m]=t.trim().split(':').map(Number);return h*60+m;}
-        function tick(){
-            const now = new Date();
-            const hh = String(now.getHours()).padStart(2,'0');
-            const mm = String(now.getMinutes()).padStart(2,'0');
-            const ss = String(now.getSeconds()).padStart(2,'0');
-            const cur = now.getHours()*60 + now.getMinutes();
-            const timeStr = hh+':'+mm;
+    <!-- PREMIUM UPSELL BANNER -->
+    {% if not user.profile.est_premium %}
+    <div class="mb-14" data-aos="zoom-in-up" data-aos-delay="600" data-aos-duration="1200">
+        <div class="relative bg-gradient-to-br from-gray-900 to-black rounded-[32px] p-1 border border-gold-500/30 overflow-hidden shadow-[0_10px_40px_rgba(212,175,55,0.15)] group">
+            <!-- Animated border effect via pseudo element -->
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold-500/20 to-transparent w-[200%] animate-[spin_4s_linear_infinite] group-hover:opacity-100 opacity-50 block" style="animation: slide 3s infinite linear; background-size: 50% 100%;"></div>
             
-            document.getElementById('clock').textContent = timeStr;
-            const entries = ['Fajr','Dhuhr','Asr','Maghrib','Isha'].map(n=>[n,PT[n]]);
-            let nextName = null, nextMins = Infinity;
-            
-            entries.forEach(([n,t])=>{const m=toMins(t);if(m>cur && m<nextMins){nextMins=m;nextName=n;}});
-            if(!nextName){nextName=entries[0][0];nextMins=toMins(entries[0][1])+1440;}
-            
-            document.querySelectorAll('.ph-slot').forEach(s=>{
-                if(s.dataset.prayer === nextName) {
-                    s.classList.add('active', 'border-gold-500/30');
-                } else {
-                    s.classList.remove('active', 'border-gold-500/30');
-                }
-            });
-            document.getElementById('next-name').textContent = nextName;
-            
-            const diff = (nextMins - cur)*60 - now.getSeconds();
-            if(diff>0){
-                const ch = String(Math.floor(diff/3600)).padStart(2,'0');
-                const cm = String(Math.floor((diff%3600)/60)).padStart(2,'0');
-                const cs = String(diff%60).padStart(2,'0');
-                document.getElementById('countdown').textContent = ch+':'+cm;
-                document.getElementById('countdown-sec').textContent = cs;
-            }
+            <div class="relative bg-[#060b09] rounded-[28px] p-6 md:p-12 pt-8 z-10 flex flex-col md:flex-row items-center justify-between text-center md:text-left gap-8">
+                <div class="absolute top-0 inset-x-0 h-32 md:h-full md:w-1/2 bg-gradient-to-b md:bg-gradient-to-r from-gold-500/10 to-transparent pointer-events-none"></div>
+                
+                <div class="flex-1 max-w-lg">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center mx-auto md:mx-0 mb-5 shadow-[0_0_30px_rgba(212,175,55,0.4)]">
+                        <i class="fa-solid fa-crown text-black text-xl md:text-2xl"></i>
+                    </div>
+                    
+                    <h3 class="text-2xl md:text-4xl font-bold text-white tracking-tight mb-3">SDM <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-gold-600">Premium</span></h3>
+                    <div class="inline-block border border-white/10 rounded-full px-4 py-1.5 mb-6 md:mb-8 bg-white/5">
+                        <p class="text-xs md:text-sm font-semibold text-white/60 uppercase tracking-widest">Mode Mouride Intégral</p>
+                    </div>
+                    
+                    <ul class="w-full text-left space-y-4 mb-8 md:mb-0">
+                        <li class="flex items-center gap-4 text-sm md:text-base text-white/80 font-medium"><div class="w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-[10px] text-gold-500"></i></div> Khassidas & Audios en accès Total</li>
+                        <li class="flex items-center gap-4 text-sm md:text-base text-white/80 font-medium"><div class="w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-[10px] text-gold-500"></i></div> Téléchargements libres (Mode hors-ligne)</li>
+                        <li class="flex items-center gap-4 text-sm md:text-base text-white/80 font-medium"><div class="w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-[10px] text-gold-500"></i></div> Navigation pure et sans publicité</li>
+                    </ul>
+                </div>
 
-            // Play Adhan
-            if(adhanEnabled && now.getSeconds() === 0) {
-                entries.forEach(([name, t]) => {
-                    if(t && t.trim() === timeStr) {
-                        ap.currentTime = 0; ap.play().catch(e=>console.warn(e));
-                    }
-                });
-            }
-        }
-        setInterval(tick, 1000);
+                <div class="md:min-w-[280px] w-full flex flex-col items-center md:items-end justify-center">
+                    <p class="text-[10px] md:text-xs uppercase font-bold text-white/40 mb-2 md:pr-2">Seulement</p>
+                    <div class="flex items-start justify-center gap-1.5 mb-6 md:pr-2">
+                        <span class="text-4xl md:text-5xl font-black text-white">490</span>
+                        <span class="text-sm md:text-base font-bold text-gold-500 mt-2 md:mt-3">FCFA<span class="text-[10px] md:text-xs text-white/30 font-normal">/mois</span></span>
+                    </div>
 
-        // QIBLA
-        function updateQibla(){
-            const compass = document.getElementById('compass');
-            compass.style.transform = `rotate(${Math.random() * 360}deg)`; // Mock interaction, usually requires device orientation API
-            
-            if (window.DeviceOrientationEvent && typeof window.DeviceOrientationEvent.requestPermission === 'function') {
-                window.DeviceOrientationEvent.requestPermission()
-                .then(response => {
-                    if (response == 'granted') {
-                        window.addEventListener('deviceorientation', (event) => {
-                            let compassHeading = event.webkitCompassHeading || Math.abs(event.alpha - 360);
-                            compass.style.transform = `rotate(${-compassHeading + 65}deg)`; // +65 is roughly Mecca from Senegal
-                        });
-                    }
-                })
-                .catch(console.error);
-            }
-        }
-    </script>
+                    <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/?amount=490." class="w-full py-4 md:py-5 rounded-[20px] bg-gradient-to-r from-gold-400 to-gold-600 font-bold text-black md:text-lg shadow-[0_10px_20px_rgba(212,175,55,0.3)] hover:shadow-[0_15px_30px_rgba(212,175,55,0.4)] hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
+                        Débloquer Premium <i class="fa-solid fa-arrow-right text-sm md:text-base"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <style>
+            @keyframes slide { 0% { background-position: -100% 0; } 100% { background-position: 200% 0; } }
+        </style>
+    </div>
+    {% endif %}
 
-<!-- Service Worker Registration -->
+{% endblock %}
+
+{% block extra_js %}
 <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js').then(function(registration) {
-        console.log('ServiceWorker registration successful');
-      }, function(err) {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-    });
-  }
+    /* CLOCK + ADHAN LOGIC */
+    let PT = {Fajr:'05:30', Dhuhr:'13:15', Asr:'16:45', Maghrib:'19:20', Isha:'20:30'}; 
+    const DEF_LAT = 14.86; const DEF_LNG = -15.88; const DEF_CITY = "Touba"; 
+    
+    // Load Adhan state
+    let adhanEnabled = localStorage.getItem('adhanEnabled') !== 'false';
+    const ap = document.getElementById('adhan-player');
+    const toggleBtn = document.getElementById('adhan-toggle');
+    const toggleIcon = document.getElementById('adhan-icon');
+    
+    function updateAdhanUI() {
+        if(adhanEnabled){
+            toggleBtn.className = "w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300 bg-gold-500/20 border-gold-500/40 text-gold-500 shadow-[0_0_15px_rgba(212,175,55,0.2)]";
+            toggleIcon.className = "fa-solid fa-bell text-sm";
+        } else {
+            toggleBtn.className = "w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300 bg-white/5 border-white/10 text-white/40 hover:bg-white/10";
+            toggleIcon.className = "fa-solid fa-bell-slash text-sm";
+        }
+    }
+    updateAdhanUI();
+
+    function toggleAdhan() {
+        adhanEnabled = !adhanEnabled;
+        localStorage.setItem('adhanEnabled', adhanEnabled);
+        updateAdhanUI();
+        if(adhanEnabled) {
+            ap.play().then(() => { ap.pause(); ap.currentTime = 0; }).catch(() => {});
+        }
+    }
+
+    // Location & Praying API
+    function updateUISlots() {
+        document.querySelector('.ph-slot[data-prayer="Fajr"] .slot-time').textContent = PT.Fajr;
+        document.querySelector('.ph-slot[data-prayer="Dhuhr"] .slot-time').textContent = PT.Dhuhr;
+        document.querySelector('.ph-slot[data-prayer="Asr"] .slot-time').textContent = PT.Asr;
+        document.querySelector('.ph-slot[data-prayer="Maghrib"] .slot-time').textContent = PT.Maghrib;
+        document.querySelector('.ph-slot[data-prayer="Isha"] .slot-time').textContent = PT.Isha;
+    }
+
+    async function fetchPrayers(lat, lng) {
+        const cacheKey = `prayer_${new Date().toDateString()}_${lat.toFixed(2)}_${lng.toFixed(2)}`;
+        const cached = localStorage.getItem(cacheKey);
+        if(cached) { PT = JSON.parse(cached); updateUISlots(); tick(); return; }
+        try {
+            const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=3`);
+            const data = await res.json();
+            if(data.code === 200) {
+                PT = data.data.timings;
+                localStorage.setItem(cacheKey, JSON.stringify(PT));
+                updateUISlots(); tick();
+            }
+        } catch(e) { updateUISlots(); tick(); }
+    }
+
+    async function fetchCity(lat, lng) {
+        const cacheKey = `city_${lat.toFixed(2)}_${lng.toFixed(2)}`;
+        const cached = localStorage.getItem(cacheKey);
+        if(cached) { document.getElementById('loc-city').textContent = cached; return; }
+        try {
+            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=fr`);
+            const data = await res.json();
+            const city = data.city || data.locality || DEF_CITY;
+            document.getElementById('loc-city').textContent = city;
+            localStorage.setItem(cacheKey, city);
+        } catch(e) { document.getElementById('loc-city').textContent = DEF_CITY; }
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                fetchCity(pos.coords.latitude, pos.coords.longitude);
+                fetchPrayers(pos.coords.latitude, pos.coords.longitude);
+            },
+            (err) => { fetchPrayers(DEF_LAT, DEF_LNG); }
+        );
+    } else {
+        fetchPrayers(DEF_LAT, DEF_LNG);
+    }
+
+    // TICK
+    function toMins(t){if(!t||!t.includes(':'))return Infinity;const[h,m]=t.trim().split(':').map(Number);return h*60+m;}
+    function tick(){
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2,'0');
+        const mm = String(now.getMinutes()).padStart(2,'0');
+        const ss = String(now.getSeconds()).padStart(2,'0');
+        const cur = now.getHours()*60 + now.getMinutes();
+        const timeStr = hh+':'+mm;
+        
+        document.getElementById('clock').textContent = timeStr;
+        const entries = ['Fajr','Dhuhr','Asr','Maghrib','Isha'].map(n=>[n,PT[n]]);
+        let nextName = null, nextMins = Infinity;
+        
+        entries.forEach(([n,t])=>{const m=toMins(t);if(m>cur && m<nextMins){nextMins=m;nextName=n;}});
+        if(!nextName){nextName=entries[0][0];nextMins=toMins(entries[0][1])+1440;}
+        
+        document.querySelectorAll('.ph-slot').forEach(s=>{
+            if(s.dataset.prayer === nextName) {
+                s.classList.add('active', 'border-gold-500/30');
+            } else {
+                s.classList.remove('active', 'border-gold-500/30');
+            }
+        });
+        document.getElementById('next-name').textContent = nextName;
+        
+        const diff = (nextMins - cur)*60 - now.getSeconds();
+        if(diff>0){
+            const ch = String(Math.floor(diff/3600)).padStart(2,'0');
+            const cm = String(Math.floor((diff%3600)/60)).padStart(2,'0');
+            const cs = String(diff%60).padStart(2,'0');
+            document.getElementById('countdown').textContent = ch+':'+cm;
+            document.getElementById('countdown-sec').textContent = cs;
+        }
+
+        // Play Adhan
+        if(adhanEnabled && now.getSeconds() === 0) {
+            entries.forEach(([name, t]) => {
+                if(t && t.trim() === timeStr) {
+                    ap.currentTime = 0; ap.play().catch(e=>console.warn(e));
+                }
+            });
+        }
+    }
+    setInterval(tick, 1000);
+
+    // QIBLA
+    function updateQibla(){
+        const compass = document.getElementById('compass');
+        compass.style.transform = `rotate(${Math.random() * 360}deg)`; // Mock interaction
+        
+        if (window.DeviceOrientationEvent && typeof window.DeviceOrientationEvent.requestPermission === 'function') {
+            window.DeviceOrientationEvent.requestPermission()
+            .then(response => {
+                if (response == 'granted') {
+                    window.addEventListener('deviceorientation', (event) => {
+                        let compassHeading = event.webkitCompassHeading || Math.abs(event.alpha - 360);
+                        compass.style.transform = `rotate(${-compassHeading + 65}deg)`;
+                    });
+                }
+            })
+            .catch(console.error);
+        }
+    }
 </script>
-</body>
-</html>
+{% endblock %}
