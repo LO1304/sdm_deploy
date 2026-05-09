@@ -139,6 +139,11 @@ STORAGES = {
     },
 }
 
+# Backward compatibility for django-cloudinary-storage 0.3.0
+# (it still references the old setting names removed in Django 6.0)
+STATICFILES_STORAGE = STORAGES["staticfiles"]["BACKEND"]
+DEFAULT_FILE_STORAGE = STORAGES["default"]["BACKEND"]
+
 # ── AUTRES ──
 DEFAULT_AUTO_FIELD  = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL  = '/collection/son/'
