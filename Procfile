@@ -1,1 +1,1 @@
-web: gunicorn sdm_config.wsgi
+web: gunicorn sdm_config.wsgi:application

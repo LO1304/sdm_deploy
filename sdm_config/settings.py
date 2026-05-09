@@ -18,21 +18,10 @@ SECRET_KEY = env('SECRET_KEY', default='change-me-in-production')
 # SECURITÉ : Ne pas laisser en True en production !
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'sdm-mouride.onrender.com',
-    'sdm-mouride-2jbn.onrender.com',
-    '.onrender.com',
-    '.pythonanywhere.com',
-    'localhost',
-    '127.0.0.1',
-]
-
-# Indispensable pour Render/Heroku (HTTPS)
+ALLOWED_HOSTS = ['*']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 
-
-# ── CSRF Protection pour Render (HTTPS) ──
 CSRF_TRUSTED_ORIGINS = [
     'https://sdm-mouride.onrender.com',
     'https://sdm-mouride-2jbn.onrender.com',
