@@ -26,6 +26,11 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
+# Indispensable pour Render/Heroku (HTTPS)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+
+
 # ── CSRF Protection pour Render (HTTPS) ──
 CSRF_TRUSTED_ORIGINS = [
     'https://sdm-mouride.onrender.com',
