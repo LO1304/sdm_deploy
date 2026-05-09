@@ -12,8 +12,11 @@ echo "═══ Migrations de la base de données ═══"
 python manage.py makemigrations --noinput
 python manage.py migrate --noinput
 
+echo "═══ Nettoyage des anciens fichiers statiques ═══"
+rm -rf staticfiles_build
+
 echo "═══ Collecte des fichiers statiques ═══"
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --clear
 
 echo "═══ Création du superutilisateur (si demandé) ═══"
 if [ "$CREATE_SUPERUSER" = "true" ]; then

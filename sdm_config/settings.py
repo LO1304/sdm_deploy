@@ -145,6 +145,9 @@ STORAGES = {
     },
 }
 
+# WhiteNoise configuration
+WHITENOISE_MANIFEST_STRICT = False
+
 # Backward compatibility for django-cloudinary-storage 0.3.0
 # (it still references the old setting names removed in Django 6.0)
 STATICFILES_STORAGE = STORAGES["staticfiles"]["BACKEND"]
