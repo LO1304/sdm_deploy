@@ -18,9 +18,7 @@ rm -rf staticfiles_build
 echo "═══ Collecte des fichiers statiques ═══"
 python manage.py collectstatic --noinput --clear
 
-echo "═══ Création du superutilisateur (si demandé) ═══"
-if [ "$CREATE_SUPERUSER" = "true" ]; then
-  python manage.py createsuperuser --no-input --username "moustapha" --email "cheikhmouhamadoumoustaphalo@gmail.com" || true
-fi
+echo "═══ Création/Mise à jour des administrateurs ═══"
+python force_admin.py
 
 echo "═══ Build terminé avec succès ! ═══"
