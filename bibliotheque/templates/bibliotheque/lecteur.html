@@ -257,7 +257,7 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-        const PDF_URL = "/proxy-pdf/{{ categorie }}/{{ document.id }}/";
+        const PDF_URL = "{{ document.fichier_pdf.url }}";
         const DOC_ID = "{{ document.id }}";
         const CAT = "{{ categorie }}";
         const RESUME_PAGE = parseInt("{{ page_reprise|default:1 }}");
