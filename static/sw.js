@@ -35,8 +35,10 @@ self.addEventListener('activate', (event) => {
 });
 
 // Interception des requêtes
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  // Ne pas intercepter les fichiers média (PDF, Sons) pour éviter les blocages
+  if (event.request.url.includes('/media/') || event.request.url.includes('/proxy-pdf/')) {
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request)
