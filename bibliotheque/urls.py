@@ -29,6 +29,7 @@ urlpatterns = [
     path('collection/son/', views.liste_sons, name='liste_sons'),
     path('collection/<str:categorie>/', views.liste_dynamique, name='liste'),
     path('lire/<str:categorie>/<int:id>/', views.lire_pdf, name='lire_pdf'),
+    path('proxy-pdf/<str:categorie>/<int:id>/', views.proxy_pdf, name='proxy_pdf'),
     path('zikr-compteur/<int:id>/', views.zikr_compteur, name='zikr_compteur'),
     path('voir-historique/', views.voir_historique, name='voir_historique'),
     path('historique/zikr/', views.voir_historique_zikr, name='voir_historique_zikr'),

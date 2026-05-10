@@ -114,6 +114,22 @@ def lire_pdf(request, categorie, id):
         'sons': sons
     })
 
+def proxy_pdf(request, categorie, id):
+    """Proxy pour éviter les erreurs CORS avec Cloudinary."""
+    if categorie == 'coran':
+        target_model = Coran
+    else:
+        target_model = Khassida
+    
+    document = get_object_or_404(target_model, id=id)
+    pdf_url = document.fichier_pdf.url
+    
+    # On télécharge le fichier depuis le serveur pour le renvoyer proprement
+    response = requests.get(pdf_url)
+    res = django.http.HttpResponse(response.content, content_type='application/pdf')
+    res['Access-Control-Allow-Origin'] = '*'
+    return res
+
 @csrf_exempt
 @login_required
 def sauvegarder_progression_pdf(request):
