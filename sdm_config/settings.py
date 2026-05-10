@@ -131,7 +131,7 @@ MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
 # ── Storage Configuration (Django 6.0+ compatible) ──
 STORAGES = {
     "default": {
-        "BACKEND": "cloudinary_storage.storage.RawMediaCloudinaryStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
