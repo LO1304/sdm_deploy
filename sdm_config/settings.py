@@ -128,15 +128,18 @@ STATICFILES_FINDERS = [
 MEDIA_URL   = '/media/'
 MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
 
-# ── Storage Configuration (Django 6.0+ compatible) ──
+# ── Storage Configuration ──
 STORAGES = {
     "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
+
+# On garde Cloudinary sous la main pour les images si besoin
+CLOUDINARY_STORAGE_CONFIG = CLOUDINARY_STORAGE
 
 # WhiteNoise configuration
 WHITENOISE_MANIFEST_STRICT = False
