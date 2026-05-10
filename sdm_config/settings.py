@@ -16,7 +16,7 @@ if os.path.exists(dot_env_path):
 # ── SÉCURITÉ ──
 SECRET_KEY = env('SECRET_KEY', default='change-me-in-production')
 # SECURITÉ : Ne pas laisser en True en production !
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
