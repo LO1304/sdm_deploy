@@ -115,20 +115,24 @@ def lire_pdf(request, categorie, id):
     })
 
 def proxy_pdf(request, categorie, id):
-    """Proxy pour éviter les erreurs CORS avec Cloudinary."""
-    if categorie == 'coran':
-        target_model = Coran
-    else:
-        target_model = Khassida
-    
+    """Proxy robuste pour garantir le chargement du PDF."""
+    target_model = Coran if categorie == 'coran' else Khassida
     document = get_object_or_404(target_model, id=id)
     pdf_url = document.fichier_pdf.url
     
-    # On télécharge le fichier depuis le serveur pour le renvoyer proprement
-    response = requests.get(pdf_url)
-    res = django.http.HttpResponse(response.content, content_type='application/pdf')
-    res['Access-Control-Allow-Origin'] = '*'
-    return res
+    try:
+        response = requests.get(pdf_url, timeout=15)
+        if response.status_code != 200:
+            return django.http.HttpResponse(f"Erreur source: {response.status_code}", status=response.status_code)
+            
+        res = django.http.HttpResponse(response.content, content_type='application/pdf')
+        res['Access-Control-Allow-Origin'] = '*'
+        # Forcer le nom du fichier pour le navigateur
+        filename = f"{document.titre.replace(' ', '_')}.pdf"
+        res['Content-Disposition'] = f'inline; filename="{filename}"'
+        return res
+    except Exception as e:
+        return django.http.HttpResponse(f"Erreur Proxy: {str(e)}", status=500)
 
 @csrf_exempt
 @login_required
