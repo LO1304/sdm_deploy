@@ -6,18 +6,25 @@ django.setup()
 
 from django.contrib.auth.models import User
 
-def create_user(username, password, email):
-    if not User.objects.filter(username=username).exists():
-        User.objects.create_superuser(username, email, password)
-        print(f"✅ Utilisateur '{username}' créé avec succès !")
+def force_user(username, password, email):
+    user, created = User.objects.get_or_create(username=username, defaults={'email': email})
+    user.set_password(password)
+    user.is_superuser = True
+    user.is_staff = True
+    user.is_active = True
+    user.save()
+    if created:
+        print(f"✅ Utilisateur '{username}' CRÉÉ avec succès !")
     else:
-        user = User.objects.get(username=username)
-        user.set_password(password)
-        user.save()
-        print(f"✅ Mot de passe de '{username}' mis à jour !")
+        print(f"✅ Utilisateur '{username}' MIS À JOUR avec succès !")
 
 if __name__ == "__main__":
-    # On crée les deux pour être sûr
-    password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'Lo13042002')
-    create_user('moustapha', password, 'cheikhmouhamadoumoustaphalo@gmail.com')
-    create_user('admin', password, 'admin@example.com')
+    # MOT DE PASSE DE SECOURS FIXE
+    FIXED_PASSWORD = "SdmMouride2026!"
+    
+    force_user('moustapha', FIXED_PASSWORD, 'cheikhmouhamadoumoustaphalo@gmail.com')
+    force_user('admin', FIXED_PASSWORD, 'admin@example.com')
+    
+    print(f"\n🚀 TENTEZ DE VOUS CONNECTER AVEC :")
+    print(f"Utilisateur : admin")
+    print(f"Mot de passe : {FIXED_PASSWORD}")
