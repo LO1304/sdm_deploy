@@ -21,4 +21,7 @@ python manage.py collectstatic --noinput --clear
 echo "═══ Création/Mise à jour des administrateurs ═══"
 python force_admin.py
 
+echo "═══ Importation des premiers Khassidas ═══"
+python import_data.py
+
 echo "═══ Build terminé avec succès ! ═══"
