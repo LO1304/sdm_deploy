@@ -195,7 +195,7 @@
         <div class="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x-mandatory pb-4 pt-1 -mx-5 px-5 md:mx-0 md:px-0 md:justify-center">
             
             <!-- YOUTUBE LINK -->
-            <a href="https://www.youtube.com/@electronikservices" target="_blank" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
+            <a href="https://www.youtube.com/@SopeyDialibatoulMarakhib" target="_blank" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
                 <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] bg-gradient-to-b from-red-600/20 to-[#040B08] border border-red-600/30 flex items-center justify-center shadow-[0_10px_20px_-10px_rgba(220,38,38,0.4)] group-hover:-translate-y-1 md:group-hover:-translate-y-2 transition-all">
                     <i class="fa-brands fa-youtube text-2xl md:text-4xl text-red-500 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]"></i>
                     <span class="absolute -top-1 -right-1 flex h-3 w-3 md:h-4 md:w-4">
@@ -290,6 +290,29 @@
         </div>
     </div>
 
+    <!-- SECTION YOUTUBE CAPSULE -->
+    <div class="mb-14" data-aos="fade-up" data-aos-delay="550" data-aos-duration="1000">
+        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-5 ml-1 flex items-center gap-2">
+            <i class="fa-brands fa-youtube text-red-500 text-[10px] md:text-xs"></i> Capsule Vidéo
+        </h2>
+        <div class="glass rounded-[32px] overflow-hidden border border-white/5 aspect-video shadow-2xl relative group">
+            <div class="absolute inset-0 bg-red-600/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+            <iframe 
+                class="w-full h-full relative z-10"
+                src="https://www.youtube.com/embed?listType=user_uploads&list=SopeyDialibatoulMarakhib" 
+                title="Sopey Dialibatoul Marakhib YouTube" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+            </iframe>
+        </div>
+        <div class="mt-4 flex justify-center">
+            <a href="https://www.youtube.com/@SopeyDialibatoulMarakhib" target="_blank" class="px-6 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/60 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all">
+                Ouvrir la chaîne YouTube
+            </a>
+        </div>
+    </div>
+
     <!-- PREMIUM UPSELL BANNER -->
     {% if not user.profile.est_premium %}
     <div class="mb-14" data-aos="zoom-in-up" data-aos-delay="600" data-aos-duration="1200">
@@ -366,7 +389,24 @@
         localStorage.setItem('adhanEnabled', adhanEnabled);
         updateAdhanUI();
         if(adhanEnabled) {
+            // Demander la permission de notification
+            if ("Notification" in window) {
+                Notification.requestPermission();
+            }
             ap.play().then(() => { ap.pause(); ap.currentTime = 0; }).catch(() => {});
+        }
+    }
+
+    // Fonction pour envoyer la notification visuelle
+    function notifyPrayer(name) {
+        if (Notification.permission === "granted" && adhanEnabled) {
+            const options = {
+                body: `C'est l'heure de la prière de ${name}. Qu'Allah accepte nos prières.`,
+                icon: '/static/images/icons/icon-192x192.png',
+                badge: '/static/images/icons/icon-192x192.png',
+                vibrate: [200, 100, 200]
+            };
+            new Notification(`🕌 Heure de ${name}`, options);
         }
     }
 
@@ -454,11 +494,15 @@
             document.getElementById('countdown-sec').textContent = cs;
         }
 
-        // Play Adhan
-        if(adhanEnabled && now.getSeconds() === 0) {
+        // Play Adhan & Show Notification
+        if(now.getSeconds() === 0) {
             entries.forEach(([name, t]) => {
                 if(t && t.trim() === timeStr) {
-                    ap.currentTime = 0; ap.play().catch(e=>console.warn(e));
+                    if(adhanEnabled) {
+                        ap.currentTime = 0; 
+                        ap.play().catch(e=>console.warn(e));
+                        notifyPrayer(name);
+                    }
                 }
             });
         }

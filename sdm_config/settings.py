@@ -151,9 +151,10 @@ DEFAULT_FILE_STORAGE = STORAGES["default"]["BACKEND"]
 
 # ── AUTRES ──
 DEFAULT_AUTO_FIELD  = 'django.db.models.BigAutoField'
-LOGIN_REDIRECT_URL  = '/collection/son/'
+# ── AUTHENTIFICATION ──
+LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
-LOGIN_URL           = 'login'
+LOGIN_URL = 'login'
 
 # ── API REST & CORS ──
 CORS_ALLOW_ALL_ORIGINS = True  # Pour autoriser Flutter
