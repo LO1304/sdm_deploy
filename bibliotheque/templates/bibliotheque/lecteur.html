@@ -271,7 +271,13 @@
         // INIT
         async function init() {
             try {
-                pdfDoc = await pdfjsLib.getDocument(PDF_URL).promise;
+                // Chargement avec support des CMaps pour les caractères spéciaux (Arabe)
+                const loadingTask = pdfjsLib.getDocument({
+                    url: PDF_URL,
+                    cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/cmaps/',
+                    cMapPacked: true,
+                });
+                pdfDoc = await loadingTask.promise;
                 document.getElementById('max-page-num').innerText = pdfDoc.numPages;
                 document.getElementById('page-slider').max = pdfDoc.numPages;
                 
