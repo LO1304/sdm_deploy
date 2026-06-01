@@ -651,7 +651,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
-        // Configuration fournie par l'utilisateur
         const firebaseConfig = {
             apiKey: "AIzaSyAsdxJ6C7m3B_qySN_S57J3FaSwW7pypSY",
             authDomain: "sdm-mouride.firebaseapp.com",
@@ -664,99 +663,126 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        // Important pour Capacitor/Mobile
         auth.useDeviceLanguage();
 
-        // Initialisation de SocialLogin pour Capacitor
-        if (window.Capacitor && window.Capacitor.isNative && window.Capacitor.Plugins.SocialLogin) {
-            window.Capacitor.Plugins.SocialLogin.initialize({
-                google: {
-                    webClientId: '1067988479300-1p1j3br98r73qakt74u9qvi6ttucfvv9.apps.googleusercontent.com'
-                }
-            }).catch(e => console.error("Erreur init SocialLogin:", e));
-        }
-
-        // -- CONNEXION GOOGLE --
-        document.getElementById('btnGoogleLogin').addEventListener('click', () => {
-            // SI ON EST DANS L'APPLICATION MOBILE CAPACITOR
-            if (window.Capacitor && window.Capacitor.isNative) {
-                window.Capacitor.Plugins.SocialLogin.login({
-                    provider: 'google',
-                    options: {
-                        scopes: ['profile', 'email']
-                    }
-                }).then((res) => {
-                    sendTokenToBackend(res.result.idToken);
-                }).catch((error) => {
-                    console.error("Erreur Google Native:", error);
-                    alert("Erreur native: " + JSON.stringify(error));
-                });
-            } else {
-                // SI ON EST SUR LE WEB CLASSIQUE (PC)
-                const provider = new GoogleAuthProvider();
-                signInWithPopup(auth, provider).then((result) => {
-                    return result.user.getIdToken();
-                }).then((idToken) => {
+        // ══════════════════════════════════════════
+        // GOOGLE : Vérifier le résultat d'un redirect
+        // ══════════════════════════════════════════
+        getRedirectResult(auth).then((result) => {
+            if (result && result.user) {
+                result.user.getIdToken().then((idToken) => {
                     sendTokenToBackend(idToken);
-                }).catch((error) => {
-                    console.error("Erreur Google Web:", error);
-                    if (error.code === 'auth/popup-blocked') {
-                        alert("Fenêtre bloquée. Veuillez autoriser les popups.");
-                    } else {
-                        alert("Erreur Web: " + error.message);
-                    }
                 });
+            }
+        }).catch((error) => {
+            if (error.code) {
+                console.error("Redirect result error:", error.code, error.message);
             }
         });
 
-        // -- CONNEXION TELEPHONE --
+        // ══════════════════════════════════════════
+        // BOUTON GOOGLE
+        // ══════════════════════════════════════════
+        document.getElementById('btnGoogleLogin').addEventListener('click', () => {
+            const provider = new GoogleAuthProvider();
+
+            // Sur mobile Capacitor : utiliser signInWithRedirect
+            if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+                signInWithRedirect(auth, provider);
+                return;
+            }
+
+            // Sur le web classique : utiliser signInWithPopup
+            signInWithPopup(auth, provider).then((result) => {
+                return result.user.getIdToken();
+            }).then((idToken) => {
+                sendTokenToBackend(idToken);
+            }).catch((error) => {
+                console.error("Erreur Google:", error.code, error.message);
+                if (error.code === 'auth/popup-blocked') {
+                    signInWithRedirect(auth, provider);
+                } else if (error.code !== 'auth/cancelled-popup-request' && error.code !== 'auth/popup-closed-by-user') {
+                    alert("Erreur Google: " + error.message);
+                }
+            });
+        });
+
+        // ══════════════════════════════════════════
+        // BOUTON SMS / TELEPHONE
+        // ══════════════════════════════════════════
         document.getElementById('btnPhoneLoginStart').addEventListener('click', () => {
             document.getElementById('phoneAuthSection').style.display = 'block';
-            if(!window.recaptchaVerifier) {
-                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                    'size': 'normal'
-                });
+            if (!window.recaptchaVerifier) {
+                try {
+                    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                        'size': 'normal',
+                        'callback': () => {
+                            document.getElementById('btnSendSMS').disabled = false;
+                        },
+                        'expired-callback': () => {
+                            document.getElementById('btnSendSMS').disabled = true;
+                        }
+                    });
+                    window.recaptchaVerifier.render();
+                } catch (e) {
+                    console.error("Erreur reCAPTCHA:", e);
+                }
             }
         });
 
         document.getElementById('btnSendSMS').addEventListener('click', () => {
             const countryCode = document.getElementById('countryCodeSelect').value;
             const phoneVal = document.getElementById('phoneNumberInput').value.trim();
-            if(!phoneVal) return alert("Veuillez entrer un numéro valide");
-            
-            // Retirer les '0' ou '+' éventuels au début si l'utilisateur les a tapés par erreur
-            const cleanPhone = phoneVal.replace(/^0+/, '').replace(/^\+/, '');
+            if (!phoneVal) return alert("Veuillez entrer un numéro valide");
+
+            const cleanPhone = phoneVal.replace(/[\s\-\.]/g, '').replace(/^0+/, '');
             const fullPhoneNumber = countryCode + cleanPhone;
-            
+
             signInWithPhoneNumber(auth, fullPhoneNumber, window.recaptchaVerifier)
                 .then((confirmationResult) => {
                     window.confirmationResult = confirmationResult;
                     document.getElementById('phoneInputStep').style.display = 'none';
                     document.getElementById('codeVerifyStep').style.display = 'block';
                 }).catch((error) => {
-                    console.error("Erreur SMS:", error);
-                    alert("Erreur d'envoi. Format attendu: Numéro sans indicatif. Détail: " + error.message);
+                    console.error("Erreur SMS:", error.code, error.message);
+                    if (error.code === 'auth/billing-not-enabled') {
+                        alert("Le service SMS n'est pas encore activé.");
+                    } else if (error.code === 'auth/invalid-phone-number') {
+                        alert("Numéro de téléphone invalide.");
+                    } else if (error.code === 'auth/too-many-requests') {
+                        alert("Trop de tentatives. Veuillez réessayer plus tard.");
+                    } else {
+                        alert("Erreur: " + error.message);
+                    }
+                    window.recaptchaVerifier = null;
+                    document.getElementById('recaptcha-container').innerHTML = '';
                 });
         });
 
         document.getElementById('btnVerifyCode').addEventListener('click', () => {
             const code = document.getElementById('verificationCodeInput').value;
+            if (!code || code.length < 6) return alert("Veuillez entrer le code à 6 chiffres.");
+
             window.confirmationResult.confirm(code).then((result) => {
                 return result.user.getIdToken();
             }).then((idToken) => {
                 sendTokenToBackend(idToken);
             }).catch((error) => {
                 console.error("Erreur Code:", error);
-                alert("Code invalide.");
+                alert("Code invalide ou expiré.");
             });
         });
 
-        // -- CONTINUER SANS COMPTE --
+        // ══════════════════════════════════════════
+        // CONTINUER SANS COMPTE (INVITÉ)
+        // ══════════════════════════════════════════
         document.getElementById('btnSkipLogin').addEventListener('click', () => {
-            window.location.href = "{% url 'home' %}";
+            window.location.href = "/";
         });
 
-        // -- ENVOI AU BACKEND DJANGO --
+        // ══════════════════════════════════════════
+        // ENVOI DU TOKEN AU BACKEND DJANGO
+        // ══════════════════════════════════════════
         function sendTokenToBackend(idToken) {
             fetch('/firebase-login/', {
                 method: 'POST',

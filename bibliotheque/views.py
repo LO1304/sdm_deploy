@@ -1,17 +1,22 @@
+import os
 import requests
 import json
+import hashlib
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Sum
 from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now
+from django.views.decorators.http import require_POST
+from django.middleware.csrf import get_token
 
 # Import de tes modèles
 from .models import (
-    Khassida, Coran, Zikr, Wird, EtapeWird, HistoriqueWird, ProgressionWird, Son, Profile, HistoriqueConsultation, Favori, ContenuDuJour, ParametresPriere, ProgressionLecture, Historique, HistoriqueZikr, ProgressionGenerale
+    Khassida, Coran, Zikr, Wird, EtapeWird, HistoriqueWird, ProgressionWird, Son, Profile, HistoriqueConsultation, Favori, Telechargement, ContenuDuJour, ParametresPriere, ProgressionLecture, Historique, HistoriqueZikr, ProgressionGenerale
 )
 from .forms import ModernRegisterForm
 
@@ -19,32 +24,40 @@ from .forms import ModernRegisterForm
 
 def home(request):
     """Page d'accueil avec horaires de prières et contenus récents."""
-    if not request.user.is_authenticated:
-        return redirect('login')
     contenu = ContenuDuJour.objects.last()
     khassida = Khassida.objects.all()
     zikrs = Zikr.objects.all()
-    recents_khassidas = Khassida.objects.order_by('-id')[:3] 
+    recents_khassidas = Khassida.objects.order_by('-id')[:6]
 
     config = ParametresPriere.objects.first()
     
-    # Récupérer la dernière lecture pour le bouton "Reprendre"
-    derniere_progression = ProgressionLecture.objects.filter(user=request.user).order_by('-derniere_mise_a_jour').first()
+    # Données réservées aux utilisateurs connectés
     derniere_lecture = None
-    if derniere_progression and derniere_progression.content_object:
-        derniere_lecture = {
-            'obj': derniere_progression.content_object,
-            'page': derniere_progression.page_actuelle,
-            'categorie': 'coran' if isinstance(derniere_progression.content_object, Coran) else 'khassida'
-        }
+    dernier_son = None
+    
+    if request.user.is_authenticated:
+        # Récupérer la dernière lecture pour le bouton "Reprendre"
+        derniere_progression = ProgressionLecture.objects.filter(user=request.user).order_by('-derniere_mise_a_jour').first()
+        if derniere_progression and derniere_progression.content_object:
+            derniere_lecture = {
+                'obj': derniere_progression.content_object,
+                'page': derniere_progression.page_actuelle,
+                'categorie': 'coran' if isinstance(derniere_progression.content_object, Coran) else 'khassida'
+            }
 
-    # Récupérer le dernier son écouté depuis l'historique
-    try:
-        son_ct = ContentType.objects.get_for_model(Son)
-        dernier_historique_son = Historique.objects.filter(user=request.user, content_type=son_ct).order_by('-date_lecture').first()
-        dernier_son = dernier_historique_son.content_object if dernier_historique_son else None
-    except Exception:
-        dernier_son = None
+        # Récupérer le dernier son écouté depuis l'historique
+        try:
+            son_ct = ContentType.objects.get_for_model(Son)
+            dernier_historique_son = Historique.objects.filter(user=request.user, content_type=son_ct).order_by('-date_lecture').first()
+            dernier_son = dernier_historique_son.content_object if dernier_historique_son else None
+        except Exception:
+            dernier_son = None
+
+    # Nombre de contenus pour les badges
+    total_khassidas = Khassida.objects.count()
+    total_corans = Coran.objects.count()
+    total_sons = Son.objects.count()
+    total_zikrs = Zikr.objects.count()
 
     context = {
         'contenu': contenu,
@@ -54,6 +67,10 @@ def home(request):
         'config': config,
         'derniere_lecture': derniere_lecture,
         'dernier_son': dernier_son,
+        'total_khassidas': total_khassidas,
+        'total_corans': total_corans,
+        'total_sons': total_sons,
+        'total_zikrs': total_zikrs,
     }
     return render(request, 'bibliotheque/index.html', context)
 
@@ -107,32 +124,166 @@ def lire_pdf(request, categorie, id):
     # Fetch all sounds for background audio player
     sons = Son.objects.all().order_by('-date_ajout')
 
+    # Préparer l'URL directe du PDF comme fallback pour le JS
+    direct_pdf_url = ''
+    try:
+        if document.fichier_pdf:
+            raw_url = document.fichier_pdf.url
+            if raw_url.startswith('//'):
+                direct_pdf_url = 'https:' + raw_url
+            elif raw_url.startswith('http'):
+                direct_pdf_url = raw_url
+            else:
+                direct_pdf_url = raw_url  # URL relative locale
+            
+            # Si c'est une URL Cloudinary, utiliser l'API Admin pour la vraie URL
+            if 'cloudinary' in direct_pdf_url or direct_pdf_url.startswith('http'):
+                try:
+                    import cloudinary
+                    import cloudinary.api
+                    from django.conf import settings as conf_settings
+                    cloud_config = getattr(conf_settings, 'CLOUDINARY_STORAGE', {})
+                    cloudinary.config(
+                        cloud_name=cloud_config.get('CLOUD_NAME', ''),
+                        api_key=cloud_config.get('API_KEY', ''),
+                        api_secret=cloud_config.get('API_SECRET', ''),
+                        secure=True,
+                    )
+                    resource_info = cloudinary.api.resource(
+                        str(document.fichier_pdf),
+                        resource_type='raw',
+                        type='upload',
+                    )
+                    real_url = resource_info.get('secure_url', '')
+                    if real_url:
+                        direct_pdf_url = real_url
+                except Exception:
+                    pass  # Garder l'URL non signée comme fallback
+    except (ValueError, Exception):
+        direct_pdf_url = ''
+
     return render(request, 'bibliotheque/lecteur.html', {
         'document': document,
         'categorie': categorie,
         'page_reprise': page_reprise,
-        'sons': sons
+        'sons': sons,
+        'direct_pdf_url': direct_pdf_url,
     })
 
 def proxy_pdf(request, categorie, id):
-    """Proxy robuste pour garantir le chargement du PDF."""
+    """Proxy robuste : streaming du PDF avec URLs signées Cloudinary."""
+    import cloudinary
+    import cloudinary.utils
+    from django.conf import settings as conf_settings
+    
     target_model = Coran if categorie == 'coran' else Khassida
     document = get_object_or_404(target_model, id=id)
-    pdf_url = document.fichier_pdf.url
     
-    try:
-        response = requests.get(pdf_url, timeout=15)
-        if response.status_code != 200:
-            return django.http.HttpResponse(f"Erreur source: {response.status_code}", status=response.status_code)
+    # Enregistrer automatiquement le téléchargement pour l'utilisateur
+    if request.user.is_authenticated:
+        try:
+            content_type = ContentType.objects.get_for_model(target_model)
+            Telechargement.objects.get_or_create(
+                user=request.user,
+                content_type=content_type,
+                object_id=id
+            )
+        except Exception as e:
+            print(f"[proxy_pdf] Erreur telechargement: {e}")
             
-        res = django.http.HttpResponse(response.content, content_type='application/pdf')
-        res['Access-Control-Allow-Origin'] = '*'
-        # Forcer le nom du fichier pour le navigateur
-        filename = f"{document.titre.replace(' ', '_')}.pdf"
-        res['Content-Disposition'] = f'inline; filename="{filename}"'
-        return res
+    # Récupérer l'URL du PDF
+    try:
+        if not document.fichier_pdf:
+            return HttpResponse("Fichier PDF non disponible", status=404)
+        pdf_url = document.fichier_pdf.url
+        pdf_name = str(document.fichier_pdf)
+    except (ValueError, Exception):
+        return HttpResponse("Fichier PDF non disponible", status=404)
+    
+    # ── Fichier local : servir directement ──
+    if pdf_url.startswith('/') and not pdf_url.startswith('//'):
+        file_path = os.path.join(conf_settings.MEDIA_ROOT, pdf_name)
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                res = HttpResponse(f.read(), content_type='application/pdf')
+                res['Access-Control-Allow-Origin'] = '*'
+                res['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+                res['Cache-Control'] = 'public, max-age=86400'
+                filename = f"{document.titre.replace(' ', '_')}.pdf"
+                res['Content-Disposition'] = f'inline; filename="{filename}"'
+                return res
+        return HttpResponse("Fichier local introuvable", status=404)
+    
+    # ── Fichier distant (Cloudinary) ──
+    # Configurer Cloudinary
+    cloud_config = getattr(conf_settings, 'CLOUDINARY_STORAGE', {})
+    cloudinary.config(
+        cloud_name=cloud_config.get('CLOUD_NAME', os.environ.get('CLOUDINARY_CLOUD_NAME', 'dcajqzg2h')),
+        api_key=cloud_config.get('API_KEY', os.environ.get('CLOUDINARY_API_KEY', '')),
+        api_secret=cloud_config.get('API_SECRET', os.environ.get('CLOUDINARY_API_SECRET', '')),
+        secure=True,
+    )
+    
+    # ── Solution Ultime : Contourner le blocage PDF de Cloudinary via ZIP ──
+    # Cloudinary bloque la distribution des fichiers PDF "raw" par défaut (Erreur 401).
+    # L'astuce consiste à demander à l'API de générer un ZIP contenant le PDF, 
+    # de le télécharger, et de l'extraire en mémoire pour le servir au navigateur.
+    try:
+        import cloudinary.utils
+        import zipfile
+        import io
+        
+        print(f"[proxy_pdf] Generation URL ZIP pour: {pdf_name}")
+        zip_url = cloudinary.utils.download_zip_url(
+            public_ids=[pdf_name],
+            resource_type='raw'
+        )
+        
+        remote = requests.get(zip_url, timeout=30)
+        
+        if remote.status_code == 200:
+            # Extraire le PDF depuis le ZIP en mémoire
+            z = zipfile.ZipFile(io.BytesIO(remote.content))
+            filename_in_zip = z.namelist()[0]
+            pdf_data = z.read(filename_in_zip)
+            
+            print(f"[proxy_pdf] OK PDF extrait du ZIP ({len(pdf_data)} bytes)")
+            res = HttpResponse(pdf_data, content_type='application/pdf')
+            res['Access-Control-Allow-Origin'] = '*'
+            res['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+            res['Cache-Control'] = 'public, max-age=86400'
+            filename = f"{document.titre.replace(' ', '_')}.pdf"
+            res['Content-Disposition'] = f'inline; filename="{filename}"'
+            return res
+        else:
+            print(f"[proxy_pdf] WARN ZIP download failed: HTTP {remote.status_code}")
     except Exception as e:
-        return django.http.HttpResponse(f"Erreur Proxy: {str(e)}", status=500)
+        print(f"[proxy_pdf] WARN ZIP workaround failed: {e}")
+        
+    # Si le workaround ZIP échoue, on tente de récupérer la secure_url API comme dernier recours
+    try:
+        import cloudinary.api
+        resource_info = cloudinary.api.resource(pdf_name, resource_type='raw', type='upload')
+        real_url = resource_info.get('secure_url', '')
+        if real_url:
+            print(f"[proxy_pdf] TRY API secure_url: {real_url[:120]}")
+            remote = requests.get(real_url, timeout=25, stream=True)
+            if remote.status_code == 200 and len(remote.content) > 0:
+                res = HttpResponse(remote.content, content_type='application/pdf')
+                res['Access-Control-Allow-Origin'] = '*'
+                res['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+                res['Cache-Control'] = 'public, max-age=86400'
+                filename = f"{document.titre.replace(' ', '_')}.pdf"
+                res['Content-Disposition'] = f'inline; filename="{filename}"'
+                return res
+    except Exception as e:
+        print(f"[proxy_pdf] API fallback failed: {e}")
+    
+    # Toutes les tentatives ont échoué
+    return HttpResponse(
+        "Impossible de charger le PDF. Le fichier est restreint ou n'existe pas.", 
+        status=502
+    )
 
 @csrf_exempt
 @login_required
@@ -228,8 +379,30 @@ def liste_sons(request):
 
 # --- AUTHENTIFICATION & PROFIL ---
 
+def login_view(request):
+    """Vue de connexion sécurisée avec protection anti-brute-force."""
+    if request.user.is_authenticated:
+        return redirect('home')
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            # Toujours rediriger vers l'accueil après connexion
+            next_url = request.GET.get('next', 'home')
+            if next_url == 'home' or not next_url:
+                return redirect('home')
+            return redirect(next_url)
+    else:
+        form = AuthenticationForm()
+    return render(request, 'bibliotheque/login.html', {'form': form})
+
 def register_view(request):
     """Gestion de l'inscription utilisateur."""
+    if request.user.is_authenticated:
+        return redirect('home')
+        
     if request.method == 'POST':
         form = ModernRegisterForm(request.POST)
         if form.is_valid():
@@ -359,7 +532,6 @@ def lire_wird(request, slug):
 @login_required
 def save_wird_progress(request):
     if request.method == 'POST':
-        import json
         data = json.loads(request.body)
         wird_id = data.get('wird_id')
         etape = data.get('etape')
@@ -409,6 +581,59 @@ def view_favoris(request):
     return render(request, 'bibliotheque/favoris.html', context)
 
 
+@login_required
+def view_telechargements(request):
+    telechargements = Telechargement.objects.filter(user=request.user)
+    
+    # Organiser les téléchargements par type
+    telechargements_by_type = {
+        'Khassida': [],
+        'Coran': [],
+        'Son': []
+    }
+    
+    for tc in telechargements:
+        if tc.content_object is None:
+            continue
+        model_name = tc.content_type.model
+        if model_name == 'khassida':
+            telechargements_by_type['Khassida'].append(tc.content_object)
+        elif model_name == 'coran':
+            telechargements_by_type['Coran'].append(tc.content_object)
+        elif model_name == 'son':
+            telechargements_by_type['Son'].append(tc.content_object)
+            
+    context = {
+        'telechargements_by_type': telechargements_by_type
+    }
+    
+    return render(request, 'bibliotheque/telechargements.html', context)
+
+
+@login_required
+def ajouter_telechargement(request, model_name, object_id):
+    from django.apps import apps
+    try:
+        model_class = apps.get_model('bibliotheque', model_name)
+    except LookupError:
+        return JsonResponse({'status': 'error', 'message': 'Modèle introuvable'})
+        
+    content_type = ContentType.objects.get_for_model(model_class)
+    obj = get_object_or_404(model_class, id=object_id)
+    
+    telechargement, created = Telechargement.objects.get_or_create(
+        user=request.user,
+        content_type=content_type,
+        object_id=object_id
+    )
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.META.get('HTTP_ACCEPT') == 'application/json':
+        return JsonResponse({'status': 'success', 'created': created})
+        
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+
 # --- RECHERCHE GLOBALE ---
 
 @login_required
@@ -439,6 +664,14 @@ def recherche_globale(request):
         'resultats': resultats,
         'total': total,
     })
+
+
+# --- KHASSIDA EN PDF INTEGRATION ---
+
+@login_required
+def khassida_external(request):
+    """Vue pour afficher les Khassidas depuis khassidaenpdf.net en iframe intégré."""
+    return render(request, 'bibliotheque/khassida_external.html')
 
 
 # --- TABLEAU DE BORD SPIRITUEL ---
