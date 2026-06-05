@@ -5,7 +5,7 @@
 {% block content %}
     <!-- AUDIO PLAYER (Adhan) -->
     <audio id="adhan-player" preload="auto" crossorigin="anonymous">
-       <source src="{{ config.fichier_adhan.url|default:'https://archive.org/download/MakkahAzan/Makkah-Azan.mp3' }}" type="audio/mpeg">
+       <source src="{% if config and config.fichier_adhan %}{{ config.fichier_adhan.url }}{% else %}https://archive.org/download/MakkahAzan/Makkah-Azan.mp3{% endif %}" type="audio/mpeg">
     </audio>
 
     <!-- HEADER -->
@@ -240,6 +240,14 @@
                 </div>
                 <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Audio</p>
             </a>
+
+            <!-- KHASSIDA EN PDF (External Site) -->
+            <a href="{% url 'khassida_external' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
+                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] bg-gradient-to-b from-emerald-600/20 to-[#040B08] border border-emerald-600/30 flex items-center justify-center shadow-[0_10px_20px_-10px_rgba(16,185,129,0.4)] group-hover:-translate-y-1 md:group-hover:-translate-y-2 transition-all">
+                    <i class="fa-solid fa-globe text-2xl md:text-4xl text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]"></i>
+                </div>
+                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center leading-tight">Khassida PDF</p>
+            </a>
         </div>
     </div>
 
@@ -299,10 +307,12 @@
             <div class="absolute inset-0 bg-red-600/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
             <iframe 
                 class="w-full h-full relative z-10"
-                src="https://www.youtube.com/embed/videoseries?list=UU7-T75Nny9Jv7P9p0Y_o8eA" 
+                src="https://www.youtube-nocookie.com/embed/ub4hTcG5sps?si=c-ayZYZFGx_QDBlQ" 
                 title="Sopey Dialibatoul Marakhib YouTube" 
                 frameborder="0" 
+                loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerpolicy="strict-origin-when-cross-origin"
                 allowfullscreen>
             </iframe>
         </div>
@@ -314,7 +324,7 @@
     </div>
 
     <!-- PREMIUM UPSELL BANNER -->
-    {% if not user.profile.est_premium %}
+    {% if user.is_authenticated and not user.profile.est_premium %}
     <div class="mb-14" data-aos="zoom-in-up" data-aos-delay="600" data-aos-duration="1200">
         <div class="relative bg-gradient-to-br from-gray-900 to-black rounded-[32px] p-1 border border-gold-500/30 overflow-hidden shadow-[0_10px_40px_rgba(212,175,55,0.15)] group">
             <!-- Animated border effect via pseudo element -->
@@ -363,7 +373,7 @@
 
 {% block extra_js %}
 <script>
-    /* CLOCK + ADHAN LOGIC */
+    /* ═══ CLOCK + ADHAN + PRAYER NOTIFICATIONS ═══ */
     let PT = {Fajr:'05:30', Dhuhr:'13:15', Asr:'16:45', Maghrib:'19:20', Isha:'20:30'}; 
     const DEF_LAT = 14.86; const DEF_LNG = -15.88; const DEF_CITY = "Touba"; 
     
@@ -372,6 +382,15 @@
     const ap = document.getElementById('adhan-player');
     const toggleBtn = document.getElementById('adhan-toggle');
     const toggleIcon = document.getElementById('adhan-icon');
+    // Track which prayers have been notified today
+    let notifiedToday = JSON.parse(localStorage.getItem('notifiedToday') || '{}');
+    const todayStr = new Date().toDateString();
+    if (notifiedToday._date !== todayStr) { notifiedToday = {_date: todayStr}; }
+
+    // Request notification permission on load
+    if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+    }
     
     function updateAdhanUI() {
         if(adhanEnabled){
@@ -389,25 +408,48 @@
         localStorage.setItem('adhanEnabled', adhanEnabled);
         updateAdhanUI();
         if(adhanEnabled) {
-            // Demander la permission de notification
-            if ("Notification" in window) {
-                Notification.requestPermission();
-            }
+            if ("Notification" in window) { Notification.requestPermission(); }
             ap.play().then(() => { ap.pause(); ap.currentTime = 0; }).catch(() => {});
         }
     }
 
-    // Fonction pour envoyer la notification visuelle
+    // Visual + Sound notification for prayer
     function notifyPrayer(name) {
-        if (Notification.permission === "granted" && adhanEnabled) {
-            const options = {
-                body: `C'est l'heure de la prière de ${name}. Qu'Allah accepte nos prières.`,
+        if (!adhanEnabled) return;
+        // Prevent duplicate notifications
+        if (notifiedToday[name]) return;
+        notifiedToday[name] = true;
+        localStorage.setItem('notifiedToday', JSON.stringify(notifiedToday));
+
+        // Play Adhan sound
+        ap.currentTime = 0;
+        ap.play().catch(e => console.warn('Adhan play failed:', e));
+
+        // Browser Notification
+        if ("Notification" in window && Notification.permission === "granted") {
+            const n = new Notification(`🕌 ${name} — Heure de prière`, {
+                body: `C'est l'heure de la prière de ${name}.\nQu'Allah accepte nos prières. 🤲`,
                 icon: '/static/images/icons/icon-192x192.png',
                 badge: '/static/images/icons/icon-192x192.png',
-                vibrate: [200, 100, 200]
-            };
-            new Notification(`🕌 Heure de ${name}`, options);
+                vibrate: [200, 100, 200, 100, 200],
+                tag: `prayer-${name}`,
+                requireInteraction: true,
+                silent: false
+            });
+            // Auto-close after 30 seconds
+            setTimeout(() => n.close(), 30000);
         }
+
+        // Visual toast on the page
+        showPrayerToast(name);
+    }
+
+    function showPrayerToast(name) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[9999] bg-gradient-to-r from-gold-400 to-gold-600 text-black px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-bounce';
+        toast.innerHTML = `<i class="fa-solid fa-mosque text-2xl"></i><div><p class="font-bold text-sm">${name}</p><p class="text-xs opacity-80">C'est l'heure de la prière</p></div>`;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.transition='all 0.5s'; toast.style.opacity='0'; toast.style.transform='translateX(-50%) translateY(-20px)'; setTimeout(()=>toast.remove(), 500); }, 15000);
     }
 
     // Location & Praying API
@@ -465,7 +507,6 @@
         const now = new Date();
         const hh = String(now.getHours()).padStart(2,'0');
         const mm = String(now.getMinutes()).padStart(2,'0');
-        const ss = String(now.getSeconds()).padStart(2,'0');
         const cur = now.getHours()*60 + now.getMinutes();
         const timeStr = hh+':'+mm;
         
@@ -494,15 +535,11 @@
             document.getElementById('countdown-sec').textContent = cs;
         }
 
-        // Play Adhan & Show Notification
+        // Check each prayer time & trigger notification
         if(now.getSeconds() === 0) {
             entries.forEach(([name, t]) => {
                 if(t && t.trim() === timeStr) {
-                    if(adhanEnabled) {
-                        ap.currentTime = 0; 
-                        ap.play().catch(e=>console.warn(e));
-                        notifyPrayer(name);
-                    }
+                    notifyPrayer(name);
                 }
             });
         }
@@ -512,8 +549,6 @@
     // QIBLA
     function updateQibla(){
         const compass = document.getElementById('compass');
-        compass.style.transform = `rotate(${Math.random() * 360}deg)`; // Mock interaction
-        
         if (window.DeviceOrientationEvent && typeof window.DeviceOrientationEvent.requestPermission === 'function') {
             window.DeviceOrientationEvent.requestPermission()
             .then(response => {
@@ -525,6 +560,8 @@
                 }
             })
             .catch(console.error);
+        } else {
+            compass.style.transform = `rotate(65deg)`;
         }
     }
 </script>
