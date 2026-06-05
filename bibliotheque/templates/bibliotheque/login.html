@@ -481,58 +481,15 @@
 
                 <!-- Boutons d'authentification sociale -->
                 <div style="display: flex; flex-direction: column; gap: 12px; animation: fadeUp 0.8s 0.6s both;">
-                    <button id="btnGoogleLogin" style="background: white; color: #333; padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px;">
+                    <button id="btnGoogleLogin" style="background: white; color: #333; padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 15px rgba(255,255,255,0.15)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18" alt="Google">
                         Continuer avec Google
                     </button>
-                    
-                    <button id="btnPhoneLoginStart" style="background: rgba(255,255,255,0.05); color: white; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px;">
-                        <i class="fa-solid fa-phone"></i>
-                        Continuer avec SMS
+
+                    <button id="btnSkipLogin" type="button" style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 500; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'; this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='rgba(255,255,255,0.7)'">
+                        <i class="fa-solid fa-arrow-right"></i>
+                        Continuer sans compte
                     </button>
-
-                    <button id="btnSkipLogin" type="button" style="background: transparent; color: var(--dim); border: none; padding: 10px; cursor: pointer; font-size: 13px; text-decoration: underline; margin-top: 5px; width: 100%;">
-                        Continuer sans compte (Invité)
-                    </button>
-                </div>
-
-                <!-- Formulaire SMS caché -->
-                <div id="phoneAuthSection" style="display: none; margin-top: 20px; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 16px; border: 1px solid var(--border);">
-                    <div id="recaptcha-container"></div>
-                    
-                    <div id="phoneInputStep">
-                        <p style="font-size: 12px; color: var(--dim); margin-bottom: 10px;">Entrez votre numéro de téléphone</p>
-                        <div class="field-group" style="margin-bottom: 15px; display: flex; gap: 8px;">
-                            <select id="countryCodeSelect" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 0 10px; color: var(--text); outline: none; width: 95px; font-family: 'Inter', sans-serif;">
-                                <option value="+221">🇸🇳 +221</option>
-                                <option value="+33">🇫🇷 +33</option>
-                                <option value="+1">🇺🇸 +1</option>
-                                <option value="+44">🇬🇧 +44</option>
-                                <option value="+212">🇲🇦 +212</option>
-                                <option value="+223">🇲🇱 +223</option>
-                                <option value="+225">🇨🇮 +225</option>
-                                <option value="+224">🇬🇳 +224</option>
-                                <option value="+222">🇲🇷 +222</option>
-                                <option value="+220">🇬🇲 +220</option>
-                                <option value="+241">🇬🇦 +241</option>
-                                <option value="+237">🇨🇲 +237</option>
-                            </select>
-                            <div style="position: relative; flex: 1;">
-                                <i class="fa-solid fa-phone field-icon" style="left: 14px;"></i>
-                                <input type="tel" id="phoneNumberInput" class="field-input" placeholder="77 000 00 00" style="padding-left: 42px; width: 100%;">
-                            </div>
-                        </div>
-                        <button id="btnSendSMS" class="btn-submit" style="padding: 12px;">Envoyer le code</button>
-                    </div>
-
-                    <div id="codeVerifyStep" style="display: none;">
-                        <p style="font-size: 12px; color: var(--dim); margin-bottom: 10px;">Entrez le code à 6 chiffres reçu par SMS</p>
-                        <div class="field-group" style="margin-bottom: 15px;">
-                            <i class="fa-solid fa-key field-icon"></i>
-                            <input type="text" id="verificationCodeInput" class="field-input" placeholder="123456">
-                        </div>
-                        <button id="btnVerifyCode" class="btn-submit" style="padding: 12px;">Vérifier</button>
-                    </div>
                 </div>
 
                 <div class="auth-link" style="animation-delay: 0.7s;">
@@ -649,7 +606,7 @@
     <!-- FIREBASE SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAsdxJ6C7m3B_qySN_S57J3FaSwW7pypSY",
@@ -665,9 +622,21 @@
         const auth = getAuth(app);
         auth.useDeviceLanguage();
 
-        // ══════════════════════════════════════════
-        // GOOGLE : Vérifier le résultat d'un redirect
-        // ══════════════════════════════════════════
+        // ── Utilitaire : récupérer le CSRF token ──
+        function getCSRFToken() {
+            // 1. Depuis le formulaire Django
+            const input = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (input) return input.value;
+            // 2. Depuis le cookie
+            const cookies = document.cookie.split(';');
+            for (let c of cookies) {
+                c = c.trim();
+                if (c.startsWith('csrftoken=')) return c.substring('csrftoken='.length);
+            }
+            return '';
+        }
+
+        // ── Gérer le résultat d'un redirect (retour après Google) ──
         getRedirectResult(auth).then((result) => {
             if (result && result.user) {
                 result.user.getIdToken().then((idToken) => {
@@ -676,132 +645,80 @@
             }
         }).catch((error) => {
             if (error.code) {
-                console.error("Redirect result error:", error.code, error.message);
+                console.error("Redirect error:", error.code, error.message);
             }
         });
 
-        // ══════════════════════════════════════════
-        // BOUTON GOOGLE
-        // ══════════════════════════════════════════
-        document.getElementById('btnGoogleLogin').addEventListener('click', () => {
+        // ── Bouton Google ──
+        const btnGoogle = document.getElementById('btnGoogleLogin');
+        btnGoogle.addEventListener('click', () => {
+            // Feedback visuel immédiat
+            const originalHTML = btnGoogle.innerHTML;
+            btnGoogle.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Connexion en cours...';
+            btnGoogle.disabled = true;
+            btnGoogle.style.opacity = '0.7';
+
             const provider = new GoogleAuthProvider();
 
-            // Sur mobile Capacitor : utiliser signInWithRedirect
+            // Sur mobile Capacitor : redirect (les popups sont bloqués en WebView)
             if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
                 signInWithRedirect(auth, provider);
                 return;
             }
 
-            // Sur le web classique : utiliser signInWithPopup
+            // Sur le web : popup d'abord, redirect en fallback
             signInWithPopup(auth, provider).then((result) => {
                 return result.user.getIdToken();
             }).then((idToken) => {
                 sendTokenToBackend(idToken);
             }).catch((error) => {
-                console.error("Erreur Google:", error.code, error.message);
+                console.error("Google Auth Error:", error.code, error.message);
+
+                // Restaurer le bouton
+                btnGoogle.innerHTML = originalHTML;
+                btnGoogle.disabled = false;
+                btnGoogle.style.opacity = '1';
+
                 if (error.code === 'auth/popup-blocked') {
+                    // Le navigateur a bloqué le popup → on tente le redirect
                     signInWithRedirect(auth, provider);
-                } else if (error.code !== 'auth/cancelled-popup-request' && error.code !== 'auth/popup-closed-by-user') {
-                    alert("Erreur Google: " + error.message);
+                } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+                    // L'utilisateur a fermé la fenêtre, rien à faire
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    alert("Ce domaine n'est pas autorisé dans Firebase. Contactez l'administrateur.");
+                } else {
+                    alert("Erreur de connexion Google : " + (error.message || "Erreur inconnue"));
                 }
             });
         });
 
-        // ══════════════════════════════════════════
-        // BOUTON SMS / TELEPHONE
-        // ══════════════════════════════════════════
-        document.getElementById('btnPhoneLoginStart').addEventListener('click', () => {
-            document.getElementById('phoneAuthSection').style.display = 'block';
-            if (!window.recaptchaVerifier) {
-                try {
-                    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                        'size': 'normal',
-                        'callback': () => {
-                            document.getElementById('btnSendSMS').disabled = false;
-                        },
-                        'expired-callback': () => {
-                            document.getElementById('btnSendSMS').disabled = true;
-                        }
-                    });
-                    window.recaptchaVerifier.render();
-                } catch (e) {
-                    console.error("Erreur reCAPTCHA:", e);
-                }
-            }
-        });
-
-        document.getElementById('btnSendSMS').addEventListener('click', () => {
-            const countryCode = document.getElementById('countryCodeSelect').value;
-            const phoneVal = document.getElementById('phoneNumberInput').value.trim();
-            if (!phoneVal) return alert("Veuillez entrer un numéro valide");
-
-            const cleanPhone = phoneVal.replace(/[\s\-\.]/g, '').replace(/^0+/, '');
-            const fullPhoneNumber = countryCode + cleanPhone;
-
-            signInWithPhoneNumber(auth, fullPhoneNumber, window.recaptchaVerifier)
-                .then((confirmationResult) => {
-                    window.confirmationResult = confirmationResult;
-                    document.getElementById('phoneInputStep').style.display = 'none';
-                    document.getElementById('codeVerifyStep').style.display = 'block';
-                }).catch((error) => {
-                    console.error("Erreur SMS:", error.code, error.message);
-                    if (error.code === 'auth/billing-not-enabled') {
-                        alert("Le service SMS n'est pas encore activé.");
-                    } else if (error.code === 'auth/invalid-phone-number') {
-                        alert("Numéro de téléphone invalide.");
-                    } else if (error.code === 'auth/too-many-requests') {
-                        alert("Trop de tentatives. Veuillez réessayer plus tard.");
-                    } else {
-                        alert("Erreur: " + error.message);
-                    }
-                    window.recaptchaVerifier = null;
-                    document.getElementById('recaptcha-container').innerHTML = '';
-                });
-        });
-
-        document.getElementById('btnVerifyCode').addEventListener('click', () => {
-            const code = document.getElementById('verificationCodeInput').value;
-            if (!code || code.length < 6) return alert("Veuillez entrer le code à 6 chiffres.");
-
-            window.confirmationResult.confirm(code).then((result) => {
-                return result.user.getIdToken();
-            }).then((idToken) => {
-                sendTokenToBackend(idToken);
-            }).catch((error) => {
-                console.error("Erreur Code:", error);
-                alert("Code invalide ou expiré.");
-            });
-        });
-
-        // ══════════════════════════════════════════
-        // CONTINUER SANS COMPTE (INVITÉ)
-        // ══════════════════════════════════════════
+        // ── Bouton Continuer sans compte ──
         document.getElementById('btnSkipLogin').addEventListener('click', () => {
             window.location.href = "/";
         });
 
-        // ══════════════════════════════════════════
-        // ENVOI DU TOKEN AU BACKEND DJANGO
-        // ══════════════════════════════════════════
+        // ── Envoi du token Firebase au backend Django ──
         function sendTokenToBackend(idToken) {
             fetch('/firebase-login/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    'X-CSRFToken': getCSRFToken()
                 },
                 body: JSON.stringify({ id_token: idToken })
-            }).then(res => res.json())
-              .then(data => {
-                  if(data.success) {
-                      window.location.href = data.redirect_url;
-                  } else {
-                      alert("Erreur serveur: " + data.error);
-                  }
-              }).catch(err => {
-                  console.error(err);
-                  alert("Erreur de communication avec le serveur.");
-              });
+            }).then(res => {
+                if (!res.ok) throw new Error('Erreur serveur ' + res.status);
+                return res.json();
+            }).then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect_url || '/';
+                } else {
+                    alert("Erreur : " + (data.error || "Connexion refusée"));
+                }
+            }).catch(err => {
+                console.error("Backend error:", err);
+                alert("Erreur de communication avec le serveur. Veuillez réessayer.");
+            });
         }
     </script>
 </body>
