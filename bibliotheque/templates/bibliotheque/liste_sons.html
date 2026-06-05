@@ -361,6 +361,7 @@
     <!-- TRACK LIST -->
     <div id="sonList">
         {% for s in sons %}
+        {% if s.fichier_audio %}
         <div class="track-item"
              data-id="{{ s.id }}"
              data-url="{{ s.fichier_audio.url }}"
@@ -399,11 +400,12 @@
                     <i class="fa-{% if s.id in favoris_ids %}solid{% else %}regular{% endif %} fa-heart"></i>
                 </button>
                 <a href="{{ s.fichier_audio.url }}" download
-                   class="track-btn" onclick="event.stopPropagation()">
+                   class="track-btn" onclick="registerDownload(event, 'son', {{ s.id }})">
                     <i class="fa-solid fa-download"></i>
                 </a>
             </div>
         </div>
+        {% endif %}
         {% empty %}
         <div class="empty-state">
             <i class="fa-solid fa-music-slash"></i>
@@ -676,6 +678,41 @@ aud.addEventListener('timeupdate',()=>{
 aud.addEventListener('loadedmetadata',()=> document.getElementById('p-dur').textContent=fmt(aud.duration));
 aud.addEventListener('ended',()=>{ if(!isLoop) playNext(); });
 
+/* ══ AUDIO ERROR HANDLING ══ */
+let audioRetries = 0;
+const AUDIO_MAX_RETRIES = 2;
+
+aud.addEventListener('error', function() {
+    console.error('[Audio] Erreur de chargement');
+    if (audioRetries < AUDIO_MAX_RETRIES && aud.src) {
+        audioRetries++;
+        console.log(`[Audio] 🔄 Retry ${audioRetries}/${AUDIO_MAX_RETRIES}...`);
+        showToast(`Reconnexion... (${audioRetries}/${AUDIO_MAX_RETRIES})`);
+        setTimeout(() => {
+            const src = items[curIdx]?.dataset.url;
+            if (src) {
+                aud.src = '';
+                aud.src = src;
+                aud.play().then(() => {
+                    ppIcon.className='fa-solid fa-pause';
+                    showToast('Lecture reprise');
+                }).catch(() => {
+                    showToast('Impossible de lire ce fichier');
+                    // Passer au suivant automatiquement
+                    setTimeout(() => playNext(), 1500);
+                });
+            }
+        }, 1500 * audioRetries);
+    } else {
+        showToast('Erreur audio — passage au suivant');
+        audioRetries = 0;
+        setTimeout(() => playNext(), 2000);
+    }
+});
+
+// Reset retry count on successful play
+aud.addEventListener('playing', () => { audioRetries = 0; });
+
 /* Volume */
 document.getElementById('vol').addEventListener('input',e=>aud.volume=e.target.value);
 
@@ -701,6 +738,15 @@ window.toggleFavori=function(e,model,id,btn){
             showToast('Retiré des favoris');
         }
         btn.style.transform='scale(1.3)'; setTimeout(()=>btn.style.transform='',200);
+    }).catch(()=>{});
+};
+
+/* ══ ENREGISTRER TELECHARGEMENT AJAX ══ */
+window.registerDownload=function(e,model,id){
+    e.stopPropagation();
+    fetch(`/telechargements/ajouter/${model}/${id}/`,{
+        method:'POST',
+        headers:{'X-Requested-With':'XMLHttpRequest','X-CSRFToken':'{{ csrf_token }}','Content-Type':'application/json'}
     }).catch(()=>{});
 };
 

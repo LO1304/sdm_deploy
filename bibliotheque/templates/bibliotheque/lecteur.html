@@ -12,9 +12,9 @@
     <title>Lecteur Premium - {{ document.titre }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
@@ -155,6 +155,7 @@
         </div>
 
         <div class="flex items-center gap-1">
+            <button onclick="downloadPdf()" class="btn-icon w-8 h-8" title="Télécharger"><i class="fa-solid fa-download text-sm"></i></button>
             <button onclick="toggleSearch()" class="btn-icon w-8 h-8"><i class="fa-solid fa-magnifying-glass text-sm"></i></button>
             <button onclick="toggleSidebar()" class="btn-icon w-8 h-8"><i class="fa-solid fa-list text-sm"></i></button>
         </div>
@@ -185,7 +186,9 @@
                     <option value="{{ document.fichier_audio.url }}" class="bg-[#111] text-[#d4af37]">Audio Récitation (Coran)</option>
                     {% endif %}
                     {% for s in sons %}
-                    <option value="{{ s.fichier_audio.url }}" class="bg-[#111]">{{ s.titre }}</option>
+                        {% if s.fichier_audio %}
+                        <option value="{{ s.fichier_audio.url }}" class="bg-[#111]">{{ s.titre }}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             </div>
@@ -259,9 +262,10 @@
     <audio id="reader-aud" preload="metadata" loop></audio>
 
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        const PDF_URL = "/proxy-pdf/{{ categorie }}/{{ document.id }}/";
+        const PROXY_URL = "/proxy-pdf/{{ categorie }}/{{ document.id }}/";
+        const DIRECT_URL = "{{ direct_pdf_url|default:'' }}";
         const DOC_ID = "{{ document.id }}";
         const CAT = "{{ categorie }}";
         const RESUME_PAGE = parseInt("{{ page_reprise|default:1 }}");
@@ -271,40 +275,107 @@
         let asActive = false, asRaf = null, saveTimeout = null;
         const container = document.getElementById('main-container'), vport = document.getElementById('viewport');
         let observer = null;
+        let retryCount = 0;
+        const MAX_RETRIES = 2;
 
-        // INIT
+        // Charger un PDF depuis une URL donnée
+        async function loadPdfFromUrl(url) {
+            const loadingTask = pdfjsLib.getDocument({
+                url: url,
+                cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+                cMapPacked: true,
+                withCredentials: false,
+                isEvalSupported: false,
+                disableRange: true,
+                disableStream: true,
+            });
+            
+            loadingTask.onProgress = function(data) {
+                if (data.total > 0) {
+                    const pct = Math.round((data.loaded / data.total) * 100);
+                    document.getElementById('top-prog').style.width = pct + '%';
+                }
+            };
+            
+            return loadingTask.promise;
+        }
+
+        // INIT avec double système de chargement
         async function init() {
+            document.getElementById('loader').classList.add('show');
+            
+            // Étape 1 : Essayer via le proxy (contourne les CORS)
             try {
-                // Chargement avec support des CMaps pour les caractères spéciaux (Arabe)
-                const loadingTask = pdfjsLib.getDocument({
-                    url: PDF_URL,
-                    cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/cmaps/',
-                    cMapPacked: true,
-                });
-                pdfDoc = await loadingTask.promise;
-                document.getElementById('max-page-num').innerText = pdfDoc.numPages;
-                document.getElementById('page-slider').max = pdfDoc.numPages;
-                
-                renderOutlines();
+                console.log('[PDF] Chargement via proxy...', PROXY_URL);
+                pdfDoc = await loadPdfFromUrl(PROXY_URL);
+                console.log('[PDF] ✅ Chargé via proxy');
+                onPdfLoaded();
+                return;
+            } catch (proxyErr) {
+                console.warn('[PDF] ⚠ Proxy échoué:', proxyErr.message);
+            }
+            
+            // Étape 2 : Fallback sur l'URL directe Cloudinary
+            if (DIRECT_URL) {
+                try {
+                    console.log('[PDF] Fallback URL directe...', DIRECT_URL);
+                    pdfDoc = await loadPdfFromUrl(DIRECT_URL);
+                    console.log('[PDF] ✅ Chargé via URL directe');
+                    onPdfLoaded();
+                    return;
+                } catch (directErr) {
+                    console.warn('[PDF] ⚠ URL directe échouée:', directErr.message);
+                }
+            }
+            
+            // Étape 3 : Retry automatique
+            if (retryCount < MAX_RETRIES) {
+                retryCount++;
+                console.log(`[PDF] 🔄 Tentative ${retryCount}/${MAX_RETRIES}...`);
+                document.getElementById('loader').classList.remove('show');
+                setTimeout(init, 2000 * retryCount);
+                return;
+            }
+            
+            // Échec total : afficher l'erreur
+            document.getElementById('loader').classList.remove('show');
+            showPdfError();
+        }
+        
+        function onPdfLoaded() {
+            document.getElementById('max-page-num').innerText = pdfDoc.numPages;
+            document.getElementById('page-slider').max = pdfDoc.numPages;
+            document.getElementById('loader').classList.remove('show');
+            
+            renderOutlines();
 
-                if (RESUME_PAGE > 1) {
-                    document.getElementById('res-num').innerText = RESUME_PAGE;
-                    document.getElementById('resume-modal').classList.add('show');
-                } else { render(); }
-            } catch (e) {
-                console.error("PDF.js Error:", e);
-                const container = document.getElementById('viewport');
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full p-10 text-center" style="min-height: 300px;">
-                        <i class="fa-solid fa-circle-exclamation text-4xl text-red-500 mb-4"></i>
-                        <h2 class="text-xl font-bold text-white mb-2">Impossible de charger le document</h2>
-                        <p class="text-white/50 text-sm mb-8">${e.message}</p>
-                        <a href="${PDF_URL}" target="_blank" class="px-8 py-3 bg-gold-500 text-black rounded-full font-bold shadow-lg">
-                            Ouvrir le fichier directement
+            if (RESUME_PAGE > 1) {
+                document.getElementById('res-num').innerText = RESUME_PAGE;
+                document.getElementById('resume-modal').classList.add('show');
+            } else { render(); }
+        }
+        
+        function showPdfError() {
+            const downloadUrl = DIRECT_URL || PROXY_URL;
+            document.getElementById('viewport').innerHTML = `
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center;min-height:300px;">
+                    <div style="width:80px;height:80px;border-radius:50%;background:rgba(220,53,69,0.1);border:1px solid rgba(220,53,69,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
+                        <i class="fa-solid fa-file-pdf" style="font-size:32px;color:#dc3545;"></i>
+                    </div>
+                    <h2 style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;">Impossible de charger le document</h2>
+                    <p style="font-size:13px;color:var(--dim);margin-bottom:28px;max-width:300px;line-height:1.6;">
+                        Le fichier PDF n'a pas pu être chargé. Vérifiez votre connexion internet ou essayez une autre méthode.
+                    </p>
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+                        <button onclick="retryCount=0;init();" style="padding:14px 28px;background:var(--accent);color:#000;border:none;border-radius:16px;font-size:12px;font-weight:700;letter-spacing:0.05em;cursor:pointer;box-shadow:0 8px 24px rgba(212,175,55,0.3);">
+                            <i class="fa-solid fa-rotate-right" style="margin-right:8px;"></i>Réessayer
+                        </button>
+                        <a href="${downloadUrl}" target="_blank" style="padding:14px 28px;border:1px solid var(--border);color:var(--dim);border-radius:16px;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:8px;">
+                            <i class="fa-solid fa-external-link-alt"></i>Ouvrir le fichier
                         </a>
                     </div>
-                `;
-            }
+                </div>
+            `;
         }
 
         function setReadingMode(m) {
@@ -558,12 +629,43 @@
             document.getElementById('loader').classList.remove('show');
         }
 
+        // Téléchargement hors ligne du PDF
+        async function downloadPdf() {
+            const btn = document.querySelector('[onclick="downloadPdf()"]');
+            const origIcon = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sm"></i>';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch(PROXY_URL);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = '{{ document.titre|escapejs }}.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+            } catch (e) {
+                console.error('[Download] Erreur:', e);
+                alert('Erreur lors du téléchargement. Vérifiez votre connexion.');
+            } finally {
+                btn.innerHTML = origIcon;
+                btn.disabled = false;
+            }
+        }
+
         init();
 
-        // LECTEUR AUDIO INTEGRE
+        // LECTEUR AUDIO INTEGRE — Amélioré
         const rAud = document.getElementById('reader-aud');
         const rIcon = document.getElementById('reader-pp-icon');
         let rAudioLoaded = false;
+        let rAudioRetries = 0;
+        const R_MAX_RETRIES = 2;
 
         function toggleAudioBar() {
             const bar = document.getElementById('audio-bar');
@@ -577,18 +679,34 @@
                 rAud.src = "";
                 rIcon.className = "fa-solid fa-play text-xs pl-0.5";
                 rAudioLoaded = false;
+                rAudioRetries = 0;
                 return;
             }
+            rAudioRetries = 0;
             rAud.src = url;
             rAud.play().then(() => {
                 rAudioLoaded = true;
                 rIcon.className = "fa-solid fa-pause text-xs";
-            }).catch(e => console.error("Lecture impossible", e));
+                updateReaderMediaSession();
+            }).catch(e => {
+                console.error("[Audio] Lecture impossible:", e);
+                // Retry automatique
+                if (rAudioRetries < R_MAX_RETRIES) {
+                    rAudioRetries++;
+                    console.log(`[Audio] 🔄 Retry ${rAudioRetries}/${R_MAX_RETRIES}...`);
+                    setTimeout(() => {
+                        rAud.src = url;
+                        rAud.play().then(() => {
+                            rAudioLoaded = true;
+                            rIcon.className = "fa-solid fa-pause text-xs";
+                        }).catch(() => {});
+                    }, 1000 * rAudioRetries);
+                }
+            });
         }
 
         function toggleReaderPlay() {
             if(!rAud.src || !rAudioLoaded) {
-                // If there's a selected url but not loaded
                 const sel = document.getElementById('audio-select');
                 if(sel.value) loadReaderAudio(sel.value);
                 return;
@@ -600,6 +718,51 @@
                 rAud.pause();
                 rIcon.className = "fa-solid fa-play text-xs pl-0.5";
             }
+        }
+
+        // Passage automatique au son suivant
+        rAud.addEventListener('ended', function() {
+            const sel = document.getElementById('audio-select');
+            const opts = [...sel.options].filter(o => o.value);
+            const curIdx = opts.findIndex(o => o.value === sel.value);
+            if (curIdx >= 0 && curIdx < opts.length - 1) {
+                // Passer au suivant
+                sel.value = opts[curIdx + 1].value;
+                loadReaderAudio(sel.value);
+            } else {
+                // Fin de la liste — remettre en pause
+                rIcon.className = "fa-solid fa-play text-xs pl-0.5";
+                rAudioLoaded = false;
+            }
+        });
+
+        // Gestion des erreurs réseau audio
+        rAud.addEventListener('error', function() {
+            console.error("[Audio] Erreur de chargement");
+            if (rAudioRetries < R_MAX_RETRIES && rAud.src) {
+                rAudioRetries++;
+                console.log(`[Audio] 🔄 Retry après erreur ${rAudioRetries}/${R_MAX_RETRIES}`);
+                setTimeout(() => {
+                    const currentSrc = rAud.src;
+                    rAud.src = '';
+                    rAud.src = currentSrc;
+                    rAud.play().catch(() => {});
+                }, 1500 * rAudioRetries);
+            }
+        });
+
+        // MediaSession API pour la lecture en arrière-plan sur mobile
+        function updateReaderMediaSession() {
+            if (!('mediaSession' in navigator)) return;
+            const sel = document.getElementById('audio-select');
+            const selectedText = sel.options[sel.selectedIndex]?.text || 'Audio';
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: selectedText,
+                artist: 'SDM Mouride',
+                album: '{{ document.titre }}',
+            });
+            navigator.mediaSession.setActionHandler('play', toggleReaderPlay);
+            navigator.mediaSession.setActionHandler('pause', toggleReaderPlay);
         }
     </script>
 

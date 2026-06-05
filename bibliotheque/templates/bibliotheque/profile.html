@@ -716,6 +716,12 @@ body {
     <i class="fa-solid fa-chevron-right prow-arr"></i>
   </a>
 
+  <a href="{% url 'telechargements' %}" class="prow">
+    <div class="prow-ico"><i class="fa-solid fa-cloud-arrow-down" style="color:var(--g1)"></i></div>
+    <span class="prow-lbl">Mes Téléchargements</span>
+    <i class="fa-solid fa-chevron-right prow-arr"></i>
+  </a>
+
   <a href="#" class="prow">
     <div class="prow-ico"><i class="fa-solid fa-pen" style="color:var(--g1)"></i></div>
     <span class="prow-lbl">Modifier le profil</span>
@@ -752,11 +758,11 @@ body {
     <i class="fa-solid fa-house-chimney"></i>
     <span>Accueil</span>
   </a>
-  <a href="#" class="nav-item">
+  <a href="{% url 'favoris' %}" class="nav-item">
     <i class="fa-solid fa-heart"></i>
     <span>Favoris</span>
   </a>
-  <a href="#" class="nav-item active">
+  <a href="{% url 'profile' %}" class="nav-item active">
     <i class="fa-solid fa-circle-user"></i>
     <span>Profil</span>
   </a>

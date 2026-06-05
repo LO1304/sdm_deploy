@@ -393,9 +393,14 @@
                             <div class="item-subtitle">{{ item.auteur|default:"Saint Coran" }}</div>
                         </a>
                     </div>
-                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
-                        <i class="fa-solid fa-star"></i>
-                    </a>
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
+                            <i class="fa-solid fa-star"></i>
+                        </a>
+                        <a href="{% url 'proxy_pdf' categorie item.id %}" download class="fav-btn" onclick="registerDownload(event, '{{ categorie }}', {{ item.id }})">
+                            <i class="fa-solid fa-download"></i>
+                        </a>
+                    </div>
                     <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
                         <i class="fa-solid fa-chevron-right item-arrow"></i>
                     </a>
@@ -412,9 +417,14 @@
                             <div class="item-subtitle">{{ item.auteur|default:"Consulter" }}</div>
                         </a>
                     </div>
-                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
-                        <i class="fa-solid fa-star"></i>
-                    </a>
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
+                            <i class="fa-solid fa-star"></i>
+                        </a>
+                        <a href="{% url 'proxy_pdf' categorie item.id %}" download class="fav-btn" onclick="registerDownload(event, '{{ categorie }}', {{ item.id }})">
+                            <i class="fa-solid fa-download"></i>
+                        </a>
+                    </div>
                     <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
                         <i class="fa-solid fa-chevron-right item-arrow"></i>
                     </a>
@@ -458,6 +468,28 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js'); });
+        }
+
+        // Fonction pour enregistrer silencieusement le téléchargement
+        function registerDownload(event, categorie, id) {
+            // Empêcher d'interférer avec le comportement de téléchargement natif du navigateur
+            event.stopPropagation();
+            
+            // Appel API pour marquer le fichier comme téléchargé
+            fetch(`/telechargements/ajouter/${categorie}/${id}/`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Téléchargement enregistré !');
+                }
+            })
+            .catch(error => console.error('Erreur telechargement:', error));
         }
     </script>
 </body>

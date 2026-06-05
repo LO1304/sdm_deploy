@@ -11,25 +11,45 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ── Lecture du fichier .env (local uniquement) ──
 dot_env_path = os.path.join(BASE_DIR, '.env')
 if os.path.exists(dot_env_path):
-    environ.Env.read_env(dot_env_path)
+    environ.Env.read_env(dot_env_path, overwrite=True)
 
 # ── SÉCURITÉ ──
 SECRET_KEY = env('SECRET_KEY', default='change-me-in-production')
 # SECURITÉ : Ne pas laisser en True en production !
-DEBUG = False
+DEBUG = env('DEBUG', default=False)
 
 ALLOWED_HOSTS = ['*']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Sessions plus longues (2 semaines)
-SESSION_COOKIE_AGE = 1209600
+# ── SÉCURITÉ RENFORCÉE DES SESSIONS ──
+SESSION_COOKIE_AGE = 1209600  # 2 semaines
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_HTTPONLY = True        # Empêche l'accès JS au cookie de session
+SESSION_COOKIE_SAMESITE = 'Lax'      # Protection CSRF via cookies
+SECURE_BROWSER_XSS_FILTER = True     # Protection XSS navigateur
+SECURE_CONTENT_TYPE_NOSNIFF = True   # Empêche MIME type sniffing
+
+# En production HTTPS uniquement :
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True     # Cookie uniquement via HTTPS
+    CSRF_COOKIE_SECURE = True        # CSRF uniquement via HTTPS
+    SECURE_SSL_REDIRECT = False      # Render gère HTTPS en amont
 
 CSRF_TRUSTED_ORIGINS = [
     'https://sdm-mouride.onrender.com',
     'https://sdm-mouride-2jbn.onrender.com',
     'https://*.onrender.com',
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+]
+
+# ── VALIDATION DES MOTS DE PASSE RENFORCÉE ──
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+     'OPTIONS': {'min_length': 6}},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # ── APPLICATIONS ──
@@ -102,15 +122,15 @@ else:
 
 # ── INTERNATIONALISATION ──
 LANGUAGE_CODE = 'fr-fr'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Dakar'  # Fuseau horaire du Sénégal
 USE_I18N = True
 USE_TZ = True
 
 # ── CLOUDINARY (pour les fichiers média : PDF, audio, images) ──
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='dcajqzg2h'),
-    'API_KEY':    env('CLOUDINARY_API_KEY',    default='138657288257876'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET', default='8trLcatgU47lqR6ewysOQ9tAiKY'),
+    'API_KEY':    env('CLOUDINARY_API_KEY',    default='222919289611882'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET', default='oJ1C-UGV6emLDjKNr_vTom3ZsIM'),
     'SECURE': True,
     'RESOURCE_TYPE': 'auto',
 }
@@ -151,8 +171,10 @@ DEFAULT_FILE_STORAGE = STORAGES["default"]["BACKEND"]
 
 # ── AUTRES ──
 DEFAULT_AUTO_FIELD  = 'django.db.models.BigAutoField'
-# ── AUTHENTIFICATION ──
-LOGIN_REDIRECT_URL = 'home'
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
+# ── AUTHENTIFICATION — Toujours rediriger vers l'accueil ──
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 

@@ -1,102 +1,81 @@
-const CACHE_NAME = 'sdm-premium-cache-v1';
-const DYNAMIC_CACHE = 'sdm-premium-dynamic-v1';
-
-// Fichiers à cacher initialement (App Shell)
-const STATIC_ASSETS = [
-    '/',
-    '/offline/',
-    '/static/manifest.json',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-    'https://cdn.tailwindcss.com'
+const CACHE_NAME = 'sdm-premium-v3';
+const ASSETS_TO_CACHE = [
+  '/',
+  '/offline/',
+  '/static/css/sdm_theme.css',
+  '/static/js/sdm_main.js',
+  '/static/manifest.json',
+  'https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
 
+// Installation du Service Worker et mise en cache des assets
 self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            console.log('[Service Worker] Installation - Caching static assets');
-            // 'addAll' is risky if one URL fails, the whole promise rejects. Let's do it safely.
-            return Promise.all(
-                STATIC_ASSETS.map(url => {
-                    return fetch(url).then(response => {
-                        if (response.ok) {
-                            return cache.put(url, response);
-                        }
-                    }).catch(error => console.log('[Service Worker] Failed to cache: ', url));
-                })
-            );
-        }).then(() => self.skipWaiting())
-    );
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        return cache.addAll(ASSETS_TO_CACHE).catch(err => {
+          console.warn('SW: Some assets failed to cache:', err);
+        });
+      })
+      .then(() => self.skipWaiting())
+  );
 });
 
+// Activation et nettoyage des anciens caches
 self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(
-                keys.filter(key => key !== CACHE_NAME && key !== DYNAMIC_CACHE)
-                    .map(key => caches.delete(key))
-            );
-        }).then(() => self.clients.claim())
-    );
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
+// Interception des requêtes avec stratégie Network-First
 self.addEventListener('fetch', (event) => {
-    // Ne pas intercepter les requêtes non-GET ou vers des API d'analytics externes
-    if (event.request.method !== 'GET') return;
+  // Ne pas intercepter les fichiers média (PDF, Sons, Cloudinary) pour éviter les blocages
+  const url = event.request.url;
+  if (
+    url.includes('/media/') ||
+    url.includes('/proxy-pdf/') ||
+    url.includes('cloudinary.com') ||
+    url.includes('res.cloudinary.com') ||
+    url.includes('/api/') ||
+    url.includes('/admin/') ||
+    event.request.method !== 'GET'
+  ) {
+    return;
+  }
 
-    // Gestion des requêtes HTML (Navigation) - Stratégie: Network First with Fallback to Cache
-    if (event.request.headers.get('accept').includes('text/html')) {
-        event.respondWith(
-            fetch(event.request)
-                .then(response => {
-                    // Mettre en cache la page visitée pour un accès hors-ligne futur
-                    const copy = response.clone();
-                    caches.open(DYNAMIC_CACHE).then(cache => {
-                        cache.put(event.request.url, copy);
-                    });
-                    return response;
-                })
-                .catch(() => {
-                    // Si réseau indisponible, essayer de trouver la page dans le cache
-                    return caches.match(event.request).then(cachedResponse => {
-                        return cachedResponse || caches.match('/offline/');
-                    });
-                })
-        );
-        return;
-    }
-
-    // Gestion des médias (Audio, Images, PDF) - Stratégie: Cache First ou Network First (ici Cache First pour économiser)
-    const isMedia = event.request.url.match(/\.(mp3|wav|jpg|jpeg|png|gif|svg|pdf)$/);
-    if (isMedia) {
-        event.respondWith(
-            caches.match(event.request).then(cachedResponse => {
-                return cachedResponse || fetch(event.request).then(response => {
-                    // Si le média n'est pas encore en cache, on le met en cache après le fetch
-                    const copy = response.clone();
-                    caches.open(DYNAMIC_CACHE).then(cache => {
-                        cache.put(event.request.url, copy);
-                    });
-                    return response;
-                }).catch(() => {
-                    // Fichier média indisponible hors ligne
-                    return new Response('', { status: 404, statusText: 'Offline representation missing' });
-                });
-            })
-        );
-        return;
-    }
-
-    // Autres requêtes (CSS, JS) - Cache First
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            return cachedResponse || fetch(event.request).then(response => {
-                return caches.open(DYNAMIC_CACHE).then(cache => {
-                    cache.put(event.request.url, response.clone());
-                    return response;
-                });
-            });
-        }).catch(() => {})
-    );
+  event.respondWith(
+    fetch(event.request)
+      .then((networkResponse) => {
+        // Clone et mise en cache dynamique pour les pages visitées
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        // En cas d'échec réseau, chercher dans le cache
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // Si page de navigation, renvoyer la page offline
+          if (event.request.mode === 'navigate') {
+            return caches.match('/offline/');
+          }
+        });
+      })
+  );
 });

@@ -1,20 +1,17 @@
+from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-from django.views.generic import TemplateView
-from bibliotheque import views # Vérifie bien le nom de ton app ici
+from bibliotheque import views, firebase_auth_view
 
 urlpatterns = [
-    # PWA et Offline
-    path('sw.js', TemplateView.as_view(template_name='sw.js', content_type='application/javascript'), name='sw.js'),
-    path('offline/', TemplateView.as_view(template_name='bibliotheque/offline.html'), name='offline'),
-
     # Accueil et Authentification
     path('', views.home, name='home'),
     path('login/', auth_views.LoginView.as_view(template_name='bibliotheque/login.html'), name='login'),
     path('register/', views.register_view, name='register'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('firebase-login/', firebase_auth_view.firebase_login, name='firebase_login'),
 
     # Profil et Abonnement
     path('profile/', views.profil_view, name='profile'),
@@ -24,12 +21,13 @@ urlpatterns = [
     path('api/wird/save-progress/', views.save_wird_progress, name='save_wird_progress'),
     path('favoris/', views.view_favoris, name='favoris'),
     path('favoris/toggle/<str:model_name>/<int:object_id>/', views.toggle_favori, name='toggle_favori'),
+    path('telechargements/', views.view_telechargements, name='telechargements'),
+    path('telechargements/ajouter/<str:model_name>/<int:object_id>/', views.ajouter_telechargement, name='ajouter_telechargement'),
 
     # Contenu (Sons, Coran, etc.)
     path('collection/son/', views.liste_sons, name='liste_sons'),
     path('collection/<str:categorie>/', views.liste_dynamique, name='liste'),
     path('lire/<str:categorie>/<int:id>/', views.lire_pdf, name='lire_pdf'),
-    path('proxy-pdf/<str:categorie>/<int:id>/', views.proxy_pdf, name='proxy_pdf'),
     path('zikr-compteur/<int:id>/', views.zikr_compteur, name='zikr_compteur'),
     path('voir-historique/', views.voir_historique, name='voir_historique'),
     path('historique/zikr/', views.voir_historique_zikr, name='voir_historique_zikr'),
@@ -38,6 +36,12 @@ urlpatterns = [
     path('api/enregistrer-seance/', views.enregistrer_seance, name='enregistrer_seance'),
     path('api/ecoute-son/<int:id>/', views.enregistrer_ecoute_son, name='enregistrer_ecoute_son'),
     path('api/progression-pdf/', views.sauvegarder_progression_pdf, name='sauvegarder_progression_pdf'),
+
+    # Proxy PDF pour contourner les problèmes CORS avec Cloudinary
+    path('proxy-pdf/<str:categorie>/<int:id>/', views.proxy_pdf, name='proxy_pdf'),
+
+    # Khassida externe
+    path('khassida-externe/', views.khassida_external, name='khassida_external'),
     
     # Recherche globale
     path('recherche/', views.recherche_globale, name='recherche_globale'),
