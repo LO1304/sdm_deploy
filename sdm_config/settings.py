@@ -18,7 +18,7 @@ SECRET_KEY = env('SECRET_KEY', default='change-me-in-production')
 # SECURITÉ : Ne pas laisser en True en production !
 DEBUG = env('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['sdm-mouride.com', 'www.sdm-mouride.com', 'sdm-mouride.onrender.com', 'sdm-mouride-2jbn.onrender.com', 'localhost', '127.0.0.1']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # ── SÉCURITÉ RENFORCÉE DES SESSIONS ──
@@ -51,6 +51,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'bibliotheque.backends.EmailAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 # ── APPLICATIONS ──
 INSTALLED_APPS = [
@@ -128,9 +134,9 @@ USE_TZ = True
 
 # ── CLOUDINARY (pour les fichiers média : PDF, audio, images) ──
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default='dcajqzg2h'),
-    'API_KEY':    env('CLOUDINARY_API_KEY',    default='222919289611882'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET', default='oJ1C-UGV6emLDjKNr_vTom3ZsIM'),
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY':    env('CLOUDINARY_API_KEY'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET'),
     'SECURE': True,
     'RESOURCE_TYPE': 'auto',
 }
@@ -179,7 +185,15 @@ LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
 # ── API REST & CORS ──
-CORS_ALLOW_ALL_ORIGINS = True  # Pour autoriser Flutter
+CORS_ALLOWED_ORIGINS = [
+    'https://sdm-mouride.com',
+    'https://www.sdm-mouride.com',
+    'https://sdm-mouride.onrender.com',
+    'https://sdm-mouride-2jbn.onrender.com',
+    'http://localhost:8088',
+    'http://127.0.0.1:8088',
+]
+# CORS_ALLOW_ALL_ORIGINS = True  # Désactivé pour la production
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

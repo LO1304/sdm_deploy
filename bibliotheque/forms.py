@@ -9,6 +9,6 @@ class ModernRegisterForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'peer w-full bg-transparent border-b-2 border-white/20 px-0 py-3 text-white focus:border-[#d4af37] focus:outline-none transition-colors placeholder-transparent',
-                'placeholder': ' ' # Required for Tailwind's peer-placeholder-shown to work
+                'class': 'field-input',
+                'placeholder': ' '
             })

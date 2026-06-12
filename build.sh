@@ -16,7 +16,8 @@ echo "═══ Collecte des fichiers statiques ═══"
 python manage.py collectstatic --noinput --clear
 
 echo "═══ Création/Mise à jour des administrateurs ═══"
-python force_admin.py
+# ON NE LANCE PLUS AUTOMATIQUEMENT LE SCRIPT EN PRODUCTION
+# python force_admin.py
 
 # ON NE LANCE PLUS l'importation lourde ici pour éviter de bloquer Render
 # On le fera manuellement ou via une tâche de fond.

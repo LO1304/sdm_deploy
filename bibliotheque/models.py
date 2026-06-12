@@ -8,7 +8,7 @@ from django.dispatch import receiver
 
 # ── KHASSIDA ──
 class Khassida(models.Model):
-    titre = models.CharField(max_length=255)
+    titre = models.CharField(max_length=255, db_index=True)
     auteur = models.CharField(max_length=255, default="Cheikh Ahmadou Bamba")
     fichier_pdf = models.FileField(upload_to='khassidas/')
     image_couverture = models.ImageField(upload_to='couvertures/', blank=True, null=True)
@@ -19,7 +19,7 @@ class Khassida(models.Model):
 
 # ── CORAN ──
 class Coran(models.Model):
-    titre = models.CharField(max_length=100)
+    titre = models.CharField(max_length=100, db_index=True)
     numero = models.IntegerField(blank=True, null=True)
     traduction_fr = models.TextField(blank=True, null=True)
     fichier_pdf = models.FileField(upload_to='coran_pdf/', blank=True, null=True)
@@ -31,7 +31,7 @@ class Coran(models.Model):
 
 # ── ZIKR ──
 class Zikr(models.Model):
-    titre = models.CharField(max_length=200)
+    titre = models.CharField(max_length=200, db_index=True)
     texte_arabe = models.TextField(blank=True)
     transcription = models.TextField(blank=True)
     traduction = models.TextField(blank=True)
@@ -75,8 +75,8 @@ class ProgressionLecture(models.Model):
 
 # ── WIRD ──
 class Wird(models.Model):
-    titre = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True, blank=True, null=True)
+    titre = models.CharField(max_length=200, db_index=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True, null=True, db_index=True)
     auteur = models.CharField(max_length=255, default="Cheikh Ahmadou Bamba")
     introduction = models.TextField()
     description_courte = models.TextField(blank=True, help_text="Résumé pour la liste")
@@ -175,9 +175,9 @@ class Son(models.Model):
         ('RAJASS', 'Rajass'),
     ]
 
-    titre = models.CharField(max_length=200)
+    titre = models.CharField(max_length=200, db_index=True)
     auteur_voix = models.CharField(max_length=150, blank=True, null=True, help_text="Nom du Kourel, du conférencier ou du Rajass")
-    categorie = models.CharField(max_length=20, choices=CATEGORIES, default='KHASSIDA')
+    categorie = models.CharField(max_length=20, choices=CATEGORIES, default='KHASSIDA', db_index=True)
     fichier_audio = models.FileField(upload_to='sons/')
     date_ajout = models.DateTimeField(auto_now_add=True)
 
