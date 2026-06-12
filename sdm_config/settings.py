@@ -18,7 +18,7 @@ SECRET_KEY = env('SECRET_KEY', default='change-me-in-production')
 # SECURITÉ : Ne pas laisser en True en production !
 DEBUG = env('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['sdm-mouride.com', 'www.sdm-mouride.com', 'sdm-mouride.onrender.com', 'sdm-mouride-2jbn.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['sdm-mouride.com', 'www.sdm-mouride.com', 'sdm-mouride.onrender.com', 'sdm-mourit.onrender.com', 'sdm-mouride-2jbn.onrender.com', 'localhost', '127.0.0.1']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # ── SÉCURITÉ RENFORCÉE DES SESSIONS ──
@@ -189,6 +189,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://sdm-mouride.com',
     'https://www.sdm-mouride.com',
     'https://sdm-mouride.onrender.com',
+    'https://sdm-mourit.onrender.com',
     'https://sdm-mouride-2jbn.onrender.com',
     'http://localhost:8088',
     'http://127.0.0.1:8088',
