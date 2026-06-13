@@ -9,6 +9,11 @@ pip install -r requirements.txt
 echo "═══ Migrations de la base de données ═══"
 python manage.py migrate --noinput
 
+echo "═══ Chargement des données locales ═══"
+if [ -f "data_dump.json" ]; then
+    python manage.py loaddata data_dump.json
+fi
+
 echo "═══ Nettoyage des anciens fichiers statiques ═══"
 rm -rf staticfiles_build
 
