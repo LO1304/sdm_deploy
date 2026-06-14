@@ -1,0 +1,53 @@
+{% extends 'bibliotheque/layout.html' %}
+
+{% block title %}Zikr en Communauté{% endblock %}
+
+{% block content %}
+<div class="content-header" style="text-align: center; margin-bottom: 2rem;">
+    <h1 style="color: var(--gold); font-size: 28px; margin-bottom: 10px;">Zikr en Communauté</h1>
+    <p style="color: var(--dim);">Unissons nos forces pour multiplier les bénédictions.</p>
+</div>
+
+<div style="display: flex; justify-content: center; margin-bottom: 30px;">
+    <a href="{% url 'zikr_communaute_create' %}" class="btn-primary" style="background: var(--gold); color: var(--bg-dark); font-weight: bold; padding: 12px 24px; border-radius: 25px; text-decoration: none;">
+        <i class="fas fa-plus"></i> Créer une Session
+    </a>
+</div>
+
+<div class="sessions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+    {% for session in sessions %}
+    <div class="card" style="background: var(--card-bg); border: 1px solid rgba(212,175,55,0.1); border-radius: 15px; padding: 20px; transition: transform 0.3s;">
+        <h3 style="color: var(--gold); margin-top: 0;">{{ session.titre }}</h3>
+        <p style="color: var(--text-light); margin-bottom: 15px;">
+            <i class="fas fa-pray" style="color: var(--gold-dim);"></i> {{ session.zikr.titre }}
+        </p>
+        
+        <div class="progress-container" style="background: rgba(255,255,255,0.05); border-radius: 10px; height: 10px; margin-bottom: 10px; overflow: hidden;">
+            {% widthratio session.compteur_actuel session.objectif_global 100 as percentage %}
+            <div class="progress-bar" style="background: var(--gold); height: 100%; width: {% if percentage|add:"0" > 100 %}100{% else %}{{ percentage }}{% endif %}%;"></div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; color: var(--dim); font-size: 14px; margin-bottom: 20px;">
+            <span>{{ session.compteur_actuel }} / {{ session.objectif_global }}</span>
+            <span>{% if percentage|add:"0" > 100 %}100{% else %}{{ percentage }}{% endif %}%</span>
+        </div>
+        
+        <a href="{% url 'zikr_communaute_detail' session.id %}" class="btn-block" style="display: block; text-align: center; background: rgba(212,175,55,0.1); color: var(--gold); padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+            Participer <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    {% empty %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--dim);">
+        <i class="fas fa-users" style="font-size: 40px; color: rgba(255,255,255,0.1); margin-bottom: 15px;"></i>
+        <p>Aucune session de Zikr communautaire active pour le moment.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+</style>
+{% endblock %}

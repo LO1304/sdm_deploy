@@ -1,0 +1,47 @@
+{% extends 'bibliotheque/layout.html' %}
+
+{% block title %}Créer une Session Communautaire{% endblock %}
+
+{% block content %}
+<div class="content-header" style="text-align: center; margin-bottom: 2rem;">
+    <a href="{% url 'zikr_communaute_list' %}" style="color: var(--dim); text-decoration: none; display: block; margin-bottom: 15px;">
+        <i class="fas fa-arrow-left"></i> Retour aux sessions
+    </a>
+    <h1 style="color: var(--gold); font-size: 28px; margin-bottom: 10px;">Nouvelle Session</h1>
+    <p style="color: var(--dim);">Lancez un objectif spirituel pour toute la communauté.</p>
+</div>
+
+<div class="form-container" style="max-width: 500px; margin: 0 auto; background: var(--card-bg); padding: 30px; border-radius: 15px; border: 1px solid rgba(212,175,55,0.1);">
+    <form method="POST" action="{% url 'zikr_communaute_create' %}">
+        {% csrf_token %}
+        
+        <div class="field-group" style="margin-bottom: 20px;">
+            <label for="titre" style="display: block; color: var(--gold); margin-bottom: 8px;">Titre de l'événement</label>
+            <input type="text" id="titre" name="titre" required placeholder="Ex: Grand Zikr du Vendredi" 
+                   style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white;">
+        </div>
+
+        <div class="field-group" style="margin-bottom: 20px;">
+            <label for="zikr_id" style="display: block; color: var(--gold); margin-bottom: 8px;">Zikr à réciter</label>
+            <select id="zikr_id" name="zikr_id" required 
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white;">
+                <option value="">Sélectionnez un Zikr...</option>
+                {% for z in zikrs %}
+                    <option value="{{ z.id }}">{{ z.titre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="field-group" style="margin-bottom: 30px;">
+            <label for="objectif_global" style="display: block; color: var(--gold); margin-bottom: 8px;">Objectif Global</label>
+            <input type="number" id="objectif_global" name="objectif_global" required value="100000" min="1000"
+                   style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white; font-size: 18px; text-align: center;">
+            <p style="color: var(--dim); font-size: 12px; margin-top: 5px;">Le nombre total visé par la communauté.</p>
+        </div>
+
+        <button type="submit" class="btn-block" style="width: 100%; background: var(--gold); color: var(--bg-dark); font-weight: bold; padding: 15px; border-radius: 8px; border: none; cursor: pointer; font-size: 16px;">
+            Lancer la session
+        </button>
+    </form>
+</div>
+{% endblock %}

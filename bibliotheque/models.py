@@ -41,6 +41,35 @@ class Zikr(models.Model):
     def __str__(self):
         return self.titre
 
+# ── ZIKR COMMUNAUTAIRE ──
+class SessionZikrCommunautaire(models.Model):
+    titre = models.CharField(max_length=200, help_text="Ex: Grand Zikr du Vendredi")
+    zikr = models.ForeignKey(Zikr, on_delete=models.CASCADE, related_name='sessions_communautaires')
+    objectif_global = models.PositiveIntegerField(default=100000, help_text="Objectif total à atteindre par la communauté")
+    compteur_actuel = models.PositiveIntegerField(default=0, help_text="Progression actuelle")
+    createur = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sessions_creees')
+    date_debut = models.DateTimeField(auto_now_add=True)
+    date_fin = models.DateTimeField(blank=True, null=True)
+    est_actif = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-date_debut']
+
+    def __str__(self):
+        return self.titre
+
+class ParticipationZikrCommunautaire(models.Model):
+    session = models.ForeignKey(SessionZikrCommunautaire, on_delete=models.CASCADE, related_name='participations')
+    utilisateur = models.ForeignKey(User, on_delete=models.CASCADE, related_name='participations_zikr')
+    contribution = models.PositiveIntegerField(default=0)
+    date_derniere_contribution = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('session', 'utilisateur')
+        ordering = ['-contribution', 'date_derniere_contribution']
+
+    def __str__(self):
+        return f"{self.utilisateur.username} - {self.contribution} sur {self.session.titre}"
 
 # ── HISTORIQUE ──
 class Historique(models.Model):

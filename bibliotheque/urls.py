@@ -48,6 +48,11 @@ urlpatterns = [
 
     # Tableau de bord personnel
     path('dashboard/', views.dashboard, name='dashboard'),
+    # Zikr Communautaire
+    path('communaute/zikr/', views.zikr_communaute_list, name='zikr_communaute_list'),
+    path('communaute/zikr/creer/', views.zikr_communaute_create, name='zikr_communaute_create'),
+    path('communaute/zikr/<int:id>/', views.zikr_communaute_detail, name='zikr_communaute_detail'),
+    path('api/communaute/zikr/add/', views.api_zikr_communaute_add, name='api_zikr_communaute_add'),
 ]
 
 # Gestion des fichiers média et statiques en développement

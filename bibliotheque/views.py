@@ -16,7 +16,8 @@ from django.middleware.csrf import get_token
 
 # Import de tes modèles
 from .models import (
-    Khassida, Coran, Zikr, Wird, EtapeWird, HistoriqueWird, ProgressionWird, Son, Profile, HistoriqueConsultation, Favori, Telechargement, ContenuDuJour, ParametresPriere, ProgressionLecture, Historique, HistoriqueZikr, ProgressionGenerale
+    Khassida, Coran, Zikr, Wird, EtapeWird, HistoriqueWird, ProgressionWird, Son, Profile, HistoriqueConsultation, Favori, Telechargement, ContenuDuJour, ParametresPriere, ProgressionLecture, Historique, HistoriqueZikr, ProgressionGenerale,
+    SessionZikrCommunautaire, ParticipationZikrCommunautaire
 )
 from .forms import ModernRegisterForm
 
@@ -754,3 +755,82 @@ def dashboard(request):
         'top_zikrs': top_zikrs,
     }
     return render(request, 'bibliotheque/dashboard.html', context)
+
+
+# ── ZIKR COMMUNAUTAIRE ──
+
+def zikr_communaute_list(request):
+    sessions = SessionZikrCommunautaire.objects.filter(est_actif=True).order_by('-date_debut')
+    return render(request, 'bibliotheque/zikr_communaute_list.html', {'sessions': sessions})
+
+@login_required
+def zikr_communaute_create(request):
+    if request.method == 'POST':
+        titre = request.POST.get('titre')
+        zikr_id = request.POST.get('zikr_id')
+        objectif = int(request.POST.get('objectif_global', 100000))
+        
+        if titre and zikr_id:
+            zikr = get_object_or_404(Zikr, id=zikr_id)
+            SessionZikrCommunautaire.objects.create(
+                titre=titre,
+                zikr=zikr,
+                objectif_global=objectif,
+                createur=request.user
+            )
+            return redirect('zikr_communaute_list')
+    
+    zikrs = Zikr.objects.all()
+    return render(request, 'bibliotheque/zikr_communaute_create.html', {'zikrs': zikrs})
+
+def zikr_communaute_detail(request, id):
+    session = get_object_or_404(SessionZikrCommunautaire, id=id)
+    # Récupérer les top 50 participants
+    classement = session.participations.all()[:50]
+    
+    ma_participation = None
+    if request.user.is_authenticated:
+        ma_participation, _ = ParticipationZikrCommunautaire.objects.get_or_create(
+            session=session, 
+            utilisateur=request.user
+        )
+        
+    return render(request, 'bibliotheque/zikr_communaute_detail.html', {
+        'session': session,
+        'classement': classement,
+        'ma_participation': ma_participation
+    })
+
+@require_POST
+def api_zikr_communaute_add(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Non connecté'}, status=403)
+        
+    try:
+        data = json.loads(request.body)
+        session_id = data.get('session_id')
+        count_to_add = int(data.get('count', 1))
+        
+        session = SessionZikrCommunautaire.objects.get(id=session_id)
+        if not session.est_actif:
+            return JsonResponse({'status': 'error', 'message': 'Session terminée'})
+            
+        # Mise à jour globale
+        session.compteur_actuel += count_to_add
+        session.save(update_fields=['compteur_actuel'])
+        
+        # Mise à jour personnelle
+        participation, _ = ParticipationZikrCommunautaire.objects.get_or_create(
+            session=session,
+            utilisateur=request.user
+        )
+        participation.contribution += count_to_add
+        participation.save(update_fields=['contribution', 'date_derniere_contribution'])
+        
+        return JsonResponse({
+            'status': 'success',
+            'global_count': session.compteur_actuel,
+            'personal_count': participation.contribution
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
