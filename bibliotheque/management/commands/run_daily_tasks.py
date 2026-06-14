@@ -26,15 +26,15 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write("--- Début des tâches quotidiennes ---")
         
-        # 1. GÉNÉRER LE CONTENU DU JOUR (Masalikoul Djinane)
+        # 1. GÉNÉRER LE CONTENU DU JOUR (Masalikoul Djinane - Français uniquement)
         verse = random.choice(MASALIKOUL_DJINANE_VERSES)
         fr_text, ar_text = verse
         ContenuDuJour.objects.create(
-            verset_du_jour=f"{ar_text}\n\n{fr_text}",
+            verset_du_jour=f"{fr_text}",
             beuyit_du_jour="Tiré de Masalikoul Djinane",
             rappel_dujour="Méditez sur ces paroles de Cheikh Ahmadou Bamba aujourd'hui."
         )
-        self.stdout.write("Contenu du jour (Masalikoul Djinane) généré.")
+        self.stdout.write("Contenu du jour (Masalikoul Djinane - FR) généré.")
 
         # 2. VÉRIFIER SI C'EST JEUDI
         today = datetime.now(timezone.utc)
