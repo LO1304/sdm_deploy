@@ -208,7 +208,17 @@ class Son(models.Model):
     titre = models.CharField(max_length=200, db_index=True)
     auteur_voix = models.CharField(max_length=150, blank=True, null=True, help_text="Nom du Kourel, du conférencier ou du Rajass")
     categorie = models.CharField(max_length=20, choices=CATEGORIES, default='KHASSIDA', db_index=True)
-    fichier_audio = models.FileField(upload_to='sons/')
+    fichier_audio = models.FileField(
+        upload_to='sons/',
+        blank=True,
+        null=True
+    )
+    lien_audio_externe = models.URLField(
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text="Lien Cloudinary ou externe (prioritaire sur le fichier local)"
+    )
     date_ajout = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
