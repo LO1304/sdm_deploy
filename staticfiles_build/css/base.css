@@ -1,0 +1,17 @@
+/* Theme SDM Mouride - Base Colors */
+:root {
+    --primary-black: #03040a;
+    --primary-gold: #d4af37;
+    --text-white: #ffffff;
+}
+
+body {
+    background-color: var(--primary-black);
+    color: var(--text-white);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Fix for broken admin styles if any */
+.dashboard #content {
+    background-color: var(--primary-black) !important;
+}
