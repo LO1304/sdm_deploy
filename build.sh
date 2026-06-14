@@ -24,6 +24,9 @@ echo "═══ Création/Mise à jour des administrateurs ═══"
 # ON NE LANCE PLUS AUTOMATIQUEMENT LE SCRIPT EN PRODUCTION
 # python force_admin.py
 
+echo "═══ Création des Sessions de Zikr par défaut ═══"
+python -c "exec(open('populate_sessions.py', encoding='utf-8').read()); run()"
+
 # ON NE LANCE PLUS l'importation lourde ici pour éviter de bloquer Render
 # On le fera manuellement ou via une tâche de fond.
 # python import_data.py 
