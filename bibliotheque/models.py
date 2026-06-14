@@ -175,6 +175,7 @@ class Profile(models.Model):
     est_premium = models.BooleanField(default=False)
     date_expiration = models.DateField(null=True, blank=True)
     type_soutien = models.CharField(max_length=20, choices=[('DON', 'Don'), ('ABO', 'Abonnement')], null=True)
+    fcm_token = models.CharField(max_length=255, blank=True, null=True, help_text="Jeton Firebase Cloud Messaging pour les notifications push")
 
     def __str__(self):
         return f"Profil de {self.user.username}"
