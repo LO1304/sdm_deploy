@@ -331,6 +331,9 @@
                     <div class="field-group" style="animation-delay: {{ forloop.counter }}00ms">
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {{ field }}
+                        {% if field.help_text %}
+                            <div class="helptext">{{ field.help_text|safe }}</div>
+                        {% endif %}
                         {% if field.errors %}
                             <div class="field-errors">{{ field.errors }}</div>
                         {% endif %}
