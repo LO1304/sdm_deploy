@@ -8,7 +8,21 @@
         <i class="fas fa-arrow-left"></i> Retour aux sessions
     </a>
     <h1 style="color: var(--gold); font-size: 28px; margin-bottom: 5px;">{{ session.titre }}</h1>
+    
+    <!-- Calligraphie Arabe -->
+    {% if session.zikr.texte_arabe %}
+    <div style="margin: 20px auto; padding: 20px 30px; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.2); border-radius: 20px; max-width: 400px; position: relative; overflow: hidden;">
+        <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(212,175,55,0.06), transparent 70%);"></div>
+        <p style="font-family: 'Amiri', serif; font-size: 36px; font-weight: 700; color: #ffd700; direction: rtl; text-align: center; line-height: 1.8; text-shadow: 0 0 30px rgba(212,175,55,0.3); margin: 0; position: relative; z-index: 1;">
+            {{ session.zikr.texte_arabe }}
+        </p>
+        {% if session.zikr.transcription %}
+        <p style="color: rgba(255,255,255,0.5); font-size: 13px; font-style: italic; margin-top: 10px; position: relative; z-index: 1;">{{ session.zikr.transcription }}</p>
+        {% endif %}
+    </div>
+    {% else %}
     <p style="color: var(--dim);">{{ session.zikr.titre }}</p>
+    {% endif %}
 </div>
 
 <!-- LE COMPTEUR GLOBAL -->
