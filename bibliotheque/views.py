@@ -407,7 +407,8 @@ def register_view(request):
         form = ModernRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            # Django nécessite de spécifier le backend s'il y en a plusieurs (ex: EmailAuthBackend + ModelBackend)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('home') 
     else:
         form = ModernRegisterForm()
