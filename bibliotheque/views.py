@@ -74,7 +74,6 @@ def home(request):
     }
     return render(request, 'bibliotheque/index.html', context)
 
-@login_required
 def liste_dynamique(request, categorie):
     """Affiche les listes filtrées par catégorie (Khassida, Coran, etc.)."""
     query = request.GET.get('search')
@@ -99,7 +98,6 @@ def liste_dynamique(request, categorie):
         'query': query
     })
 
-@login_required
 def lire_pdf(request, categorie, id):
     """Lecteur PDF pour le Coran et les Khassidas."""
     if categorie == 'coran':
@@ -116,10 +114,11 @@ def lire_pdf(request, categorie, id):
     
     # Récupérer la progression
     page_reprise = 1
-    content_type = ContentType.objects.get_for_model(target_model)
-    prog = ProgressionLecture.objects.filter(user=request.user, content_type=content_type, object_id=id).first()
-    if prog:
-        page_reprise = prog.page_actuelle
+    if request.user.is_authenticated:
+        content_type = ContentType.objects.get_for_model(target_model)
+        prog = ProgressionLecture.objects.filter(user=request.user, content_type=content_type, object_id=id).first()
+        if prog:
+            page_reprise = prog.page_actuelle
 
     # Fetch all sounds for background audio player
     sons = Son.objects.all().order_by('-date_ajout')
@@ -286,8 +285,9 @@ def proxy_pdf(request, categorie, id):
     )
 
 @csrf_exempt
-@login_required
 def sauvegarder_progression_pdf(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'ignored', 'message': 'Non connecté'}, status=200)
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -320,7 +320,6 @@ def sauvegarder_progression_pdf(request):
 
 # --- GESTION DU ZIKR ---
 
-@login_required
 def zikr_compteur(request, id):
     """Interface du chapelet électronique."""
     zikr = get_object_or_404(Zikr, id=id)
@@ -352,7 +351,6 @@ def enregistrer_seance(request):
 
 # --- GESTION DES SONS ---
 
-@login_required
 def liste_sons(request):
     """Liste audio filtrable."""
     categorie_filter = request.GET.get('cat')
@@ -364,17 +362,19 @@ def liste_sons(request):
     categories = Son.CATEGORIES
     
     # Get favorited sound IDs for the current user
-    try:
-        son_ct = ContentType.objects.get_for_model(Son)
-        favoris_ids = Favori.objects.filter(user=request.user, content_type=son_ct).values_list('object_id', flat=True)
-    except Exception:
-        favoris_ids = []
+    favoris_ids = []
+    if request.user.is_authenticated:
+        try:
+            son_ct = ContentType.objects.get_for_model(Son)
+            favoris_ids = list(Favori.objects.filter(user=request.user, content_type=son_ct).values_list('object_id', flat=True))
+        except Exception:
+            pass
 
     return render(request, 'bibliotheque/liste_sons.html', {
         'sons': sons,
         'categories': categories,
         'active_cat': categorie_filter,
-        'favoris_ids': list(favoris_ids),
+        'favoris_ids': favoris_ids,
     })
 
 # --- AUTHENTIFICATION & PROFIL ---
@@ -435,21 +435,22 @@ def paiement_reussi(request):
 
 # --- HISTORIQUE & DÉTAILS ---
 
-@login_required
 def details_contenu(request, id):
     """Affiche les détails et enregistre la consultation dans l'historique."""
     contenu = get_object_or_404(Khassida, id=id)
-    obj_type = ContentType.objects.get_for_model(contenu)
-    Historique.objects.update_or_create(
-        user=request.user,
-        content_type=obj_type,
-        object_id=contenu.id
-    )
+    if request.user.is_authenticated:
+        obj_type = ContentType.objects.get_for_model(contenu)
+        Historique.objects.update_or_create(
+            user=request.user,
+            content_type=obj_type,
+            object_id=contenu.id
+        )
     return render(request, 'bibliotheque/details.html', {'contenu': contenu})
 
 @csrf_exempt
-@login_required
 def enregistrer_ecoute_son(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'ignored', 'message': 'Non connecté'}, status=200)
     if request.method == 'POST':
         try:
             son = get_object_or_404(Son, id=id)
@@ -513,15 +514,16 @@ def toggle_favori(request, model_name, object_id):
     # Redirect to the previous page
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
-@login_required
 def lire_wird(request, slug):
     wird = get_object_or_404(Wird, slug=slug)
     etapes = wird.etapes.all().order_by('numero')
     
-    progression, created = ProgressionWird.objects.get_or_create(
-        user=request.user, 
-        wird=wird
-    )
+    progression = None
+    if request.user.is_authenticated:
+        progression, created = ProgressionWird.objects.get_or_create(
+            user=request.user, 
+            wird=wird
+        )
     
     return render(request, 'bibliotheque/lire_wird.html', {
         'wird': wird,
@@ -529,8 +531,9 @@ def lire_wird(request, slug):
         'progression': progression,
     })
 
-@login_required
 def save_wird_progress(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'ignored', 'message': 'Non connecté'}, status=200)
     if request.method == 'POST':
         data = json.loads(request.body)
         wird_id = data.get('wird_id')
@@ -636,7 +639,6 @@ def ajouter_telechargement(request, model_name, object_id):
 
 # --- RECHERCHE GLOBALE ---
 
-@login_required
 def recherche_globale(request):
     """Recherche simultanée dans tous les types de contenu."""
     query = request.GET.get('q', '').strip()
@@ -668,7 +670,6 @@ def recherche_globale(request):
 
 # --- KHASSIDA EN PDF INTEGRATION ---
 
-@login_required
 def khassida_external(request):
     """Vue pour afficher les Khassidas depuis khassidaenpdf.net en iframe intégré."""
     return render(request, 'bibliotheque/khassida_external.html')
