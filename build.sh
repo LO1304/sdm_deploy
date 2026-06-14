@@ -27,8 +27,7 @@ echo "═══ Création/Mise à jour des administrateurs ═══"
 echo "═══ Création des Sessions de Zikr par défaut ═══"
 python manage.py shell -c "exec(open('populate_sessions.py', encoding='utf-8').read()); run()"
 
-# ON NE LANCE PLUS l'importation lourde ici pour éviter de bloquer Render
-# On le fera manuellement ou via une tâche de fond.
-# python import_data.py 
+echo "═══ Déploiement des Sons (Base de données) ═══"
+python deploy_sons.py
 
 echo "═══ Build terminé avec succès ! ═══"
