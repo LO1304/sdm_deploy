@@ -53,6 +53,9 @@ urlpatterns = [
     path('communaute/zikr/creer/', views.zikr_communaute_create, name='zikr_communaute_create'),
     path('communaute/zikr/<int:id>/', views.zikr_communaute_detail, name='zikr_communaute_detail'),
     path('api/communaute/zikr/add/', views.api_zikr_communaute_add, name='api_zikr_communaute_add'),
+    
+    # Tâches quotidiennes (Cron Gratuit)
+    path('api/trigger-daily-tasks/', views.trigger_daily_tasks, name='trigger_daily_tasks'),
 ]
 
 # Gestion des fichiers média et statiques en développement

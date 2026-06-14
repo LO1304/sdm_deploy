@@ -15,6 +15,24 @@ from django.views.decorators.http import require_POST
 from django.middleware.csrf import get_token
 
 # Import de tes modèles
+from django.core.management import call_command
+from django.http import HttpResponse, JsonResponse
+from django.conf import settings
+
+def trigger_daily_tasks(request):
+    token = request.GET.get('token')
+    # On utilise SECRET_KEY comme token de sécurité (les 20 premiers caractères)
+    expected_token = settings.SECRET_KEY[:20]
+    
+    if token != expected_token:
+        return HttpResponse("Non autorisé", status=403)
+        
+    try:
+        call_command('run_daily_tasks')
+        return JsonResponse({"status": "success", "message": "Tâches quotidiennes exécutées avec succès."})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
 from .models import (
     Khassida, Coran, Zikr, Wird, EtapeWird, HistoriqueWird, ProgressionWird, Son, Profile, HistoriqueConsultation, Favori, Telechargement, ContenuDuJour, ParametresPriere, ProgressionLecture, Historique, HistoriqueZikr, ProgressionGenerale,
     SessionZikrCommunautaire, ParticipationZikrCommunautaire
