@@ -370,7 +370,7 @@
              data-titre="{{ s.titre|escapejs }}"
              data-auteur="{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}"
              data-index="{{ forloop.counter0 }}"
-             style="animation-delay: {{ forloop.counter0|floatformat:2 }}s; animation-delay: calc({{ forloop.counter0 }} * 0.04s)">
+             style="animation-delay: {% if forloop.counter0 < 20 %}calc({{ forloop.counter0 }} * 0.04s){% else %}0s{% endif %};">
 
             <!-- Numéro / Égaliseur -->
             <div class="track-num">{{ forloop.counter }}</div>
@@ -489,15 +489,7 @@ items.forEach(it => it.addEventListener('click', ()=> playTrack(it)));
 /* Format temps */
 function fmt(s){ if(!isFinite(s)||isNaN(s))return '0:00'; const m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+String(sec).padStart(2,'0'); }
 
-/* Durées lazy */
-setTimeout(()=> {
-    items.forEach(it=>{
-        const a=new Audio(); a.preload='metadata'; a.src=it.dataset.url;
-        a.addEventListener('loadedmetadata',()=>{
-            const d=it.querySelector('.track-dur'); if(d) d.textContent=fmt(a.duration);
-        });
-    });
-}, 800);
+/* Durées lazy supprimées pour éviter de crasher les navigateurs mobiles avec trop de requêtes audio */
 
 /* ══ WAVEFORM CANVAS ══ */
 const wvCanvas = document.getElementById('waveform');
