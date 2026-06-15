@@ -406,7 +406,16 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
     </button>
   </div>
 
-  <!-- SALAT TABS -->
+  <!-- MINI BARRE PRIÈRE (lit depuis localStorage) -->
+  <div id="mini-prayer-bar" style="display:flex;align-items:center;justify-content:center;gap:16px;padding:6px 18px;background:rgba(212,175,55,0.04);border-bottom:1px solid rgba(212,175,55,0.08);flex-shrink:0">
+    <span style="font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(212,175,55,0.6);font-weight:600">Prochain :</span>
+    <span id="zikr-next-prayer" style="font-size:12px;font-weight:700;color:#d4af37">—</span>
+    <span id="zikr-next-time" style="font-size:12px;color:rgba(255,255,255,0.5)">--:--</span>
+    <span style="width:1px;height:12px;background:rgba(255,255,255,0.1)"></span>
+    <span id="zikr-countdown" style="font-size:11px;color:rgba(255,255,255,0.4);font-variant-numeric:tabular-nums">--:--</span>
+  </div>
+
+
   <div class="salat-bar">
     <div class="salat-tabs" id="salatTabs"></div>
     <div class="add-salat-btn" onclick="openSheet()" title="Ajouter une salât">
@@ -955,6 +964,41 @@ document.getElementById('volBar').addEventListener('input',e=>aud.volume=e.targe
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
   AOS.init({ duration: 800, once: true });
+
+  /* ══ MINI BARRE PRIÈRE — lit le cache localStorage de la page d'accueil ══ */
+  (function() {
+    const prayers = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+    function toMins(t) { if(!t||!t.includes(':')) return Infinity; const[h,m]=t.trim().split(':').map(Number); return h*60+m; }
+
+    function updateMiniBar() {
+      // Try to load cached prayer times
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('prayer_'));
+      if (!keys.length) return;
+      // Use most recent cache key
+      const PT = JSON.parse(localStorage.getItem(keys[keys.length - 1]) || '{}');
+
+      const now = new Date();
+      const cur = now.getHours()*60 + now.getMinutes();
+      let nextName = null, nextMins = Infinity;
+      prayers.forEach(n => { const m=toMins(PT[n]); if(m>cur && m<nextMins){nextMins=m;nextName=n;} });
+      if (!nextName) { nextName=prayers[0]; nextMins=toMins(PT[prayers[0]])+1440; }
+
+      const diff = (nextMins - cur)*60 - now.getSeconds();
+      const ch = String(Math.floor(diff/3600)).padStart(2,'0');
+      const cm = String(Math.floor((diff%3600)/60)).padStart(2,'0');
+
+      const el1 = document.getElementById('zikr-next-prayer');
+      const el2 = document.getElementById('zikr-next-time');
+      const el3 = document.getElementById('zikr-countdown');
+      if (el1) el1.textContent = nextName;
+      if (el2 && PT[nextName]) el2.textContent = PT[nextName].trim();
+      if (el3) el3.textContent = ch+':'+cm;
+    }
+
+    updateMiniBar();
+    setInterval(updateMiniBar, 30000); // update every 30s
+  })();
+
 </script>
 
 <!-- Service Worker Registration -->

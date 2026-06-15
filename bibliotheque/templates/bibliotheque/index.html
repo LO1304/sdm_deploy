@@ -57,6 +57,8 @@
         .action-btn:hover i { transform: scale(1.15); filter: drop-shadow(0 0 10px rgba(212,175,55,0.5)); }
         .action-btn p { transition: color 0.3s, transform 0.4s; }
         .action-btn:hover p { color: #f5dc6e !important; transform: translateY(2px); }
+        @keyframes prayerSlideIn { from { opacity:0; transform:translateX(-50%) translateY(-30px) scale(0.92); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
+        @keyframes prayerPulse { 0%,100% { box-shadow:0 0 20px rgba(212,175,55,0.4); } 50% { box-shadow:0 0 35px rgba(212,175,55,0.7); transform:scale(1.05); } }
     </style>
 
     <div class="relative w-full rounded-[32px] overflow-hidden shadow-2xl mb-12 md:px-6" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="1200">
@@ -186,68 +188,82 @@
     </div>
     {% endif %}
 
-    <!-- HORIZONTAL EXPLORER ROW (Mouride Features) -->
-    <div class="mb-12 overflow-hidden" data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
+    <!-- EXPLORER GRID (Mouride Features) -->
+    <div class="mb-12" data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
         <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-5 ml-1 flex items-center gap-2">
             <i class="fa-solid fa-compass text-gold-500 text-[10px] md:text-xs"></i> Explorer
         </h2>
-        <!-- Scrollable container -->
-        <div class="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x-mandatory pb-4 pt-1 -mx-5 px-5 md:mx-0 md:px-0 md:justify-center">
-            
-            <!-- YOUTUBE LINK -->
-            <a href="https://www.youtube.com/@SopeyDialibatoulMarakhib" target="_blank" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] bg-gradient-to-b from-red-600/20 to-[#040B08] border border-red-600/30 flex items-center justify-center shadow-[0_10px_20px_-10px_rgba(220,38,38,0.4)] group-hover:-translate-y-1 md:group-hover:-translate-y-2 transition-all">
-                    <i class="fa-brands fa-youtube text-2xl md:text-4xl text-red-500 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]"></i>
-                    <span class="absolute -top-1 -right-1 flex h-3 w-3 md:h-4 md:w-4">
+        <!-- Grid 4 colonnes — 2 rangées visible immédiatement -->
+        <div class="grid grid-cols-4 gap-3 md:gap-6">
+
+            <!-- YOUTUBE -->
+            <a href="https://www.youtube.com/@SopeyDialibatoulMarakhib" target="_blank" class="action-btn flex flex-col items-center gap-2 md:gap-3 group">
+                <div class="relative w-full aspect-square rounded-[20px] md:rounded-[28px] bg-gradient-to-b from-red-600/20 to-[#040B08] border border-red-600/30 flex items-center justify-center shadow-[0_8px_20px_-8px_rgba(220,38,38,0.5)] transition-all">
+                    <i class="fa-brands fa-youtube text-xl md:text-3xl text-red-500 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]"></i>
+                    <span class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 md:h-4 md:w-4 bg-red-600"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
                     </span>
                 </div>
-                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center leading-tight">YouTube</p>
+                <p class="text-[10px] md:text-xs font-semibold text-white/70 text-center leading-tight">YouTube</p>
             </a>
 
-            <a href="{% url 'liste' 'khassida' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
-                    <i class="fa-solid fa-book-open text-2xl md:text-4xl text-gold-500"></i>
+            <!-- KHASSIDA -->
+            <a href="{% url 'liste' 'khassida' %}" class="action-btn flex flex-col items-center gap-2 md:gap-3 group">
+                <div class="w-full aspect-square rounded-[20px] md:rounded-[28px] glass border border-white/10 flex items-center justify-center shadow-lg transition-all">
+                    <i class="fa-solid fa-book-open text-xl md:text-3xl text-gold-500"></i>
                 </div>
-                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Khassida</p>
+                <p class="text-[10px] md:text-xs font-semibold text-white/70 text-center">Khassida</p>
             </a>
 
-            <a href="{% url 'liste' 'coran' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
-                    <i class="fa-solid fa-quran text-2xl md:text-4xl text-white/90"></i>
+            <!-- CORAN -->
+            <a href="{% url 'liste' 'coran' %}" class="action-btn flex flex-col items-center gap-2 md:gap-3 group">
+                <div class="w-full aspect-square rounded-[20px] md:rounded-[28px] glass border border-white/10 flex items-center justify-center shadow-lg transition-all">
+                    <i class="fa-solid fa-quran text-xl md:text-3xl text-white/90"></i>
                 </div>
-                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Coran</p>
-            </a>
-            
-            <a href="{% url 'liste' 'zikr' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
-                    <i class="fa-solid fa-fingerprint text-2xl md:text-4xl text-gold-500"></i>
-                </div>
-                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Zikr</p>
+                <p class="text-[10px] md:text-xs font-semibold text-white/70 text-center">Coran</p>
             </a>
 
-            <a href="{% url 'liste' 'wird' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
-                    <i class="fa-solid fa-braille text-2xl md:text-4xl text-white/90"></i>
+            <!-- ZIKR -->
+            <a href="{% url 'liste' 'zikr' %}" class="action-btn flex flex-col items-center gap-2 md:gap-3 group">
+                <div class="w-full aspect-square rounded-[20px] md:rounded-[28px] glass border border-white/10 flex items-center justify-center shadow-lg transition-all">
+                    <i class="fa-solid fa-fingerprint text-xl md:text-3xl text-gold-500"></i>
                 </div>
-                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Wird</p>
+                <p class="text-[10px] md:text-xs font-semibold text-white/70 text-center">Zikr</p>
             </a>
 
-            <a href="{% url 'liste_sons' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] glass border border-white/10 flex items-center justify-center shadow-lg group-hover:-translate-y-1 md:group-hover:-translate-y-2 group-hover:border-gold-500/40 transition-all">
-                    <i class="fa-solid fa-headphones text-2xl md:text-4xl text-gold-500"></i>
+            <!-- WIRD -->
+            <a href="{% url 'liste' 'wird' %}" class="action-btn flex flex-col items-center gap-2 md:gap-3 group">
+                <div class="w-full aspect-square rounded-[20px] md:rounded-[28px] glass border border-white/10 flex items-center justify-center shadow-lg transition-all">
+                    <i class="fa-solid fa-braille text-xl md:text-3xl text-white/90"></i>
                 </div>
-                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center">Audio</p>
+                <p class="text-[10px] md:text-xs font-semibold text-white/70 text-center">Wird</p>
             </a>
 
-            <!-- KHASSIDA EN PDF (External Site) -->
-            <a href="{% url 'khassida_external' %}" class="action-btn snap-center flex flex-col items-center gap-2 md:gap-4 group flex-shrink-0 w-[80px] md:w-[120px]">
-                <div class="w-[72px] h-[72px] md:w-[100px] md:h-[100px] rounded-[24px] md:rounded-[32px] bg-gradient-to-b from-emerald-600/20 to-[#040B08] border border-emerald-600/30 flex items-center justify-center shadow-[0_10px_20px_-10px_rgba(16,185,129,0.4)] group-hover:-translate-y-1 md:group-hover:-translate-y-2 transition-all">
-                    <i class="fa-solid fa-globe text-2xl md:text-4xl text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]"></i>
+            <!-- AUDIO -->
+            <a href="{% url 'liste_sons' %}" class="action-btn flex flex-col items-center gap-2 md:gap-3 group">
+                <div class="w-full aspect-square rounded-[20px] md:rounded-[28px] glass border border-white/10 flex items-center justify-center shadow-lg transition-all">
+                    <i class="fa-solid fa-headphones text-xl md:text-3xl text-gold-500"></i>
                 </div>
-                <p class="text-[10px] md:text-sm font-semibold tracking-wide text-white/80 text-center leading-tight">Khassida PDF</p>
+                <p class="text-[10px] md:text-xs font-semibold text-white/70 text-center">Audio</p>
             </a>
+
+            <!-- KHASSIDA PDF -->
+            <a href="{% url 'khassida_external' %}" class="action-btn flex flex-col items-center gap-2 md:gap-3 group">
+                <div class="w-full aspect-square rounded-[20px] md:rounded-[28px] bg-gradient-to-b from-emerald-600/20 to-[#040B08] border border-emerald-600/30 flex items-center justify-center shadow-[0_8px_20px_-8px_rgba(16,185,129,0.4)] transition-all">
+                    <i class="fa-solid fa-globe text-xl md:text-3xl text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]"></i>
+                </div>
+                <p class="text-[10px] md:text-xs font-semibold text-white/70 text-center leading-tight">PDF</p>
+            </a>
+
+            <!-- COMMUNAUTÉ ZIKR -->
+            <a href="{% url 'zikr_communaute_list' %}" class="action-btn flex flex-col items-center gap-2 md:gap-3 group">
+                <div class="w-full aspect-square rounded-[20px] md:rounded-[28px] bg-gradient-to-b from-violet-600/20 to-[#040B08] border border-violet-600/30 flex items-center justify-center shadow-[0_8px_20px_-8px_rgba(139,92,246,0.4)] transition-all">
+                    <i class="fa-solid fa-users text-xl md:text-3xl text-violet-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]"></i>
+                </div>
+                <p class="text-[10px] md:text-xs font-semibold text-white/70 text-center leading-tight">Communauté</p>
+            </a>
+
         </div>
     </div>
 
@@ -445,12 +461,39 @@
     }
 
     function showPrayerToast(name) {
+        // Remove any existing prayer toast first
+        const existing = document.getElementById('prayer-toast');
+        if (existing) existing.remove();
+
         const toast = document.createElement('div');
-        toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[9999] bg-gradient-to-r from-gold-400 to-gold-600 text-black px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-bounce';
-        toast.innerHTML = `<i class="fa-solid fa-mosque text-2xl"></i><div><p class="font-bold text-sm">${name}</p><p class="text-xs opacity-80">C'est l'heure de la prière</p></div>`;
+        toast.id = 'prayer-toast';
+        toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;width:min(90vw,380px);animation:prayerSlideIn 0.5s cubic-bezier(0.16,1,0.3,1) both';
+        toast.innerHTML = `
+            <div style="background:linear-gradient(135deg,#1a2e1a,#0c2a1e);border:1px solid rgba(212,175,55,0.4);border-radius:24px;padding:20px 20px 16px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 40px rgba(212,175,55,0.15);backdrop-filter:blur(20px)">
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
+                    <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#d4af37,#a68a28);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 20px rgba(212,175,55,0.4);animation:prayerPulse 1.5s ease-in-out infinite">
+                        <i class="fa-solid fa-mosque" style="font-size:22px;color:#030408"></i>
+                    </div>
+                    <div style="flex:1">
+                        <p style="font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(212,175,55,0.8);margin-bottom:3px">Heure de prière</p>
+                        <p style="font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.02em">${name}</p>
+                    </div>
+                    <button onclick="document.getElementById('prayer-toast').remove()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">✕</button>
+                </div>
+                <p style="font-size:12px;color:rgba(255,255,255,0.55);text-align:center;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08)">Qu'Allah accepte nos prières 🤲</p>
+            </div>`;
         document.body.appendChild(toast);
-        setTimeout(() => { toast.style.transition='all 0.5s'; toast.style.opacity='0'; toast.style.transform='translateX(-50%) translateY(-20px)'; setTimeout(()=>toast.remove(), 500); }, 15000);
+
+        // Vibrate on mobile
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+
+        // Auto-remove after 30 seconds
+        setTimeout(() => {
+            const t = document.getElementById('prayer-toast');
+            if (t) { t.style.transition='all 0.5s'; t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(-20px)'; setTimeout(()=>t.remove(), 500); }
+        }, 30000);
     }
+
 
     // Location & Praying API
     function updateUISlots() {
