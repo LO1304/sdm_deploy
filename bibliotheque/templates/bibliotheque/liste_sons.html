@@ -120,9 +120,9 @@
         }
         .track-item.playing .eq-bars { display: flex; }
         .eq-bar {
-            width: 3px; border-radius: 2px; background: var(--gold);
+            width: 4px; border-radius: 2px; background: var(--gold);
             animation: eqAnim 0.6s ease-in-out infinite alternate;
-            box-shadow: 0 0 4px rgba(212,175,55,0.5);
+            box-shadow: 0 0 8px rgba(212,175,55,0.8);
         }
         .eq-bar:nth-child(1) { height: 40%; animation-delay: 0s; animation-duration: 0.5s; }
         .eq-bar:nth-child(2) { height: 80%; animation-delay: 0.15s; animation-duration: 0.7s; }
@@ -181,12 +181,14 @@
 
         .player-inner {
             max-width: 680px; margin: 0 auto;
-            background: rgba(6,5,14,0.97);
-            border: 1px solid rgba(212,175,55,0.15);
+            background: rgba(10,8,18,0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.08);
             border-bottom: none;
-            border-radius: 28px 28px 0 0;
+            border-radius: 32px 32px 0 0;
             overflow: hidden; position: relative;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(212,175,55,0.05) inset;
+            box-shadow: 0 -24px 64px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.1);
         }
 
         /* Fond cover flou */
@@ -289,11 +291,11 @@
         .ctrl-btn.active-ctrl { color: var(--gold); }
 
         .play-btn {
-            width: 64px; height: 64px; border-radius: 50%;
+            width: 72px; height: 72px; border-radius: 50%;
             background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
             border: none; cursor: pointer; color: #0a0500;
             display: flex; align-items: center; justify-content: center;
-            font-size: 22px; box-shadow: 0 8px 28px rgba(212,175,55,0.4);
+            font-size: 26px; box-shadow: 0 8px 32px rgba(212,175,55,0.5);
             transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
         }
         .play-btn:hover { transform: scale(1.07); box-shadow: 0 12px 36px rgba(212,175,55,0.5); }

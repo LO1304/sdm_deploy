@@ -20,20 +20,22 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
         :root {
-            --bg: #030303; --surface: rgba(20,20,20,0.65); --surface-light: rgba(40,40,40,0.6);
-            --text: #f0f0f0; --dim: #888888; --accent: #d4af37; --accent-glow: rgba(212,175,55,0.4);
-            --border: rgba(255,255,255,0.08); --border-focus: rgba(212,175,55,0.3);
-            --sh: 0 10px 40px -10px rgba(0,0,0,0.8);
+            --bg: #030303; --surface: rgba(20,20,20,0.45); --surface-light: rgba(40,40,40,0.5);
+            --text: #f0f0f0; --dim: #999999; --accent: #d4af37; --accent-glow: rgba(212,175,55,0.4);
+            --border: rgba(255,255,255,0.08); --border-focus: rgba(212,175,55,0.35);
+            --sh: 0 16px 40px -8px rgba(0,0,0,0.7);
         }
         [data-theme="sepia"] {
-            --bg: #f4ecdf; --surface: rgba(240,230,210,0.75); --surface-light: rgba(230,220,195,0.9);
+            --bg: #f4ecdf; --surface: rgba(240,230,210,0.6); --surface-light: rgba(245,235,215,0.8);
             --text: #4a3b2c; --dim: #8b735b; --accent: #b06a2c; --accent-glow: rgba(176,106,44,0.3);
             --border: rgba(139,69,19,0.15); --border-focus: rgba(176,106,44,0.4);
+            --sh: 0 16px 40px -8px rgba(139,69,19,0.25);
         }
         [data-theme="paper"] {
-            --bg: #fdfdfd; --surface: rgba(250,250,250,0.85); --surface-light: rgba(240,240,240,1);
+            --bg: #fdfdfd; --surface: rgba(255,255,255,0.7); --surface-light: rgba(255,255,255,0.9);
             --text: #111111; --dim: #666666; --accent: #222222; --accent-glow: rgba(0,0,0,0.15);
             --border: rgba(0,0,0,0.1); --border-focus: rgba(0,0,0,0.3);
+            --sh: 0 16px 40px -8px rgba(0,0,0,0.15);
         }
 
         body {
@@ -45,10 +47,11 @@
         /* Glassmorphism utility */
         .glass-panel {
             background: var(--surface);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
             border: 1px solid var(--border);
             box-shadow: var(--sh);
+            border-top: 1px solid rgba(255,255,255,0.15);
         }
 
         .accent-text { color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
@@ -553,11 +556,29 @@
             v.innerText = `Vitesse: ${(val / 10).toFixed(1)}x`;
         }
 
+        let hideTimeout;
+        function resetHideTimer() {
+            clearTimeout(hideTimeout);
+            if (uiVisible) {
+                hideTimeout = setTimeout(() => {
+                    if (uiVisible) {
+                        uiVisible = false;
+                        document.getElementById('header').classList.add('hide-up');
+                        document.getElementById('footer').classList.add('hide-down');
+                    }
+                }, 4000); // 4 seconds of inactivity hides UI
+            }
+        }
+
+        // On scroll/touch, reset timer if UI is visible
+        document.getElementById('viewport').addEventListener('scroll', () => { if (uiVisible) resetHideTimer(); }, {passive: true});
+
         function handleTap(e) {
             if (e.target.tagName !== 'CANVAS') return;
             uiVisible = !uiVisible;
             document.getElementById('header').classList.toggle('hide-up', !uiVisible);
             document.getElementById('footer').classList.toggle('hide-down', !uiVisible);
+            resetHideTimer();
         }
 
         function doResume(r) {

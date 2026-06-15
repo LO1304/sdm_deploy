@@ -140,16 +140,19 @@
         .item-card {
             display: flex; align-items: center; gap: 16px;
             padding: 16px 18px;
-            background: var(--s1);
-            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 20px;
             text-decoration: none;
-            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
             position: relative; overflow: hidden;
             /* Animation d'entrée */
             opacity: 0;
-            transform: translateY(16px);
-            animation: itemReveal 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+            transform: translateY(24px);
+            animation: itemReveal 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+            box-shadow: 0 8px 32px -8px rgba(0,0,0,0.6);
         }
         @keyframes itemReveal {
             to { opacity: 1; transform: translateY(0); }
@@ -325,7 +328,7 @@
 
             {% if 'zikr' in categorie|lower %}
                 {% with target_url=item.id|stringformat:"s" %}
-                <div class="item-card" style="animation-delay: {{ forloop.counter0 }}0ms">
+                <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
                     <a href="{% url 'zikr_compteur' item.id %}" class="item-icon" style="text-decoration:none">
                         <i class="fa-solid fa-fingerprint"></i>
                     </a>
@@ -345,7 +348,7 @@
                 {% endwith %}
 
             {% elif 'wird' in categorie|lower %}
-                <div class="item-card" style="animation-delay: {{ forloop.counter0 }}0ms">
+                <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
                     <a href="{% url 'lire_wird' item.slug %}" class="item-icon white" style="text-decoration:none">
                         <i class="fa-solid fa-scroll"></i>
                     </a>
@@ -364,7 +367,7 @@
                 </div>
 
             {% elif 'son' in categorie|lower %}
-                <div class="item-card" style="animation-delay: {{ forloop.counter0 }}0ms">
+                <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
                     <a href="{% url 'lire_pdf' categorie item.id %}" class="item-icon green" style="text-decoration:none">
                         <i class="fa-solid fa-headphones"></i>
                     </a>
@@ -383,7 +386,7 @@
                 </div>
 
             {% elif 'coran' in categorie|lower %}
-                <div class="item-card" style="animation-delay: {{ forloop.counter0 }}0ms">
+                <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
                     <a href="{% url 'lire_pdf' categorie item.id %}" class="item-icon white" style="text-decoration:none">
                         <i class="fa-solid fa-quran"></i>
                     </a>
@@ -407,7 +410,7 @@
                 </div>
 
             {% else %}
-                <div class="item-card" style="animation-delay: {{ forloop.counter0 }}0ms">
+                <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
                     <a href="{% url 'lire_pdf' categorie item.id %}" class="item-icon" style="text-decoration:none">
                         <i class="fa-solid fa-book-open"></i>
                     </a>
