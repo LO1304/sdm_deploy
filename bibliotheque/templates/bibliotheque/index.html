@@ -413,9 +413,9 @@
                 <p class="text-sm md:text-base font-bold text-white mb-0.5">Installer l'application</p>
                 <p class="text-[10px] md:text-xs text-white/40">Accédez à SDM directement depuis votre écran d'accueil</p>
             </div>
-            <button id="install-btn" onclick="installPWA()" class="px-5 py-2.5 rounded-xl bg-gold-500/15 border border-gold-500/30 text-gold-500 text-xs font-bold uppercase tracking-wider hover:bg-gold-500/25 transition-all flex-shrink-0">
-                Installer
-            </button>
+            <a href="{% static 'app/sdm-premium.apk' %}" download="sdm-premium.apk" class="px-5 py-2.5 rounded-xl bg-gold-500/15 border border-gold-500/30 text-gold-500 text-xs font-bold uppercase tracking-wider hover:bg-gold-500/25 transition-all flex-shrink-0" style="text-decoration:none;">
+                Télécharger
+            </a>
         </div>
     </div>
 
@@ -643,28 +643,7 @@
         }
     }
 
-    /* ═══ PWA INSTALL ═══ */
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        const btn = document.getElementById('install-btn');
-        if (btn) btn.style.display = 'block';
-    });
-    function installPWA() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choice) => {
-                if (choice.outcome === 'accepted') {
-                    const btn = document.getElementById('install-btn');
-                    if (btn) btn.textContent = 'Installé ✓';
-                }
-                deferredPrompt = null;
-            });
-        } else {
-            // Fallback: show instructions
-            alert("Pour installer l'application :\n\n📱 Sur téléphone : Ouvrez le menu du navigateur (⋮) puis 'Ajouter à l'écran d'accueil'\n\n💻 Sur PC : Cliquez sur l'icône d'installation dans la barre d'adresse");
-        }
-    }
+    /* ═══ APK INSTALL ═══ */
+    // Le bouton de téléchargement gère le téléchargement de l'APK via l'attribut HTML 'download'
 </script>
 {% endblock %}
