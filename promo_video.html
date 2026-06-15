@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDM - Vidéo Promotionnelle</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    background:#040b08;
+    color:#fff;
+    font-family:'Inter',sans-serif;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+/* ── Controls ── */
+.controls {
+    position:fixed; top:20px; right:20px; z-index:100;
+    display:flex; gap:12px;
+}
+.ctrl-btn {
+    padding:10px 22px;
+    border:1px solid rgba(212,175,55,0.5);
+    background:rgba(4,11,8,0.85);
+    color:#D4AF37;
+    font-family:'Inter',sans-serif;
+    font-size:13px; font-weight:600;
+    border-radius:8px;
+    cursor:pointer;
+    backdrop-filter:blur(10px);
+    transition:all .3s;
+}
+.ctrl-btn:hover { background:rgba(212,175,55,0.15); border-color:#D4AF37; }
+.ctrl-btn:disabled { opacity:.4; cursor:not-allowed; }
+.ctrl-btn.recording { border-color:#e74c3c; color:#e74c3c; animation:recPulse 1s infinite; }
+@keyframes recPulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+.status-bar {
+    position:fixed; top:70px; right:20px; z-index:100;
+    font-size:11px; color:rgba(212,175,55,0.7);
+    background:rgba(4,11,8,0.8); padding:6px 14px;
+    border-radius:6px; display:none;
+}
+
+/* ── Canvas ── */
+#promoCanvas {
+    border-radius:16px;
+    box-shadow: 0 0 80px rgba(212,175,55,0.15);
+}
+
+/* ── Info ── */
+.info {
+    margin-top:30px;
+    text-align:center;
+    color:rgba(255,255,255,0.5);
+    font-size:13px;
+    max-width:500px;
+    line-height:1.8;
+}
+.info strong { color:#D4AF37; }
+</style>
+</head>
+<body>
+
+<div class="controls">
+    <button class="ctrl-btn" id="btnPlay" onclick="startAnimation()">▶ Lancer la Vidéo</button>
+    <button class="ctrl-btn" id="btnRecord" onclick="startRecording()" disabled>⏺ Enregistrer MP4</button>
+    <button class="ctrl-btn" id="btnDownload" onclick="downloadVideo()" disabled style="display:none">⬇ Télécharger</button>
+</div>
+<div class="status-bar" id="statusBar"></div>
+
+<canvas id="promoCanvas" width="1080" height="1920"></canvas>
+
+<div class="info">
+    <p>Format : <strong>1080×1920</strong> (Stories / Reels / TikTok)</p>
+    <p>Cliquez sur <strong>Lancer la Vidéo</strong> pour prévisualiser, puis <strong>Enregistrer MP4</strong> pour capturer.</p>
+</div>
+
+<script>
+const canvas = document.getElementById('promoCanvas');
+const ctx = canvas.getContext('2d');
+const W = 1080, H = 1920;
+
+// Scale canvas display
+const scale = Math.min(window.innerWidth * 0.85 / W, window.innerHeight * 0.75 / H);
+canvas.style.width = (W * scale) + 'px';
+canvas.style.height = (H * scale) + 'px';
+
+// ── Colors ──
+const GOLD = '#D4AF37';
+const GOLD_LT = '#F0D060';
+const GOLD_DK = '#A8892C';
+const BG = '#040b08';
+const DIM = 'rgba(255,255,255,0.45)';
+
+// ── Animation state ──
+let animFrame = 0;
+let animRunning = false;
+let animId = null;
+const TOTAL_FRAMES = 600; // ~20 seconds at 30fps
+const FPS = 30;
+
+// ── Particles ──
+const particles = [];
+for (let i = 0; i < 60; i++) {
+    particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 2 + 0.5,
+        speed: Math.random() * 0.8 + 0.2,
+        opacity: Math.random() * 0.5 + 0.1,
+        phase: Math.random() * Math.PI * 2
+    });
+}
+
+// ── Scenes definition ──
+const scenes = [
+    { start:0,   end:90,  id:'intro' },        // 0-3s : Logo reveal
+    { start:90,  end:180, id:'bismillah' },     // 3-6s : Bismillah
+    { start:180, end:270, id:'feature1' },      // 6-9s : Khassidas
+    { start:270, end:360, id:'feature2' },      // 9-12s : Zikr communautaire
+    { start:360, end:450, id:'feature3' },      // 12-15s : Horaires prière
+    { start:450, end:540, id:'feature4' },      // 15-18s : Masalikoul Djinane
+    { start:540, end:600, id:'outro' }          // 18-20s : CTA
+];
+
+function getCurrentScene(frame) {
+    return scenes.find(s => frame >= s.start && frame < s.end) || scenes[scenes.length - 1];
+}
+
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+function easeInOutCubic(t) { return t < .5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+function easeOutBack(t) { const c1=1.70158; const c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); }
+
+// ── Draw functions ──
+function drawBackground(frame) {
+    // Deep dark gradient
+    const grd = ctx.createRadialGradient(W/2, H/2, 100, W/2, H/2, H);
+    grd.addColorStop(0, '#0a1a12');
+    grd.addColorStop(1, BG);
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+
+    // Subtle geometric pattern
+    ctx.save();
+    ctx.globalAlpha = 0.03;
+    ctx.strokeStyle = GOLD;
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < 8; i++) {
+        const size = 200 + i * 80;
+        const cx = W/2, cy = H/2;
+        const rot = frame * 0.001 + i * 0.3;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(rot);
+        // Draw octagon
+        ctx.beginPath();
+        for (let j = 0; j < 8; j++) {
+            const angle = (Math.PI * 2 / 8) * j;
+            const x = Math.cos(angle) * size;
+            const y = Math.sin(angle) * size;
+            j === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+    }
+    ctx.restore();
+}
+
+function drawParticles(frame) {
+    particles.forEach(p => {
+        p.y -= p.speed;
+        if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+        const flicker = Math.sin(frame * 0.05 + p.phase) * 0.3 + 0.7;
+        ctx.save();
+        ctx.globalAlpha = p.opacity * flicker;
+        ctx.fillStyle = GOLD;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        // Glow
+        ctx.shadowColor = GOLD;
+        ctx.shadowBlur = 15;
+        ctx.fill();
+        ctx.restore();
+    });
+}
+
+function drawOrnament(y, frame, delay) {
+    const progress = Math.max(0, Math.min(1, (frame - delay) / 30));
+    const t = easeOutCubic(progress);
+    const lineW = 120 * t;
+
+    ctx.save();
+    ctx.globalAlpha = t;
+
+    // Left line
+    const lgrd = ctx.createLinearGradient(W/2 - lineW - 20, y, W/2 - 20, y);
+    lgrd.addColorStop(0, 'transparent');
+    lgrd.addColorStop(1, GOLD);
+    ctx.strokeStyle = lgrd;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(W/2 - lineW - 20, y);
+    ctx.lineTo(W/2 - 20, y);
+    ctx.stroke();
+
+    // Right line
+    const rgrd = ctx.createLinearGradient(W/2 + 20, y, W/2 + lineW + 20, y);
+    rgrd.addColorStop(0, GOLD);
+    rgrd.addColorStop(1, 'transparent');
+    ctx.strokeStyle = rgrd;
+    ctx.beginPath();
+    ctx.moveTo(W/2 + 20, y);
+    ctx.lineTo(W/2 + lineW + 20, y);
+    ctx.stroke();
+
+    // Diamond center
+    ctx.save();
+    ctx.translate(W/2, y);
+    ctx.rotate(Math.PI / 4);
+    ctx.fillStyle = 'rgba(212,175,55,0.3)';
+    ctx.strokeStyle = GOLD;
+    ctx.lineWidth = 1;
+    ctx.fillRect(-5, -5, 10, 10);
+    ctx.strokeRect(-5, -5, 10, 10);
+    // Glow
+    ctx.shadowColor = GOLD;
+    ctx.shadowBlur = 20 + Math.sin(frame * 0.08) * 8;
+    ctx.fillRect(-5, -5, 10, 10);
+    ctx.restore();
+
+    ctx.restore();
+}
+
+function drawTextReveal(text, x, y, font, color, frame, delay, duration) {
+    const progress = Math.max(0, Math.min(1, (frame - delay) / duration));
+    if (progress <= 0) return;
+    const t = easeOutCubic(progress);
+
+    ctx.save();
+    ctx.globalAlpha = t;
+    ctx.font = font;
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Slide up effect
+    const offsetY = (1 - t) * 40;
+    ctx.fillText(text, x, y + offsetY);
+    ctx.restore();
+}
+
+function drawGoldText(text, x, y, font, frame, delay, duration) {
+    const progress = Math.max(0, Math.min(1, (frame - delay) / duration));
+    if (progress <= 0) return;
+    const t = easeOutCubic(progress);
+
+    ctx.save();
+    ctx.globalAlpha = t;
+    ctx.font = font;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Gold gradient
+    const grd = ctx.createLinearGradient(x - 200, y, x + 200, y);
+    grd.addColorStop(0, GOLD_LT);
+    grd.addColorStop(0.5, GOLD);
+    grd.addColorStop(1, GOLD_DK);
+    ctx.fillStyle = grd;
+
+    const offsetY = (1 - t) * 50;
+    ctx.shadowColor = GOLD;
+    ctx.shadowBlur = 30;
+    ctx.fillText(text, x, y + offsetY);
+    ctx.restore();
+}
+
+function drawFeatureCard(icon, title, desc, frame, sceneStart) {
+    const localFrame = frame - sceneStart;
+    const cardProgress = Math.max(0, Math.min(1, localFrame / 25));
+    const t = easeOutBack(cardProgress);
+    if (t <= 0) return;
+
+    const cardW = 820, cardH = 340;
+    const cardX = (W - cardW) / 2;
+    const cardY = H / 2 - cardH / 2 + 80;
+
+    ctx.save();
+    ctx.globalAlpha = t;
+
+    // Scale from center
+    ctx.translate(W/2, cardY + cardH/2);
+    ctx.scale(t, t);
+    ctx.translate(-W/2, -(cardY + cardH/2));
+
+    // Card background
+    ctx.fillStyle = 'rgba(12,25,18,0.85)';
+    ctx.strokeStyle = 'rgba(212,175,55,0.25)';
+    ctx.lineWidth = 1;
+
+    // Rounded rect
+    const r = 24;
+    ctx.beginPath();
+    ctx.moveTo(cardX + r, cardY);
+    ctx.lineTo(cardX + cardW - r, cardY);
+    ctx.quadraticCurveTo(cardX + cardW, cardY, cardX + cardW, cardY + r);
+    ctx.lineTo(cardX + cardW, cardY + cardH - r);
+    ctx.quadraticCurveTo(cardX + cardW, cardY + cardH, cardX + cardW - r, cardY + cardH);
+    ctx.lineTo(cardX + r, cardY + cardH);
+    ctx.quadraticCurveTo(cardX, cardY + cardH, cardX, cardY + cardH - r);
+    ctx.lineTo(cardX, cardY + r);
+    ctx.quadraticCurveTo(cardX, cardY, cardX + r, cardY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Gold top border accent
+    ctx.save();
+    ctx.clip();
+    const topGrd = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY);
+    topGrd.addColorStop(0, 'transparent');
+    topGrd.addColorStop(0.5, 'rgba(212,175,55,0.6)');
+    topGrd.addColorStop(1, 'transparent');
+    ctx.fillStyle = topGrd;
+    ctx.fillRect(cardX, cardY, cardW, 2);
+    ctx.restore();
+
+    // Icon circle
+    const iconDelay = Math.max(0, Math.min(1, (localFrame - 10) / 20));
+    const iconT = easeOutBack(iconDelay);
+    ctx.save();
+    ctx.globalAlpha = iconT;
+    const icX = W/2, icY = cardY + 90;
+    // Circle bg
+    ctx.beginPath();
+    ctx.arc(icX, icY, 50 * iconT, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(212,175,55,0.12)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(212,175,55,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Icon text (emoji)
+    ctx.font = '48px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(icon, icX, icY);
+    ctx.restore();
+
+    // Title
+    const titleDelay = Math.max(0, Math.min(1, (localFrame - 18) / 20));
+    const titleT = easeOutCubic(titleDelay);
+    ctx.save();
+    ctx.globalAlpha = titleT;
+    ctx.font = 'bold 42px Inter';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText(title, W/2, cardY + 190 + (1-titleT)*20);
+    ctx.restore();
+
+    // Description
+    const descDelay = Math.max(0, Math.min(1, (localFrame - 28) / 20));
+    const descT = easeOutCubic(descDelay);
+    ctx.save();
+    ctx.globalAlpha = descT * 0.65;
+    ctx.font = '28px Inter';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText(desc, W/2, cardY + 260 + (1-descT)*15);
+    ctx.restore();
+
+    ctx.restore();
+}
+
+function drawProgressBar(frame) {
+    const progress = frame / TOTAL_FRAMES;
+    const barW = W - 160;
+    const barH = 4;
+    const barX = 80;
+    const barY = H - 60;
+
+    ctx.save();
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.fillRect(barX, barY, barW, barH);
+
+    ctx.globalAlpha = 0.7;
+    const pgrd = ctx.createLinearGradient(barX, barY, barX + barW * progress, barY);
+    pgrd.addColorStop(0, GOLD_DK);
+    pgrd.addColorStop(1, GOLD_LT);
+    ctx.fillStyle = pgrd;
+    ctx.fillRect(barX, barY, barW * progress, barH);
+    ctx.restore();
+}
+
+// ── Main render ──
+function render(frame) {
+    ctx.clearRect(0, 0, W, H);
+    drawBackground(frame);
+    drawParticles(frame);
+
+    const scene = getCurrentScene(frame);
+
+    // ── SCENE: INTRO (Logo reveal) ──
+    if (scene.id === 'intro') {
+        const f = frame - scene.start;
+        drawOrnament(H/2 - 120, frame, 10);
+        drawGoldText('SDM', W/2, H/2, '900 140px "Cinzel Decorative"', frame, 15, 30);
+        drawTextReveal('Sopey Dialibatoul Marakhib', W/2, H/2 + 100, '300 30px Inter', DIM, frame, 35, 25);
+        drawTextReveal('Votre Compagnon Spirituel', W/2, H/2 + 160, '500 36px Inter', 'rgba(212,175,55,0.7)', frame, 50, 25);
+    }
+
+    // ── SCENE: BISMILLAH ──
+    if (scene.id === 'bismillah') {
+        const f = frame - scene.start;
+        // Fade out intro
+        const fadeIn = Math.min(1, f / 20);
+
+        ctx.save();
+        ctx.globalAlpha = fadeIn;
+        drawOrnament(H/2 - 140, frame, scene.start + 5);
+
+        // Arabic bismillah
+        drawGoldText('بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ', W/2, H/2, '700 72px Amiri', frame, scene.start + 10, 30);
+        drawTextReveal('Au Nom d\'Allah, le Tout Miséricordieux', W/2, H/2 + 80, '400 32px Inter', DIM, frame, scene.start + 25, 25);
+        drawTextReveal('le Très Miséricordieux', W/2, H/2 + 130, '400 32px Inter', DIM, frame, scene.start + 35, 25);
+        
+        drawOrnament(H/2 + 200, frame, scene.start + 30);
+        ctx.restore();
+    }
+
+    // ── SCENE: Feature 1 - Khassidas ──
+    if (scene.id === 'feature1') {
+        drawTextReveal('Bibliothèque Complète', W/2, H/2 - 260, '700 48px Inter', GOLD, frame, scene.start + 5, 20);
+        drawFeatureCard('📖', 'Khassidas & Coran', 'Lisez, écoutez et méditez à tout moment', frame, scene.start);
+    }
+
+    // ── SCENE: Feature 2 - Zikr ──
+    if (scene.id === 'feature2') {
+        drawTextReveal('Ensemble dans le Zikr', W/2, H/2 - 260, '700 48px Inter', GOLD, frame, scene.start + 5, 20);
+        drawFeatureCard('🤲', 'Zikr Communautaire', 'Rejoignez des milliers de frères dans le Zikr', frame, scene.start);
+    }
+
+    // ── SCENE: Feature 3 - Prière ──
+    if (scene.id === 'feature3') {
+        drawTextReveal('Ne Ratez Plus Aucune Prière', W/2, H/2 - 260, '700 48px Inter', GOLD, frame, scene.start + 5, 20);
+        drawFeatureCard('🕌', 'Horaires de Prière', 'Notifications et Adhan pour chaque Salat', frame, scene.start);
+    }
+
+    // ── SCENE: Feature 4 - Masalikoul Djinane ──
+    if (scene.id === 'feature4') {
+        drawTextReveal('Sagesse Quotidienne', W/2, H/2 - 260, '700 48px Inter', GOLD, frame, scene.start + 5, 20);
+        drawFeatureCard('✨', 'Masalikoul Djinane', 'Un verset de Cheikh Ahmadou Bamba chaque jour', frame, scene.start);
+    }
+
+    // ── SCENE: OUTRO (CTA) ──
+    if (scene.id === 'outro') {
+        const f = frame - scene.start;
+        drawOrnament(H/2 - 200, frame, scene.start + 5);
+        drawGoldText('SDM', W/2, H/2 - 80, '900 120px "Cinzel Decorative"', frame, scene.start + 5, 20);
+        drawTextReveal('Téléchargez Gratuitement', W/2, H/2 + 60, '600 44px Inter', '#fff', frame, scene.start + 20, 20);
+        drawTextReveal('sur le Play Store', W/2, H/2 + 120, '400 36px Inter', DIM, frame, scene.start + 28, 20);
+        drawOrnament(H/2 + 200, frame, scene.start + 15);
+
+        // Pulsing CTA button
+        const btnProgress = Math.max(0, Math.min(1, (f - 35) / 15));
+        if (btnProgress > 0) {
+            const btnT = easeOutBack(btnProgress);
+            const pulse = Math.sin(frame * 0.1) * 3;
+            const btnW = 500, btnH = 80;
+            const btnX = (W - btnW)/2, btnY = H/2 + 200;
+
+            ctx.save();
+            ctx.globalAlpha = btnT;
+            ctx.translate(W/2, btnY + btnH/2);
+            ctx.scale(btnT, btnT);
+            ctx.translate(-W/2, -(btnY + btnH/2));
+
+            // Button glow
+            ctx.shadowColor = GOLD;
+            ctx.shadowBlur = 25 + pulse;
+
+            // Button bg
+            const btnGrd = ctx.createLinearGradient(btnX, btnY, btnX + btnW, btnY + btnH);
+            btnGrd.addColorStop(0, 'rgba(212,175,55,0.2)');
+            btnGrd.addColorStop(1, 'rgba(212,175,55,0.1)');
+            ctx.fillStyle = btnGrd;
+            ctx.strokeStyle = GOLD;
+            ctx.lineWidth = 2;
+
+            // Rounded button
+            const br = 40;
+            ctx.beginPath();
+            ctx.moveTo(btnX + br, btnY);
+            ctx.lineTo(btnX + btnW - br, btnY);
+            ctx.quadraticCurveTo(btnX + btnW, btnY, btnX + btnW, btnY + br);
+            ctx.lineTo(btnX + btnW, btnY + btnH - br);
+            ctx.quadraticCurveTo(btnX + btnW, btnY + btnH, btnX + btnW - br, btnY + btnH);
+            ctx.lineTo(btnX + br, btnY + btnH);
+            ctx.quadraticCurveTo(btnX, btnY + btnH, btnX, btnY + btnH - br);
+            ctx.lineTo(btnX, btnY + br);
+            ctx.quadraticCurveTo(btnX, btnY, btnX + br, btnY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Button text
+            ctx.font = '600 32px Inter';
+            ctx.fillStyle = GOLD;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowBlur = 0;
+            ctx.fillText('▶  Disponible Maintenant', W/2, btnY + btnH/2);
+            ctx.restore();
+        }
+    }
+
+    // Transition fades between scenes
+    scenes.forEach(s => {
+        if (frame >= s.end - 10 && frame < s.end && s.id !== 'outro') {
+            const fadeOut = (s.end - frame) / 10;
+            ctx.save();
+            ctx.globalAlpha = 1 - fadeOut;
+            ctx.fillStyle = BG;
+            ctx.fillRect(0, 0, W, H);
+            ctx.restore();
+        }
+        if (frame >= s.start && frame < s.start + 10 && s.id !== 'intro') {
+            const fadeIn = (frame - s.start) / 10;
+            ctx.save();
+            ctx.globalAlpha = 1 - fadeIn;
+            ctx.fillStyle = BG;
+            ctx.fillRect(0, 0, W, H);
+            ctx.restore();
+        }
+    });
+
+    drawProgressBar(frame);
+}
+
+// ── Animation loop ──
+function animate() {
+    if (!animRunning) return;
+    render(animFrame);
+    animFrame++;
+    if (animFrame >= TOTAL_FRAMES) {
+        animRunning = false;
+        document.getElementById('btnPlay').textContent = '▶ Relancer';
+        document.getElementById('btnPlay').disabled = false;
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+        }
+        return;
+    }
+    animId = setTimeout(() => requestAnimationFrame(animate), 1000 / FPS);
+}
+
+function startAnimation() {
+    animFrame = 0;
+    animRunning = true;
+    // Reset particles
+    particles.forEach(p => {
+        p.y = Math.random() * H;
+        p.x = Math.random() * W;
+    });
+    document.getElementById('btnPlay').textContent = '⏸ En cours...';
+    document.getElementById('btnPlay').disabled = true;
+    document.getElementById('btnRecord').disabled = false;
+    animate();
+}
+
+// ── Recording (MediaRecorder API) ──
+let mediaRecorder = null;
+let recordedChunks = [];
+
+function startRecording() {
+    recordedChunks = [];
+    const stream = canvas.captureStream(FPS);
+
+    // Try VP9, fallback to VP8, then default
+    const mimeTypes = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+    let mimeType = '';
+    for (const mt of mimeTypes) {
+        if (MediaRecorder.isTypeSupported(mt)) { mimeType = mt; break; }
+    }
+
+    mediaRecorder = new MediaRecorder(stream, {
+        mimeType: mimeType,
+        videoBitsPerSecond: 8000000 // 8 Mbps
+    });
+
+    mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+        document.getElementById('btnRecord').textContent = '⏺ Enregistrer MP4';
+        document.getElementById('btnRecord').classList.remove('recording');
+        document.getElementById('btnDownload').style.display = 'inline-block';
+        document.getElementById('btnDownload').disabled = false;
+        showStatus('✅ Enregistrement terminé ! Cliquez sur Télécharger.');
+    };
+
+    mediaRecorder.start(100); // collect chunks every 100ms
+    document.getElementById('btnRecord').textContent = '⏹ Enregistrement...';
+    document.getElementById('btnRecord').classList.add('recording');
+    document.getElementById('btnRecord').disabled = true;
+    showStatus('🔴 Enregistrement en cours...');
+
+    // Restart animation from beginning with recording
+    animFrame = 0;
+    animRunning = true;
+    particles.forEach(p => {
+        p.y = Math.random() * H;
+        p.x = Math.random() * W;
+    });
+    document.getElementById('btnPlay').textContent = '⏸ En cours...';
+    document.getElementById('btnPlay').disabled = true;
+    animate();
+}
+
+function downloadVideo() {
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'SDM_Promo_Video.webm';
+    a.click();
+    URL.revokeObjectURL(url);
+    showStatus('📥 Téléchargement lancé ! (Format WebM - convertible en MP4 si besoin)');
+}
+
+function showStatus(msg) {
+    const bar = document.getElementById('statusBar');
+    bar.textContent = msg;
+    bar.style.display = 'block';
+    setTimeout(() => { bar.style.display = 'none'; }, 5000);
+}
+
+// Draw initial frame
+render(0);
+</script>
+</body>
+</html>

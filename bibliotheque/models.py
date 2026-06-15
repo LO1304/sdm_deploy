@@ -12,6 +12,7 @@ class Khassida(models.Model):
     auteur = models.CharField(max_length=255, default="Cheikh Ahmadou Bamba")
     fichier_pdf = models.FileField(upload_to='khassidas/')
     image_couverture = models.ImageField(upload_to='couvertures/', blank=True, null=True)
+    est_premium = models.BooleanField(default=False, help_text="Cocher pour réserver ce contenu aux utilisateurs Premium")
 
     def __str__(self):
         return self.titre
@@ -24,6 +25,7 @@ class Coran(models.Model):
     traduction_fr = models.TextField(blank=True, null=True)
     fichier_pdf = models.FileField(upload_to='coran_pdf/', blank=True, null=True)
     fichier_audio = models.FileField(upload_to='coran_audio/', blank=True, null=True)
+    est_premium = models.BooleanField(default=False, help_text="Cocher pour réserver ce contenu aux utilisateurs Premium")
 
     def __str__(self):
         return self.titre
@@ -37,6 +39,7 @@ class Zikr(models.Model):
     traduction = models.TextField(blank=True)
     objectif_par_defaut = models.PositiveIntegerField(default=33)
     fichier_audio = models.FileField(upload_to='zikrs_audio/', blank=True, null=True)
+    est_premium = models.BooleanField(default=False, help_text="Cocher pour réserver ce contenu aux utilisateurs Premium")
 
     def __str__(self):
         return self.titre
@@ -114,6 +117,7 @@ class Wird(models.Model):
     traduction = models.TextField(blank=True, help_text="Traduction")
     nombre_repetitions = models.IntegerField(default=100)
     fichier_audio = models.FileField(upload_to='audios/wird', blank=True, null=True)
+    est_premium = models.BooleanField(default=False, help_text="Cocher pour réserver ce contenu aux utilisateurs Premium")
 
     def __str__(self):
         return self.titre
@@ -220,6 +224,7 @@ class Son(models.Model):
         help_text="Lien Cloudinary ou externe (prioritaire sur le fichier local)"
     )
     date_ajout = models.DateTimeField(auto_now_add=True)
+    est_premium = models.BooleanField(default=False, help_text="Cocher pour réserver ce contenu aux utilisateurs Premium")
 
     def __str__(self):
         return f"{self.titre} ({self.get_categorie_display()})"

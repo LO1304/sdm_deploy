@@ -334,7 +334,7 @@
                     </a>
                     <div class="item-body">
                         <a href="{% url 'zikr_compteur' item.id %}" style="text-decoration:none">
-                            <div class="item-title">{{ item.titre }}</div>
+                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
                             <div class="item-subtitle">Objectif : {{ item.objectif_par_defaut }} fois</div>
                         </a>
                     </div>
@@ -354,7 +354,7 @@
                     </a>
                     <div class="item-body">
                         <a href="{% url 'lire_wird' item.slug %}" style="text-decoration:none">
-                            <div class="item-title">{{ item.titre }}</div>
+                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
                             <div class="item-subtitle">Consulter le Wird</div>
                         </a>
                     </div>
@@ -373,7 +373,7 @@
                     </a>
                     <div class="item-body">
                         <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
-                            <div class="item-title">{{ item.titre }}</div>
+                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
                             <div class="item-subtitle">{{ item.auteur_voix|default:item.get_categorie_display|default:"Audio" }}</div>
                         </a>
                     </div>
@@ -392,7 +392,7 @@
                     </a>
                     <div class="item-body">
                         <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
-                            <div class="item-title">{{ item.titre }}</div>
+                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
                             <div class="item-subtitle">{{ item.auteur|default:"Saint Coran" }}</div>
                         </a>
                     </div>
@@ -416,7 +416,7 @@
                     </a>
                     <div class="item-body">
                         <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
-                            <div class="item-title">{{ item.titre }}</div>
+                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
                             <div class="item-subtitle">{{ item.auteur|default:"Consulter" }}</div>
                         </a>
                     </div>

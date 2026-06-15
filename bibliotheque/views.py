@@ -39,6 +39,28 @@ from .models import (
 )
 from .forms import ModernRegisterForm
 
+
+# --- HELPER : VÉRIFICATION PREMIUM ---
+
+def _user_is_premium(user):
+    """Vérifie si un utilisateur est Premium."""
+    if not user.is_authenticated:
+        return False
+    try:
+        return user.profile.est_premium
+    except Profile.DoesNotExist:
+        return False
+
+
+def _check_premium_access(request, content_obj):
+    """Vérifie l'accès premium et retourne une redirection si bloqué, sinon None."""
+    if getattr(content_obj, 'est_premium', False) and not _user_is_premium(request.user):
+        return render(request, 'bibliotheque/premium_required.html', {
+            'contenu_titre': getattr(content_obj, 'titre', 'Contenu Premium'),
+        })
+    return None
+
+
 # --- VUES PRINCIPALES ---
 
 def home(request):
@@ -140,6 +162,11 @@ def lire_pdf(request, categorie, id):
         return redirect('lire_wird', slug=wird.slug)
         
     document = get_object_or_404(target_model, id=id)
+
+    # Vérifier l'accès Premium
+    premium_block = _check_premium_access(request, document)
+    if premium_block:
+        return premium_block
     
     # Récupérer la progression
     page_reprise = 1
@@ -352,6 +379,12 @@ def sauvegarder_progression_pdf(request):
 def zikr_compteur(request, id):
     """Interface du chapelet électronique."""
     zikr = get_object_or_404(Zikr, id=id)
+
+    # Vérifier l'accès Premium
+    premium_block = _check_premium_access(request, zikr)
+    if premium_block:
+        return premium_block
+
     return render(request, 'bibliotheque/zikr_compteur.html', {'zikr': zikr})
 
 @csrf_exempt
@@ -546,6 +579,12 @@ def toggle_favori(request, model_name, object_id):
 
 def lire_wird(request, slug):
     wird = get_object_or_404(Wird, slug=slug)
+
+    # Vérifier l'accès Premium
+    premium_block = _check_premium_access(request, wird)
+    if premium_block:
+        return premium_block
+
     etapes = wird.etapes.all().order_by('numero')
     
     progression = None

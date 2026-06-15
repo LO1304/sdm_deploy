@@ -1,0 +1,348 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#03040a">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Contenu Premium — SDM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37; --gold-lt: #f5dc6e; --gold-dk: #9a7520;
+            --bg: #03040a; --text: #f0f0f0; --dim: rgba(255,255,255,0.4);
+            --border: rgba(255,255,255,0.07); --border-g: rgba(212,175,55,0.2);
+            --emerald: #10B981;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+            min-height: 100dvh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── CANVAS ÉTOILES ── */
+        #cosmos { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        /* ── BLOBS ── */
+        .blob {
+            position: fixed; border-radius: 50%;
+            filter: blur(120px); pointer-events: none; z-index: 0;
+        }
+        .blob-1 {
+            width: 600px; height: 600px; top: -200px; left: -100px;
+            background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%);
+            animation: blobA 20s ease-in-out infinite alternate;
+        }
+        .blob-2 {
+            width: 450px; height: 450px; bottom: -100px; right: -100px;
+            background: radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%);
+            animation: blobB 25s ease-in-out infinite alternate;
+        }
+        @keyframes blobA { to { transform: translate(80px, 60px) scale(1.15); } }
+        @keyframes blobB { to { transform: translate(-60px, -40px) scale(1.2); } }
+
+        /* ── LAYOUT ── */
+        .wrapper {
+            position: relative; z-index: 1;
+            min-height: 100dvh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* ── LOCK ICON ── */
+        .lock-ring {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.03));
+            border: 2px solid var(--border-g);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 32px;
+            animation: pulse-ring 3s ease-in-out infinite;
+            position: relative;
+        }
+        .lock-ring::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 1px solid rgba(212,175,55,0.1);
+            animation: pulse-ring 3s ease-in-out infinite 0.5s;
+        }
+        .lock-ring i {
+            font-size: 42px;
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        @keyframes pulse-ring {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212,175,55,0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px 10px rgba(212,175,55,0.08); }
+        }
+
+        /* ── CARD ── */
+        .premium-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-g);
+            border-radius: 28px;
+            padding: 48px 32px 40px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .premium-card h1 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .premium-card .subtitle {
+            color: var(--dim);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+        .premium-card .content-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 24px;
+            padding: 12px 20px;
+            background: rgba(212,175,55,0.08);
+            border: 1px solid rgba(212,175,55,0.15);
+            border-radius: 14px;
+            display: inline-block;
+        }
+        .premium-card .content-name i {
+            color: var(--gold);
+            margin-right: 8px;
+        }
+
+        /* ── FEATURES LIST ── */
+        .features-list {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 32px;
+        }
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .features-list li:last-child { border-bottom: none; }
+        .features-list li i {
+            color: var(--gold);
+            font-size: 0.8rem;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* ── BOUTON DON ── */
+        .btn-don {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 28px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #000;
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 24px rgba(212,175,55,0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-don::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        .btn-don:hover::before { transform: translateX(100%); }
+        .btn-don:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(212,175,55,0.35);
+        }
+        .btn-don:active { transform: translateY(0) scale(0.98); }
+
+        /* ── BOUTON RETOUR ── */
+        .btn-retour {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--dim);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-retour:hover {
+            color: white;
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        /* ── FOOTER ── */
+        .premium-footer {
+            margin-top: 32px;
+            color: var(--dim);
+            font-size: 0.75rem;
+            line-height: 1.5;
+        }
+        .premium-footer i { color: var(--emerald); }
+
+        /* ── SPARKLES ── */
+        .sparkle {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: sparkle-anim 2s ease-in-out infinite;
+        }
+        .sparkle:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 20%; right: 12%; animation-delay: 0.7s; }
+        .sparkle:nth-child(3) { bottom: 25%; left: 8%; animation-delay: 1.4s; }
+        .sparkle:nth-child(4) { bottom: 15%; right: 15%; animation-delay: 0.3s; }
+        @keyframes sparkle-anim {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 480px) {
+            .premium-card { padding: 36px 24px 32px; border-radius: 22px; }
+            .premium-card h1 { font-size: 1.3rem; }
+            .lock-ring { width: 100px; height: 100px; }
+            .lock-ring i { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fond étoilé -->
+    <canvas id="cosmos"></canvas>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="wrapper">
+        <!-- Lock Icon -->
+        <div class="lock-ring">
+            <i class="fa-solid fa-crown"></i>
+        </div>
+
+        <!-- Card -->
+        <div class="premium-card">
+            <!-- Sparkles -->
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+
+            <h1>Contenu Premium</h1>
+            <p class="subtitle">
+                Ce contenu est réservé aux membres Premium de SDM.<br>
+                Soutenez le projet par un don et débloquez tout le contenu !
+            </p>
+
+            <div class="content-name">
+                <i class="fa-solid fa-lock"></i> {{ contenu_titre }}
+            </div>
+
+            <ul class="features-list">
+                <li><i class="fa-solid fa-check"></i> Accès à tous les Khassidas Premium</li>
+                <li><i class="fa-solid fa-check"></i> Sons et récitations exclusifs</li>
+                <li><i class="fa-solid fa-check"></i> Zikrs et Wirds avancés</li>
+                <li><i class="fa-solid fa-check"></i> Badge 👑 de soutien du projet</li>
+                <li><i class="fa-solid fa-check"></i> Soutenez la préservation du patrimoine Mouride</li>
+            </ul>
+
+            <a href="{% url 'abonnement' %}" class="btn-don">
+                <i class="fa-solid fa-hand-holding-heart"></i>
+                Faire un Don
+            </a>
+
+            <a href="javascript:history.back()" class="btn-retour">
+                <i class="fa-solid fa-arrow-left"></i> Retour
+            </a>
+
+            <div class="premium-footer">
+                <i class="fa-solid fa-shield-halved"></i> Votre don soutient directement la numérisation<br>
+                et la préservation des écrits de Cheikh Ahmadou Bamba.
+            </div>
+        </div>
+    </div>
+
+    <!-- Script étoiles -->
+    <script>
+    (function(){
+        const c = document.getElementById('cosmos');
+        const ctx = c.getContext('2d');
+        let stars = [];
+        function resize() {
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+            stars = Array.from({length: 80}, () => ({
+                x: Math.random() * c.width,
+                y: Math.random() * c.height,
+                r: Math.random() * 1.2 + 0.3,
+                a: Math.random(),
+                da: (Math.random() - 0.5) * 0.008
+            }));
+        }
+        function draw() {
+            ctx.clearRect(0, 0, c.width, c.height);
+            for (const s of stars) {
+                s.a += s.da;
+                if (s.a > 1 || s.a < 0.1) s.da *= -1;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(212, 175, 55, ${s.a * 0.4})`;
+                ctx.fill();
+            }
+            requestAnimationFrame(draw);
+        }
+        window.addEventListener('resize', resize);
+        resize();
+        draw();
+    })();
+    </script>
+</body>
+</html>

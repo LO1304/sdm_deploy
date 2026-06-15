@@ -389,7 +389,7 @@
 
             <!-- Infos -->
             <div class="track-info">
-                <div class="track-title">{{ s.titre }}</div>
+                <div class="track-title">{{ s.titre }}{% if s.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
                 <div class="track-author">{{ s.auteur_voix|default:s.get_categorie_display }}</div>
             </div>
 

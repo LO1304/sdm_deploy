@@ -154,7 +154,7 @@
                 </div>
                 <div class="overflow-hidden">
                     <p class="text-[10px] md:text-xs uppercase font-bold text-gold-500 tracking-widest mb-1 md:mb-2">LECTURE EN COURS</p>
-                    <p class="text-sm md:text-xl font-semibold text-white/90 truncate w-[180px] md:w-[400px]">{{ derniere_lecture.obj.titre }}</p>
+                    <p class="text-sm md:text-xl font-semibold text-white/90 truncate w-[180px] md:w-[400px]">{{ derniere_lecture.obj.titre }}{% if derniere_lecture.obj.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</p>
                 </div>
             </div>
             <div class="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-black transition-colors flex-shrink-0">
@@ -177,7 +177,7 @@
                 </div>
                 <div class="overflow-hidden">
                     <p class="text-[10px] md:text-xs uppercase font-bold text-[#10B981] tracking-widest mb-1 md:mb-2">SON EN COURS</p>
-                    <p class="text-sm md:text-xl font-semibold text-white/90 truncate w-[180px] md:w-[400px]">{{ dernier_son.titre }}</p>
+                    <p class="text-sm md:text-xl font-semibold text-white/90 truncate w-[180px] md:w-[400px]">{{ dernier_son.titre }}{% if dernier_son.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</p>
                     <p class="text-[9px] md:text-[10px] text-white/50 uppercase tracking-widest truncate mt-0.5">{{ dernier_son.auteur_voix|default:dernier_son.get_categorie_display }}</p>
                 </div>
             </div>
