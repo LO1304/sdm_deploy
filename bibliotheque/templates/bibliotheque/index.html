@@ -339,11 +339,10 @@
         </div>
     </div>
 
-    <!-- PREMIUM UPSELL BANNER -->
+    <!-- PREMIUM UPSELL BANNER (non-premium uniquement) -->
     {% if user.is_authenticated and not user.profile.est_premium %}
     <div class="mb-14" data-aos="zoom-in-up" data-aos-delay="600" data-aos-duration="1200">
         <div class="relative bg-gradient-to-br from-gray-900 to-black rounded-[32px] p-1 border border-gold-500/30 overflow-hidden shadow-[0_10px_40px_rgba(212,175,55,0.15)] group">
-            <!-- Animated border effect via pseudo element -->
             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold-500/20 to-transparent w-[200%] animate-[spin_4s_linear_infinite] group-hover:opacity-100 opacity-50 block" style="animation: slide 3s infinite linear; background-size: 50% 100%;"></div>
             
             <div class="relative bg-[#060b09] rounded-[28px] p-6 md:p-12 pt-8 z-10 flex flex-col md:flex-row items-center justify-between text-center md:text-left gap-8">
@@ -385,7 +384,43 @@
     </div>
     {% endif %}
 
+    <!-- SOUTENIR LE PROJET (Visible pour TOUS — Premium ou non) -->
+    <div class="mb-14" data-aos="fade-up" data-aos-delay="650" data-aos-duration="1000">
+        <div class="glass rounded-[28px] p-6 md:p-8 border border-white/5 text-center relative overflow-hidden">
+            <div class="absolute -bottom-16 -left-16 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl"></div>
+            <div class="relative z-10">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400/20 to-emerald-600/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-hand-holding-heart text-emerald-400 text-lg"></i>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-white mb-2">Soutenir SDM</h3>
+                <p class="text-xs md:text-sm text-white/50 mb-6 max-w-md mx-auto leading-relaxed">
+                    Votre contribution aide à maintenir et améliorer cette plateforme au service de la communauté mouride. Qu'Allah vous récompense.
+                </p>
+                <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/" target="_blank" class="inline-flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-sm shadow-[0_8px_20px_rgba(16,185,129,0.25)] hover:shadow-[0_12px_28px_rgba(16,185,129,0.35)] hover:-translate-y-0.5 transition-all">
+                    <i class="fa-solid fa-heart text-sm"></i> Faire un don
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- INSTALLER L'APPLICATION (Visible pour TOUS) -->
+    <div class="mb-14" data-aos="fade-up" data-aos-delay="700" data-aos-duration="1000">
+        <div class="glass rounded-[28px] p-5 md:p-6 border border-white/5 flex items-center gap-5">
+            <div class="w-14 h-14 rounded-[18px] bg-gradient-to-br from-gold-400/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-download text-gold-500 text-xl"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm md:text-base font-bold text-white mb-0.5">Installer l'application</p>
+                <p class="text-[10px] md:text-xs text-white/40">Accédez à SDM directement depuis votre écran d'accueil</p>
+            </div>
+            <button id="install-btn" onclick="installPWA()" class="px-5 py-2.5 rounded-xl bg-gold-500/15 border border-gold-500/30 text-gold-500 text-xs font-bold uppercase tracking-wider hover:bg-gold-500/25 transition-all flex-shrink-0">
+                Installer
+            </button>
+        </div>
+    </div>
+
 {% endblock %}
+
 
 {% block extra_js %}
 <script>
@@ -605,6 +640,30 @@
             .catch(console.error);
         } else {
             compass.style.transform = `rotate(65deg)`;
+        }
+    }
+
+    /* ═══ PWA INSTALL ═══ */
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const btn = document.getElementById('install-btn');
+        if (btn) btn.style.display = 'block';
+    });
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') {
+                    const btn = document.getElementById('install-btn');
+                    if (btn) btn.textContent = 'Installé ✓';
+                }
+                deferredPrompt = null;
+            });
+        } else {
+            // Fallback: show instructions
+            alert("Pour installer l'application :\n\n📱 Sur téléphone : Ouvrez le menu du navigateur (⋮) puis 'Ajouter à l'écran d'accueil'\n\n💻 Sur PC : Cliquez sur l'icône d'installation dans la barre d'adresse");
         }
     }
 </script>
