@@ -43,7 +43,15 @@ from .forms import ModernRegisterForm
 
 def home(request):
     """Page d'accueil avec horaires de prières et contenus récents."""
-    contenu = ContenuDuJour.objects.last()
+    import datetime
+    
+    # Automatisation du contenu du jour : rotation quotidienne
+    tous_les_contenus = ContenuDuJour.objects.all()
+    contenu = None
+    if tous_les_contenus.exists():
+        jour_annee = datetime.date.today().timetuple().tm_yday
+        index = jour_annee % tous_les_contenus.count()
+        contenu = tous_les_contenus[index]
     khassida = Khassida.objects.all()
     zikrs = Zikr.objects.all()
     recents_khassidas = Khassida.objects.order_by('-id')[:6]
