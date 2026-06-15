@@ -363,10 +363,10 @@
     <!-- TRACK LIST -->
     <div id="sonList">
         {% for s in sons %}
-        {% if s.fichier_audio %}
+        {% if s.fichier_audio or s.lien_audio_externe %}
         <div class="track-item"
              data-id="{{ s.id }}"
-             data-url="{{ s.fichier_audio.url }}"
+             data-url="{% if s.fichier_audio %}{{ s.fichier_audio.url }}{% else %}{{ s.lien_audio_externe }}{% endif %}"
              data-titre="{{ s.titre|escapejs }}"
              data-auteur="{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}"
              data-index="{{ forloop.counter0 }}"
@@ -401,7 +401,7 @@
                         data-liked="{% if s.id in favoris_ids %}true{% else %}false{% endif %}">
                     <i class="fa-{% if s.id in favoris_ids %}solid{% else %}regular{% endif %} fa-heart"></i>
                 </button>
-                <a href="{{ s.fichier_audio.url }}" download
+                <a href="{% if s.fichier_audio %}{{ s.fichier_audio.url }}{% else %}{{ s.lien_audio_externe }}{% endif %}" download
                    class="track-btn" onclick="registerDownload(event, 'son', {{ s.id }})">
                     <i class="fa-solid fa-download"></i>
                 </a>
