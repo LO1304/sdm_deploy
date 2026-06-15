@@ -439,6 +439,18 @@ def liste_sons(request):
         'favoris_ids': favoris_ids,
     })
 
+def run_import_xamxam(request):
+    """View to trigger the xamxam audio import directly from the web."""
+    from django.core.management import call_command
+    import threading
+    
+    def run_cmd():
+        call_command('import_xamxam')
+        
+    thread = threading.Thread(target=run_cmd)
+    thread.start()
+    return HttpResponse("Import XamXam démarré en arrière-plan. Vérifiez les sons dans quelques minutes.")
+
 # --- AUTHENTIFICATION & PROFIL ---
 
 def login_view(request):

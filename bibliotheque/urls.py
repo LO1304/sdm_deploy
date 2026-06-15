@@ -8,6 +8,7 @@ from bibliotheque import views, firebase_auth_view
 urlpatterns = [
     # Accueil et Authentification
     path('', views.home, name='home'),
+    path('admin/run-import-xamxam/', views.run_import_xamxam, name='run_import_xamxam'),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
