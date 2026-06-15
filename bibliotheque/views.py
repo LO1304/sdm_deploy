@@ -46,12 +46,14 @@ def home(request):
     import datetime
     
     # Automatisation du contenu du jour : rotation quotidienne
-    tous_les_contenus = ContenuDuJour.objects.all()
+    tous_les_contenus = ContenuDuJour.objects.order_by('id')
     contenu = None
     if tous_les_contenus.exists():
         jour_annee = datetime.date.today().timetuple().tm_yday
-        index = jour_annee % tous_les_contenus.count()
-        contenu = tous_les_contenus[index]
+        count = tous_les_contenus.count()
+        if count > 0:
+            index = jour_annee % count
+            contenu = tous_les_contenus[index]
     khassida = Khassida.objects.all()
     zikrs = Zikr.objects.all()
     recents_khassidas = Khassida.objects.order_by('-id')[:6]
