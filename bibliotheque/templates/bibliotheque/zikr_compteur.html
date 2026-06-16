@@ -9,15 +9,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="google" content="notranslate">
-<title>Zikr ÔÇö {{ zikr.titre }}</title>
+<title>Zikr — {{ zikr.titre }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body class="zikr-body">
+
 <style>
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    DESIGN TOKENS
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 :root {
   --g1:#d4af37; --g2:#f5dc6e; --g3:#9a7520;
   --bg:#03040a;
@@ -35,7 +34,7 @@
 html,body{height:100%;overflow:hidden;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:#fff;font-family:var(--fU)}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ BACKGROUND IMAGE OVERLAY ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ BACKGROUND IMAGE OVERLAY ══════ */
 body::before {
   content:'';
   position:fixed;
@@ -46,7 +45,7 @@ body::before {
   pointer-events:none;
 }
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ CANVAS / BLOBS ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ CANVAS / BLOBS ══════ */
 #bgc{position:fixed;inset:0;z-index:0;pointer-events:none}
 .blob{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
 .bl1{width:500px;height:500px;top:-180px;left:50%;transform:translateX(-50%);
@@ -58,10 +57,10 @@ body::before {
 @keyframes bp  {to{transform:translateX(-50%) scale(1.12)}}
 @keyframes bp2 {to{transform:scale(1.2) rotate(12deg)}}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ SCREEN ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ SCREEN ══════ */
 .screen{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;padding-bottom:80px}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ TOPBAR ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ TOPBAR ══════ */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 0;flex-shrink:0}
 .tbtn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid var(--b2);
   display:flex;align-items:center;justify-content:center;color:var(--g1);cursor:pointer;
@@ -72,7 +71,7 @@ body::before {
 .tc-title{font-family:var(--fT);font-size:12px;color:var(--g1);letter-spacing:.06em;margin-top:2px;
   text-shadow:0 0 20px rgba(212,175,55,.15)}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ SALAT TABS ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ SALAT TABS ══════ */
 .salat-bar{
   display:flex;align-items:center;gap:0;
   padding:10px 18px 0;flex-shrink:0;
@@ -120,34 +119,32 @@ body::before {
 .add-salat-btn:hover{background:rgba(212,175,55,.14);transform:scale(1.06)}
 .add-salat-btn:active{transform:scale(.9)}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ ZIKR PILL ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ ZIKR PILL ══════ */
 .zikr-zone{padding:10px 18px 0;flex-shrink:0}
 .zpill{
-  background:rgba(20, 15, 5, 0.4);border:1px solid rgba(212,175,55,.15);
-  border-radius:24px;padding:20px 24px;
+  background:rgba(255,255,255,.02);border:1px solid var(--b1);
+  border-radius:20px;padding:14px 18px;
   text-align:center;position:relative;overflow:hidden;
-  backdrop-filter:blur(24px);transition:all .3s ease;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 25px rgba(212,175,55,0.05);
+  backdrop-filter:blur(20px);transition:all .3s ease;
 }
 .zpill::before{
   content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(212,175,55,.8),transparent);
+  background:linear-gradient(90deg,transparent,rgba(212,175,55,.6),transparent);
 }
 .zpill::after{
   content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(135deg,rgba(212,175,55,.08) 0%,transparent 50%,rgba(212,175,55,.03) 100%);
+  background:linear-gradient(90deg,transparent,rgba(212,175,55,.03),transparent);
+  animation:shimmer 5s ease-in-out infinite;
 }
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
 .zp-ar{
-  font-family:var(--fA);font-size:clamp(22px,6vw,32px);direction:rtl;line-height:1.8;
-  color:#fff;margin-bottom:8px;transition:all .3s;
-  text-shadow: 0 0 25px rgba(212,175,55,.4), 0 2px 4px rgba(0,0,0,0.8);
-  font-weight: 700;
+  font-family:var(--fA);font-size:clamp(18px,5vw,26px);direction:rtl;line-height:2;
+  color:rgba(255,255,255,.92);margin-bottom:6px;transition:all .3s;
+  text-shadow:0 0 30px rgba(212,175,55,.08);
 }
-.zp-tx{font-family:var(--fS);font-style:italic;font-size:15px;color:var(--g2);line-height:1.5;transition:all .3s;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-}
+.zp-tx{font-family:var(--fS);font-style:italic;font-size:13px;color:var(--g1);line-height:1.5;transition:all .3s;opacity:.85}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ COUNTER AREA (Chapelet) ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ COUNTER AREA (Chapelet) ══════ */
 .counter-area{
   flex:1;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
@@ -172,7 +169,7 @@ body::before {
   animation:ptclA var(--d,.5s) ease-out forwards}
 @keyframes ptclA{from{transform:translate(0,0) scale(1);opacity:.9}to{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ CHAPELET (Prayer Beads Ring) ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ CHAPELET (Prayer Beads Ring) ══════ */
 .chapelet-container{
   position:relative;z-index:2;
   width:260px;height:260px;
@@ -230,21 +227,21 @@ body::before {
 }
 
 /* Center counter */
-.count-block{position:absolute;display:flex;flex-direction:column;align-items:center;z-index:3; pointer-events:none;}
+.count-block{position:absolute;display:flex;flex-direction:column;align-items:center;z-index:3}
 .count-num{
-  font-family:var(--fU);font-weight:300;
-  font-size:clamp(64px,18vw,90px);
+  font-family:var(--fU);font-weight:200;
+  font-size:clamp(56px,15vw,80px);
   line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em;
+  transition:all .25s;
   background: linear-gradient(180deg, #ffffff 0%, var(--g2) 40%, var(--g1) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 4px 15px rgba(212,175,55,0.4));
-  transition:all .25s;
 }
-.count-num.bump{animation:bump .2s cubic-bezier(.17,.89,.32,1.28)}
-@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
-.count-sub{font-size:13px;color:rgba(255,255,255,.6);margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:.1em; text-transform:uppercase;}
-.count-sub em{color:var(--g2);font-style:normal;font-weight:700}
+.count-num.bump{animation:bump .18s ease}
+@keyframes bump{0%{transform:scale(1)}45%{transform:scale(1.12)}100%{transform:scale(1)}}
+.count-sub{font-size:12px;color:var(--dim);margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.count-sub em{color:var(--g1);font-style:normal;font-weight:600}
 
 /* Percentage badge */
 .pct-badge{
@@ -308,7 +305,7 @@ body::before {
 .cr-ok:hover{background:rgba(212,175,55,.35)}
 .cr-no{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--dim)}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ AUDIO ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ AUDIO ══════ */
 .audio-section{flex-shrink:0;padding:0 18px 10px}
 .audio-card{background:rgba(255,255,255,.025);border:1px solid var(--b1);border-radius:18px;padding:11px 14px;backdrop-filter:blur(16px)}
 .audio-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
@@ -334,7 +331,7 @@ body::before {
 .vol-bar::-webkit-slider-thumb{-webkit-appearance:none;width:9px;height:9px;border-radius:50%;background:var(--g1)}
 #fileIn{display:none}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ ADD SALAT SHEET ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ ADD SALAT SHEET ══════ */
 .overlay{
   position:fixed;inset:0;z-index:200;
   background:rgba(3,4,10,.95);backdrop-filter:blur(24px);
@@ -376,7 +373,7 @@ body::before {
 .sact-btn.confirm{background:linear-gradient(135deg,var(--g2),var(--g1),var(--g3));color:#080400;box-shadow:0 4px 20px rgba(212,175,55,.25)}
 .sact-btn:active{transform:scale(.95)}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ CONGRATS MODAL ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ CONGRATS MODAL ══════ */
 .modal{
   position:fixed;inset:0;z-index:300;
   background:rgba(3,4,10,.97);backdrop-filter:blur(24px);
@@ -462,7 +459,7 @@ body::before {
 @keyframes fUp{from{opacity:0;transform:translate(-50%,10px)}}
 @keyframes popIn{from{transform:scale(.8);opacity:0}}
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ BOTTOM NAV ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+/* ══════ BOTTOM NAV ══════ */
 .nav-island{
   position:fixed;
   bottom:20px;left:50%;transform:translateX(-50%);
@@ -497,7 +494,7 @@ body::before {
 .nav-item.active .nav-item-indicator{opacity:1;transform:scale(1)}
 </style>
 </head>
-<body hx-boost="true" hx-ext="head-support">
+<body>
 
 <canvas id="bgc"></canvas>
 <div class="blob bl1"></div>
@@ -518,15 +515,15 @@ body::before {
       <div class="tc-tag">Compteur Zikr</div>
       <div class="tc-title" id="mainTitle">{{ zikr.titre }}</div>
     </div>
-    <button class="tbtn" id="resetBtn" title="R├®initialiser">
+    <button class="tbtn" id="resetBtn" title="Réinitialiser">
       <i class="fa-solid fa-rotate-right" style="font-size:11px"></i>
     </button>
   </div>
 
-  <!-- MINI BARRE PRI├êRE -->
+  <!-- MINI BARRE PRIÈRE -->
   <div id="mini-prayer-bar" style="display:flex;align-items:center;justify-content:center;gap:16px;padding:6px 18px;background:rgba(212,175,55,0.04);border-bottom:1px solid rgba(212,175,55,0.08);flex-shrink:0">
     <span style="font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(212,175,55,0.6);font-weight:600">Prochain :</span>
-    <span id="zikr-next-prayer" style="font-size:12px;font-weight:700;color:#d4af37">ÔÇö</span>
+    <span id="zikr-next-prayer" style="font-size:12px;font-weight:700;color:#d4af37">—</span>
     <span id="zikr-next-time" style="font-size:12px;color:rgba(255,255,255,0.5)">--:--</span>
     <span style="width:1px;height:12px;background:rgba(255,255,255,0.1)"></span>
     <span id="zikr-countdown" style="font-size:11px;color:rgba(255,255,255,0.4);font-variant-numeric:tabular-nums">--:--</span>
@@ -535,7 +532,7 @@ body::before {
   <!-- SALAT TABS -->
   <div class="salat-bar">
     <div class="salat-tabs" id="salatTabs"></div>
-    <div class="add-salat-btn" id="addSalatBtn" title="Ajouter une sal├ót">
+    <div class="add-salat-btn" id="addSalatBtn" title="Ajouter une salât">
       <i class="fa-solid fa-plus"></i>
     </div>
   </div>
@@ -601,14 +598,14 @@ body::before {
   <div class="audio-section">
     <div class="audio-card">
       <div class="audio-top">
-        <span class="audio-lbl">├ëcouter</span>
+        <span class="audio-lbl">Écouter</span>
         <span class="audio-src-btn" id="audioSrcBtn">
           <i class="fa-solid fa-folder-open" style="font-size:9px;margin-right:4px"></i>Charger
         </span>
       </div>
       <div id="noSrcMsg" class="audio-no-src">
         <i class="fa-solid fa-music" style="color:var(--g1);opacity:.4"></i>
-        Aucun fichier ÔÇö appuyez sur ┬½ Charger ┬╗
+        Aucun fichier — appuyez sur « Charger »
       </div>
       <div class="audio-controls" id="audControls" style="display:none">
         <button class="ab" id="skipBackBtn"><i class="fa-solid fa-backward-step" style="font-size:10px"></i></button>
@@ -629,7 +626,7 @@ body::before {
 <div class="overlay" id="sheetOverlay">
   <div class="sheet" id="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">Ajouter une Sal├ót</div>
+    <div class="sheet-title">Ajouter une Salât</div>
     <div class="sheet-row">
       <div class="field">
         <label>Nom *</label>
@@ -642,10 +639,10 @@ body::before {
     </div>
     <div class="field">
       <label>Texte arabe</label>
-      <textarea id="fAr" placeholder="Ïº┘ä┘åÏÁ Ï¿Ïº┘äÏ╣Ï▒Ï¿┘èÏ®..."></textarea>
+      <textarea id="fAr" placeholder="النص بالعربية..."></textarea>
     </div>
     <div class="field">
-      <label>Translitt├®ration / Traduction</label>
+      <label>Translittération / Traduction</label>
       <input type="text" id="fTx" placeholder="ex: Allahu Akbar">
     </div>
     <div class="sheet-actions">
@@ -655,9 +652,9 @@ body::before {
   </div>
 </div>
 
-<!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+<!-- ══════════════════════════
      CONGRATS MODAL
-ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+══════════════════════════ -->
 <div class="modal" id="modal">
   <div id="modal-ptcls"></div>
 
@@ -675,12 +672,12 @@ body::before {
 
   <div class="m-title">Macha'Allah !</div>
   <div class="m-sub" id="modalSub">
-    S├®ance termin├®e avec succ├¿s.<br>Que Allah accepte votre Zikr.
+    Séance terminée avec succès.<br>Que Allah accepte votre Zikr.
   </div>
 
   <div class="m-badge">
     <div class="m-num" id="finalCount">0</div>
-    <div class="m-lbl">R├®p├®titions</div>
+    <div class="m-lbl">Répétitions</div>
   </div>
 
   <!-- Boutons -->
@@ -688,7 +685,7 @@ body::before {
     <button class="m-btn-save" id="btnSave">
       <span class="btn-text">
         <i class="fa-solid fa-floppy-disk" style="font-size:13px"></i>
-        Enregistrer la s├®ance
+        Enregistrer la séance
       </span>
       <span class="btn-spin">
         <div class="spin-ring"></div>
@@ -697,7 +694,7 @@ body::before {
     </button>
     <button class="m-btn-reset" id="btnReset">
       <i class="fa-solid fa-rotate-right" style="font-size:11px"></i>
-      Nouvelle s├®ance
+      Nouvelle séance
     </button>
   </div>
 
@@ -709,9 +706,9 @@ body::before {
 </div>
 
 <script>
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    STARS CANVAS
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 (function(){
   const c=document.getElementById('bgc'),ctx=c.getContext('2d');
   let W,H,pts=[];
@@ -734,28 +731,22 @@ body::before {
   window.addEventListener('resize',rs);
 })();
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
-   DATA ÔÇö DEFAULT SALATS (Post-salat zikrs)
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
-const LS_KEY = 'sdm_salats_v3_{{ zikr.id|default:"0" }}';
+/* ══════════════════════════════════════════
+   DATA — DEFAULT SALATS (Post-salat zikrs)
+   ══════════════════════════════════════════ */
+const LS_KEY = 'sdm_salats_v2';
 const DEFAULT_SALATS = [
   { id:'s0', nom:'{{ zikr.titre|escapejs }}', arabe:'{{ zikr.texte_arabe|escapejs }}', trans:'{{ zikr.texte_a_repeter|default:zikr.transcription|escapejs }}', goal:{{ zikr.objectif_par_defaut|default:33 }}, count:0 },
-  { id:'s1', nom:'SubhanAllah', arabe:'Ï│┘ÅÏ¿┘ÆÏ¡┘ÄÏº┘å┘Ä Ïº┘ä┘ä┘Ä┘æ┘ç┘É', trans:'Gloire ├á Allah', goal:33, count:0 },
-  { id:'s2', nom:'Alhamdulillah', arabe:'Ïº┘ä┘ÆÏ¡┘Ä┘à┘ÆÏ»┘Å ┘ä┘É┘ä┘Ä┘æ┘ç┘É', trans:'Louange ├á Allah', goal:33, count:0 },
-  { id:'s3', nom:'Allahu Akbar', arabe:'Ïº┘ä┘ä┘Ä┘æ┘ç┘Å Ïú┘Ä┘â┘ÆÏ¿┘ÄÏ▒┘Å', trans:'Allah est le Plus Grand', goal:33, count:0 },
-  { id:'s3b', nom:'La ilaha illallah', arabe:'┘ä┘ÄÏº ÏÑ┘É┘ä┘Ä┘░┘ç┘Ä ÏÑ┘É┘ä┘Ä┘æÏº Ïº┘ä┘ä┘Ä┘æ┘ç┘Å', trans:'Il n\'y a de dieu qu\'Allah', goal:1, count:0 },
-  { id:'s4', nom:'Istighfar', arabe:'Ïú┘ÄÏ│┘ÆÏ¬┘ÄÏ║┘Æ┘ü┘ÉÏ▒┘Å Ïº┘ä┘ä┘Ä┘æ┘ç┘Ä', trans:'Je demande pardon ├á Allah', goal:33, count:0 },
-  { id:'s5', nom:'Salat ala Nabi', arabe:'Ïº┘ä┘ä┘Ä┘æ┘ç┘Å┘à┘Ä┘æ ÏÁ┘Ä┘ä┘É┘æ Ï╣┘Ä┘ä┘Ä┘ë ┘à┘ÅÏ¡┘Ä┘à┘Ä┘æÏ»┘ì', trans:'├ö Allah, prie sur Muhammad', goal:33, count:0 },
+  { id:'s1', nom:'SubhanAllah', arabe:'سُبْحَانَ اللَّهِ', trans:'Gloire à Allah', goal:33, count:0 },
+  { id:'s2', nom:'Alhamdulillah', arabe:'الْحَمْدُ لِلَّهِ', trans:'Louange à Allah', goal:33, count:0 },
+  { id:'s3', nom:'Allahu Akbar', arabe:'اللَّهُ أَكْبَرُ', trans:'Allah est le Plus Grand', goal:33, count:0 },
+  { id:'s3b', nom:'La ilaha illallah', arabe:'لَا إِلَٰهَ إِلَّا اللَّهُ', trans:'Il n\'y a de dieu qu\'Allah', goal:1, count:0 },
+  { id:'s4', nom:'Istighfar', arabe:'أَسْتَغْفِرُ اللَّهَ', trans:'Je demande pardon à Allah', goal:33, count:0 },
+  { id:'s5', nom:'Salat ala Nabi', arabe:'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ', trans:'Ô Allah, prie sur Muhammad', goal:33, count:0 },
 ];
 
 function loadSalats(){
-  try{ 
-    const r=localStorage.getItem(LS_KEY); 
-    if(r) {
-      const parsed = JSON.parse(r);
-      if(Array.isArray(parsed) && parsed.length > 0 && parsed[0].nom) return parsed;
-    }
-  }catch(e){}
+  try{ const r=localStorage.getItem(LS_KEY); if(r) { const parsed = JSON.parse(r); if(Array.isArray(parsed) && parsed.length > 0 && parsed[0].nom) return parsed; } }catch(e){}
   return DEFAULT_SALATS.map(s=>({...s}));
 }
 function saveSalats(){
@@ -764,11 +755,10 @@ function saveSalats(){
 
 let salats    = loadSalats();
 let activeIdx = 0;
-let isZikrInitialized = false;
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    CHAPELET (Prayer Beads) RENDERING
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 const BEAD_COUNT = 33;
 const RING_RADIUS = 115;
 const beadEls = [];
@@ -782,7 +772,7 @@ function createBeads(){
   const startAngle = -90; // top center
 
   for(let i=0; i<BEAD_COUNT; i++){
-    const angle = startAngle + (i / BEAD_COUNT) * 300; // 300┬░ arc (like real tasbih with gap)
+    const angle = startAngle + (i / BEAD_COUNT) * 300; // 300° arc (like real tasbih with gap)
     const rad = angle * Math.PI / 180;
     const x = cx + RING_RADIUS * Math.cos(rad) - 7;
     const y = cy + RING_RADIUS * Math.sin(rad) - 7;
@@ -832,9 +822,9 @@ function animateBeadReset(){
   }, BEAD_COUNT * 20 + 500);
 }
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    GOALS
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 const GOAL_PRESETS = [33,99,100,1000];
 let goalList  = [];
 let activeGoal = 33;
@@ -854,7 +844,7 @@ function renderChips(){
   goalList.forEach(g=>{
     const d=document.createElement('div');
     d.className='chip'+(g===activeGoal?' on':'');
-    d.innerHTML=`<span>${g}</span>`+(goalList.length>1?`<span class="chip-x" data-goal="${g}">Ô£ò</span>`:'');
+    d.innerHTML=`<span>${g}</span>`+(goalList.length>1?`<span class="chip-x" data-goal="${g}">✕</span>`:'');
     d.addEventListener('click',function(e){
       if(e.target.classList.contains('chip-x')){
         e.stopPropagation();
@@ -909,9 +899,9 @@ document.getElementById('customIn').addEventListener('keydown',e=>{
 document.getElementById('crOkBtn').addEventListener('click', confirmGoal);
 document.getElementById('crNoBtn').addEventListener('click', cancelGoal);
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    SALAT TABS
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 function renderTabs(){
   const row=document.getElementById('salatTabs');
   row.innerHTML='';
@@ -938,8 +928,7 @@ function renderTabs(){
 }
 
 function switchSalat(i){
-  if(i===activeIdx && isZikrInitialized)return;
-  isZikrInitialized = true;
+  if(i===activeIdx && document.getElementById('cNum').textContent!=='')return;
   activeIdx=i;
   const s=salats[i];
   const el=document.getElementById('cNum');
@@ -965,9 +954,9 @@ function deleteSalat(i){
   renderTabs();switchSalat(activeIdx);
 }
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    ADD SALAT SHEET
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 function openSheet() { document.getElementById('sheetOverlay').classList.add('open'); document.getElementById('fName').focus(); }
 function closeSheet(){ document.getElementById('sheetOverlay').classList.remove('open'); }
 
@@ -990,10 +979,10 @@ function addSalat(){
   renderTabs();switchSalat(salats.length-1);
 }
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
-   TAP COUNTER ÔÇö SINGLE pointerdown, DEBOUNCED
+/* ══════════════════════════════════════════
+   TAP COUNTER — SINGLE pointerdown, DEBOUNCED
    Fixes the double-counting bug from onclick+ontouchstart
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 let lastTapTime = 0;
 const DEBOUNCE_MS = 50;
 
@@ -1026,7 +1015,7 @@ function handleTap(){
   // Chapelet beads
   const beadIdx = (s.count - 1) % BEAD_COUNT;
   if(beadIdx === 0 && s.count > 1){
-    // Full round completed ÔÇö animate reset then light first bead
+    // Full round completed — animate reset then light first bead
     animateBeadReset();
     setTimeout(()=>{
       updateBeads(s.count, activeGoal);
@@ -1046,7 +1035,7 @@ function handleTap(){
   if(s.count === activeGoal) setTimeout(openModal, 420);
 }
 
-// Attach SINGLE event listener ÔÇö pointerdown works for mouse, touch, and stylus
+// Attach SINGLE event listener — pointerdown works for mouse, touch, and stylus
 document.getElementById('cArea').addEventListener('pointerdown', function(e){
   // Don't count when tapping on chip controls, custom input, etc.
   if(e.target.closest('.goal-panel') || e.target.closest('.streak') || e.target.closest('.custom-row')) return;
@@ -1060,9 +1049,9 @@ document.getElementById('cArea').addEventListener('touchstart', function(e){
   e.preventDefault();
 }, {passive: false});
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    VISUAL EFFECTS
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 function spawnRipple(){
   const h=document.getElementById('ripples');
   const r=document.createElement('div');r.className='rpl';
@@ -1081,13 +1070,13 @@ function spawnPtcls(){
   }
 }
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    CONGRATS MODAL
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 function openModal(){
   const s=salats[activeIdx];
   document.getElementById('finalCount').textContent=s.count;
-  document.getElementById('modalSub').innerHTML=`S├®ance de <strong style="color:var(--g1)">${s.nom}</strong> termin├®e !<br>Que Allah accepte votre Zikr.`;
+  document.getElementById('modalSub').innerHTML=`Séance de <strong style="color:var(--g1)">${s.nom}</strong> terminée !<br>Que Allah accepte votre Zikr.`;
 
   // Reset save button
   const btn=document.getElementById('btnSave');
@@ -1109,9 +1098,9 @@ function openModal(){
   }
 }
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    RESET
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 function resetSession(){
   const s=salats[activeIdx];
   s.count=0;saveSalats();
@@ -1128,9 +1117,9 @@ function resetSession(){
 document.getElementById('resetBtn').addEventListener('click', resetSession);
 document.getElementById('btnReset').addEventListener('click', resetSession);
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    SAVE SESSION (Django)
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 document.getElementById('btnSave').addEventListener('click', sauvegarderSeance);
 
 async function sauvegarderSeance(){
@@ -1177,9 +1166,9 @@ async function sauvegarderSeance(){
   }
 }
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    AUDIO PLAYER
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 const aud=document.getElementById('aud');
 let isSeeking=false;
 {% if zikr.fichier_audio %}
@@ -1223,9 +1212,9 @@ aud.addEventListener('loadedmetadata',()=>document.getElementById('audDur').text
 aud.addEventListener('ended',()=>document.getElementById('audIcon').className='fa-solid fa-play');
 document.getElementById('volBar').addEventListener('input',e=>aud.volume=e.target.value);
 
-/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+/* ══════════════════════════════════════════
    INIT
-   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+   ══════════════════════════════════════════ */
 (function(){
   createBeads();
   switchSalat(0);
@@ -1233,7 +1222,7 @@ document.getElementById('volBar').addEventListener('input',e=>aud.volume=e.targe
 })();
 </script>
 
-<!-- NAV (M├¬me style que l'accueil) -->
+<!-- NAV (Même style que l'accueil) -->
 <nav class="nav-island notranslate">
   <a href="/" class="nav-item">
     <i class="fa-solid fa-house-chimney"></i>
@@ -1258,7 +1247,7 @@ document.getElementById('volBar').addEventListener('input',e=>aud.volume=e.targe
 </nav>
 
 <script>
-  /* ÔòÉÔòÉ MINI BARRE PRI├êRE ÔÇö lit le cache localStorage ÔòÉÔòÉ */
+  /* ══ MINI BARRE PRIÈRE — lit le cache localStorage ══ */
   (function() {
     const prayers = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
     function toMins(t) { if(!t||!t.includes(':')) return Infinity; const[h,m]=t.trim().split(':').map(Number); return h*60+m; }
