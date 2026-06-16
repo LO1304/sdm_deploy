@@ -376,14 +376,30 @@ def sauvegarder_progression_pdf(request):
 
 # --- GESTION DU ZIKR ---
 
-def zikr_compteur(request, id):
+def zikr_compteur(request, id=None):
     """Interface du chapelet électronique."""
-    zikr = get_object_or_404(Zikr, id=id)
+    if id:
+        zikr = get_object_or_404(Zikr, id=id)
+    else:
+        zikr = Zikr.objects.first()
+        if not zikr:
+            # Fallback if DB is completely empty
+            class DummyZikr:
+                id = 0
+                titre = "Zikr Libre"
+                texte_arabe = ""
+                texte_a_repeter = ""
+                transcription = ""
+                objectif_par_defaut = 33
+                est_premium = False
+                fichier_audio = None
+            zikr = DummyZikr()
 
-    # Vérifier l'accès Premium
-    premium_block = _check_premium_access(request, zikr)
-    if premium_block:
-        return premium_block
+    # Vérifier l'accès Premium seulement si ce n'est pas le dummy
+    if hasattr(zikr, 'est_premium') and zikr.id != 0:
+        premium_block = _check_premium_access(request, zikr)
+        if premium_block:
+            return premium_block
 
     return render(request, 'bibliotheque/zikr_compteur.html', {'zikr': zikr})
 

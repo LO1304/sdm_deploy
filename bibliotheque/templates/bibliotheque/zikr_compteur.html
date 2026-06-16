@@ -9,12 +9,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="google" content="notranslate">
-<title>Zikr — {{ zikr.titre }}</title>
+<title>Zikr ÔÇö {{ zikr.titre }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
+</head>
+<body class="zikr-body">
 <style>
-/* ══════ TOKENS ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   DESIGN TOKENS
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 :root {
   --g1:#d4af37; --g2:#f5dc6e; --g3:#9a7520;
   --bg:#03040a;
@@ -25,12 +28,25 @@
   --fU:'Outfit',sans-serif;
   --fA:'Amiri',serif;
   --fT:'Cinzel Decorative',cursive;
+  --bead-size: 14px;
+  --ring-radius: 120px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:#fff;font-family:var(--fU)}
 
-/* ══════ CANVAS / BLOBS ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ BACKGROUND IMAGE OVERLAY ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:url('/static/images/zikr_bg.jpg') center/cover no-repeat;
+  opacity:0.06;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ CANVAS / BLOBS ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 #bgc{position:fixed;inset:0;z-index:0;pointer-events:none}
 .blob{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
 .bl1{width:500px;height:500px;top:-180px;left:50%;transform:translateX(-50%);
@@ -42,20 +58,21 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 @keyframes bp  {to{transform:translateX(-50%) scale(1.12)}}
 @keyframes bp2 {to{transform:scale(1.2) rotate(12deg)}}
 
-/* ══════ SCREEN ══════ */
-.screen{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column}
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ SCREEN ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+.screen{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;padding-bottom:80px}
 
-/* ══════ TOPBAR ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ TOPBAR ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 0;flex-shrink:0}
-.tbtn{width:38px;height:38px;border-radius:50%;background:var(--s1);border:1px solid var(--b2);
+.tbtn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid var(--b2);
   display:flex;align-items:center;justify-content:center;color:var(--g1);cursor:pointer;
-  text-decoration:none;transition:transform .15s,background .2s;backdrop-filter:blur(10px)}
+  text-decoration:none;transition:transform .15s,background .2s;backdrop-filter:blur(14px)}
 .tbtn:active{transform:scale(.88)}
 .tc{text-align:center;flex:1;padding:0 10px}
 .tc-tag{font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}
-.tc-title{font-family:var(--fT);font-size:11px;color:var(--g1);letter-spacing:.06em;margin-top:2px}
+.tc-title{font-family:var(--fT);font-size:12px;color:var(--g1);letter-spacing:.06em;margin-top:2px;
+  text-shadow:0 0 20px rgba(212,175,55,.15)}
 
-/* ══════ SALAT TABS ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ SALAT TABS ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .salat-bar{
   display:flex;align-items:center;gap:0;
   padding:10px 18px 0;flex-shrink:0;
@@ -67,13 +84,14 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 .stab{
   display:flex;flex-direction:column;align-items:center;gap:2px;
   padding:8px 14px;border-radius:14px;cursor:pointer;
-  background:var(--s1);border:1px solid var(--b2);
-  transition:all .2s;flex-shrink:0;position:relative;
-  min-width:72px;
+  background:rgba(255,255,255,.025);border:1px solid var(--b2);
+  transition:all .25s cubic-bezier(.4,0,.2,1);flex-shrink:0;position:relative;
+  min-width:72px;backdrop-filter:blur(10px);
   animation:popIn .25s cubic-bezier(.36,1.56,.64,1) both;
 }
 .stab:hover{border-color:rgba(212,175,55,.3)}
-.stab.active{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.45)}
+.stab.active{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.45);
+  box-shadow:0 0 20px rgba(212,175,55,.06)}
 .stab.active::before{
   content:'';position:absolute;bottom:-1px;left:20%;right:20%;height:2px;
   background:linear-gradient(90deg,transparent,var(--g1),transparent);
@@ -102,71 +120,178 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 .add-salat-btn:hover{background:rgba(212,175,55,.14);transform:scale(1.06)}
 .add-salat-btn:active{transform:scale(.9)}
 
-/* ══════ ZIKR PILL ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ ZIKR PILL ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .zikr-zone{padding:10px 18px 0;flex-shrink:0}
 .zpill{
-  background:var(--s1);border:1px solid var(--b1);
-  border-radius:18px;padding:12px 16px;
+  background:rgba(20, 15, 5, 0.4);border:1px solid rgba(212,175,55,.15);
+  border-radius:24px;padding:20px 24px;
   text-align:center;position:relative;overflow:hidden;
-  backdrop-filter:blur(16px);transition:all .3s ease;
+  backdrop-filter:blur(24px);transition:all .3s ease;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 25px rgba(212,175,55,0.05);
 }
 .zpill::before{
-  content:'';position:absolute;top:0;left:20%;right:20%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--g1),transparent);
+  content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(212,175,55,.8),transparent);
 }
 .zpill::after{
   content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(90deg,transparent,rgba(212,175,55,.03),transparent);
-  animation:shimmer 5s ease-in-out infinite;
+  background:linear-gradient(135deg,rgba(212,175,55,.08) 0%,transparent 50%,rgba(212,175,55,.03) 100%);
 }
-@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
-.zp-ar{font-family:var(--fA);font-size:clamp(16px,4vw,21px);direction:rtl;line-height:1.8;
-  color:rgba(255,255,255,.9);margin-bottom:5px;transition:all .3s}
-.zp-tx{font-family:var(--fS);font-style:italic;font-size:13px;color:var(--g1);line-height:1.5;transition:all .3s}
+.zp-ar{
+  font-family:var(--fA);font-size:clamp(22px,6vw,32px);direction:rtl;line-height:1.8;
+  color:#fff;margin-bottom:8px;transition:all .3s;
+  text-shadow: 0 0 25px rgba(212,175,55,.4), 0 2px 4px rgba(0,0,0,0.8);
+  font-weight: 700;
+}
+.zp-tx{font-family:var(--fS);font-style:italic;font-size:15px;color:var(--g2);line-height:1.5;transition:all .3s;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+}
 
-/* ══════ COUNTER AREA ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ COUNTER AREA (Chapelet) ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .counter-area{
   flex:1;display:flex;flex-direction:column;
-  align-items:center;justify-content:space-evenly;
+  align-items:center;justify-content:center;
   position:relative;overflow:hidden;
   padding:4px 20px;min-height:0;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  user-select:none;touch-action:manipulation;
 }
+
+/* Ambient circles */
 .amb{position:absolute;border-radius:50%;pointer-events:none}
-.amb1{width:165px;height:165px;border:1px solid rgba(212,175,55,.07);animation:ambP 4s ease-in-out infinite}
-.amb2{width:225px;height:225px;border:1px dashed rgba(212,175,55,.04);animation:ambP 4s 1s ease-in-out infinite}
-.amb3{width:280px;height:280px;border:1px solid rgba(212,175,55,.025);animation:ambP 4s 2s ease-in-out infinite}
+.amb1{width:165px;height:165px;border:1px solid rgba(212,175,55,.06);animation:ambP 4s ease-in-out infinite}
+.amb2{width:225px;height:225px;border:1px dashed rgba(212,175,55,.035);animation:ambP 4s 1s ease-in-out infinite}
+.amb3{width:280px;height:280px;border:1px solid rgba(212,175,55,.02);animation:ambP 4s 2s ease-in-out infinite}
 @keyframes ambP{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.05);opacity:1}}
+
+/* Ripples */
 #ripples{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
-.rpl{position:absolute;border-radius:50%;border:1.5px solid rgba(212,175,55,.5);animation:rplA .75s ease-out forwards}
-@keyframes rplA{from{width:80px;height:80px;opacity:.8}to{width:300px;height:300px;opacity:0}}
+.rpl{position:absolute;border-radius:50%;border:1.5px solid rgba(212,175,55,.45);animation:rplA .75s ease-out forwards}
+@keyframes rplA{from{width:60px;height:60px;opacity:.7}to{width:260px;height:260px;opacity:0}}
 .ptcl{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--g1);pointer-events:none;
   animation:ptclA var(--d,.5s) ease-out forwards}
 @keyframes ptclA{from{transform:translate(0,0) scale(1);opacity:.9}to{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
 
-.count-block{display:flex;flex-direction:column;align-items:center;position:relative;z-index:2}
-.count-num{
-  font-family:var(--fU);font-weight:200;
-  font-size:clamp(72px,19vw,100px);
-  line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em;
-  transition:color .25s;
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ CHAPELET (Prayer Beads Ring) ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+.chapelet-container{
+  position:relative;z-index:2;
+  width:260px;height:260px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
 }
-.count-num.bump{animation:bump .18s ease}
-@keyframes bump{0%{transform:scale(1)}45%{transform:scale(1.12)}100%{transform:scale(1)}}
-.count-sub{font-size:12px;color:var(--dim);margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:.06em}
-.count-sub em{color:var(--g1);font-style:normal;font-weight:600}
+.chapelet-ring{
+  position:absolute;inset:0;
+}
+.bead{
+  position:absolute;
+  width:var(--bead-size);height:var(--bead-size);
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0.6) 100%);
+  border:1px solid rgba(255,255,255,.05);
+  box-shadow:inset 0 0 6px rgba(0,0,0,0.8), 0 2px 6px rgba(0,0,0,0.4);
+  transition:all .35s cubic-bezier(.4,0,.2,1);
+  transform-origin:center center;
+}
+.bead.lit{
+  background:radial-gradient(circle at 30% 30%, #fffde7 0%, var(--g2) 25%, var(--g1) 60%, #4a360a 100%);
+  border-color:rgba(255,255,255,.6);
+  box-shadow:inset -2px -2px 6px rgba(0,0,0,0.6), 0 0 12px rgba(212,175,55,.5), 0 0 24px rgba(212,175,55,.2);
+  transform:scale(1.2);
+}
+.bead.active-bead{
+  background:radial-gradient(circle at 30% 30%, #ffffff 0%, #fff59d 30%, var(--g1) 70%, #7a5c18 100%);
+  box-shadow:inset -2px -2px 8px rgba(0,0,0,0.6), 0 0 20px rgba(212,175,55,.8), 0 0 40px rgba(212,175,55,.4), 0 0 60px rgba(212,175,55,.2);
+  transform:scale(1.5);
+  border-color:#fff;
+  z-index: 10;
+}
+.bead.reset-anim{
+  animation:beadReset .5s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes beadReset{
+  0%{transform:scale(1.2);opacity:1}
+  50%{transform:scale(1.8);opacity:.8;background:var(--g2);box-shadow:0 0 40px var(--g2)}
+  100%{transform:scale(1);opacity:1;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0.6) 100%);box-shadow:inset 0 0 6px rgba(0,0,0,0.8), 0 2px 6px rgba(0,0,0,0.4);border-color:rgba(255,255,255,.05)}
+}
 
-.goal-panel{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:2}
+/* Progress ring (SVG behind beads) */
+.progress-ring{
+  position:absolute;inset:-8px;z-index:0;
+  pointer-events:none;
+}
+.progress-ring-bg{
+  fill:none;stroke:rgba(255,255,255,.04);stroke-width:2;
+}
+.progress-ring-fill{
+  fill:none;stroke:url(#goldGrad);stroke-width:2.5;
+  stroke-linecap:round;
+  transition:stroke-dashoffset .4s cubic-bezier(.4,0,.2,1);
+  filter:drop-shadow(0 0 4px rgba(212,175,55,.3));
+}
+
+/* Center counter */
+.count-block{position:absolute;display:flex;flex-direction:column;align-items:center;z-index:3; pointer-events:none;}
+.count-num{
+  font-family:var(--fU);font-weight:300;
+  font-size:clamp(64px,18vw,90px);
+  line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em;
+  background: linear-gradient(180deg, #ffffff 0%, var(--g2) 40%, var(--g1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 15px rgba(212,175,55,0.4));
+  transition:all .25s;
+}
+.count-num.bump{animation:bump .2s cubic-bezier(.17,.89,.32,1.28)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
+.count-sub{font-size:13px;color:rgba(255,255,255,.6);margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:.1em; text-transform:uppercase;}
+.count-sub em{color:var(--g2);font-style:normal;font-weight:700}
+
+/* Percentage badge */
+.pct-badge{
+  margin-top:4px;
+  font-size:10px;font-weight:500;letter-spacing:.1em;
+  color:rgba(212,175,55,.7);
+  transition:all .3s;
+}
+
+/* Streak */
+.streak{
+  position:absolute;top:8px;right:8px;z-index:3;
+  background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);
+  border-radius:14px;padding:6px 14px;
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g1);
+  opacity:0;transform:translateY(-8px);transition:opacity .3s,transform .3s;
+  backdrop-filter:blur(10px);
+  box-shadow:0 4px 16px rgba(212,175,55,.06);
+}
+.streak.on{opacity:1;transform:translateY(0)}
+.streak-dot{width:6px;height:6px;border-radius:50%;background:var(--g1);animation:blink 1s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* Tap hint */
+.tap-hint{
+  position:absolute;bottom:12px;z-index:3;
+  font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
+  opacity:.5;transition:opacity .3s;
+  animation:tapHintPulse 2.5s ease-in-out infinite;
+}
+@keyframes tapHintPulse{0%,100%{opacity:.5}50%{opacity:.2}}
+
+/* Goal panel */
+.goal-panel{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:2;
+  padding:6px 0;flex-shrink:0}
 .chips-lbl{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
 .chips-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .chip{
   padding:5px 13px;border-radius:99px;
-  background:var(--s1);border:1px solid var(--b2);
+  background:rgba(255,255,255,.03);border:1px solid var(--b2);
   font-family:var(--fU);font-size:12px;font-weight:500;color:var(--mid);
   cursor:pointer;display:flex;align-items:center;gap:5px;
-  transition:all .2s;user-select:none;
+  transition:all .2s;user-select:none;backdrop-filter:blur(8px);
 }
 .chip:hover{border-color:rgba(212,175,55,.35);color:#fff}
-.chip.on{background:rgba(212,175,55,.12);border-color:rgba(212,175,55,.5);color:var(--g1);box-shadow:0 0 14px rgba(212,175,55,.12)}
+.chip.on{background:rgba(212,175,55,.12);border-color:rgba(212,175,55,.5);color:var(--g1);box-shadow:0 0 14px rgba(212,175,55,.1)}
 .chip.add{border-style:dashed;border-color:rgba(212,175,55,.28);color:var(--g1);padding:5px 11px}
 .chip-x{font-size:8px;opacity:.35;transition:opacity .15s}
 .chip-x:hover{opacity:1}
@@ -183,43 +308,9 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 .cr-ok:hover{background:rgba(212,175,55,.35)}
 .cr-no{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--dim)}
 
-.tap-wrap{position:relative;z-index:2;display:flex;align-items:center;justify-content:center}
-.tap-btn{
-  width:138px;height:138px;border-radius:50%;position:relative;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;transition:transform .12s;
-  background:none;border:none;padding:0;
-}
-.tap-btn:active{transform:scale(.87)}
-.tap-outer{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(212,175,55,.2);animation:outerP 3s ease-in-out infinite}
-@keyframes outerP{0%,100%{transform:scale(1)}50%{transform:scale(1.07);box-shadow:0 0 0 10px rgba(212,175,55,.03)}}
-.tap-dash{position:absolute;inset:-10px;border-radius:50%;border:1px dashed rgba(212,175,55,.1);animation:spinD 25s linear infinite}
-@keyframes spinD{to{transform:rotate(360deg)}}
-.tap-inner{
-  width:106px;height:106px;border-radius:50%;
-  background:linear-gradient(145deg,rgba(212,175,55,.14),rgba(212,175,55,.04));
-  border:1px solid rgba(212,175,55,.38);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 36px rgba(212,175,55,.08),inset 0 0 20px rgba(212,175,55,.04);
-  transition:box-shadow .15s;position:relative;z-index:1;
-}
-.tap-btn:active .tap-inner{box-shadow:0 0 56px rgba(212,175,55,.28),inset 0 0 30px rgba(212,175,55,.1)}
-.tap-icon{font-size:40px;color:var(--g1);opacity:.8}
-.streak{
-  position:absolute;top:8px;right:8px;z-index:3;
-  background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.22);
-  border-radius:99px;padding:4px 11px;
-  display:flex;align-items:center;gap:5px;
-  font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--g1);
-  opacity:0;transform:translateX(10px);transition:opacity .3s,transform .3s;
-}
-.streak.on{opacity:1;transform:translateX(0)}
-.streak-dot{width:5px;height:5px;border-radius:50%;background:var(--g1);animation:blink 1s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-
-/* ══════ AUDIO ══════ */
-.audio-section{flex-shrink:0;padding:0 18px 20px}
-.audio-card{background:var(--s2);border:1px solid var(--b1);border-radius:18px;padding:11px 14px;backdrop-filter:blur(16px)}
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ AUDIO ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+.audio-section{flex-shrink:0;padding:0 18px 10px}
+.audio-card{background:rgba(255,255,255,.025);border:1px solid var(--b1);border-radius:18px;padding:11px 14px;backdrop-filter:blur(16px)}
 .audio-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
 .audio-lbl{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
 .audio-src-btn{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--g1);
@@ -243,7 +334,7 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 .vol-bar::-webkit-slider-thumb{-webkit-appearance:none;width:9px;height:9px;border-radius:50%;background:var(--g1)}
 #fileIn{display:none}
 
-/* ══════ ADD SALAT SHEET ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ ADD SALAT SHEET ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .overlay{
   position:fixed;inset:0;z-index:200;
   background:rgba(3,4,10,.95);backdrop-filter:blur(24px);
@@ -285,7 +376,7 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 .sact-btn.confirm{background:linear-gradient(135deg,var(--g2),var(--g1),var(--g3));color:#080400;box-shadow:0 4px 20px rgba(212,175,55,.25)}
 .sact-btn:active{transform:scale(.95)}
 
-/* ══════ CONGRATS MODAL ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ CONGRATS MODAL ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .modal{
   position:fixed;inset:0;z-index:300;
   background:rgba(3,4,10,.97);backdrop-filter:blur(24px);
@@ -317,10 +408,8 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 .m-num{font-family:var(--fU);font-weight:200;font-size:44px;color:var(--g1);text-align:center;line-height:1}
 .m-lbl{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);text-align:center;margin-top:3px}
 
-/* ── Boutons modal ── */
+/* Modal buttons */
 .m-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;z-index:1;animation:fUp .5s .5s ease both}
-
-/* Bouton Enregistrer (principal) */
 .m-btn-save{
   display:flex;align-items:center;justify-content:center;gap:9px;
   width:100%;padding:17px;border-radius:18px;
@@ -339,7 +428,6 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 }
 .m-btn-save:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(212,175,55,.38)}
 .m-btn-save:active{transform:scale(.95)}
-/* Spinner dans le bouton */
 .m-btn-save.loading .btn-text{display:none}
 .m-btn-save.loading .btn-spin{display:flex}
 .btn-spin{display:none;align-items:center;gap:8px}
@@ -350,8 +438,6 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
   animation:spin .7s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* Bouton Recommencer (secondaire) */
 .m-btn-reset{
   display:flex;align-items:center;justify-content:center;gap:9px;
   width:100%;padding:14px;border-radius:18px;
@@ -363,8 +449,6 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 }
 .m-btn-reset:hover{background:rgba(255,255,255,.08);color:#fff}
 .m-btn-reset:active{transform:scale(.95)}
-
-/* Toast interne modal */
 .m-toast{
   position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
   background:rgba(220,50,50,.15);border:1px solid rgba(220,50,50,.3);
@@ -375,12 +459,45 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
   animation:fUp .3s ease both;
 }
 .m-toast.show{display:flex}
-
 @keyframes fUp{from{opacity:0;transform:translate(-50%,10px)}}
 @keyframes popIn{from{transform:scale(.8);opacity:0}}
+
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ BOTTOM NAV ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+.nav-island{
+  position:fixed;
+  bottom:20px;left:50%;transform:translateX(-50%);
+  width:calc(100% - 32px);max-width:420px;height:65px;
+  border-radius:99px;
+  background:rgba(8,23,17,0.85);
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 20px 40px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.1);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 10px;z-index:999;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;color:#6b7280;text-decoration:none;position:relative;
+  transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.nav-item.active{color:var(--g1)}
+.nav-item i{font-size:22px;transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275)}
+.nav-item.active i{
+  transform:translateY(-12px);
+  background:linear-gradient(130deg,#FDE047 0%,#D4AF37 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 4px 10px rgba(212,175,55,0.4));
+}
+.nav-item span{font-size:10px;margin-top:2px}
+.nav-item-indicator{
+  position:absolute;bottom:12px;width:4px;height:4px;border-radius:50%;
+  background-color:var(--g1);opacity:0;transform:scale(0);
+  transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.nav-item.active .nav-item-indicator{opacity:1;transform:scale(1)}
 </style>
 </head>
-<body>
+<body hx-boost="true" hx-ext="head-support">
 
 <canvas id="bgc"></canvas>
 <div class="blob bl1"></div>
@@ -401,24 +518,24 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
       <div class="tc-tag">Compteur Zikr</div>
       <div class="tc-title" id="mainTitle">{{ zikr.titre }}</div>
     </div>
-    <button class="tbtn" onclick="resetSession()" title="Réinitialiser">
+    <button class="tbtn" id="resetBtn" title="R├®initialiser">
       <i class="fa-solid fa-rotate-right" style="font-size:11px"></i>
     </button>
   </div>
 
-  <!-- MINI BARRE PRIÈRE (lit depuis localStorage) -->
+  <!-- MINI BARRE PRI├êRE -->
   <div id="mini-prayer-bar" style="display:flex;align-items:center;justify-content:center;gap:16px;padding:6px 18px;background:rgba(212,175,55,0.04);border-bottom:1px solid rgba(212,175,55,0.08);flex-shrink:0">
     <span style="font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(212,175,55,0.6);font-weight:600">Prochain :</span>
-    <span id="zikr-next-prayer" style="font-size:12px;font-weight:700;color:#d4af37">—</span>
+    <span id="zikr-next-prayer" style="font-size:12px;font-weight:700;color:#d4af37">ÔÇö</span>
     <span id="zikr-next-time" style="font-size:12px;color:rgba(255,255,255,0.5)">--:--</span>
     <span style="width:1px;height:12px;background:rgba(255,255,255,0.1)"></span>
     <span id="zikr-countdown" style="font-size:11px;color:rgba(255,255,255,0.4);font-variant-numeric:tabular-nums">--:--</span>
   </div>
 
-
+  <!-- SALAT TABS -->
   <div class="salat-bar">
     <div class="salat-tabs" id="salatTabs"></div>
-    <div class="add-salat-btn" onclick="openSheet()" title="Ajouter une salât">
+    <div class="add-salat-btn" id="addSalatBtn" title="Ajouter une sal├ót">
       <i class="fa-solid fa-plus"></i>
     </div>
   </div>
@@ -431,7 +548,7 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
     </div>
   </div>
 
-  <!-- COUNTER AREA -->
+  <!-- COUNTER AREA (Chapelet) -->
   <div class="counter-area" id="cArea">
     <div class="amb amb1"></div>
     <div class="amb amb2"></div>
@@ -443,29 +560,40 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
       <span id="sNum">0</span>&nbsp;/&nbsp;<span id="sGoal">33</span>
     </div>
 
-    <div class="count-block">
-      <div class="count-num" id="cNum">0</div>
-      <div class="count-sub">sur <em id="goalDisp">33</em></div>
-    </div>
-
-    <div class="goal-panel">
-      <div class="chips-lbl">Objectif</div>
-      <div class="chips-row" id="chipsRow"></div>
-      <div class="custom-row" id="customRow">
-        <input type="number" id="customIn" placeholder="ex: 500" min="1" max="9999">
-        <div class="cr-ok" onclick="confirmGoal()"><i class="fa-solid fa-check"></i></div>
-        <div class="cr-no" onclick="cancelGoal()"><i class="fa-solid fa-xmark"></i></div>
+    <!-- Chapelet Ring -->
+    <div class="chapelet-container" id="chapeletContainer">
+      <svg class="progress-ring" id="progressRing" viewBox="0 0 276 276">
+        <defs>
+          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f5dc6e"/>
+            <stop offset="50%" stop-color="#d4af37"/>
+            <stop offset="100%" stop-color="#9a7520"/>
+          </linearGradient>
+        </defs>
+        <circle class="progress-ring-bg" cx="138" cy="138" r="130"/>
+        <circle class="progress-ring-fill" id="progressFill" cx="138" cy="138" r="130"
+          stroke-dasharray="816.81" stroke-dashoffset="816.81"
+          transform="rotate(-90 138 138)"/>
+      </svg>
+      <div class="chapelet-ring" id="chapeletRing"></div>
+      <div class="count-block">
+        <div class="count-num" id="cNum">0</div>
+        <div class="count-sub">sur <em id="goalDisp">33</em></div>
+        <div class="pct-badge" id="pctBadge">0%</div>
       </div>
     </div>
 
-    <div class="tap-wrap">
-      <button class="tap-btn" onclick="handleTap()" ontouchstart="handleTap()">
-        <div class="tap-outer"></div>
-        <div class="tap-dash"></div>
-        <div class="tap-inner">
-          <i class="fa-solid fa-fingerprint tap-icon"></i>
-        </div>
-      </button>
+    <div class="tap-hint" id="tapHint">Appuyez pour compter</div>
+  </div>
+
+  <!-- GOAL PANEL -->
+  <div class="goal-panel">
+    <div class="chips-lbl">Objectif</div>
+    <div class="chips-row" id="chipsRow"></div>
+    <div class="custom-row" id="customRow">
+      <input type="number" id="customIn" placeholder="ex: 500" min="1" max="9999">
+      <div class="cr-ok" id="crOkBtn"><i class="fa-solid fa-check"></i></div>
+      <div class="cr-no" id="crNoBtn"><i class="fa-solid fa-xmark"></i></div>
     </div>
   </div>
 
@@ -473,19 +601,19 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
   <div class="audio-section">
     <div class="audio-card">
       <div class="audio-top">
-        <span class="audio-lbl">Écouter</span>
-        <span class="audio-src-btn" onclick="document.getElementById('fileIn').click()">
+        <span class="audio-lbl">├ëcouter</span>
+        <span class="audio-src-btn" id="audioSrcBtn">
           <i class="fa-solid fa-folder-open" style="font-size:9px;margin-right:4px"></i>Charger
         </span>
       </div>
       <div id="noSrcMsg" class="audio-no-src">
         <i class="fa-solid fa-music" style="color:var(--g1);opacity:.4"></i>
-        Aucun fichier — appuyez sur « Charger »
+        Aucun fichier ÔÇö appuyez sur ┬½ Charger ┬╗
       </div>
       <div class="audio-controls" id="audControls" style="display:none">
-        <button class="ab" onclick="skipBack()"><i class="fa-solid fa-backward-step" style="font-size:10px"></i></button>
-        <button class="ab main" onclick="toggleAudio()"><i class="fa-solid fa-play" id="audIcon"></i></button>
-        <button class="ab" onclick="skipFwd()"><i class="fa-solid fa-forward-step" style="font-size:10px"></i></button>
+        <button class="ab" id="skipBackBtn"><i class="fa-solid fa-backward-step" style="font-size:10px"></i></button>
+        <button class="ab main" id="toggleAudioBtn"><i class="fa-solid fa-play" id="audIcon"></i></button>
+        <button class="ab" id="skipFwdBtn"><i class="fa-solid fa-forward-step" style="font-size:10px"></i></button>
         <div class="seek-wrap">
           <input type="range" class="seek-bar" id="seekBar" min="0" max="1000" value="0" step="1">
           <div class="seek-times"><span id="audCur">00:00</span><span id="audDur">00:00</span></div>
@@ -498,10 +626,10 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 </div><!-- /screen -->
 
 <!-- ADD SALAT SHEET -->
-<div class="overlay" id="sheetOverlay" onclick="closeSheetIfBg(event)">
+<div class="overlay" id="sheetOverlay">
   <div class="sheet" id="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">Ajouter une Salât</div>
+    <div class="sheet-title">Ajouter une Sal├ót</div>
     <div class="sheet-row">
       <div class="field">
         <label>Nom *</label>
@@ -514,22 +642,22 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
     </div>
     <div class="field">
       <label>Texte arabe</label>
-      <textarea id="fAr" placeholder="النص بالعربية..."></textarea>
+      <textarea id="fAr" placeholder="Ïº┘ä┘åÏÁ Ï¿Ïº┘äÏ╣Ï▒Ï¿┘èÏ®..."></textarea>
     </div>
     <div class="field">
-      <label>Translittération / Traduction</label>
+      <label>Translitt├®ration / Traduction</label>
       <input type="text" id="fTx" placeholder="ex: Allahu Akbar">
     </div>
     <div class="sheet-actions">
-      <button class="sact-btn cancel" onclick="closeSheet()">Annuler</button>
-      <button class="sact-btn confirm" onclick="addSalat()">Ajouter</button>
+      <button class="sact-btn cancel" id="sheetCancelBtn">Annuler</button>
+      <button class="sact-btn confirm" id="sheetConfirmBtn">Ajouter</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════
+<!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
      CONGRATS MODAL
-══════════════════════════ -->
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
 <div class="modal" id="modal">
   <div id="modal-ptcls"></div>
 
@@ -547,35 +675,30 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
 
   <div class="m-title">Macha'Allah !</div>
   <div class="m-sub" id="modalSub">
-    Séance terminée avec succès.<br>Que Allah accepte votre Zikr.
+    S├®ance termin├®e avec succ├¿s.<br>Que Allah accepte votre Zikr.
   </div>
 
   <div class="m-badge">
     <div class="m-num" id="finalCount">0</div>
-    <div class="m-lbl">Répétitions</div>
+    <div class="m-lbl">R├®p├®titions</div>
   </div>
 
-  <!-- ── Boutons ── -->
+  <!-- Boutons -->
   <div class="m-btns">
-
-    <!-- Bouton 1 : Enregistrer dans l'historique -->
-    <button class="m-btn-save" id="btnSave" onclick="sauvegarderSeance()">
+    <button class="m-btn-save" id="btnSave">
       <span class="btn-text">
         <i class="fa-solid fa-floppy-disk" style="font-size:13px"></i>
-        Enregistrer la séance
+        Enregistrer la s├®ance
       </span>
       <span class="btn-spin">
         <div class="spin-ring"></div>
         Enregistrement...
       </span>
     </button>
-
-    <!-- Bouton 2 : Nouvelle séance -->
-    <button class="m-btn-reset" onclick="resetSession()">
+    <button class="m-btn-reset" id="btnReset">
       <i class="fa-solid fa-rotate-right" style="font-size:11px"></i>
-      Nouvelle séance
+      Nouvelle s├®ance
     </button>
-
   </div>
 
   <!-- Toast erreur -->
@@ -583,11 +706,12 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
     <i class="fa-solid fa-triangle-exclamation"></i>
     <span id="mToastMsg">Une erreur est survenue.</span>
   </div>
-
 </div>
 
 <script>
-/* ══════ ÉTOILES ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   STARS CANVAS
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 (function(){
   const c=document.getElementById('bgc'),ctx=c.getContext('2d');
   let W,H,pts=[];
@@ -610,34 +734,107 @@ body{background:var(--bg);color:#fff;font-family:var(--fU)}
   window.addEventListener('resize',rs);
 })();
 
-/* ══════ DATA ══════ */
-const LS_KEY = 'sdm_salats_v1';
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   DATA ÔÇö DEFAULT SALATS (Post-salat zikrs)
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+const LS_KEY = 'sdm_salats_v3_{{ zikr.id|default:"0" }}';
 const DEFAULT_SALATS = [
-  {
-    id: 's0',
-    nom:   '{{ zikr.titre|escapejs }}',
-    arabe: '{{ zikr.texte_arabe|escapejs }}',
-    trans: '{{ zikr.texte_a_repeter|default:zikr.transcription|escapejs }}',
-    goal:  {{ zikr.objectif_par_defaut|default:33 }},
-    count: 0
-  },
-  { id:'s1', nom:'Fatiha',     arabe:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ', trans:'Al-Fatiha', goal:7,   count:0 },
-  { id:'s2', nom:'Ikhlass',    arabe:'قُلْ هُوَ اللَّهُ أَحَدٌ',              trans:'Qul huwa Allahu ahad', goal:33, count:0 },
-  { id:'s3', nom:'Salat Nabi', arabe:'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ',   trans:'Sallallahu Alaihi Wasallam', goal:100, count:0 },
+  { id:'s0', nom:'{{ zikr.titre|escapejs }}', arabe:'{{ zikr.texte_arabe|escapejs }}', trans:'{{ zikr.texte_a_repeter|default:zikr.transcription|escapejs }}', goal:{{ zikr.objectif_par_defaut|default:33 }}, count:0 },
+  { id:'s1', nom:'SubhanAllah', arabe:'Ï│┘ÅÏ¿┘ÆÏ¡┘ÄÏº┘å┘Ä Ïº┘ä┘ä┘Ä┘æ┘ç┘É', trans:'Gloire ├á Allah', goal:33, count:0 },
+  { id:'s2', nom:'Alhamdulillah', arabe:'Ïº┘ä┘ÆÏ¡┘Ä┘à┘ÆÏ»┘Å ┘ä┘É┘ä┘Ä┘æ┘ç┘É', trans:'Louange ├á Allah', goal:33, count:0 },
+  { id:'s3', nom:'Allahu Akbar', arabe:'Ïº┘ä┘ä┘Ä┘æ┘ç┘Å Ïú┘Ä┘â┘ÆÏ¿┘ÄÏ▒┘Å', trans:'Allah est le Plus Grand', goal:33, count:0 },
+  { id:'s3b', nom:'La ilaha illallah', arabe:'┘ä┘ÄÏº ÏÑ┘É┘ä┘Ä┘░┘ç┘Ä ÏÑ┘É┘ä┘Ä┘æÏº Ïº┘ä┘ä┘Ä┘æ┘ç┘Å', trans:'Il n\'y a de dieu qu\'Allah', goal:1, count:0 },
+  { id:'s4', nom:'Istighfar', arabe:'Ïú┘ÄÏ│┘ÆÏ¬┘ÄÏ║┘Æ┘ü┘ÉÏ▒┘Å Ïº┘ä┘ä┘Ä┘æ┘ç┘Ä', trans:'Je demande pardon ├á Allah', goal:33, count:0 },
+  { id:'s5', nom:'Salat ala Nabi', arabe:'Ïº┘ä┘ä┘Ä┘æ┘ç┘Å┘à┘Ä┘æ ÏÁ┘Ä┘ä┘É┘æ Ï╣┘Ä┘ä┘Ä┘ë ┘à┘ÅÏ¡┘Ä┘à┘Ä┘æÏ»┘ì', trans:'├ö Allah, prie sur Muhammad', goal:33, count:0 },
 ];
 
 function loadSalats(){
-  try{ const r=localStorage.getItem(LS_KEY); if(r) return JSON.parse(r); }catch(e){}
+  try{ 
+    const r=localStorage.getItem(LS_KEY); 
+    if(r) {
+      const parsed = JSON.parse(r);
+      if(Array.isArray(parsed) && parsed.length > 0 && parsed[0].nom) return parsed;
+    }
+  }catch(e){}
   return DEFAULT_SALATS.map(s=>({...s}));
 }
 function saveSalats(){
   try{localStorage.setItem(LS_KEY,JSON.stringify(salats));}catch(e){}
 }
 
-let salats   = loadSalats();
+let salats    = loadSalats();
 let activeIdx = 0;
+let isZikrInitialized = false;
 
-/* ══════ GOALS ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   CHAPELET (Prayer Beads) RENDERING
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+const BEAD_COUNT = 33;
+const RING_RADIUS = 115;
+const beadEls = [];
+const circumference = 2 * Math.PI * 130; // matches SVG r=130
+
+function createBeads(){
+  const ring = document.getElementById('chapeletRing');
+  ring.innerHTML = '';
+  beadEls.length = 0;
+  const cx = 130, cy = 130;
+  const startAngle = -90; // top center
+
+  for(let i=0; i<BEAD_COUNT; i++){
+    const angle = startAngle + (i / BEAD_COUNT) * 300; // 300┬░ arc (like real tasbih with gap)
+    const rad = angle * Math.PI / 180;
+    const x = cx + RING_RADIUS * Math.cos(rad) - 7;
+    const y = cy + RING_RADIUS * Math.sin(rad) - 7;
+
+    const bead = document.createElement('div');
+    bead.className = 'bead';
+    bead.style.left = x + 'px';
+    bead.style.top = y + 'px';
+    ring.appendChild(bead);
+    beadEls.push(bead);
+  }
+}
+
+function updateBeads(count, goal){
+  const beadsInRound = count % BEAD_COUNT;
+  const fullRounds = Math.floor(count / BEAD_COUNT);
+
+  beadEls.forEach((b, i) => {
+    b.classList.remove('lit', 'active-bead', 'reset-anim');
+    if(i < beadsInRound){
+      b.classList.add('lit');
+    }
+    if(i === beadsInRound - 1 && beadsInRound > 0){
+      b.classList.add('active-bead');
+    }
+  });
+
+  // Update progress ring
+  const pct = Math.min(count / goal, 1);
+  const offset = circumference * (1 - pct);
+  document.getElementById('progressFill').style.strokeDashoffset = offset;
+
+  // Update percentage badge
+  document.getElementById('pctBadge').textContent = Math.round(pct * 100) + '%';
+}
+
+function animateBeadReset(){
+  beadEls.forEach((b, i) => {
+    setTimeout(() => {
+      b.classList.add('reset-anim');
+    }, i * 20);
+  });
+  setTimeout(() => {
+    beadEls.forEach(b => {
+      b.classList.remove('lit', 'active-bead', 'reset-anim');
+    });
+  }, BEAD_COUNT * 20 + 500);
+}
+
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   GOALS
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 const GOAL_PRESETS = [33,99,100,1000];
 let goalList  = [];
 let activeGoal = 33;
@@ -657,14 +854,21 @@ function renderChips(){
   goalList.forEach(g=>{
     const d=document.createElement('div');
     d.className='chip'+(g===activeGoal?' on':'');
-    d.innerHTML=`<span>${g}</span>`+(goalList.length>1?`<span class="chip-x" onclick="removeGoal(event,${g})">✕</span>`:'');
-    d.addEventListener('click',()=>selectGoal(g));
+    d.innerHTML=`<span>${g}</span>`+(goalList.length>1?`<span class="chip-x" data-goal="${g}">Ô£ò</span>`:'');
+    d.addEventListener('click',function(e){
+      if(e.target.classList.contains('chip-x')){
+        e.stopPropagation();
+        removeGoal(parseInt(e.target.dataset.goal));
+      } else {
+        selectGoal(g);
+      }
+    });
     row.appendChild(d);
   });
   const a=document.createElement('div');
   a.className='chip add';
   a.innerHTML='<i class="fa-solid fa-plus" style="font-size:9px"></i>';
-  a.onclick=showCustom;
+  a.addEventListener('click', showCustom);
   row.appendChild(a);
 }
 
@@ -673,9 +877,9 @@ function selectGoal(g){
   document.getElementById('goalDisp').textContent=g;
   document.getElementById('sGoal').textContent=g;
   renderChips();
+  updateBeads(salats[activeIdx].count, activeGoal);
 }
-function removeGoal(e,g){
-  e.stopPropagation();
+function removeGoal(g){
   if(goalList.length<=1)return;
   goalList=goalList.filter(x=>x!==g);
   if(activeGoal===g)selectGoal(goalList[0]);else renderChips();
@@ -697,12 +901,17 @@ function cancelGoal(){
   document.getElementById('customRow').style.display='none';
   document.getElementById('customIn').value='';
 }
+
 document.getElementById('customIn').addEventListener('keydown',e=>{
   if(e.key==='Enter')confirmGoal();
   if(e.key==='Escape')cancelGoal();
 });
+document.getElementById('crOkBtn').addEventListener('click', confirmGoal);
+document.getElementById('crNoBtn').addEventListener('click', cancelGoal);
 
-/* ══════ TABS ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   SALAT TABS
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 function renderTabs(){
   const row=document.getElementById('salatTabs');
   row.innerHTML='';
@@ -713,42 +922,61 @@ function renderTabs(){
     t.innerHTML=`
       <span class="stab-name">${s.nom}</span>
       <span class="stab-count">${s.count}/${s.goal}</span>
-      ${i>0?`<div class="stab-del" onclick="deleteSalat(event,${i})"><i class="fa-solid fa-xmark"></i></div>`:''}
+      ${i>0?`<div class="stab-del" data-idx="${i}"><i class="fa-solid fa-xmark"></i></div>`:''}
     `;
-    t.addEventListener('click',()=>switchSalat(i));
+    t.addEventListener('click',function(e){
+      if(e.target.closest('.stab-del')){
+        e.stopPropagation();
+        const idx = parseInt(e.target.closest('.stab-del').dataset.idx);
+        deleteSalat(idx);
+      } else {
+        switchSalat(i);
+      }
+    });
     row.appendChild(t);
   });
 }
 
 function switchSalat(i){
-  if(i===activeIdx)return;
+  if(i===activeIdx && isZikrInitialized)return;
+  isZikrInitialized = true;
   activeIdx=i;
   const s=salats[i];
   const el=document.getElementById('cNum');
   el.textContent=s.count;el.style.color='';
   document.getElementById('zpAr').textContent=s.arabe;
-  document.getElementById('zpTx').textContent=s.trans?`" ${s.trans} "`:'' ;
+  document.getElementById('zpTx').textContent=s.trans?`" ${s.trans} "`:'';
   document.getElementById('zpAr').style.display=s.arabe?'':'none';
   document.getElementById('zpill').style.display=s.trans||s.arabe?'':'none';
   document.getElementById('mainTitle').textContent=s.nom;
   document.getElementById('sNum').textContent=s.count;
   document.getElementById('streak').classList.toggle('on',s.count>0);
+  if(s.count>0) document.getElementById('tapHint').style.display='none';
+  else document.getElementById('tapHint').style.display='';
   initGoals();
   renderTabs();
+  updateBeads(s.count, s.goal);
 }
 
-function deleteSalat(e,i){
-  e.stopPropagation();
+function deleteSalat(i){
   if(salats.length<=1)return;
   salats.splice(i,1);saveSalats();
   if(activeIdx>=salats.length)activeIdx=salats.length-1;
   renderTabs();switchSalat(activeIdx);
 }
 
-/* ══════ ADD SALAT ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   ADD SALAT SHEET
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 function openSheet() { document.getElementById('sheetOverlay').classList.add('open'); document.getElementById('fName').focus(); }
 function closeSheet(){ document.getElementById('sheetOverlay').classList.remove('open'); }
-function closeSheetIfBg(e){ if(e.target===document.getElementById('sheetOverlay'))closeSheet(); }
+
+document.getElementById('addSalatBtn').addEventListener('click', openSheet);
+document.getElementById('sheetOverlay').addEventListener('click', function(e){
+  if(e.target===document.getElementById('sheetOverlay')) closeSheet();
+});
+document.getElementById('sheetCancelBtn').addEventListener('click', closeSheet);
+document.getElementById('sheetConfirmBtn').addEventListener('click', addSalat);
 
 function addSalat(){
   const nom=document.getElementById('fName').value.trim();
@@ -762,40 +990,85 @@ function addSalat(){
   renderTabs();switchSalat(salats.length-1);
 }
 
-/* ══════ COUNTER ══════ */
-let lastTap=0;
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   TAP COUNTER ÔÇö SINGLE pointerdown, DEBOUNCED
+   Fixes the double-counting bug from onclick+ontouchstart
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+let lastTapTime = 0;
+const DEBOUNCE_MS = 200;
 
 function handleTap(){
-  const now=Date.now();
-  if(now-lastTap<80)return;
-  lastTap=now;
-  const s=salats[activeIdx];
-  if(s.count>=activeGoal)return;
+  const now = Date.now();
+  if(now - lastTapTime < DEBOUNCE_MS) return;  // Debounce guard
+  lastTapTime = now;
+
+  const s = salats[activeIdx];
+  if(s.count >= activeGoal) return;
+
+  // Increment exactly +1
   s.count++;
   saveSalats();
 
-  const el=document.getElementById('cNum');
-  el.textContent=s.count;
-  el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');
-  el.style.color=s.count/activeGoal>.8?'var(--g1)':'';
+  // Update display
+  const el = document.getElementById('cNum');
+  el.textContent = s.count;
+  el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+  el.style.color = s.count/activeGoal > .8 ? 'var(--g1)' : '';
 
-  document.getElementById('sNum').textContent=s.count;
+  document.getElementById('sNum').textContent = s.count;
   document.getElementById('streak').classList.add('on');
+  document.getElementById('tapHint').style.display = 'none';
 
-  const tabs=document.querySelectorAll('.stab');
-  if(tabs[activeIdx])tabs[activeIdx].querySelector('.stab-count').textContent=`${s.count}/${activeGoal}`;
+  // Update tab display
+  const tabs = document.querySelectorAll('.stab');
+  if(tabs[activeIdx]) tabs[activeIdx].querySelector('.stab-count').textContent = `${s.count}/${activeGoal}`;
 
+  // Chapelet beads
+  const beadIdx = (s.count - 1) % BEAD_COUNT;
+  if(beadIdx === 0 && s.count > 1){
+    // Full round completed ÔÇö animate reset then light first bead
+    animateBeadReset();
+    setTimeout(()=>{
+      updateBeads(s.count, activeGoal);
+    }, BEAD_COUNT * 20 + 550);
+  } else {
+    updateBeads(s.count, activeGoal);
+  }
+
+  // VFX
   spawnRipple();
-  if(s.count%5===0)spawnPtcls();
-  if(navigator.vibrate)navigator.vibrate(s.count%10===0?[40,20,40]:35);
-  if(s.count===activeGoal)setTimeout(openModal,420);
+  if(s.count % 5 === 0) spawnPtcls();
+
+  // Vibration
+  if(navigator.vibrate) navigator.vibrate(s.count % 10 === 0 ? [40,20,40] : 35);
+
+  // Goal reached
+  if(s.count === activeGoal) setTimeout(openModal, 420);
 }
 
+// Attach SINGLE event listener ÔÇö pointerdown works for mouse, touch, and stylus
+document.getElementById('cArea').addEventListener('pointerdown', function(e){
+  // Don't count when tapping on chip controls, custom input, etc.
+  if(e.target.closest('.goal-panel') || e.target.closest('.streak') || e.target.closest('.custom-row')) return;
+  e.preventDefault();
+  handleTap();
+}, {passive: false});
+
+// Prevent ghost clicks / double-firing on touch devices
+document.getElementById('cArea').addEventListener('touchstart', function(e){
+  if(e.target.closest('.goal-panel') || e.target.closest('.streak') || e.target.closest('.custom-row')) return;
+  e.preventDefault();
+}, {passive: false});
+
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   VISUAL EFFECTS
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 function spawnRipple(){
   const h=document.getElementById('ripples');
   const r=document.createElement('div');r.className='rpl';
   h.appendChild(r);r.addEventListener('animationend',()=>r.remove());
 }
+
 function spawnPtcls(){
   const a=document.getElementById('cArea');
   const cx=a.offsetWidth/2,cy=a.offsetHeight/2;
@@ -808,19 +1081,22 @@ function spawnPtcls(){
   }
 }
 
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   CONGRATS MODAL
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 function openModal(){
   const s=salats[activeIdx];
   document.getElementById('finalCount').textContent=s.count;
-  document.getElementById('modalSub').innerHTML=`Séance de <strong style="color:var(--g1)">${s.nom}</strong> terminée !<br>Que Allah accepte votre Zikr.`;
+  document.getElementById('modalSub').innerHTML=`S├®ance de <strong style="color:var(--g1)">${s.nom}</strong> termin├®e !<br>Que Allah accepte votre Zikr.`;
 
-  // Réinitialiser le bouton save
+  // Reset save button
   const btn=document.getElementById('btnSave');
   btn.classList.remove('loading');
   btn.disabled=false;
 
   document.getElementById('modal').classList.add('open');
 
-  // Particules
+  // Modal particles
   const h=document.getElementById('modal-ptcls');h.innerHTML='';
   for(let i=0;i<30;i++){
     const p=document.createElement('div');const sz=2+Math.random()*4;
@@ -833,7 +1109,9 @@ function openModal(){
   }
 }
 
-/* ══════ RESET ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   RESET
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 function resetSession(){
   const s=salats[activeIdx];
   s.count=0;saveSalats();
@@ -842,20 +1120,26 @@ function resetSession(){
   document.getElementById('sNum').textContent='0';
   document.getElementById('streak').classList.remove('on');
   document.getElementById('modal').classList.remove('open');
+  document.getElementById('tapHint').style.display='';
+  updateBeads(0, activeGoal);
   renderTabs();
 }
 
-/* ══════ ENREGISTRER SÉANCE (Django) ══════ */
+document.getElementById('resetBtn').addEventListener('click', resetSession);
+document.getElementById('btnReset').addEventListener('click', resetSession);
+
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   SAVE SESSION (Django)
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+document.getElementById('btnSave').addEventListener('click', sauvegarderSeance);
+
 async function sauvegarderSeance(){
   const s      = salats[activeIdx];
   const btn    = document.getElementById('btnSave');
   const toast  = document.getElementById('mToast');
   const toastM = document.getElementById('mToastMsg');
 
-  // Masquer ancien toast
   toast.classList.remove('show');
-
-  // Spinner
   btn.classList.add('loading');
   btn.disabled = true;
 
@@ -879,15 +1163,12 @@ async function sauvegarderSeance(){
     const data = await res.json();
 
     if (res.ok && data.status === 'success') {
-      // ✅ Succès → aller à l'historique
       window.location.href = "{% url 'voir_historique' %}";
     } else {
-      // ❌ Erreur métier Django
       throw new Error(data.message || 'Erreur serveur');
     }
 
   } catch(err) {
-    // ❌ Erreur réseau ou autre
     btn.classList.remove('loading');
     btn.disabled = false;
     toastM.textContent = err.message || 'Erreur de connexion.';
@@ -896,7 +1177,9 @@ async function sauvegarderSeance(){
   }
 }
 
-/* ══════ AUDIO ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   AUDIO PLAYER
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 const aud=document.getElementById('aud');
 let isSeeking=false;
 {% if zikr.fichier_audio %}
@@ -905,9 +1188,14 @@ document.getElementById('audControls').style.display='flex';
 {% endif %}
 
 function fmt(s){if(!isFinite(s)||isNaN(s))return'00:00';return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0')}
-function toggleAudio(){if(aud.paused){aud.play();document.getElementById('audIcon').className='fa-solid fa-pause'}else{aud.pause();document.getElementById('audIcon').className='fa-solid fa-play'}}
-function skipBack(){aud.currentTime=Math.max(0,aud.currentTime-10)}
-function skipFwd() {aud.currentTime=Math.min(aud.duration||0,aud.currentTime+10)}
+
+document.getElementById('audioSrcBtn').addEventListener('click', ()=> document.getElementById('fileIn').click());
+document.getElementById('toggleAudioBtn').addEventListener('click', function(){
+  if(aud.paused){aud.play();document.getElementById('audIcon').className='fa-solid fa-pause'}
+  else{aud.pause();document.getElementById('audIcon').className='fa-solid fa-play'}
+});
+document.getElementById('skipBackBtn').addEventListener('click', ()=> { aud.currentTime=Math.max(0,aud.currentTime-10); });
+document.getElementById('skipFwdBtn').addEventListener('click', ()=> { aud.currentTime=Math.min(aud.duration||0,aud.currentTime+10); });
 
 document.getElementById('fileIn').addEventListener('change',function(){
   const f=this.files[0];if(!f)return;
@@ -935,46 +1223,49 @@ aud.addEventListener('loadedmetadata',()=>document.getElementById('audDur').text
 aud.addEventListener('ended',()=>document.getElementById('audIcon').className='fa-solid fa-play');
 document.getElementById('volBar').addEventListener('input',e=>aud.volume=e.target.value);
 
-/* ══════ INIT ══════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   INIT
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 (function(){
+  createBeads();
   switchSalat(0);
   renderTabs();
 })();
 </script>
-<!-- NAV (Même style que l'accueil) -->
-<nav class="nav layer notranslate">
+
+<!-- NAV (M├¬me style que l'accueil) -->
+<nav class="nav-island notranslate">
   <a href="/" class="nav-item">
     <i class="fa-solid fa-house-chimney"></i>
     <span>Accueil</span>
+    <div class="nav-item-indicator"></div>
   </a>
   <a href="{% url 'dashboard' %}" class="nav-item active">
     <i class="fa-solid fa-chart-line"></i>
     <span>Stats</span>
+    <div class="nav-item-indicator"></div>
   </a>
   <a href="{% url 'favoris' %}" class="nav-item">
     <i class="fa-solid fa-heart"></i>
     <span>Favoris</span>
+    <div class="nav-item-indicator"></div>
   </a>
   <a href="{% url 'profile' %}" class="nav-item">
     <i class="fa-solid fa-circle-user"></i>
     <span>Profil</span>
+    <div class="nav-item-indicator"></div>
   </a>
 </nav>
 
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-  AOS.init({ duration: 800, once: true });
-
-  /* ══ MINI BARRE PRIÈRE — lit le cache localStorage de la page d'accueil ══ */
+  /* ÔòÉÔòÉ MINI BARRE PRI├êRE ÔÇö lit le cache localStorage ÔòÉÔòÉ */
   (function() {
     const prayers = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
     function toMins(t) { if(!t||!t.includes(':')) return Infinity; const[h,m]=t.trim().split(':').map(Number); return h*60+m; }
 
     function updateMiniBar() {
-      // Try to load cached prayer times
       const keys = Object.keys(localStorage).filter(k => k.startsWith('prayer_'));
       if (!keys.length) return;
-      // Use most recent cache key
       const PT = JSON.parse(localStorage.getItem(keys[keys.length - 1]) || '{}');
 
       const now = new Date();
@@ -996,9 +1287,8 @@ document.getElementById('volBar').addEventListener('input',e=>aud.volume=e.targe
     }
 
     updateMiniBar();
-    setInterval(updateMiniBar, 30000); // update every 30s
+    setInterval(updateMiniBar, 30000);
   })();
-
 </script>
 
 <!-- Service Worker Registration -->
