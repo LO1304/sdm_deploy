@@ -86,7 +86,7 @@ class Historique(models.Model):
         ordering = ['-date_lecture']
 
     def __str__(self):
-        return f"{self.user.username} a écouté {self.content_object} le {self.date_lecture}"
+        return f"{self.user.username} a écouté un(e) {self.content_type.model} (ID: {self.object_id}) le {self.date_lecture}"
 
 
 # ── PROGRESSION LECTURE ──
@@ -280,7 +280,7 @@ class Favori(models.Model):
         unique_together = ('user', 'content_type', 'object_id')
 
     def __str__(self):
-        return f"{self.user.username} a ajouté {self.content_object} à ses favoris"
+        return f"{self.user.username} a ajouté un(e) {self.content_type.model} (ID: {self.object_id}) à ses favoris"
 
 
 # ── TELECHARGEMENTS ──
@@ -296,7 +296,7 @@ class Telechargement(models.Model):
         unique_together = ('user', 'content_type', 'object_id')
 
     def __str__(self):
-        return f"{self.user.username} a téléchargé {self.content_object}"
+        return f"{self.user.username} a téléchargé un(e) {self.content_type.model} (ID: {self.object_id})"
 
 
 
