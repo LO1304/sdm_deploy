@@ -116,8 +116,8 @@ def home(request):
         
         # 2. Wird Mahuz
         wird_mahuz = Wird.objects.filter(titre__icontains='Mahuz').first()
-        # Vérifier si l'utilisateur a un Wird en cours (qui n'est pas terminé aujourd'hui)
-        wird_en_cours = ProgressionWird.objects.filter(user=request.user, complete=False).order_by('-derniere_mise_a_jour').first()
+        # Vérifier si l'utilisateur a un Wird en cours (via ProgressionWird qui garde l'état courant)
+        wird_en_cours = ProgressionWird.objects.filter(user=request.user).order_by('-derniere_modif').first()
         
         # 3. Calcul du niveau spirituel (Basé sur les interactions : Zikr + Ecoutes + Lectures)
         total_ecoutes = Historique.objects.filter(user=request.user).count()
