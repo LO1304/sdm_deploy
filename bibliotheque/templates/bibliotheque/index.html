@@ -64,9 +64,9 @@
 
     <div class="relative w-full rounded-[32px] overflow-hidden shadow-2xl mb-12 md:px-6" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="1200">
         <!-- Backgrounds -->
-        <div class="absolute inset-0 bg-gradient-to-br from-[#0c2a1e] to-[#040B08] z-0"></div>
-        <div class="absolute inset-0 hero-pattern opacity-50 mix-blend-overlay z-0"></div>
-        <div class="absolute -top-24 -right-24 w-64 h-64 md:w-96 md:h-96 bg-gold-500/20 rounded-full blur-[80px] z-0"></div>
+        <div class="absolute inset-0 z-0 bg-cover bg-center" style="background-image: url('https://www.leral.net/photo/art/grande/89764721-63418109.jpg'); filter: brightness(0.6) contrast(1.1);"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#040B08] via-[#040B08]/80 to-transparent z-0"></div>
+        <div class="absolute -top-24 -right-24 w-64 h-64 md:w-96 md:h-96 bg-gold-500/30 rounded-full blur-[100px] z-0 mix-blend-screen"></div>
         
         <!-- Card Content -->
         <div class="relative z-10 p-6 md:p-10 border border-white/10 rounded-[32px] glass h-full flex flex-col justify-between">
@@ -136,6 +136,119 @@
                     <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
                     <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Isha</p>
                     <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MAGAL COUNTDOWN -->
+    <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="250" data-aos-duration="1000">
+        <div class="relative overflow-hidden rounded-[28px] p-6 md:p-8 flex items-center justify-between shadow-lg border border-gold-500/20 group cursor-default">
+            <div class="absolute inset-0 bg-gradient-to-r from-gold-500/10 via-transparent to-transparent z-0"></div>
+            <div class="absolute inset-0 bg-[#0c2a1e]/80 backdrop-blur-md z-0"></div>
+            
+            <div class="relative z-10">
+                <p class="text-[10px] md:text-xs font-bold tracking-[0.3em] text-gold-500 uppercase mb-2 animate-pulse">MAGAL GUI NIEUW NA</p>
+                <h3 class="text-xl md:text-3xl font-semibold text-white">18 Safar (2 Août 2026)</h3>
+            </div>
+            
+            <div class="relative z-10 flex gap-3 text-center">
+                <div class="flex flex-col">
+                    <span id="magal-days" class="text-2xl md:text-4xl font-bold text-white tabular-nums">00</span>
+                    <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-white/50">Jours</span>
+                </div>
+                <span class="text-xl md:text-3xl font-bold text-gold-500/50">:</span>
+                <div class="flex flex-col">
+                    <span id="magal-hours" class="text-2xl md:text-4xl font-bold text-white tabular-nums">00</span>
+                    <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-white/50">H</span>
+                </div>
+                <span class="text-xl md:text-3xl font-bold text-gold-500/50">:</span>
+                <div class="flex flex-col">
+                    <span id="magal-mins" class="text-2xl md:text-4xl font-bold text-white tabular-nums">00</span>
+                    <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-white/50">Min</span>
+                </div>
+                <span class="text-xl md:text-3xl font-bold text-gold-500/50 hidden md:block">:</span>
+                <div class="flex flex-col hidden md:flex">
+                    <span id="magal-secs" class="text-2xl md:text-4xl font-bold text-gold-500 tabular-nums">00</span>
+                    <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-white/50">Sec</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MON QUOTIDIEN (Zikr, Wird, Niveau) -->
+    <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="280" data-aos-duration="1000">
+        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-4 ml-1 flex items-center gap-2">
+            <i class="fa-solid fa-sun text-gold-500 text-[10px] md:text-xs"></i> Mon Quotidien
+        </h2>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
+            
+            <!-- Wird Widget -->
+            {% if wird_mahuz %}
+                <a href="{% if wird_en_cours %}{% url 'lire_wird' wird_en_cours.wird.id %}{% else %}{% url 'lire_wird' wird_mahuz.id %}{% endif %}" class="block glass rounded-[24px] p-4 flex flex-col justify-between border border-white/5 hover:border-gold-500/30 transition-all group">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/80 group-hover:text-gold-500 transition-colors">
+                            <i class="fa-solid fa-braille"></i>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-white/20 group-hover:text-gold-500 text-sm transition-transform group-hover:translate-x-1"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-widest text-white/40 mb-1">{% if wird_en_cours %}En cours{% else %}À faire{% endif %}</p>
+                        <p class="font-semibold text-white/90 text-sm truncate">Wird Mahuz</p>
+                    </div>
+                </a>
+            {% else %}
+                <a href="{% url 'liste' 'wird' %}" class="block glass rounded-[24px] p-4 flex flex-col justify-between border border-white/5 hover:border-gold-500/30 transition-all group">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/80 group-hover:text-gold-500 transition-colors">
+                            <i class="fa-solid fa-braille"></i>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-white/20 group-hover:text-gold-500 text-sm transition-transform group-hover:translate-x-1"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-widest text-white/40 mb-1">Quotidien</p>
+                        <p class="font-semibold text-white/90 text-sm">Mes Wirds</p>
+                    </div>
+                </a>
+            {% endif %}
+
+            <!-- Zikr Widget -->
+            <a href="{% url 'zikr_compteur_default' %}" class="block glass rounded-[24px] p-4 flex flex-col justify-between border border-white/5 hover:border-gold-500/30 transition-all group relative overflow-hidden">
+                <!-- Background glow effect -->
+                <div class="absolute -top-10 -right-10 w-24 h-24 bg-gold-500/10 rounded-full blur-xl group-hover:bg-gold-500/20 transition-all"></div>
+                
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/80 group-hover:text-gold-500 transition-colors">
+                        <i class="fa-solid fa-fingerprint"></i>
+                    </div>
+                    <i class="fa-solid fa-plus text-white/20 group-hover:text-gold-500 text-sm"></i>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-[10px] uppercase tracking-widest text-white/40 mb-1">Total Salats</p>
+                    <p class="font-bold text-white/90 text-lg tabular-nums">{{ total_zikr_user }}</p>
+                </div>
+            </a>
+
+            <!-- Progression Spirituelle Widget -->
+            <div class="col-span-2 md:col-span-1 block glass rounded-[24px] p-4 flex flex-col justify-between border border-gold-500/20 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gold-500/5 group-hover:bg-gold-500/10 transition-colors"></div>
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <div class="w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center text-gold-500 border border-gold-500/30">
+                        <i class="fa-solid fa-ranking-star"></i>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] uppercase tracking-widest text-gold-500/70">Niveau</p>
+                        <p class="font-bold text-gold-500">{{ niveau_spirituel }}</p>
+                    </div>
+                </div>
+                <div class="relative z-10 mt-2">
+                    <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <!-- Barre de progression fictive qui boucle visuellement -->
+                        <div class="h-full bg-gradient-to-r from-gold-600 to-gold-400 w-[65%] rounded-full shadow-[0_0_10px_rgba(212,175,55,0.5)]"></div>
+                    </div>
+                    <p class="text-[9px] text-white/40 mt-2 text-right">Basé sur {{ total_ecoutes }} activités</p>
                 </div>
             </div>
 
@@ -624,6 +737,31 @@
         }
     }
     setInterval(tick, 1000);
+
+    // MAGAL COUNTDOWN LOGIC
+    function updateMagalCountdown() {
+        // 2 Août 2026 00:00:00 (Mois 7 car 0-indexé)
+        const magalDate = new Date(2026, 7, 2, 0, 0, 0).getTime();
+        const now = new Date().getTime();
+        const diff = magalDate - now;
+
+        if (diff > 0) {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            const elDays = document.getElementById('magal-days');
+            if(elDays) {
+                elDays.textContent = String(days).padStart(2, '0');
+                document.getElementById('magal-hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('magal-mins').textContent = String(mins).padStart(2, '0');
+                document.getElementById('magal-secs').textContent = String(secs).padStart(2, '0');
+            }
+        }
+    }
+    setInterval(updateMagalCountdown, 1000);
+    updateMagalCountdown();
 
     // QIBLA
     function updateQibla(){

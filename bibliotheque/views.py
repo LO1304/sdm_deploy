@@ -85,6 +85,11 @@ def home(request):
     # Données réservées aux utilisateurs connectés
     derniere_lecture = None
     dernier_son = None
+    wird_mahuz = None
+    wird_en_cours = None
+    total_zikr_user = 0
+    niveau_spirituel = 1
+    total_ecoutes = 0
     
     if request.user.is_authenticated:
         # Récupérer la dernière lecture pour le bouton "Reprendre"
@@ -103,6 +108,21 @@ def home(request):
             dernier_son = dernier_historique_son.content_object if dernier_historique_son else None
         except Exception:
             dernier_son = None
+            
+        # --- NOUVEAUTÉS DASHBOARD MOBILE ---
+        # 1. Total Zikr
+        zikr_aggr = HistoriqueZikr.objects.filter(user=request.user).aggregate(total=Sum('nombre_total'))
+        total_zikr_user = zikr_aggr['total'] or 0
+        
+        # 2. Wird Mahuz
+        wird_mahuz = Wird.objects.filter(titre__icontains='Mahuz').first()
+        # Vérifier si l'utilisateur a un Wird en cours (qui n'est pas terminé aujourd'hui)
+        wird_en_cours = ProgressionWird.objects.filter(user=request.user, complete=False).order_by('-derniere_mise_a_jour').first()
+        
+        # 3. Calcul du niveau spirituel (Basé sur les interactions : Zikr + Ecoutes + Lectures)
+        total_ecoutes = Historique.objects.filter(user=request.user).count()
+        points = (total_zikr_user // 100) + total_ecoutes
+        niveau_spirituel = 1 + (points // 50)  # Niveau 1 par défaut, augmente tous les 50 "points"
 
     # Nombre de contenus pour les badges
     total_khassidas = Khassida.objects.count()
@@ -118,6 +138,11 @@ def home(request):
         'config': config,
         'derniere_lecture': derniere_lecture,
         'dernier_son': dernier_son,
+        'wird_mahuz': wird_mahuz,
+        'wird_en_cours': wird_en_cours,
+        'total_zikr_user': total_zikr_user,
+        'niveau_spirituel': niveau_spirituel,
+        'total_ecoutes': total_ecoutes,
         'total_khassidas': total_khassidas,
         'total_corans': total_corans,
         'total_sons': total_sons,
