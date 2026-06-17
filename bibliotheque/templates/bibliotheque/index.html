@@ -60,6 +60,85 @@
         .action-btn:hover p { color: #f5dc6e !important; transform: translateY(2px); }
         @keyframes prayerSlideIn { from { opacity:0; transform:translateX(-50%) translateY(-30px) scale(0.92); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
         @keyframes prayerPulse { 0%,100% { box-shadow:0 0 20px rgba(212,175,55,0.4); } 50% { box-shadow:0 0 35px rgba(212,175,55,0.7); transform:scale(1.05); } }
+        
+        /* === MAGAL COUNTDOWN CADRANS === */
+        .magal-cadran {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .magal-cadran-inner {
+            width: 60px; height: 70px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+        .magal-cadran-inner:hover {
+            border-color: rgba(212,175,55,0.4);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(212,175,55,0.15);
+        }
+        .magal-digit {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+            transition: transform 0.15s ease;
+        }
+        .magal-digit.flip {
+            animation: magalFlip 0.3s ease;
+        }
+        @keyframes magalFlip {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            40% { transform: translateY(-6px) scale(1.1); opacity: 0.6; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .magal-label {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(255,255,255,0.4);
+        }
+        .magal-colon {
+            animation: colonBlink 1s ease-in-out infinite;
+        }
+        @keyframes colonBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* Floating gold particles */
+        .magal-particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: #d4af37;
+            border-radius: 50%;
+            bottom: -10px;
+            opacity: 0;
+            animation: particleFloat 6s ease-in-out infinite;
+            box-shadow: 0 0 6px rgba(212,175,55,0.6);
+        }
+        @keyframes particleFloat {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            10% { opacity: 0.7; transform: scale(1); }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-200px) scale(0.3); opacity: 0; }
+        }
+        
+        /* Mobile responsive cadrans */
+        @media (max-width: 400px) {
+            .magal-cadran-inner { width: 52px; height: 60px; border-radius: 14px; }
+            .magal-digit { font-size: 22px; }
+            .magal-colon { font-size: 18px !important; }
+            .magal-label { font-size: 8px; }
+        }
     </style>
 
     <div class="relative w-full rounded-[32px] overflow-hidden shadow-2xl mb-12 md:px-6" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="1200">
@@ -142,36 +221,105 @@
         </div>
     </div>
 
-    <!-- MAGAL COUNTDOWN -->
+    <!-- MAGAL COUNTDOWN — Widget Spectaculaire -->
     <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="250" data-aos-duration="1000">
-        <div class="relative overflow-hidden rounded-[28px] p-6 md:p-8 flex items-center justify-between shadow-lg border border-gold-500/20 group cursor-default">
-            <div class="absolute inset-0 bg-gradient-to-r from-gold-500/10 via-transparent to-transparent z-0"></div>
-            <div class="absolute inset-0 bg-[#0c2a1e]/80 backdrop-blur-md z-0"></div>
+        <div class="relative overflow-hidden rounded-[32px] shadow-2xl border border-gold-500/30">
             
-            <div class="relative z-10">
-                <p class="text-[10px] md:text-xs font-bold tracking-[0.3em] text-gold-500 uppercase mb-2 animate-pulse">MAGAL GUI NIEUW NA</p>
-                <h3 class="text-xl md:text-3xl font-semibold text-white">18 Safar (2 Août 2026)</h3>
+            <!-- Background Image: Mosquée -->
+            <div class="absolute inset-0 z-0">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{% static 'images/mosque_touba.png' %}'); opacity: 0.12;"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-[#040B08]/60 via-[#0c2a1e]/90 to-[#040B08]"></div>
             </div>
             
-            <div class="relative z-10 flex gap-3 text-center">
-                <div class="flex flex-col">
-                    <span id="magal-days" class="text-2xl md:text-4xl font-bold text-white tabular-nums">00</span>
-                    <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-white/50">Jours</span>
+            <!-- Floating Gold Particles (CSS) -->
+            <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <div class="magal-particle" style="left:10%;animation-delay:0s;"></div>
+                <div class="magal-particle" style="left:25%;animation-delay:1.5s;"></div>
+                <div class="magal-particle" style="left:40%;animation-delay:3s;"></div>
+                <div class="magal-particle" style="left:55%;animation-delay:0.8s;"></div>
+                <div class="magal-particle" style="left:70%;animation-delay:2.2s;"></div>
+                <div class="magal-particle" style="left:85%;animation-delay:4s;"></div>
+                <div class="magal-particle" style="left:50%;animation-delay:2.8s;"></div>
+                <div class="magal-particle" style="left:15%;animation-delay:3.5s;"></div>
+            </div>
+            
+            <!-- Glow Orbs -->
+            <div class="absolute -top-20 left-1/2 -translate-x-1/2 w-48 h-48 bg-gold-500/15 rounded-full blur-[80px] z-0"></div>
+            <div class="absolute -bottom-10 left-1/4 w-32 h-32 bg-gold-500/10 rounded-full blur-[60px] z-0"></div>
+            
+            <!-- Content -->
+            <div class="relative z-10 px-5 py-8 md:px-10 md:py-10 text-center">
+                
+                <!-- Decorative Top Line -->
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <div class="h-px w-12 bg-gradient-to-r from-transparent to-gold-500/50"></div>
+                    <i class="fa-solid fa-mosque text-gold-500 text-sm"></i>
+                    <div class="h-px w-12 bg-gradient-to-l from-transparent to-gold-500/50"></div>
                 </div>
-                <span class="text-xl md:text-3xl font-bold text-gold-500/50">:</span>
-                <div class="flex flex-col">
-                    <span id="magal-hours" class="text-2xl md:text-4xl font-bold text-white tabular-nums">00</span>
-                    <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-white/50">H</span>
+                
+                <!-- Title -->
+                <p class="text-[11px] md:text-sm font-bold tracking-[0.35em] text-gold-500 uppercase mb-2" style="font-family:'Cinzel Decorative',serif; text-shadow: 0 0 30px rgba(212,175,55,0.4);">MAGAL GUI NIEUW NA</p>
+                
+                <!-- Date with Amiri font -->
+                <p class="text-base md:text-xl text-white/80 mb-8" style="font-family:'Amiri',serif;">
+                    <span class="text-gold-500">18 Safar</span> · 2 Août 2026
+                </p>
+                
+                <!-- 4 Countdown Cadrans -->
+                <div class="flex items-center justify-center gap-2 md:gap-4 mb-6">
+                    
+                    <!-- JOURS -->
+                    <div class="magal-cadran">
+                        <div class="magal-cadran-inner">
+                            <span id="magal-days" class="magal-digit">00</span>
+                        </div>
+                        <span class="magal-label">Jours</span>
+                    </div>
+                    
+                    <span class="text-gold-500/60 text-2xl md:text-3xl font-light mt-[-20px] magal-colon">:</span>
+                    
+                    <!-- HEURES -->
+                    <div class="magal-cadran">
+                        <div class="magal-cadran-inner">
+                            <span id="magal-hours" class="magal-digit">00</span>
+                        </div>
+                        <span class="magal-label">Heures</span>
+                    </div>
+                    
+                    <span class="text-gold-500/60 text-2xl md:text-3xl font-light mt-[-20px] magal-colon">:</span>
+                    
+                    <!-- MINUTES -->
+                    <div class="magal-cadran">
+                        <div class="magal-cadran-inner">
+                            <span id="magal-mins" class="magal-digit">00</span>
+                        </div>
+                        <span class="magal-label">Min</span>
+                    </div>
+                    
+                    <span class="text-gold-500/60 text-2xl md:text-3xl font-light mt-[-20px] magal-colon">:</span>
+                    
+                    <!-- SECONDES (visible sur mobile aussi !) -->
+                    <div class="magal-cadran magal-cadran-sec">
+                        <div class="magal-cadran-inner border-gold-500/40">
+                            <span id="magal-secs" class="magal-digit text-gold-500">00</span>
+                        </div>
+                        <span class="magal-label">Sec</span>
+                    </div>
+                    
                 </div>
-                <span class="text-xl md:text-3xl font-bold text-gold-500/50">:</span>
-                <div class="flex flex-col">
-                    <span id="magal-mins" class="text-2xl md:text-4xl font-bold text-white tabular-nums">00</span>
-                    <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-white/50">Min</span>
+
+                <!-- Progress Bar (temps écoulé depuis le dernier Magal) -->
+                <div class="max-w-xs mx-auto">
+                    <div class="h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div id="magal-progress" class="h-full bg-gradient-to-r from-gold-600 via-gold-400 to-gold-600 rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(212,175,55,0.5)]" style="width: 0%"></div>
+                    </div>
                 </div>
-                <span class="text-xl md:text-3xl font-bold text-gold-500/50 hidden md:block">:</span>
-                <div class="flex flex-col hidden md:flex">
-                    <span id="magal-secs" class="text-2xl md:text-4xl font-bold text-gold-500 tabular-nums">00</span>
-                    <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-white/50">Sec</span>
+                
+                <!-- Decorative Bottom Line -->
+                <div class="flex items-center justify-center gap-3 mt-5">
+                    <div class="h-px w-8 bg-gradient-to-r from-transparent to-gold-500/30"></div>
+                    <i class="fa-solid fa-star text-gold-500/30 text-[8px]"></i>
+                    <div class="h-px w-8 bg-gradient-to-l from-transparent to-gold-500/30"></div>
                 </div>
             </div>
         </div>
@@ -770,26 +918,42 @@
     }
     setInterval(tick, 1000);
 
-    // MAGAL COUNTDOWN LOGIC
+    // MAGAL COUNTDOWN LOGIC — with flip animation + progress bar
+    const _magalPrev = {d:'',h:'',m:'',s:''};
     function updateMagalCountdown() {
-        // 2 Août 2026 00:00:00 (Mois 7 car 0-indexé)
-        const magalDate = new Date(2026, 7, 2, 0, 0, 0).getTime();
+        const magalDate = new Date(2026, 7, 2, 0, 0, 0).getTime(); // 2 Août 2026
+        const lastMagal = new Date(2025, 8, 5, 0, 0, 0).getTime(); // ~Magal 2025
         const now = new Date().getTime();
         const diff = magalDate - now;
 
         if (diff > 0) {
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            const days = String(Math.floor(diff / (1000*60*60*24))).padStart(2,'0');
+            const hours = String(Math.floor((diff%(1000*60*60*24))/(1000*60*60))).padStart(2,'0');
+            const mins = String(Math.floor((diff%(1000*60*60))/(1000*60))).padStart(2,'0');
+            const secs = String(Math.floor((diff%(1000*60))/1000)).padStart(2,'0');
 
-            const elDays = document.getElementById('magal-days');
-            if(elDays) {
-                elDays.textContent = String(days).padStart(2, '0');
-                document.getElementById('magal-hours').textContent = String(hours).padStart(2, '0');
-                document.getElementById('magal-mins').textContent = String(mins).padStart(2, '0');
-                document.getElementById('magal-secs').textContent = String(secs).padStart(2, '0');
+            // Update with flip animation
+            function setDigit(id, val, key) {
+                const el = document.getElementById(id);
+                if(el && _magalPrev[key] !== val) {
+                    el.textContent = val;
+                    el.classList.remove('flip');
+                    void el.offsetWidth; // force reflow
+                    el.classList.add('flip');
+                    _magalPrev[key] = val;
+                }
             }
+            setDigit('magal-days', days, 'd');
+            setDigit('magal-hours', hours, 'h');
+            setDigit('magal-mins', mins, 'm');
+            setDigit('magal-secs', secs, 's');
+
+            // Progress bar (% of time elapsed since last Magal)
+            const totalSpan = magalDate - lastMagal;
+            const elapsed = now - lastMagal;
+            const pct = Math.min(100, Math.max(0, (elapsed / totalSpan) * 100));
+            const bar = document.getElementById('magal-progress');
+            if(bar) bar.style.width = pct.toFixed(1) + '%';
         }
     }
     setInterval(updateMagalCountdown, 1000);

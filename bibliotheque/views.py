@@ -1,4 +1,5 @@
 import os
+import datetime
 import requests
 import json
 import hashlib
@@ -8,9 +9,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.middleware.csrf import get_token
 
@@ -531,9 +533,72 @@ def register_view(request):
 
 @login_required
 def profil_view(request):
-    """Vue du profil utilisateur avec statut Premium."""
+    """Page de profil utilisateur avec statistiques spirituelles complètes."""
     profile, created = Profile.objects.get_or_create(user=request.user)
-    return render(request, 'bibliotheque/profile.html', {'profile': profile})
+
+    # Stats Zikr
+    zikr_stats = HistoriqueZikr.objects.filter(user=request.user).aggregate(
+        total=Sum('nombre_total'),
+        nb_seances=Count('id')
+    )
+    total_zikr = zikr_stats['total'] or 0
+    nb_seances_zikr = zikr_stats['nb_seances'] or 0
+
+    # Wird complétés
+    wird_completes = HistoriqueWird.objects.filter(user=request.user, complete=True).count()
+    wird_en_cours = ProgressionWird.objects.filter(user=request.user).order_by('-derniere_modif').first()
+
+    # Écoutes
+    total_ecoutes = Historique.objects.filter(user=request.user).count()
+
+    # Favoris
+    nb_favoris = Favori.objects.filter(user=request.user).count()
+    favoris_recents = Favori.objects.filter(user=request.user).order_by('-date_ajout')[:4]
+
+    # Lectures terminées
+    lectures_terminees = ProgressionGenerale.objects.filter(user=request.user, termine=True).count()
+
+    # Historique récent (5 derniers)
+    historique_recent = Historique.objects.filter(user=request.user).order_by('-date_lecture')[:5]
+
+    # Streak (jours consécutifs d'activité)
+    today = timezone.now().date()
+    streak_jours = 0
+    check_date = today
+    while True:
+        has_activity = (
+            HistoriqueZikr.objects.filter(user=request.user, date_seance__date=check_date).exists() or
+            Historique.objects.filter(user=request.user, date_lecture__date=check_date).exists()
+        )
+        if has_activity:
+            streak_jours += 1
+            check_date -= datetime.timedelta(days=1)
+        else:
+            break
+        if streak_jours > 365:  # Safety limit
+            break
+
+    # Niveau spirituel
+    points = (total_zikr // 100) + total_ecoutes + lectures_terminees
+    niveau_spirituel = 1 + (points // 50)
+    points_vers_prochain = points % 50
+
+    context = {
+        'profile': profile,
+        'total_zikr': total_zikr,
+        'nb_seances_zikr': nb_seances_zikr,
+        'wird_completes': wird_completes,
+        'wird_en_cours': wird_en_cours,
+        'total_ecoutes': total_ecoutes,
+        'nb_favoris': nb_favoris,
+        'favoris_recents': favoris_recents,
+        'lectures_terminees': lectures_terminees,
+        'historique_recent': historique_recent,
+        'streak_jours': streak_jours,
+        'niveau_spirituel': niveau_spirituel,
+        'points_vers_prochain': points_vers_prochain,
+    }
+    return render(request, 'bibliotheque/profile.html', context)
 
 # --- ABONNEMENT ---
 

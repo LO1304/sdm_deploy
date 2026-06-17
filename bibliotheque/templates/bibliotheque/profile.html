@@ -1,838 +1,339 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <!-- PWA -->
-    <link rel="manifest" href="/static/manifest.json">
-    <meta name="theme-color" content="#040B08">
-    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="google" content="notranslate">
-<title>SDM — Mon Profil</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% block title %}Mon Profil - SDM{% endblock %}
 
+{% block extra_head %}
 <style>
-/* ╔══════════════════════════════════════╗
-   ║  TOKENS                              ║
-   ╚══════════════════════════════════════╝ */
-:root {
-  --g1: #d4af37;
-  --g2: #f5dc6e;
-  --g3: #9a7520;
-  --bg: #03040a;
-  --b1: rgba(212,175,55,0.18);
-  --b2: rgba(255,255,255,0.07);
-  --dim: rgba(255,255,255,0.26);
-  --mid: rgba(255,255,255,0.55);
-  --fT: 'Cinzel Decorative', cursive;
-  --fS: 'Cormorant Garamond', serif;
-  --fU: 'Outfit', sans-serif;
-  --nav: 70px;
-}
-
-/* ╔══════════════════════════════════════╗
-   ║  BASE                                ║
-   ╚══════════════════════════════════════╝ */
-*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-html { scroll-behavior:smooth; overflow-x:hidden; }
-body {
-  background: var(--bg);
-  color: #fff;
-  font-family: var(--fU);
-  min-height: 100vh;
-  overflow-x: hidden;
-  padding-bottom: calc(var(--nav) + 40px);
-  -webkit-tap-highlight-color: transparent;
-}
-::-webkit-scrollbar { width:2px; }
-::-webkit-scrollbar-thumb { background:rgba(212,175,55,0.25); border-radius:9px; }
-
-/* ╔══════════════════════════════════════╗
-   ║  CANVAS ÉTOILES                      ║
-   ╚══════════════════════════════════════╝ */
-#stars { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.7; }
-
-/* ╔══════════════════════════════════════╗
-   ║  BLOBS                               ║
-   ╚══════════════════════════════════════╝ */
-.blob {
-  position:fixed; border-radius:50%; filter:blur(90px);
-  pointer-events:none; z-index:0; will-change:transform;
-}
-.blob-1 {
-  width:600px; height:600px; top:-200px; left:50%;
-  transform:translateX(-50%);
-  background:radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 65%);
-  animation: blobFloat1 12s ease-in-out infinite alternate;
-}
-.blob-2 {
-  width:350px; height:350px; bottom:-80px; right:-80px;
-  background:radial-gradient(circle, rgba(90,60,180,0.06) 0%, transparent 65%);
-  animation: blobFloat2 15s ease-in-out infinite alternate;
-}
-.blob-3 {
-  width:250px; height:250px; top:40%; left:-80px;
-  background:radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 65%);
-  animation: blobFloat3 10s ease-in-out infinite alternate;
-}
-@keyframes blobFloat1 {
-  0%   { transform:translateX(-50%) scale(1) translateY(0); }
-  50%  { transform:translateX(-48%) scale(1.1) translateY(-30px); }
-  100% { transform:translateX(-52%) scale(0.95) translateY(20px); }
-}
-@keyframes blobFloat2 {
-  0%   { transform:scale(1) rotate(0deg); }
-  100% { transform:scale(1.2) rotate(20deg); }
-}
-@keyframes blobFloat3 {
-  0%   { transform:scale(1) translateY(0); }
-  100% { transform:scale(1.15) translateY(-40px); }
-}
-
-/* ╔══════════════════════════════════════╗
-   ║  LAYER & REVEAL                      ║
-   ╚══════════════════════════════════════╝ */
-.layer { position:relative; z-index:1; }
-.reveal {
-  opacity:0;
-  animation: riseUp 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
-}
-@keyframes riseUp {
-  from { opacity:0; transform:translateY(22px) scale(0.98); }
-  to   { opacity:1; transform:translateY(0) scale(1); }
-}
-.d1{animation-delay:.05s} .d2{animation-delay:.15s}
-.d3{animation-delay:.25s} .d4{animation-delay:.35s}
-.d5{animation-delay:.45s} .d6{animation-delay:.55s}
-
-/* ╔══════════════════════════════════════╗
-   ║  GOLD GRADIENT TEXT                  ║
-   ╚══════════════════════════════════════╝ */
-.gold-grad {
-  background: linear-gradient(130deg, var(--g2) 0%, var(--g1) 50%, var(--g3) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ╔══════════════════════════════════════╗
-   ║  HEADER                              ║
-   ╚══════════════════════════════════════╝ */
-.header {
-  padding: 56px 24px 24px;
-  text-align: center;
-  position: relative;
-}
-.header-ring {
-  position:absolute; top:30px; left:50%; transform:translateX(-50%);
-  width:160px; height:160px; border-radius:50%;
-  border:1px solid rgba(212,175,55,0.1);
-  animation: ringPulse 3s ease-in-out infinite;
-}
-.header-ring::before {
-  content:''; position:absolute; inset:12px; border-radius:50%;
-  border:1px solid rgba(212,175,55,0.07);
-  animation: ringPulse 3s ease-in-out infinite reverse;
-}
-@keyframes ringPulse {
-  0%,100% { transform:translateX(-50%) scale(1); opacity:.6; }
-  50%      { transform:translateX(-50%) scale(1.06); opacity:1; }
-}
-.ornament {
-  display:flex; align-items:center; justify-content:center;
-  gap:10px; margin-bottom:14px;
-}
-.orn-line { height:1px; width:36px; background:linear-gradient(90deg,transparent,var(--g1)); }
-.orn-line.r { background:linear-gradient(90deg,var(--g1),transparent); }
-.orn-gem {
-  width:5px; height:5px; border:1px solid var(--g1);
-  transform:rotate(45deg); background:rgba(212,175,55,0.2);
-  animation: gemGlow 2s ease-in-out infinite alternate;
-}
-@keyframes gemGlow {
-  from { box-shadow:0 0 5px rgba(212,175,55,0.3); }
-  to   { box-shadow:0 0 14px rgba(212,175,55,0.7), 0 0 28px rgba(212,175,55,0.2); }
-}
-.title-sdm {
-  font-family: var(--fT);
-  font-size: clamp(1.6rem,5.5vw,2.2rem);
-  line-height:1; letter-spacing:.06em;
-  filter: drop-shadow(0 0 40px rgba(212,175,55,0.3));
-  position:relative; z-index:1;
-}
-.title-sub {
-  font-family:var(--fU); font-weight:200;
-  font-size:8px; letter-spacing:.5em; text-transform:uppercase;
-  color:var(--mid); margin-top:8px; position:relative; z-index:1;
-}
-
-/* ╔══════════════════════════════════════╗
-   ║  HERO AVATAR CARD                    ║
-   ╚══════════════════════════════════════╝ */
-.profile-hero {
-  margin: 0 16px 18px;
-  border-radius: 32px;
-  padding: 40px 24px 30px;
-  text-align: center;
-  position: relative; overflow: hidden;
-  background: linear-gradient(160deg, rgba(15,12,30,0.97) 0%, rgba(3,4,10,0.98) 100%);
-  border: 1px solid rgba(212,175,55,0.22);
-  box-shadow: 0 0 60px rgba(212,175,55,0.04);
-}
-
-/* Ligne dorée en haut */
-.profile-hero::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:2px;
-  background: linear-gradient(90deg, transparent, var(--g3) 20%, var(--g2) 50%, var(--g3) 80%, transparent);
-  animation: borderFlow 4s linear infinite; background-size:200% 100%;
-}
-@keyframes borderFlow {
-  0%   { background-position:-100% 0; }
-  100% { background-position:200% 0; }
-}
-
-/* Décor géométrique SVG */
-.hero-geo {
-  position:absolute; right:-50px; bottom:-50px; z-index:0;
-  opacity:.04; animation:rotateSlow 60s linear infinite; pointer-events:none;
-}
-@keyframes rotateSlow { to { transform:rotate(360deg); } }
-
-/* Glow central */
-.profile-glow {
-  position:absolute; top:-20px; left:50%; transform:translateX(-50%);
-  width:220px; height:180px;
-  background: radial-gradient(ellipse, rgba(212,175,55,0.12) 0%, transparent 70%);
-  pointer-events:none; z-index:0;
-}
-
-/* Avatar */
-.avatar-wrap {
-  position:relative; z-index:1;
-  width:110px; height:110px; margin:0 auto 24px;
-}
-.avatar-outer-ring {
-  position:absolute; inset:-12px; border-radius:50%;
-  border:1px solid rgba(212,175,55,0.2);
-  animation: ringPulseAvatar 3s ease-in-out infinite;
-}
-.avatar-outer-ring::before {
-  content:''; position:absolute; inset:-10px; border-radius:50%;
-  border:1px dashed rgba(212,175,55,0.15);
-  animation: ringPulseAvatar 3s 1s ease-in-out infinite reverse;
-}
-@keyframes ringPulseAvatar {
-  0%,100% { transform:scale(1); opacity:.4; }
-  50%      { transform:scale(1.08); opacity:1; }
-}
-.avatar-circle {
-  width:110px; height:110px; border-radius:50%;
-  border:2px solid rgba(212,175,55,0.6);
-  background: linear-gradient(145deg, rgba(212,175,55,0.25), rgba(212,175,55,0.08));
-  box-shadow: 0 0 50px rgba(212,175,55,0.3), 0 0 100px rgba(212,175,55,0.12), inset 0 0 30px rgba(212,175,55,0.1);
-  display:flex; align-items:center; justify-content:center;
-  position:relative; z-index:1;
-  animation: avatarGlow 4s ease-in-out infinite alternate;
-}
-@keyframes avatarGlow {
-  from { box-shadow: 0 0 30px rgba(212,175,55,0.18), inset 0 0 15px rgba(212,175,55,0.04); }
-  to   { box-shadow: 0 0 55px rgba(212,175,55,0.35), 0 0 100px rgba(212,175,55,0.1), inset 0 0 25px rgba(212,175,55,0.08); }
-}
-.avatar-letter {
-  font-family: var(--fT);
-  font-size:38px; line-height:1;
-  background: linear-gradient(130deg, var(--g2), var(--g1), var(--g3));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  background-clip:text;
-  filter: drop-shadow(0 0 12px rgba(212,175,55,0.5));
-}
-
-.profile-username {
-  font-family: var(--fS); font-size:clamp(20px,5vw,26px);
-  font-weight:600; color:#fff;
-  margin-bottom:4px; position:relative; z-index:1;
-}
-.profile-email {
-  font-size:10px; letter-spacing:.14em; color:var(--dim);
-  margin-bottom:20px; position:relative; z-index:1;
-}
-
-/* Badge statut */
-.status-badge {
-  display:inline-flex; align-items:center; gap:8px;
-  border-radius:99px; padding:7px 18px;
-  font-size:9px; letter-spacing:.22em; text-transform:uppercase;
-  font-weight:600; position:relative; z-index:1;
-}
-.status-premium {
-  background:rgba(212,175,55,0.12);
-  border:1px solid rgba(212,175,55,0.38);
-  color:var(--g1);
-  box-shadow:0 0 18px rgba(212,175,55,0.10);
-}
-.status-premium i { animation: crownBob 2s ease-in-out infinite; }
-@keyframes crownBob {
-  0%,100% { transform:translateY(0); }
-  50%      { transform:translateY(-2px); }
-}
-.status-free {
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.10);
-  color:var(--mid);
-}
-
-/* Stats row */
-.hero-stats {
-  display:grid; grid-template-columns:repeat(3,1fr);
-  gap:1px; margin-top:24px;
-  background:rgba(212,175,55,0.15);
-  border-radius:24px; overflow:hidden;
-  position:relative; z-index:1;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
-}
-.hstat {
-  background:rgba(10,8,18,0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  padding:20px 8px; text-align:center;
-  transition: background 0.3s;
-}
-.hstat:hover { background: rgba(212,175,55,0.12); }
-.hstat-val {
-  font-family:var(--fU); font-size:20px; font-weight:600;
-  color:var(--g1); line-height:1; margin-bottom:5px;
-  animation: countUp 1.2s cubic-bezier(0.16,1,0.3,1) both;
-}
-@keyframes countUp {
-  from { opacity:0; transform: translateY(10px) scale(0.8); }
-  to   { opacity:1; transform: translateY(0) scale(1); }
-}
-.hstat-key {
-  font-size:7px; letter-spacing:.18em; text-transform:uppercase;
-  color:var(--dim);
-}
-
-/* ╔══════════════════════════════════════╗
-   ║  INFO CARD                           ║
-   ╚══════════════════════════════════════╝ */
-.info-card {
-  margin: 0 16px 18px;
-  border-radius:24px; padding:20px 20px 6px;
-  background:rgba(255,255,255,0.022);
-  border:1px solid rgba(255,255,255,0.07);
-}
-.section-lbl {
-  font-size:8px; letter-spacing:.28em; text-transform:uppercase;
-  color:var(--dim); margin-bottom:16px;
-  display:flex; align-items:center; gap:8px;
-}
-.section-lbl::after {
-  content:''; flex:1; height:1px;
-  background:linear-gradient(90deg, rgba(212,175,55,.18), transparent);
-}
-.info-row {
-  display:flex; align-items:center; gap:14px;
-  padding-bottom:14px; margin-bottom:14px;
-  border-bottom:1px solid rgba(255,255,255,0.05);
-}
-.info-row:last-child { border-bottom:none; margin-bottom:0; padding-bottom:14px; }
-.info-ico {
-  width:36px; height:36px; flex-shrink:0; border-radius:13px;
-  background:rgba(212,175,55,0.08);
-  border:1px solid rgba(212,175,55,0.15);
-  display:flex; align-items:center; justify-content:center;
-  font-size:13px; color:var(--g1);
-}
-.info-key {
-  font-size:9px; letter-spacing:.12em; text-transform:uppercase;
-  color:var(--dim); margin-bottom:3px;
-}
-.info-val { font-size:13px; color:rgba(255,255,255,.85); }
-
-/* ╔══════════════════════════════════════╗
-   ║  UPGRADE BANNER                      ║
-   ╚══════════════════════════════════════╝ */
-.upgrade-banner {
-  margin:0 16px 18px;
-  border-radius:22px; padding:18px 18px;
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
-  background:linear-gradient(135deg, rgba(212,175,55,0.11) 0%, rgba(3,4,10,0.96) 100%);
-  border:1px solid rgba(212,175,55,0.26);
-  position:relative; overflow:hidden;
-}
-.upgrade-banner::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:2px;
-  background:linear-gradient(90deg, transparent, var(--g1), transparent);
-}
-/* Shimmer */
-.upgrade-banner::after {
-  content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
-  background:linear-gradient(90deg, transparent, rgba(212,175,55,0.04), transparent);
-  animation:shimmer 3s ease-in-out infinite;
-}
-@keyframes shimmer { to { left:150%; } }
-.upgrade-left { position:relative; z-index:1; }
-.upgrade-title {
-  font-family:var(--fS); font-size:17px; font-weight:600; color:var(--g1);
-  margin-bottom:2px;
-}
-.upgrade-sub { font-size:9px; letter-spacing:.10em; color:var(--dim); }
-.upgrade-btn {
-  display:flex; align-items:center; gap:7px;
-  padding:11px 20px; border-radius:13px; flex-shrink:0;
-  background:linear-gradient(130deg, var(--g2), var(--g1), var(--g3));
-  color:#0a0800; text-decoration:none;
-  font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
-  position:relative; z-index:1;
-  transition:transform .2s, box-shadow .2s;
-}
-.upgrade-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(212,175,55,0.3); }
-.upgrade-btn:active { transform:scale(.94); }
-
-/* ╔══════════════════════════════════════╗
-   ║  ACTION ROWS                         ║
-   ╚══════════════════════════════════════╝ */
-.actions-card {
-  margin:0 16px 18px;
-  border-radius:24px; overflow:hidden;
-  border:1px solid rgba(255,255,255,0.07);
-}
-.prow {
-  display:flex; align-items:center; gap:14px;
-  padding:15px 18px; text-decoration:none; color:#fff;
-  background:rgba(255,255,255,0.018);
-  border-bottom:1px solid rgba(255,255,255,0.05);
-  transition:background .2s;
-}
-.prow:last-child { border-bottom:none; }
-.prow:hover  { background:rgba(212,175,55,0.05); }
-.prow:active { background:rgba(212,175,55,0.09); }
-.prow-ico {
-  width:38px; height:38px; flex-shrink:0; border-radius:13px;
-  display:flex; align-items:center; justify-content:center; font-size:15px;
-  background:linear-gradient(145deg, rgba(212,175,55,0.14), rgba(212,175,55,0.04));
-  border:1px solid rgba(212,175,55,0.20);
-}
-.prow-lbl { flex:1; font-size:13px; color:rgba(255,255,255,.82); }
-.prow-arr { font-size:9px; color:var(--dim); }
-
-/* ╔══════════════════════════════════════╗
-   ║  LOGOUT                              ║
-   ╚══════════════════════════════════════╝ */
-.logout-wrap { padding:0 16px 32px; }
-.logout-form { margin:0; }
-.logout-btn {
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  width:100%; padding:16px; border-radius:18px; cursor:pointer;
-  border:1px solid rgba(220,50,50,0.28);
-  background:rgba(220,50,50,0.07);
-  color:#ff5555; font-family:var(--fU);
-  font-size:10px; font-weight:600; letter-spacing:.22em; text-transform:uppercase;
-  transition:background .2s, transform .15s;
-}
-.logout-btn:hover  { background:rgba(220,50,50,0.14); }
-.logout-btn:active { transform:scale(.96); }
-.sdm-version {
-  text-align:center; margin-top:14px;
-  font-size:8px; letter-spacing:.18em; color:var(--dim);
-}
-
-/* ╔══════════════════════════════════════╗
-   ║  BOTTOM NAV                          ║
-   ╚══════════════════════════════════════╝ */
-.nav {
-  position:fixed; bottom:0; left:0; width:100%;
-  background: rgba(3,4,10,0.92);
-  border-top: 1px solid rgba(212,175,55,0.12);
-  backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
-  display:flex; align-items:center; justify-content:space-around;
-  padding: 0 24px env(safe-area-inset-bottom, 16px);
-  height: calc(var(--nav) + env(safe-area-inset-bottom, 0px));
-  z-index:100;
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
-}
-.nav-item {
-  display:flex; flex-direction:column; align-items:center; gap:5px;
-  text-decoration:none; color:var(--dim); padding:10px 18px;
-  position:relative; transition:color .3s, transform .3s;
-  border-radius: 16px;
-}
-.nav-item:active { transform: scale(0.88); }
-.nav-item.active { color:var(--g1); }
-.nav-item.active::before {
-  content:''; position:absolute; top:-1px; left:50%; transform:translateX(-50%);
-  width:28px; height:2px; border-radius:99px;
-  background:linear-gradient(90deg, transparent, var(--g1), transparent);
-  box-shadow: 0 0 8px rgba(212,175,55,0.5);
-  animation:navIn .4s ease both;
-}
-@keyframes navIn { from{width:0;opacity:0} to{width:28px;opacity:1} }
-.nav-item i { font-size:20px; transition: transform 0.3s; }
-.nav-item.active i { transform: translateY(-1px); }
-.nav-item span { font-size:7px; letter-spacing:.15em; text-transform:uppercase; font-weight:600; }
-
-/* ╔══════════════════════════════════════╗
-   ║  TOASTS                              ║
-   ╚══════════════════════════════════════╝ */
-.toast-wrap {
-  position:fixed; top:20px; left:50%; transform:translateX(-50%);
-  z-index:999; width:calc(100% - 32px); max-width:420px;
-  display:flex; flex-direction:column; gap:10px; pointer-events:none;
-}
-.sdm-toast {
-  display:flex; align-items:center; gap:12px;
-  padding:14px 18px; border-radius:18px; pointer-events:all;
-  background:linear-gradient(135deg, rgba(212,175,55,0.13) 0%, rgba(3,4,10,0.95) 100%);
-  border:1px solid rgba(212,175,55,0.30);
-  box-shadow:0 8px 32px rgba(212,175,55,0.10);
-  animation:riseUp .5s cubic-bezier(0.16,1,0.3,1) both;
-  position:relative; overflow:hidden;
-}
-.sdm-toast::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:2px;
-  background:linear-gradient(90deg, transparent, var(--g1), transparent);
-}
-.toast-ico {
-  width:32px; height:32px; border-radius:50%; flex-shrink:0;
-  background:rgba(212,175,55,0.12); border:1px solid rgba(212,175,55,0.22);
-  display:flex; align-items:center; justify-content:center;
-  font-size:12px; color:var(--g1);
-}
-.toast-msg { flex:1; font-size:11px; font-weight:500; letter-spacing:.08em; color:rgba(255,255,255,.88); }
-.toast-close {
-  background:none; border:none; cursor:pointer;
-  color:var(--dim); font-size:10px; padding:4px; flex-shrink:0;
-}
-.toast-progress {
-  position:absolute; bottom:0; left:0; height:2px;
-  background:var(--g1); border-radius:99px;
-  animation:shrink 4s linear forwards;
-}
-@keyframes shrink { from{width:100%} to{width:0%} }
-</style>
-</head>
-<body>
-
-<!-- ── Fond ── -->
-<canvas id="stars"></canvas>
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-<div class="blob blob-3"></div>
-
-<!-- ══════════════════════════
-     TOASTS DJANGO MESSAGES
-══════════════════════════ -->
-{% if messages %}
-<div class="toast-wrap" id="toastWrap">
-  {% for message in messages %}
-  <div class="sdm-toast">
-    <div class="toast-ico">
-      {% if message.tags == 'error' %}
-        <i class="fa-solid fa-xmark" style="color:#ff5555"></i>
-      {% elif message.tags == 'info' %}
-        <i class="fa-solid fa-info" style="color:#5082dc"></i>
-      {% else %}
-        <i class="fa-solid fa-check"></i>
-      {% endif %}
-    </div>
-    <div class="toast-msg">{{ message }}</div>
-    <button class="toast-close" onclick="closeToast(this.closest('.sdm-toast'))">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
-    <div class="toast-progress"></div>
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
-
-<!-- ══════════════════════════
-     HEADER
-══════════════════════════ -->
-<header class="header layer reveal d1">
-  <div class="header-ring"></div>
-  <div class="ornament">
-    <div class="orn-line"></div>
-    <div class="orn-gem"></div>
-    <div class="orn-line r"></div>
-  </div>
-  <h1 class="title-sdm gold-grad">Mon Profil</h1>
-  <p class="title-sub">Espace personnel</p>
-</header>
-
-<!-- ══════════════════════════
-     HERO AVATAR
-══════════════════════════ -->
-<div class="profile-hero layer reveal d2">
-
-  <!-- Décor SVG -->
-  <div class="hero-geo">
-    <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
-      <polygon points="130,4 155,90 245,90 175,145 200,230 130,178 60,230 85,145 15,90 105,90"
-               stroke="#d4af37" stroke-width="1.5" fill="none"/>
-      <circle cx="130" cy="130" r="88" stroke="#d4af37" stroke-width=".5" stroke-dasharray="5 10"/>
-    </svg>
-  </div>
-
-  <div class="profile-glow"></div>
-
-  <!-- Avatar -->
-  <div class="avatar-wrap">
-    <div class="avatar-outer-ring"></div>
-    <div class="avatar-circle">
-      <span class="avatar-letter">S</span>
-    </div>
-  </div>
-
-  <!-- Nom & Email -->
-  <div class="profile-username">Membre SDM</div>
-  <div class="profile-email">{{ profile.user.email|default:"Email non renseigné" }}</div>
-
-  <!-- Badge -->
- {% if not profile.est_premium %}
-<div class="info-card layer reveal d4" style="padding-bottom: 20px;">
-  <div class="section-lbl">Soutenir le projet</div>
-  
-  <p style="font-size: 11px; color: var(--dim); margin-bottom: 20px; line-height: 1.6;">
-    Choisissez votre mode de contribution pour aider à maintenir l'application.
-  </p>
-
-  <div class="upgrade-banner" style="margin: 0 0 12px 0; border-color: rgba(46, 204, 113, 0.3); background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(3,4,10,0.96) 100%);">
-    <div class="upgrade-left">
-      <div class="upgrade-title" style="color: #2ecc71;">Siggil sa Ligueey</div>
-      <div class="upgrade-sub">Don libre via Wave</div>
-    </div>
-    <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN" target="_blank" class="upgrade-btn" style="background: linear-gradient(130deg, #5ef095, #2ecc71, #27ae60);">
-      <i class="fa-solid fa-heart"></i>
-      Donner
-    </a>
-  </div>
-
-  <div class="upgrade-banner" style="margin: 0;">
-    <div class="upgrade-left">
-      <div class="upgrade-title">Abonnement Pro</div>
-      <div class="upgrade-sub">Visa / Mastercard · 490 FCFA</div>
-    </div>
-    <a href="{% url 'abonnement' %}" class="upgrade-btn">
-      <i class="fa-solid fa-credit-card"></i>
-      Carte
-    </a>
-  </div>
-</div>
-{% endif %}
-
-  <!-- Mini stats -->
-  <div class="hero-stats">
-    <div class="hstat">
-      <div class="hstat-val">
-        {% if profile.est_premium %}✦{% else %}—{% endif %}
-      </div>
-      <div class="hstat-key">Premium</div>
-    </div>
-    <div class="hstat">
-      <div class="hstat-val">{{ profile.user.date_joined|date:"Y" }}</div>
-      <div class="hstat-key">Depuis</div>
-    </div>
-    <div class="hstat">
-      <div class="hstat-val">SDM</div>
-      <div class="hstat-key">Communauté</div>
-    </div>
-  </div>
-
-</div>
-
-<!-- ══════════════════════════
-     INFOS COMPTE
-══════════════════════════ -->
-<div class="info-card layer reveal d3">
-  <div class="section-lbl">Informations</div>
-
-  <div class="info-row">
-    <div class="info-ico"><i class="fa-solid fa-user"></i></div>
-    <div>
-      <div class="info-key">Nom d'utilisateur</div>
-      <div class="info-val">{{ profile.user.username }}</div>
-    </div>
-  </div>
-
-  <div class="info-row">
-    <div class="info-ico"><i class="fa-solid fa-envelope"></i></div>
-    <div>
-      <div class="info-key">Adresse e-mail</div>
-      <div class="info-val">{{ profile.user.email|default:"Non renseigné" }}</div>
-    </div>
-  </div>
-
-  <div class="info-row">
-    <div class="info-ico"><i class="fa-solid fa-calendar-check"></i></div>
-    <div>
-      <div class="info-key">Membre depuis</div>
-      <div class="info-val">{{ profile.user.date_joined|date:"d F Y" }}</div>
-    </div>
-  </div>
-
-  <div class="info-row">
-    <div class="info-ico"><i class="fa-solid fa-shield-halved"></i></div>
-    <div>
-      <div class="info-key">Statut du compte</div>
-      {% if profile.est_premium %}
-        <div class="info-val" style="color:var(--g1)">Premium actif ✦</div>
-      {% else %}
-        <div class="info-val">Compte gratuit</div>
-      {% endif %}
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════
-     UPGRADE (si gratuit)
-══════════════════════════ -->
-{% if not profile.est_premium %}
-<div class="upgrade-banner layer reveal d4">
-  <div class="upgrade-left">
-    <div class="upgrade-title">Passez Premium</div>
-    <div class="upgrade-sub">490 FCFA / mois · Zéro publicité</div>
-  </div>
-  <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/?amount=490"
-     target="_blank" class="upgrade-btn">
-    <i class="fa-solid fa-bolt"></i>
-    Wave
-  </a>
-</div>
-{% endif %}
-
-<!-- ══════════════════════════
-     ACTIONS
-══════════════════════════ -->
-<div class="actions-card layer reveal d5">
-
-  <a href="/" class="prow">
-    <div class="prow-ico"><i class="fa-solid fa-house-chimney" style="color:var(--g1)"></i></div>
-    <span class="prow-lbl">Retour à l'accueil</span>
-    <i class="fa-solid fa-chevron-right prow-arr"></i>
-  </a>
-
-  <a href="{% url 'voir_historique' %}" class="prow">
-    <div class="prow-ico"><i class="fa-solid fa-history" style="color:var(--g1)"></i></div>
-    <span class="prow-lbl">Mon historique</span>
-    <i class="fa-solid fa-chevron-right prow-arr"></i>
-  </a>
-
-  <a href="{% url 'telechargements' %}" class="prow">
-    <div class="prow-ico"><i class="fa-solid fa-cloud-arrow-down" style="color:var(--g1)"></i></div>
-    <span class="prow-lbl">Mes Téléchargements</span>
-    <i class="fa-solid fa-chevron-right prow-arr"></i>
-  </a>
-
-  <a href="#" class="prow">
-    <div class="prow-ico"><i class="fa-solid fa-pen" style="color:var(--g1)"></i></div>
-    <span class="prow-lbl">Modifier le profil</span>
-    <i class="fa-solid fa-chevron-right prow-arr"></i>
-  </a>
-
-  <a href="#" class="prow">
-    <div class="prow-ico"><i class="fa-solid fa-lock" style="color:var(--g1)"></i></div>
-    <span class="prow-lbl">Changer le mot de passe</span>
-    <i class="fa-solid fa-chevron-right prow-arr"></i>
-  </a>
-
-</div>
-
-<!-- ══════════════════════════
-     DÉCONNEXION
-══════════════════════════ -->
-<div class="logout-wrap layer reveal d6">
-  <form action="{% url 'logout' %}" method="post" class="logout-form">
-    {% csrf_token %}
-    <button type="submit" class="logout-btn">
-      <i class="fa-solid fa-power-off"></i>
-      Se déconnecter
-    </button>
-  </form>
-  <p class="sdm-version">SDM · v1.0 · Sopey Dialibatoul Marakhib</p>
-</div>
-
-<!-- ══════════════════════════
-     NAV
-══════════════════════════ -->
-<nav class="nav layer">
-  <a href="/" class="nav-item">
-    <i class="fa-solid fa-house-chimney"></i>
-    <span>Accueil</span>
-  </a>
-  <a href="{% url 'favoris' %}" class="nav-item">
-    <i class="fa-solid fa-heart"></i>
-    <span>Favoris</span>
-  </a>
-  <a href="{% url 'profile' %}" class="nav-item active">
-    <i class="fa-solid fa-circle-user"></i>
-    <span>Profil</span>
-  </a>
-</nav>
-
-<script>
-/* ── ÉTOILES (mix or + blanc) ── */
-(function(){
-  const c=document.getElementById('stars'),ctx=c.getContext('2d');
-  let W,H,S=[];
-  const resize=()=>{W=c.width=innerWidth;H=c.height=innerHeight;};
-  const mk=()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.1+.2,
-    a:Math.random()*.55+.04,
-    da:(Math.random()*.004+.001)*(Math.random()>.5?1:-1),
-    vx:(Math.random()-.5)*.07,vy:(Math.random()-.5)*.07,
-    gold: Math.random() > .8 });
-  const init=()=>{resize();S=Array.from({length:180},mk);};
-  const draw=()=>{
-    ctx.clearRect(0,0,W,H);
-    S.forEach(s=>{
-      s.a=Math.max(.04,Math.min(.6,s.a+s.da));
-      if(s.a>=.6||s.a<=.04)s.da*=-1;
-      s.x=(s.x+s.vx+W)%W; s.y=(s.y+s.vy+H)%H;
-      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fillStyle = s.gold
-        ? `rgba(212,175,55,${s.a*.7})`
-        : `rgba(255,255,255,${s.a*.4})`;
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  };
-  init();draw();addEventListener('resize',resize);
-})();
-
-/* ── SCROLL REVEAL ── */
-const io=new IntersectionObserver(es=>{
-  es.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.style.opacity='1';
-      e.target.style.transform='translateY(0) scale(1)';
+    .profile-pattern::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: url("{% static 'images/islamic_pattern.png' %}") center/300px repeat;
+        opacity: 0.03;
+        z-index: 0;
+        pointer-events: none;
     }
-  });
-},{threshold:.1});
-document.querySelectorAll('.reveal').forEach(el=>setTimeout(()=>io.observe(el),800));
+    .avatar-ring {
+        background: conic-gradient(from 0deg, #D4AF37, #FDE047, #D4AF37, #A68A28, #D4AF37);
+        padding: 3px;
+        border-radius: 9999px;
+    }
+    .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-card:active {
+        transform: scale(0.97);
+    }
+    .progress-glow {
+        box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+    }
+    .action-item {
+        transition: background 0.2s ease;
+    }
+    .action-item:active {
+        background: rgba(212, 175, 55, 0.1);
+    }
+    .scroll-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scroll-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+{% endblock %}
 
-/* ── TOASTS ── */
-function closeToast(el){
-  el.style.transition='opacity .3s, transform .3s';
-  el.style.opacity='0'; el.style.transform='translateY(-10px) scale(.95)';
-  setTimeout(()=>el.remove(),300);
-}
-document.querySelectorAll('.sdm-toast').forEach((t,i)=>{
-  setTimeout(()=>closeToast(t), 4000 + i*600);
+{% block content %}
+<div class="profile-pattern">
+<div class="relative z-10 max-w-lg mx-auto px-4 pt-6 pb-32 space-y-5">
+
+    {# ══════════════════════════════════════════ #}
+    {# A. HERO CARD                               #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl p-6 border border-yellow-500/20 text-center" data-aos="fade-up">
+        <!-- Avatar -->
+        <div class="flex justify-center mb-4">
+            <div class="avatar-ring">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-600 via-yellow-500 to-yellow-700 flex items-center justify-center">
+                    <span class="text-3xl font-bold text-gray-900" style="font-family:'Cinzel Decorative',cursive;">
+                        {{ request.user.username|first|upper }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info -->
+        <h1 class="text-xl font-bold text-white mb-1">{{ request.user.username }}</h1>
+        <p class="text-white/60 text-sm mb-3">{{ request.user.email }}</p>
+
+        <!-- Premium Badge -->
+        {% if profile.est_premium %}
+        <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-yellow-600/30 to-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+            <i class="fas fa-crown text-yellow-400"></i> Premium ✨
+        </span>
+        {% else %}
+        <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium bg-white/5 text-white/50 border border-white/10">
+            <i class="fas fa-user"></i> Gratuit
+        </span>
+        {% endif %}
+
+        <!-- Member Since -->
+        <p class="text-white/40 text-xs mt-3">
+            <i class="far fa-calendar-alt mr-1"></i> Membre depuis {{ request.user.date_joined|date:"d M Y" }}
+        </p>
+    </div>
+
+    {# ══════════════════════════════════════════ #}
+    {# B. STATS GRID 2×2                          #}
+    {# ══════════════════════════════════════════ #}
+    <div class="grid grid-cols-2 gap-3" data-aos="fade-up" data-aos-delay="50">
+        <!-- Zikr Total -->
+        <div class="glass rounded-2xl p-4 text-center stat-card border border-white/5">
+            <div class="text-2xl mb-2">🤲</div>
+            <div class="text-2xl font-bold text-yellow-400">{{ total_zikr|default:0 }}</div>
+            <div class="text-xs text-white/50 mt-1">Zikr Total</div>
+        </div>
+
+        <!-- Écoutes -->
+        <div class="glass rounded-2xl p-4 text-center stat-card border border-white/5">
+            <div class="text-2xl mb-2">🎧</div>
+            <div class="text-2xl font-bold text-white">{{ total_ecoutes|default:0 }}</div>
+            <div class="text-xs text-white/50 mt-1">Écoutes</div>
+        </div>
+
+        <!-- Wird -->
+        <div class="glass rounded-2xl p-4 text-center stat-card border border-white/5">
+            <div class="text-2xl mb-2">📖</div>
+            <div class="text-2xl font-bold text-white">{{ wird_completes|default:0 }}</div>
+            <div class="text-xs text-white/50 mt-1">Wird complétés</div>
+        </div>
+
+        <!-- Favoris -->
+        <div class="glass rounded-2xl p-4 text-center stat-card border border-white/5">
+            <div class="text-2xl mb-2">⭐</div>
+            <div class="text-2xl font-bold text-white">{{ nb_favoris|default:0 }}</div>
+            <div class="text-xs text-white/50 mt-1">Favoris</div>
+        </div>
+    </div>
+
+    {# ══════════════════════════════════════════ #}
+    {# C. PROGRESSION SPIRITUELLE                  #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up" data-aos-delay="100">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-semibold text-white/80">
+                <i class="fas fa-star-and-crescent text-yellow-500 mr-2"></i>Progression Spirituelle
+            </h2>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-600 to-yellow-500 text-gray-900">
+                Niveau {{ niveau_spirituel|default:1 }}
+            </span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full h-2.5 bg-white/10 rounded-full overflow-hidden mb-3">
+            <div class="h-full rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 progress-glow transition-all duration-1000"
+                 style="width: {% widthratio points_vers_prochain 50 100 %}%;">
+            </div>
+        </div>
+        <div class="flex justify-between text-xs text-white/40 mb-4">
+            <span>{{ points_vers_prochain|default:0 }} / 50 points</span>
+            <span>Niveau {{ niveau_spirituel|default:1 }} → {{ niveau_spirituel|default:1|add:1 }}</span>
+        </div>
+
+        <!-- Streak -->
+        <div class="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+            <div class="text-3xl">🔥</div>
+            <div>
+                <div class="text-lg font-bold text-white">{{ streak_jours|default:0 }} jour{{ streak_jours|pluralize:"s" }}</div>
+                <div class="text-xs text-white/50">Jours consécutifs d'activité</div>
+            </div>
+        </div>
+    </div>
+
+    {# ══════════════════════════════════════════ #}
+    {# D. HISTORIQUE RÉCENT                        #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up" data-aos-delay="150">
+        <h2 class="text-sm font-semibold text-white/80 mb-4">
+            <i class="far fa-clock text-yellow-500 mr-2"></i>Activité Récente
+        </h2>
+
+        {% if historique_recent %}
+        <div class="space-y-3">
+            {% for item in historique_recent %}
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-white/5 hover:bg-white/8 transition-colors">
+                <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
+                    {% if item.content_type.model == 'khassida' %}
+                    <i class="fas fa-book text-yellow-500 text-sm"></i>
+                    {% elif item.content_type.model == 'coran' %}
+                    <i class="fas fa-quran text-green-400 text-sm"></i>
+                    {% elif item.content_type.model == 'son' %}
+                    <i class="fas fa-headphones text-blue-400 text-sm"></i>
+                    {% elif item.content_type.model == 'zikr' %}
+                    <i class="fas fa-pray text-purple-400 text-sm"></i>
+                    {% else %}
+                    <i class="fas fa-file-alt text-white/50 text-sm"></i>
+                    {% endif %}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm text-white font-medium truncate">
+                        {% if item.content_object %}{{ item.content_object }}{% else %}Contenu supprimé{% endif %}
+                    </p>
+                    <p class="text-xs text-white/40">Il y a {{ item.date_lecture|timesince }}</p>
+                </div>
+                <i class="fas fa-chevron-right text-white/20 text-xs"></i>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <div class="text-4xl mb-3 opacity-30">📭</div>
+            <p class="text-white/40 text-sm">Aucune activité récente</p>
+            <p class="text-white/25 text-xs mt-1">Commencez à explorer les contenus !</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {# ══════════════════════════════════════════ #}
+    {# E. MES FAVORIS (PREVIEW)                    #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up" data-aos-delay="200">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-semibold text-white/80">
+                <i class="fas fa-star text-yellow-500 mr-2"></i>Mes Favoris
+            </h2>
+            {% if nb_favoris %}
+            <a href="{% url 'favoris' %}" class="text-xs text-yellow-500 hover:text-yellow-400 transition-colors">
+                Voir tout <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+            {% endif %}
+        </div>
+
+        {% if favoris_recents %}
+        <div class="flex gap-3 overflow-x-auto scroll-hide pb-2">
+            {% for fav in favoris_recents %}
+            <div class="flex-shrink-0 w-36 p-3 rounded-2xl bg-white/5 border border-white/5 hover:border-yellow-500/20 transition-colors">
+                <div class="w-9 h-9 rounded-xl bg-yellow-500/10 flex items-center justify-center mb-2">
+                    {% if fav.content_type.model == 'khassida' %}
+                    <i class="fas fa-book text-yellow-500 text-sm"></i>
+                    {% elif fav.content_type.model == 'coran' %}
+                    <i class="fas fa-quran text-green-400 text-sm"></i>
+                    {% elif fav.content_type.model == 'son' %}
+                    <i class="fas fa-headphones text-blue-400 text-sm"></i>
+                    {% else %}
+                    <i class="fas fa-heart text-red-400 text-sm"></i>
+                    {% endif %}
+                </div>
+                <p class="text-xs text-white font-medium truncate">
+                    {% if fav.content_object %}{{ fav.content_object }}{% else %}Contenu{% endif %}
+                </p>
+                <p class="text-xs text-white/30 mt-0.5">
+                    {{ fav.date_ajout|timesince }} ago
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-6">
+            <div class="text-3xl mb-2 opacity-30">⭐</div>
+            <p class="text-white/40 text-sm">Aucun favori pour l'instant</p>
+            <p class="text-white/25 text-xs mt-1">Ajoutez vos contenus préférés !</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {# ══════════════════════════════════════════ #}
+    {# F. ACTIONS / NAVIGATION                     #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl overflow-hidden border border-white/5" data-aos="fade-up" data-aos-delay="250">
+        <a href="{% url 'home' %}" class="action-item flex items-center gap-4 px-5 py-4 border-b border-white/5">
+            <div class="w-9 h-9 rounded-xl bg-green-500/10 flex items-center justify-center">
+                <span class="text-lg">🏠</span>
+            </div>
+            <span class="flex-1 text-sm text-white font-medium">Accueil</span>
+            <i class="fas fa-chevron-right text-white/20 text-xs"></i>
+        </a>
+
+        <a href="{% url 'historique_general' %}" class="action-item flex items-center gap-4 px-5 py-4 border-b border-white/5">
+            <div class="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                <span class="text-lg">📜</span>
+            </div>
+            <span class="flex-1 text-sm text-white font-medium">Mon Historique</span>
+            <i class="fas fa-chevron-right text-white/20 text-xs"></i>
+        </a>
+
+        <a href="{% url 'telechargements' %}" class="action-item flex items-center gap-4 px-5 py-4 border-b border-white/5">
+            <div class="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                <span class="text-lg">📥</span>
+            </div>
+            <span class="flex-1 text-sm text-white font-medium">Mes Téléchargements</span>
+            <i class="fas fa-chevron-right text-white/20 text-xs"></i>
+        </a>
+
+        <a href="#" class="action-item flex items-center gap-4 px-5 py-4 border-b border-white/5">
+            <div class="w-9 h-9 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+                <span class="text-lg">🔑</span>
+            </div>
+            <span class="flex-1 text-sm text-white font-medium">Changer mot de passe</span>
+            <i class="fas fa-chevron-right text-white/20 text-xs"></i>
+        </a>
+
+        <a href="{% url 'abonnement_premium' %}" class="action-item flex items-center gap-4 px-5 py-4">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-600/20 to-yellow-500/10 flex items-center justify-center">
+                <span class="text-lg">💳</span>
+            </div>
+            <span class="flex-1 text-sm font-medium text-yellow-400">Abonnement Premium</span>
+            <i class="fas fa-chevron-right text-yellow-500/40 text-xs"></i>
+        </a>
+    </div>
+
+    {# ══════════════════════════════════════════ #}
+    {# G. LOGOUT                                   #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl p-5 border border-red-500/10 bg-red-500/5" data-aos="fade-up" data-aos-delay="300">
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="w-full flex items-center justify-center gap-3 py-3 rounded-2xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 font-medium text-sm transition-all active:scale-[0.98]">
+                <i class="fas fa-sign-out-alt"></i>
+                Se déconnecter
+            </button>
+        </form>
+        <p class="text-center text-white/20 text-xs mt-4">SDM Premium · v2.0</p>
+    </div>
+
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Animate stats numbers on scroll
+document.addEventListener('DOMContentLoaded', () => {
+    const statCards = document.querySelectorAll('.stat-card .text-2xl.font-bold');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const target = parseInt(el.textContent) || 0;
+                if (target === 0) return;
+                let current = 0;
+                const step = Math.max(1, Math.ceil(target / 40));
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        el.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        el.textContent = current;
+                    }
+                }, 30);
+                observer.unobserve(el);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    statCards.forEach(card => observer.observe(card));
 });
 </script>
-
-<!-- Service Worker Registration -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js').then(function(registration) {
-        console.log('ServiceWorker registration successful');
-      }, function(err) {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-    });
-  }
-</script>
-</body>
-</html>
+{% endblock %}

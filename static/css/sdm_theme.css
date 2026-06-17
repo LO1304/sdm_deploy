@@ -176,3 +176,25 @@ body::after {
 
 /* Fix position z-index for main content */
 .site-wrapper { position: relative; z-index: 1; }
+
+/* Responsive adjustments for very small screens */
+@media (max-width: 380px) {
+    .nav-island {
+        bottom: 10px;
+        height: 60px;
+    }
+    .nav-item i {
+        font-size: 18px;
+    }
+    body {
+        padding-bottom: calc(var(--nav-height) + 10px);
+    }
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    body {
+        padding-bottom: calc(var(--nav-height) + 20px + env(safe-area-inset-bottom));
+    }
+    .nav-island {
+        bottom: calc(20px + env(safe-area-inset-bottom));
+    }
+}

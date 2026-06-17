@@ -1,0 +1,247 @@
+
+    /* ═══ CLOCK + ADHAN + PRAYER NOTIFICATIONS ═══ */
+    let PT = {Fajr:'05:30', Dhuhr:'13:15', Asr:'16:45', Maghrib:'19:20', Isha:'20:30'}; 
+    const DEF_LAT = 14.86; const DEF_LNG = -15.88; const DEF_CITY = "Touba"; 
+    
+    // Load Adhan state
+    let adhanEnabled = localStorage.getItem('adhanEnabled') !== 'false';
+    const ap = document.getElementById('adhan-player');
+    const toggleBtn = document.getElementById('adhan-toggle');
+    const toggleIcon = document.getElementById('adhan-icon');
+    // Track which prayers have been notified today
+    let notifiedToday = JSON.parse(localStorage.getItem('notifiedToday') || '{}');
+    const todayStr = new Date().toDateString();
+    if (notifiedToday._date !== todayStr) { notifiedToday = {_date: todayStr}; }
+
+    // Request notification permission on load
+    if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+    }
+    
+    function updateAdhanUI() {
+        if(adhanEnabled){
+            toggleBtn.className = "w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300 bg-gold-500/20 border-gold-500/40 text-gold-500 shadow-[0_0_15px_rgba(212,175,55,0.2)]";
+            toggleIcon.className = "fa-solid fa-bell text-sm";
+        } else {
+            toggleBtn.className = "w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300 bg-white/5 border-white/10 text-white/40 hover:bg-white/10";
+            toggleIcon.className = "fa-solid fa-bell-slash text-sm";
+        }
+    }
+    updateAdhanUI();
+
+    function toggleAdhan() {
+        adhanEnabled = !adhanEnabled;
+        localStorage.setItem('adhanEnabled', adhanEnabled);
+        updateAdhanUI();
+        if(adhanEnabled) {
+            if ("Notification" in window) { Notification.requestPermission(); }
+            ap.play().then(() => { ap.pause(); ap.currentTime = 0; }).catch(() => {});
+        }
+    }
+
+    // Visual + Sound notification for prayer
+    function notifyPrayer(name) {
+        if (!adhanEnabled) return;
+        // Prevent duplicate notifications
+        if (notifiedToday[name]) return;
+        notifiedToday[name] = true;
+        localStorage.setItem('notifiedToday', JSON.stringify(notifiedToday));
+
+        // Play Adhan sound
+        ap.currentTime = 0;
+        ap.play().catch(e => console.warn('Adhan play failed:', e));
+
+        // Browser Notification
+        if ("Notification" in window && Notification.permission === "granted") {
+            const n = new Notification(`🕌 ${name} — Heure de prière`, {
+                body: `C'est l'heure de la prière de ${name}.\nQu'Allah accepte nos prières. 🤲`,
+                icon: '/static/images/icons/icon-192x192.png',
+                badge: '/static/images/icons/icon-192x192.png',
+                vibrate: [200, 100, 200, 100, 200],
+                tag: `prayer-${name}`,
+                requireInteraction: true,
+                silent: false
+            });
+            // Auto-close after 30 seconds
+            setTimeout(() => n.close(), 30000);
+        }
+
+        // Visual toast on the page
+        showPrayerToast(name);
+    }
+
+    function showPrayerToast(name) {
+        // Remove any existing prayer toast first
+        const existing = document.getElementById('prayer-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'prayer-toast';
+        toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;width:min(90vw,380px);animation:prayerSlideIn 0.5s cubic-bezier(0.16,1,0.3,1) both';
+        toast.innerHTML = `
+            <div style="background:linear-gradient(135deg,#1a2e1a,#0c2a1e);border:1px solid rgba(212,175,55,0.4);border-radius:24px;padding:20px 20px 16px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 40px rgba(212,175,55,0.15);backdrop-filter:blur(20px)">
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
+                    <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#d4af37,#a68a28);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 20px rgba(212,175,55,0.4);animation:prayerPulse 1.5s ease-in-out infinite">
+                        <i class="fa-solid fa-mosque" style="font-size:22px;color:#030408"></i>
+                    </div>
+                    <div style="flex:1">
+                        <p style="font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(212,175,55,0.8);margin-bottom:3px">Heure de prière</p>
+                        <p style="font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.02em">${name}</p>
+                    </div>
+                    <button onclick="document.getElementById('prayer-toast').remove()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">✕</button>
+                </div>
+                <p style="font-size:12px;color:rgba(255,255,255,0.55);text-align:center;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08)">Qu'Allah accepte nos prières 🤲</p>
+            </div>`;
+        document.body.appendChild(toast);
+
+        // Vibrate on mobile
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+
+        // Auto-remove after 30 seconds
+        setTimeout(() => {
+            const t = document.getElementById('prayer-toast');
+            if (t) { t.style.transition='all 0.5s'; t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(-20px)'; setTimeout(()=>t.remove(), 500); }
+        }, 30000);
+    }
+
+
+    // Location & Praying API
+    function updateUISlots() {
+        document.querySelector('.ph-slot[data-prayer="Fajr"] .slot-time').textContent = PT.Fajr;
+        document.querySelector('.ph-slot[data-prayer="Dhuhr"] .slot-time').textContent = PT.Dhuhr;
+        document.querySelector('.ph-slot[data-prayer="Asr"] .slot-time').textContent = PT.Asr;
+        document.querySelector('.ph-slot[data-prayer="Maghrib"] .slot-time').textContent = PT.Maghrib;
+        document.querySelector('.ph-slot[data-prayer="Isha"] .slot-time').textContent = PT.Isha;
+    }
+
+    async function fetchPrayers(lat, lng) {
+        const cacheKey = `prayer_${new Date().toDateString()}_${lat.toFixed(2)}_${lng.toFixed(2)}`;
+        const cached = localStorage.getItem(cacheKey);
+        if(cached) { PT = JSON.parse(cached); updateUISlots(); tick(); return; }
+        try {
+            const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=3`);
+            const data = await res.json();
+            if(data.code === 200) {
+                PT = data.data.timings;
+                localStorage.setItem(cacheKey, JSON.stringify(PT));
+                updateUISlots(); tick();
+            }
+        } catch(e) { updateUISlots(); tick(); }
+    }
+
+    async function fetchCity(lat, lng) {
+        const cacheKey = `city_${lat.toFixed(2)}_${lng.toFixed(2)}`;
+        const cached = localStorage.getItem(cacheKey);
+        if(cached) { document.getElementById('loc-city').textContent = cached; return; }
+        try {
+            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=fr`);
+            const data = await res.json();
+            const city = data.city || data.locality || DEF_CITY;
+            document.getElementById('loc-city').textContent = city;
+            localStorage.setItem(cacheKey, city);
+        } catch(e) { document.getElementById('loc-city').textContent = DEF_CITY; }
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                fetchCity(pos.coords.latitude, pos.coords.longitude);
+                fetchPrayers(pos.coords.latitude, pos.coords.longitude);
+            },
+            (err) => { fetchPrayers(DEF_LAT, DEF_LNG); }
+        );
+    } else {
+        fetchPrayers(DEF_LAT, DEF_LNG);
+    }
+
+    // TICK
+    function toMins(t){if(!t||!t.includes(':'))return Infinity;const[h,m]=t.trim().split(':').map(Number);return h*60+m;}
+    function tick(){
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2,'0');
+        const mm = String(now.getMinutes()).padStart(2,'0');
+        const cur = now.getHours()*60 + now.getMinutes();
+        const timeStr = hh+':'+mm;
+        
+        document.getElementById('clock').textContent = timeStr;
+        const entries = ['Fajr','Dhuhr','Asr','Maghrib','Isha'].map(n=>[n,PT[n]]);
+        let nextName = null, nextMins = Infinity;
+        
+        entries.forEach(([n,t])=>{const m=toMins(t);if(m>cur && m<nextMins){nextMins=m;nextName=n;}});
+        if(!nextName){nextName=entries[0][0];nextMins=toMins(entries[0][1])+1440;}
+        
+        document.querySelectorAll('.ph-slot').forEach(s=>{
+            if(s.dataset.prayer === nextName) {
+                s.classList.add('active', 'border-gold-500/30');
+            } else {
+                s.classList.remove('active', 'border-gold-500/30');
+            }
+        });
+        document.getElementById('next-name').textContent = nextName;
+        
+        const diff = (nextMins - cur)*60 - now.getSeconds();
+        if(diff>0){
+            const ch = String(Math.floor(diff/3600)).padStart(2,'0');
+            const cm = String(Math.floor((diff%3600)/60)).padStart(2,'0');
+            const cs = String(diff%60).padStart(2,'0');
+            document.getElementById('countdown').textContent = ch+':'+cm;
+            document.getElementById('countdown-sec').textContent = cs;
+        }
+
+        // Check each prayer time & trigger notification
+        if(now.getSeconds() === 0) {
+            entries.forEach(([name, t]) => {
+                if(t && t.trim() === timeStr) {
+                    notifyPrayer(name);
+                }
+            });
+        }
+    }
+    setInterval(tick, 1000);
+
+    // MAGAL COUNTDOWN LOGIC
+    function updateMagalCountdown() {
+        // 2 Août 2026 00:00:00 (Mois 7 car 0-indexé)
+        const magalDate = new Date(2026, 7, 2, 0, 0, 0).getTime();
+        const now = new Date().getTime();
+        const diff = magalDate - now;
+
+        if (diff > 0) {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            const elDays = document.getElementById('magal-days');
+            if(elDays) {
+                elDays.textContent = String(days).padStart(2, '0');
+                document.getElementById('magal-hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('magal-mins').textContent = String(mins).padStart(2, '0');
+                document.getElementById('magal-secs').textContent = String(secs).padStart(2, '0');
+            }
+        }
+    }
+    setInterval(updateMagalCountdown, 1000);
+    updateMagalCountdown();
+
+    // QIBLA
+    function updateQibla(){
+        const compass = document.getElementById('compass');
+        if (window.DeviceOrientationEvent && typeof window.DeviceOrientationEvent.requestPermission === 'function') {
+            window.DeviceOrientationEvent.requestPermission()
+            .then(response => {
+                if (response == 'granted') {
+                    window.addEventListener('deviceorientation', (event) => {
+                        let compassHeading = event.webkitCompassHeading || Math.abs(event.alpha - 360);
+                        compass.style.transform = `rotate(${-compassHeading + 65}deg)`;
+                    });
+                }
+            })
+            .catch(console.error);
+        } else {
+            compass.style.transform = `rotate(65deg)`;
+        }
+    }
+
+    /* ═══ APK INSTALL ═══ */
+    // Le bouton de téléchargement gère le téléchargement de l'APK via l'attribut HTML 'download'
