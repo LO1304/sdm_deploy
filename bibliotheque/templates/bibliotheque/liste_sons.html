@@ -637,6 +637,17 @@ function playTrack(el){
     document.getElementById('p-author').textContent = el.dataset.auteur || '—';
     applyCover(el.dataset.url);
     updateActive(curIdx);
+    
+    // Update extra controls
+    document.getElementById('btn-dl-player').href = el.dataset.url;
+    const listBtn = el.querySelector('.track-btn');
+    const pFavBtn = document.getElementById('btn-fav-player');
+    if (listBtn && listBtn.dataset.liked === 'true') {
+        pFavBtn.innerHTML = '<i class="fa-solid fa-heart" style="color:var(--gold)"></i>';
+    } else {
+        pFavBtn.innerHTML = '<i class="fa-regular fa-heart"></i>';
+    }
+
     seekEl.value=0; seekEl.style.setProperty('--value','0%');
     aud.src = el.dataset.url;
     aud.play().then(()=>{
