@@ -244,9 +244,42 @@
     </div>
 
     {# ══════════════════════════════════════════ #}
-    {# F. ACTIONS / NAVIGATION                     #}
+    {# F. SOUTIEN & PREMIUM                        #}
     {# ══════════════════════════════════════════ #}
-    <div class="glass rounded-3xl overflow-hidden border border-white/5" data-aos="fade-up" data-aos-delay="250">
+    <div class="mb-6 grid grid-cols-2 gap-3 md:gap-6" data-aos="fade-up" data-aos-delay="200">
+        <!-- Don Card -->
+        <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/" target="_blank" class="block glass rounded-[24px] p-4 border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all group relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex items-center gap-3 mb-1">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                    <span class="text-lg">💚</span>
+                </div>
+                <div>
+                    <h3 class="text-[11px] md:text-sm font-bold text-emerald-400">Soutenir SDM</h3>
+                    <p class="text-[9px] text-emerald-400/60 uppercase tracking-wider font-semibold">Faire un don</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- Abonnement Card -->
+        <a href="{% url 'abonnement' %}" class="block glass rounded-[24px] p-4 border border-gold-500/20 bg-gold-500/5 hover:bg-gold-500/10 hover:border-gold-500/40 transition-all group relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-gold-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex items-center gap-3 mb-1">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-600/30 to-gold-400/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-lg">👑</span>
+                </div>
+                <div>
+                    <h3 class="text-[11px] md:text-sm font-bold text-gold-400">Premium</h3>
+                    <p class="text-[9px] text-gold-400/60 uppercase tracking-wider font-semibold">S'abonner</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    {# ══════════════════════════════════════════ #}
+    {# G. ACTIONS / NAVIGATION                     #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl overflow-hidden border border-white/5 mb-6" data-aos="fade-up" data-aos-delay="250">
         <a href="{% url 'home' %}" class="action-item flex items-center gap-4 px-5 py-4 border-b border-white/5">
             <div class="w-9 h-9 rounded-xl bg-green-500/10 flex items-center justify-center">
                 <span class="text-lg">🏠</span>
@@ -271,28 +304,12 @@
             <i class="fas fa-chevron-right text-white/20 text-xs"></i>
         </a>
 
-        <a href="#" class="action-item flex items-center gap-4 px-5 py-4 border-b border-white/5">
+        <a href="#" class="action-item flex items-center gap-4 px-5 py-4">
             <div class="w-9 h-9 rounded-xl bg-yellow-500/10 flex items-center justify-center">
                 <span class="text-lg">🔑</span>
             </div>
             <span class="flex-1 text-sm text-white font-medium">Changer mot de passe</span>
             <i class="fas fa-chevron-right text-white/20 text-xs"></i>
-        </a>
-
-        <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/" target="_blank" class="action-item flex items-center gap-4 px-5 py-4 border-b border-white/5">
-            <div class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                <span class="text-lg">💚</span>
-            </div>
-            <span class="flex-1 text-sm text-emerald-400 font-medium">Soutenir ligueey bi (Don)</span>
-            <i class="fas fa-chevron-right text-emerald-500/40 text-xs"></i>
-        </a>
-
-        <a href="{% url 'abonnement' %}" class="action-item flex items-center gap-4 px-5 py-4">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-600/20 to-yellow-500/10 flex items-center justify-center">
-                <span class="text-lg">💳</span>
-            </div>
-            <span class="flex-1 text-sm font-medium text-yellow-400">Abonnement Premium</span>
-            <i class="fas fa-chevron-right text-yellow-500/40 text-xs"></i>
         </a>
     </div>
 
