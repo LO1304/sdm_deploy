@@ -1152,7 +1152,26 @@ async function sauvegarderSeance(){
     const data = await res.json();
 
     if (res.ok && data.status === 'success') {
-      window.location.href = "{% url 'voir_historique' %}";
+      // Recommencer à zéro
+      s.count = 0;
+      saveSalats();
+      updateRing();
+      updateCountDisplay();
+      
+      btn.classList.remove('loading');
+      btn.disabled = false;
+      
+      // Afficher un message de succès
+      toastM.textContent = 'Séance enregistrée avec succès !';
+      toast.style.color = 'var(--g1)';
+      toast.style.borderColor = 'var(--g1)';
+      toast.classList.add('show');
+      setTimeout(()=>{ 
+        toast.classList.remove('show'); 
+        toast.style.color = '';
+        toast.style.borderColor = '';
+      }, 3000);
+      
     } else {
       throw new Error(data.message || 'Erreur serveur');
     }

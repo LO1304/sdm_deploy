@@ -172,6 +172,21 @@ class Command(BaseCommand):
                             )
 
                     document.fichier_pdf.save(pdf_filename, ContentFile(pdf_content), save=False)
+                    
+                    # Générer automatiquement la couverture
+                    try:
+                        import fitz
+                        doc = fitz.open(stream=pdf_content, filetype="pdf")
+                        if len(doc) > 0:
+                            page = doc.load_page(0)
+                            pix = page.get_pixmap(matrix=fitz.Matrix(1.0, 1.0))
+                            img_bytes = pix.tobytes("jpeg")
+                            cover_filename = f"cover_{pdf_filename.split('.')[0]}.jpg"
+                            document.image_couverture.save(cover_filename, ContentFile(img_bytes), save=False)
+                            self.stdout.write(f"  -> Couverture generee pour '{safe_titre}'.")
+                    except Exception as e:
+                        self.stderr.write(self.style.WARNING(f"  -> Echec generation couverture: {e}"))
+                        
                     self.stdout.write(self.style.SUCCESS(f"  -> Succes : '{safe_titre}' importe."))
                 except urllib.error.HTTPError as e:
                     self.stderr.write(

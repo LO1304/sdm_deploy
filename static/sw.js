@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sdm-premium-v3';
+const CACHE_NAME = 'sdm-premium-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/offline/',

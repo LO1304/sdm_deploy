@@ -63,23 +63,38 @@
             font-size: 10px; font-weight: 700; color: rgba(212,175,55,0.6);
         }
 
-        /* ── CATEGORIES ── */
+        /* ── CATEGORIES (Profils) ── */
         .cats-row {
-            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;
+            display: flex; gap: 16px; overflow-x: auto; padding-bottom: 12px;
             margin-bottom: 24px; scrollbar-width: none;
         }
         .cats-row::-webkit-scrollbar { display: none; }
-        .cat-pill {
-            padding: 8px 18px; border-radius: 99px; white-space: nowrap;
-            font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
-            border: 1px solid var(--border); color: var(--dim); text-decoration: none;
-            transition: all 0.3s; flex-shrink: 0; background: var(--surface);
+        .cat-profile {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            text-decoration: none; flex-shrink: 0; width: 64px;
         }
-        .cat-pill:hover { border-color: var(--border-g); color: var(--text); }
-        .cat-pill.active {
-            background: rgba(212,175,55,0.12); border-color: var(--border-g);
-            color: var(--gold); box-shadow: 0 0 16px rgba(212,175,55,0.12);
+        .cat-avatar {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: var(--surface); border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+            position: relative;
         }
+        .cat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-avatar i { font-size: 20px; color: var(--dim); }
+        .cat-name {
+            font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--dim); text-align: center; transition: all 0.3s;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
+        }
+        .cat-profile:hover .cat-avatar { border-color: var(--border-g); transform: scale(1.05); }
+        .cat-profile:hover .cat-name { color: var(--text); }
+        .cat-profile.active .cat-avatar {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(212,175,55,0.3);
+        }
+        .cat-profile.active .cat-avatar i { color: var(--gold); }
+        .cat-profile.active .cat-name { color: var(--gold); }
 
         /* ── TRACK LIST ── */
         #sonList { display: flex; flex-direction: column; gap: 8px; }
@@ -173,7 +188,7 @@
 
         /* ── PLAYER IMMERSIF ── */
         #audio-player {
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
             transform: translateY(110%);
             transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
         }
@@ -354,9 +369,28 @@
 
     <!-- CATEGORIES -->
     <div class="cats-row">
-        <a href="?" class="cat-pill {% if not active_cat %}active{% endif %}">Tout</a>
+        <a href="?" class="cat-profile {% if not active_cat %}active{% endif %}">
+            <div class="cat-avatar"><i class="fa-solid fa-layer-group"></i></div>
+            <span class="cat-name">Tout</span>
+        </a>
         {% for code, label in categories %}
-        <a href="?cat={{ code }}" class="cat-pill {% if active_cat == code %}active{% endif %}">{{ label }}</a>
+        <a href="?cat={{ code }}" class="cat-profile {% if active_cat == code %}active{% endif %}">
+            <div class="cat-avatar">
+                {% if code == 'coran' %}
+                <img src="/static/images/categories/coran.jpg" alt="Coran" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                <i class="fa-solid fa-book-quran" style="display:none"></i>
+                {% elif code == 'khassida' %}
+                <img src="/static/images/categories/khassida.jpg" alt="Khassida" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                <i class="fa-solid fa-feather-pointed" style="display:none"></i>
+                {% elif code == 'zikr' %}
+                <img src="/static/images/categories/zikr.jpg" alt="Zikr" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                <i class="fa-solid fa-hands-praying" style="display:none"></i>
+                {% else %}
+                <i class="fa-solid fa-folder-open"></i>
+                {% endif %}
+            </div>
+            <span class="cat-name">{{ label }}</span>
+        </a>
         {% endfor %}
     </div>
 
@@ -367,8 +401,8 @@
         <div class="track-item"
              data-id="{{ s.id }}"
              data-url="{% if s.fichier_audio %}{{ s.fichier_audio.url }}{% else %}{{ s.lien_audio_externe }}{% endif %}"
-             data-titre="{{ s.titre|escapejs }}"
-             data-auteur="{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}"
+             data-titre="{{ s.titre }}"
+             data-auteur="{{ s.auteur_voix|default:s.get_categorie_display }}"
              data-index="{{ forloop.counter0 }}"
              style="animation-delay: {% if forloop.counter0 < 20 %}calc({{ forloop.counter0 }} * 0.04s){% else %}0s{% endif %};">
 
@@ -454,7 +488,16 @@
                 <span class="time-label" id="p-dur">0:00</span>
             </div>
 
-            <!-- Contrôles -->
+            <!-- Contrôles Extras -->
+            <div class="extra-controls" style="display:flex; justify-content:space-between; align-items:center; padding:0 20px; margin-bottom: 8px;">
+                <button class="ctrl-btn" id="btn-speed" onclick="cycleSpeed()" style="font-size:12px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--gold)">1x</button>
+                <div style="display:flex; gap:16px;">
+                    <button class="ctrl-btn" id="btn-fav-player" onclick="togglePlayerFav()"><i class="fa-regular fa-heart"></i></button>
+                    <a href="#" id="btn-dl-player" class="ctrl-btn" download><i class="fa-solid fa-download"></i></a>
+                </div>
+            </div>
+
+            <!-- Contrôles Principaux -->
             <div class="controls-row">
                 <div class="vol-wrap">
                     <i class="fa-solid fa-volume-low" style="color:var(--dim);font-size:12px"></i>
@@ -660,15 +703,7 @@ seekEl.addEventListener('change', e=>{
     isSeeking=false;
 });
 
-aud.addEventListener('timeupdate',()=>{
-    if(!aud.duration||isSeeking) return;
-    const pct=aud.currentTime/aud.duration;
-    seekEl.value=Math.round(pct*1000);
-    seekEl.style.setProperty('--value',(pct*100)+'%');
-    document.getElementById('p-cur').textContent=fmt(aud.currentTime);
-    document.getElementById('p-dur').textContent=fmt(aud.duration);
-    drawWaveform(pct);
-});
+// L'ancien timeupdate a été remplacé par celui gérant la reprise automatique (localStorage) plus bas.
 aud.addEventListener('loadedmetadata',()=> document.getElementById('p-dur').textContent=fmt(aud.duration));
 aud.addEventListener('ended',()=>{ if(!isLoop) playNext(); });
 
@@ -754,6 +789,35 @@ document.getElementById('searchInput').addEventListener('input',function(){
     document.getElementById('search-count').textContent=q?`${n} titre${n>1?'s':''}` : '';
 });
 
+/* ══ CONTROLES AVANCES (VITESSE, FAVORIS) ══ */
+const speedBtn = document.getElementById('btn-speed');
+const speeds = [1, 1.25, 1.5, 2];
+let curSpeedIdx = 0;
+window.cycleSpeed = function() {
+    curSpeedIdx = (curSpeedIdx + 1) % speeds.length;
+    const speed = speeds[curSpeedIdx];
+    aud.playbackRate = speed;
+    speedBtn.textContent = speed + 'x';
+    showToast('Vitesse : ' + speed + 'x');
+};
+
+window.togglePlayerFav = function() {
+    if (curIdx === -1) return;
+    const el = items[curIdx];
+    const id = el.dataset.id;
+    const listBtn = el.querySelector('.track-btn');
+    if(listBtn) window.toggleFavori(new Event('click'), 'son', id, listBtn);
+    
+    // Sync the player button icon instantly
+    const pFavBtn = document.getElementById('btn-fav-player');
+    const isNowLiked = listBtn.dataset.liked === 'true'; // after toggle it might flip, but we want the optimistic update
+    if (isNowLiked) {
+        pFavBtn.innerHTML = '<i class="fa-solid fa-heart" style="color:var(--gold)"></i>';
+    } else {
+        pFavBtn.innerHTML = '<i class="fa-regular fa-heart"></i>';
+    }
+};
+
 /* ══ MEDIA SESSION ══ */
 function setMediaSession(el){
     if(!('mediaSession' in navigator)) return;
@@ -766,6 +830,64 @@ function setMediaSession(el){
     navigator.mediaSession.setActionHandler('previoustrack', window.playPrev);
     navigator.mediaSession.setActionHandler('nexttrack', window.playNext);
 }
+
+/* ══ REPRISE AUTOMATIQUE (LOCALSTORAGE) ══ */
+const LS_KEY = 'sdm_last_audio';
+aud.addEventListener('timeupdate', () => {
+    if(!aud.duration || isSeeking || curIdx === -1) return;
+    const pct = aud.currentTime / aud.duration;
+    seekEl.value = Math.round(pct * 1000);
+    seekEl.style.setProperty('--value', (pct * 100) + '%');
+    document.getElementById('p-cur').textContent = fmt(aud.currentTime);
+    document.getElementById('p-dur').textContent = fmt(aud.duration);
+    drawWaveform(pct);
+    
+    // Save to localStorage every 3 seconds approx to save battery
+    if(Math.floor(aud.currentTime) % 3 === 0) {
+        localStorage.setItem(LS_KEY, JSON.stringify({
+            id: items[curIdx].dataset.id,
+            time: aud.currentTime,
+            duration: aud.duration
+        }));
+    }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    try {
+        const last = JSON.parse(localStorage.getItem(LS_KEY));
+        if (last && last.id && last.time) {
+            const idx = items.findIndex(i => i.dataset.id === last.id);
+            if (idx !== -1) {
+                // Initialize player silently
+                curIdx = idx;
+                const el = items[idx];
+                document.getElementById('p-title').textContent = el.dataset.titre;
+                document.getElementById('p-author').textContent = el.dataset.auteur || '—';
+                applyCover(el.dataset.url);
+                updateActive(curIdx);
+                
+                aud.src = el.dataset.url;
+                aud.currentTime = last.time;
+                
+                // Show player but don't play
+                player.classList.add('active');
+                ppIcon.className = 'fa-solid fa-play';
+                vinyl.classList.add('spin-paused');
+                document.getElementById('p-cur').textContent = fmt(last.time);
+                
+                // Update download link and fav
+                document.getElementById('btn-dl-player').href = el.dataset.url;
+                const listBtn = el.querySelector('.track-btn');
+                const pFavBtn = document.getElementById('btn-fav-player');
+                if (listBtn && listBtn.dataset.liked === 'true') {
+                    pFavBtn.innerHTML = '<i class="fa-solid fa-heart" style="color:var(--gold)"></i>';
+                } else {
+                    pFavBtn.innerHTML = '<i class="fa-regular fa-heart"></i>';
+                }
+            }
+        }
+    } catch(e) {}
+});
 
 /* Init waveform size */
 window.addEventListener('resize', ()=> drawWaveform(parseFloat(seekEl.value)/1000));
