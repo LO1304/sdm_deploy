@@ -325,6 +325,43 @@
         </div>
     </div>
 
+    <!-- ACTION CARDS (Don & Abonnement) -->
+    <div class="mb-12 max-w-4xl mx-auto grid grid-cols-2 gap-3 md:gap-6" data-aos="fade-up" data-aos-delay="260" data-aos-duration="1000">
+        <!-- Don Card -->
+        <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/" target="_blank" class="block glass rounded-[24px] p-4 md:p-6 border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all group relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex items-center gap-3 md:gap-4 mb-1 md:mb-3">
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                    <span class="text-lg md:text-xl">💚</span>
+                </div>
+                <div>
+                    <h3 class="text-[11px] md:text-sm font-bold text-emerald-400">Soutenir SDM</h3>
+                    <p class="text-[9px] md:text-[11px] text-emerald-400/60 uppercase tracking-wider font-semibold">Faire un don</p>
+                </div>
+            </div>
+            <p class="text-[10px] md:text-xs text-white/50 leading-relaxed hidden md:block">
+                Votre contribution aide à maintenir cette plateforme au service de la communauté.
+            </p>
+        </a>
+
+        <!-- Abonnement Card -->
+        <a href="{% url 'abonnement' %}" class="block glass rounded-[24px] p-4 md:p-6 border border-gold-500/20 bg-gold-500/5 hover:bg-gold-500/10 hover:border-gold-500/40 transition-all group relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-gold-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex items-center gap-3 md:gap-4 mb-1 md:mb-3">
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-gold-600/30 to-gold-400/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-lg md:text-xl">👑</span>
+                </div>
+                <div>
+                    <h3 class="text-[11px] md:text-sm font-bold text-gold-400">Premium</h3>
+                    <p class="text-[9px] md:text-[11px] text-gold-400/60 uppercase tracking-wider font-semibold">S'abonner</p>
+                </div>
+            </div>
+            <p class="text-[10px] md:text-xs text-white/50 leading-relaxed hidden md:block">
+                Débloquez tout le contenu exclusif et profitez d'une expérience sans limites.
+            </p>
+        </a>
+    </div>
+
     <!-- MON QUOTIDIEN (Zikr, Wird, Niveau) -->
     <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="280" data-aos-duration="1000">
         <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-4 ml-1 flex items-center gap-2">
@@ -678,24 +715,7 @@
     </div>
     {% endif %}
 
-    <!-- SOUTENIR LE PROJET (Visible pour TOUS — Premium ou non) -->
-    <div class="mb-14" data-aos="fade-up" data-aos-delay="650" data-aos-duration="1000">
-        <div class="glass rounded-[28px] p-6 md:p-8 border border-white/5 text-center relative overflow-hidden">
-            <div class="absolute -bottom-16 -left-16 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl"></div>
-            <div class="relative z-10">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400/20 to-emerald-600/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-hand-holding-heart text-emerald-400 text-lg"></i>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-white mb-2">Soutenir SDM</h3>
-                <p class="text-xs md:text-sm text-white/50 mb-6 max-w-md mx-auto leading-relaxed">
-                    Votre contribution aide à maintenir et améliorer cette plateforme au service de la communauté mouride. Qu'Allah vous récompense.
-                </p>
-                <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/" target="_blank" class="inline-flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-sm shadow-[0_8px_20px_rgba(16,185,129,0.25)] hover:shadow-[0_12px_28px_rgba(16,185,129,0.35)] hover:-translate-y-0.5 transition-all">
-                    <i class="fa-solid fa-heart text-sm"></i> Faire un don
-                </a>
-            </div>
-        </div>
-    </div>
+
 
     <!-- INSTALLER L'APPLICATION (Visible pour TOUS) -->
     <div class="mb-14" data-aos="fade-up" data-aos-delay="700" data-aos-duration="1000">
