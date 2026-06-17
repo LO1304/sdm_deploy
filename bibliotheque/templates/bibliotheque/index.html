@@ -187,7 +187,7 @@
             
             <!-- Wird Widget -->
             {% if wird_mahuz %}
-                <a href="{% if wird_en_cours %}{% url 'lire_wird' wird_en_cours.wird.id %}{% else %}{% url 'lire_wird' wird_mahuz.id %}{% endif %}" class="block glass rounded-[24px] p-4 flex flex-col justify-between border border-white/5 hover:border-gold-500/30 transition-all group">
+                <a href="{% if wird_en_cours %}{% url 'lire_wird' wird_en_cours.wird.slug %}{% else %}{% url 'lire_wird' wird_mahuz.slug %}{% endif %}" class="block glass rounded-[24px] p-4 flex flex-col justify-between border border-white/5 hover:border-gold-500/30 transition-all group">
                     <div class="flex items-center justify-between mb-3">
                         <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/80 group-hover:text-gold-500 transition-colors">
                             <i class="fa-solid fa-braille"></i>
