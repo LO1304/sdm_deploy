@@ -1,11 +1,15 @@
 from django.core.management.base import BaseCommand
 from bibliotheque.models import Khassida
 from django.core.files.base import ContentFile
-import fitz
 import cloudinary.utils
 import urllib.request
 import zipfile
 import io
+
+try:
+    import fitz
+except ImportError:
+    fitz = None
 
 class Command(BaseCommand):
     help = 'Génère les images de couverture à partir de la première page des PDF'
