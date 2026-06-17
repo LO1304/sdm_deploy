@@ -88,3 +88,38 @@ function initToasts() {
         });
     }, 5000);
 }
+
+/* ── THEMES LOGIC ── */
+window.setTheme = function(themeName) {
+    // Save to localStorage
+    if (themeName) {
+        localStorage.setItem('sdm_theme', themeName);
+        document.documentElement.setAttribute('data-theme', themeName);
+    } else {
+        localStorage.removeItem('sdm_theme');
+        document.documentElement.removeAttribute('data-theme');
+    }
+    
+    // Update active state on buttons if they exist
+    updateThemeUI(themeName);
+};
+
+function updateThemeUI(themeName) {
+    const currentTheme = themeName !== undefined ? themeName : (localStorage.getItem('sdm_theme') || '');
+    const buttons = document.querySelectorAll('.theme-btn');
+    
+    buttons.forEach(btn => {
+        if (btn.getAttribute('data-theme-id') === currentTheme) {
+            btn.classList.add('ring-2', 'ring-white');
+            btn.classList.remove('opacity-70');
+        } else {
+            btn.classList.remove('ring-2', 'ring-white');
+            btn.classList.add('opacity-70');
+        }
+    });
+}
+
+// Initialize Theme UI on load
+document.addEventListener("DOMContentLoaded", function () {
+    updateThemeUI();
+});

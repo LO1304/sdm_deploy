@@ -30,15 +30,15 @@
                 extend: {
                     colors: {
                         mouride: {
-                            900: '#040B08', 800: '#081711', 700: '#0C2219',
-                            surface: 'rgba(12, 34, 25, 0.45)', light: 'rgba(255, 255, 255, 0.05)',
+                            900: 'var(--theme-bg)', 800: 'var(--theme-bg-lighter)', 700: 'var(--theme-bg-lightest)',
+                            surface: 'var(--theme-surface)', light: 'var(--theme-light)',
                         },
                         gold: {
-                            400: '#FDE047', 500: '#D4AF37', 600: '#A68A28',
+                            400: 'var(--theme-accent-light)', 500: 'var(--theme-accent)', 600: 'var(--theme-accent-dark)',
                         }
                     },
                     fontFamily: { sans: ['Inter', 'sans-serif'], arabic: ['Amiri', 'serif'], },
-                    boxShadow: { glass: '0 8px 32px 0 rgba(0, 0, 0, 0.5)', glow: '0 0 20px rgba(212, 175, 55, 0.3)', }
+                    boxShadow: { glass: '0 8px 32px 0 var(--theme-glass-bg)', glow: '0 0 20px var(--theme-glow)', }
                 }
             }
         }
@@ -48,8 +48,20 @@
     <link rel="stylesheet" href="{% static 'css/sdm_theme.css' %}">
 
     {% block extra_head %}{% endblock %}
+
+    <!-- THEME LOADER (Pre-render to avoid flash of unstyled content) -->
+    <script>
+        (function() {
+            try {
+                var theme = localStorage.getItem('sdm_theme');
+                if (theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
-<body class="antialiased selection:bg-gold-500 selection:text-black" style="background-color:#030408;color:#fff;">
+<body class="antialiased selection:bg-gold-500 selection:text-black" style="background-color:var(--theme-bg);color:#fff;">
 
     <!-- FOND ÉTOILÉ (Global) -->
     <canvas id="sdm-cosmos"></canvas>

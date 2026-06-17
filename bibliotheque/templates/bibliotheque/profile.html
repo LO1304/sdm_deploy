@@ -152,6 +152,47 @@
     </div>
 
     {# ══════════════════════════════════════════ #}
+    {# C2. APPARENCE & THÈMES                      #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up" data-aos-delay="120">
+        <h2 class="text-sm font-semibold text-white/80 mb-4">
+            <i class="fas fa-palette text-yellow-500 mr-2"></i>Apparence
+        </h2>
+        
+        <div class="grid grid-cols-3 gap-2 md:gap-4">
+            <!-- Thème Par défaut -->
+            <button onclick="setTheme('')" class="theme-btn relative aspect-square rounded-2xl border-2 border-transparent hover:border-yellow-500/50 transition-all overflow-hidden group" data-theme-id="">
+                <div class="absolute inset-0 bg-[#040B08]"></div>
+                <div class="absolute bottom-0 right-0 w-16 h-16 rounded-tl-full bg-yellow-500/20 blur-md"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-2 z-10">
+                    <div class="w-6 h-6 rounded-full bg-[#D4AF37] mb-2 shadow-glow"></div>
+                    <span class="text-[10px] md:text-xs font-medium text-white/80">Sombre</span>
+                </div>
+            </button>
+            
+            <!-- Thème Émeraude -->
+            <button onclick="setTheme('vert')" class="theme-btn relative aspect-square rounded-2xl border-2 border-transparent hover:border-[#10B981]/50 transition-all overflow-hidden group" data-theme-id="vert">
+                <div class="absolute inset-0 bg-[#01140A]"></div>
+                <div class="absolute bottom-0 right-0 w-16 h-16 rounded-tl-full bg-[#10B981]/20 blur-md"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-2 z-10">
+                    <div class="w-6 h-6 rounded-full bg-[#10B981] mb-2 shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div>
+                    <span class="text-[10px] md:text-xs font-medium text-white/80">Émeraude</span>
+                </div>
+            </button>
+            
+            <!-- Thème Bleu Nuit -->
+            <button onclick="setTheme('bleu')" class="theme-btn relative aspect-square rounded-2xl border-2 border-transparent hover:border-[#38BDF8]/50 transition-all overflow-hidden group" data-theme-id="bleu">
+                <div class="absolute inset-0 bg-[#020617]"></div>
+                <div class="absolute bottom-0 right-0 w-16 h-16 rounded-tl-full bg-[#38BDF8]/20 blur-md"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-2 z-10">
+                    <div class="w-6 h-6 rounded-full bg-[#38BDF8] mb-2 shadow-[0_0_15px_rgba(56,189,248,0.5)]"></div>
+                    <span class="text-[10px] md:text-xs font-medium text-white/80">Bleu Nuit</span>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    {# ══════════════════════════════════════════ #}
     {# D. HISTORIQUE RÉCENT                        #}
     {# ══════════════════════════════════════════ #}
     <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up" data-aos-delay="150">
