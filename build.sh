@@ -24,10 +24,12 @@ echo "═══ Création/Mise à jour des administrateurs ═══"
 # ON NE LANCE PLUS AUTOMATIQUEMENT LE SCRIPT EN PRODUCTION
 # python force_admin.py
 
-echo "═══ Création des Sessions de Zikr par défaut ═══"
-python manage.py shell -c "exec(open('populate_sessions.py', encoding='utf-8').read()); run()"
+echo "🔥 Création des Sessions de Zikr par défaut 🔥"
+# ON NE LANCE PLUS AUTOMATIQUEMENT LE SCRIPT EN PRODUCTION (Lock SQLite)
+# python manage.py shell -c "exec(open('populate_sessions.py', encoding='utf-8').read()); run()"
 
-echo "═══ Déploiement des Sons (Base de données) ═══"
-python deploy_sons.py
+echo "🔥 Déploiement des Sons (Base de données) 🔥"
+# ON NE LANCE PLUS AUTOMATIQUEMENT LE SCRIPT EN PRODUCTION (Lock SQLite)
+# python deploy_sons.py
 
 echo "═══ Build terminé avec succès ! ═══"
