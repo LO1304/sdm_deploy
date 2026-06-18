@@ -953,13 +953,18 @@ def zikr_communaute_create(request):
     if request.method == 'POST':
         titre = request.POST.get('titre')
         zikr_id = request.POST.get('zikr_id')
+        zikr_personnalise = request.POST.get('zikr_personnalise')
         objectif = int(request.POST.get('objectif_global', 100000))
         
-        if titre and zikr_id:
-            zikr = get_object_or_404(Zikr, id=zikr_id)
+        if titre and (zikr_id or zikr_personnalise):
+            zikr = None
+            if zikr_id:
+                zikr = get_object_or_404(Zikr, id=zikr_id)
+            
             SessionZikrCommunautaire.objects.create(
                 titre=titre,
                 zikr=zikr,
+                zikr_personnalise=zikr_personnalise,
                 objectif_global=objectif,
                 createur=request.user
             )

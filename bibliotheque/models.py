@@ -47,7 +47,8 @@ class Zikr(models.Model):
 # ── ZIKR COMMUNAUTAIRE ──
 class SessionZikrCommunautaire(models.Model):
     titre = models.CharField(max_length=200, help_text="Ex: Grand Zikr du Vendredi")
-    zikr = models.ForeignKey(Zikr, on_delete=models.CASCADE, related_name='sessions_communautaires')
+    zikr = models.ForeignKey(Zikr, on_delete=models.CASCADE, related_name='sessions_communautaires', null=True, blank=True)
+    zikr_personnalise = models.TextField(blank=True, null=True, help_text="Formule personnalisée si aucun zikr prédéfini n'est choisi")
     objectif_global = models.PositiveIntegerField(default=100000, help_text="Objectif total à atteindre par la communauté")
     compteur_actuel = models.PositiveIntegerField(default=0, help_text="Progression actuelle")
     createur = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sessions_creees')

@@ -9,8 +9,15 @@
     </a>
     <h1 style="color: var(--gold); font-size: 28px; margin-bottom: 5px;">{{ session.titre }}</h1>
     
-    <!-- Calligraphie Arabe -->
-    {% if session.zikr.texte_arabe %}
+    <!-- Calligraphie Arabe ou Formule Personnalisée -->
+    {% if session.zikr_personnalise %}
+    <div style="margin: 20px auto; padding: 20px 30px; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.2); border-radius: 20px; max-width: 500px; position: relative; overflow: hidden;">
+        <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(212,175,55,0.06), transparent 70%);"></div>
+        <p style="font-family: 'Amiri', serif; font-size: 32px; font-weight: 700; color: #ffd700; text-align: center; line-height: 1.8; text-shadow: 0 0 30px rgba(212,175,55,0.3); margin: 0; position: relative; z-index: 1;">
+            {{ session.zikr_personnalise|linebreaksbr }}
+        </p>
+    </div>
+    {% elif session.zikr and session.zikr.texte_arabe %}
     <div style="margin: 20px auto; padding: 20px 30px; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.2); border-radius: 20px; max-width: 400px; position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(212,175,55,0.06), transparent 70%);"></div>
         <p style="font-family: 'Amiri', serif; font-size: 36px; font-weight: 700; color: #ffd700; direction: rtl; text-align: center; line-height: 1.8; text-shadow: 0 0 30px rgba(212,175,55,0.3); margin: 0; position: relative; z-index: 1;">
@@ -20,9 +27,30 @@
         <p style="color: rgba(255,255,255,0.5); font-size: 13px; font-style: italic; margin-top: 10px; position: relative; z-index: 1;">{{ session.zikr.transcription }}</p>
         {% endif %}
     </div>
-    {% else %}
+    {% elif session.zikr %}
     <p style="color: var(--dim);">{{ session.zikr.titre }}</p>
     {% endif %}
+
+    <!-- BOUTON DE PARTAGE -->
+    <button onclick="shareSession()" style="margin-top: 10px; margin-bottom: 20px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.5); color: var(--gold); padding: 10px 24px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-size: 15px; display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fas fa-share-nodes"></i> Inviter à participer
+    </button>
+    <script>
+        function shareSession() {
+            const shareData = {
+                title: '{{ session.titre|escapejs }}',
+                text: "Rejoignez-moi pour cette session de Zikr communautaire et atteignons ensemble l'objectif de {{ session.objectif_global }} !",
+                url: window.location.href
+            }
+            if (navigator.share) {
+                navigator.share(shareData).catch(err => console.error('Erreur de partage:', err));
+            } else {
+                navigator.clipboard.writeText(shareData.url).then(() => {
+                    alert('Lien copié dans le presse-papier !');
+                });
+            }
+        }
+    </script>
 </div>
 
 <!-- LE COMPTEUR GLOBAL -->

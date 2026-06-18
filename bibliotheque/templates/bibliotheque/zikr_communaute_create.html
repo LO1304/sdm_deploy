@@ -22,6 +22,20 @@
         </div>
 
         <div class="field-group" style="margin-bottom: 20px;">
+            <label style="display: block; color: var(--gold); margin-bottom: 8px;">Type de Zikr</label>
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <label style="color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="radio" name="zikr_type" value="predefini" checked onclick="document.getElementById('div_zikr_predefini').style.display='block'; document.getElementById('div_zikr_perso').style.display='none'; document.getElementById('zikr_id').required=true; document.getElementById('zikr_personnalise').required=false;">
+                    Choisir dans la liste
+                </label>
+                <label style="color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="radio" name="zikr_type" value="personnalise" onclick="document.getElementById('div_zikr_predefini').style.display='none'; document.getElementById('div_zikr_perso').style.display='block'; document.getElementById('zikr_id').required=false; document.getElementById('zikr_personnalise').required=true;">
+                    Formule personnalisée
+                </label>
+            </div>
+        </div>
+
+        <div id="div_zikr_predefini" class="field-group" style="margin-bottom: 20px;">
             <label for="zikr_id" style="display: block; color: var(--gold); margin-bottom: 8px;">Zikr à réciter</label>
             <select id="zikr_id" name="zikr_id" required 
                     style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white;">
@@ -30,6 +44,13 @@
                     <option value="{{ z.id }}">{{ z.titre }}</option>
                 {% endfor %}
             </select>
+        </div>
+
+        <div id="div_zikr_perso" class="field-group" style="margin-bottom: 20px; display: none;">
+            <label for="zikr_personnalise" style="display: block; color: var(--gold); margin-bottom: 8px;">Formule de Zikr personnalisée</label>
+            <textarea id="zikr_personnalise" name="zikr_personnalise" rows="3" placeholder="Écrivez la formule de Zikr à réciter..."
+                      style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white; resize: vertical; font-family: 'Amiri', serif; font-size: 20px; text-align: center; direction: rtl;"></textarea>
+            <p style="color: var(--dim); font-size: 12px; margin-top: 5px;">Vous pouvez écrire en Arabe ou en phonétique.</p>
         </div>
 
         <div class="field-group" style="margin-bottom: 30px;">

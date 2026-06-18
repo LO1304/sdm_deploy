@@ -18,8 +18,13 @@
     {% for session in sessions %}
     <div class="card" style="background: var(--card-bg); border: 1px solid rgba(212,175,55,0.1); border-radius: 15px; padding: 20px; transition: transform 0.3s;">
         <h3 style="color: var(--gold); margin-top: 0;">{{ session.titre }}</h3>
-        <p style="color: var(--text-light); margin-bottom: 15px;">
-            <i class="fas fa-pray" style="color: var(--gold-dim);"></i> {{ session.zikr.titre }}
+        <p style="color: var(--text-light); margin-bottom: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <i class="fas fa-pray" style="color: var(--gold-dim);"></i> 
+            {% if session.zikr %}
+                {{ session.zikr.titre }}
+            {% else %}
+                {{ session.zikr_personnalise|truncatechars:50 }}
+            {% endif %}
         </p>
         
         <div class="progress-container" style="background: rgba(255,255,255,0.05); border-radius: 10px; height: 10px; margin-bottom: 10px; overflow: hidden;">
