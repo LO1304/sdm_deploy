@@ -1,0 +1,72 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}Notifications - SDM Premium{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto" data-aos="fade-up">
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold">
+            <span class="text-gradient-gold">Notifications</span>
+        </h1>
+        <button onclick="markAllAsRead()" class="text-sm font-medium text-white/50 hover:text-gold-400 transition-colors">
+            <i class="fa-solid fa-check-double mr-1"></i> Tout marquer comme lu
+        </button>
+    </div>
+
+    <div class="space-y-4">
+        {% for notif in notifications %}
+        <div class="glass p-5 rounded-2xl flex gap-4 transition-all {% if not notif.est_lue %}border-l-4 border-l-gold-500 bg-white/[0.08]{% else %}border border-white/5 opacity-70{% endif %}">
+            <div class="flex-shrink-0 mt-1">
+                {% if notif.type_notif == 'PRIERE' %}
+                    <i class="fa-solid fa-mosque text-emerald-400 text-2xl"></i>
+                {% elif notif.type_notif == 'WIRD' %}
+                    <i class="fa-solid fa-book-open text-blue-400 text-2xl"></i>
+                {% elif notif.type_notif == 'ZIKR' %}
+                    <i class="fa-solid fa-hands-praying text-yellow-400 text-2xl"></i>
+                {% elif notif.type_notif == 'NOUVEAU' %}
+                    <i class="fa-solid fa-bell-concierge text-purple-400 text-2xl"></i>
+                {% else %}
+                    <i class="fa-solid fa-star-and-crescent text-gold-500 text-2xl"></i>
+                {% endif %}
+            </div>
+            <div class="flex-1">
+                <div class="flex items-start justify-between gap-4">
+                    <h3 class="font-bold text-white mb-1">{{ notif.titre }}</h3>
+                    <span class="text-xs text-white/40 whitespace-nowrap">{{ notif.date_creation|timesince }}</span>
+                </div>
+                <p class="text-sm text-white/70 mb-2">{{ notif.message }}</p>
+                {% if notif.url_action %}
+                <a href="{{ notif.url_action }}" class="inline-block mt-2 text-xs font-bold text-gold-400 hover:text-gold-300">
+                    Ouvrir <i class="fa-solid fa-arrow-right ml-1"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="glass p-12 rounded-3xl text-center border border-white/5">
+            <i class="fa-regular fa-bell-slash text-5xl text-white/20 mb-4 block"></i>
+            <h3 class="text-lg font-bold text-white mb-2">Aucune notification</h3>
+            <p class="text-sm text-white/50">Vous êtes à jour ! Vos rappels spirituels apparaîtront ici.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function markAllAsRead() {
+    fetch('{% url "mark_notifications_read" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    }).then(response => response.json())
+      .then(data => {
+          if(data.status === 'success') {
+              window.location.reload();
+          }
+      });
+}
+</script>
+{% endblock %}

@@ -193,6 +193,53 @@
     </div>
 
     {# ══════════════════════════════════════════ #}
+    {# C3. PARAMÈTRES DE NOTIFICATIONS             #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up" data-aos-delay="130">
+        <h2 class="text-sm font-semibold text-white/80 mb-4">
+            <i class="fas fa-bell text-yellow-500 mr-2"></i>Notifications
+        </h2>
+        
+        <div class="space-y-4">
+            <!-- Rappels de prières -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-white font-medium">Heures de Prières</p>
+                    <p class="text-xs text-white/50">Recevoir des rappels pour l'heure de la prière</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" id="toggle-prieres" {% if request.user.profile.notif_prieres %}checked{% endif %} onchange="updateNotifPref('notif_prieres', this.checked)">
+                    <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+                </label>
+            </div>
+
+            <!-- Rappels Wird/Zikr -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-white font-medium">Wird & Zikr Quotidien</p>
+                    <p class="text-xs text-white/50">Rappels pour vos objectifs quotidiens</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" id="toggle-wird" {% if request.user.profile.notif_wird %}checked{% endif %} onchange="updateNotifPref('notif_wird', this.checked)">
+                    <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+                </label>
+            </div>
+
+            <!-- Nouveautés -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-white font-medium">Nouveaux Contenus</p>
+                    <p class="text-xs text-white/50">Être alerté lors de l'ajout d'audios/khassidas</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" id="toggle-nouveau" {% if request.user.profile.notif_nouveau_contenu %}checked{% endif %} onchange="updateNotifPref('notif_nouveau_contenu', this.checked)">
+                    <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    {# ══════════════════════════════════════════ #}
     {# D. HISTORIQUE RÉCENT                        #}
     {# ══════════════════════════════════════════ #}
     <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up" data-aos-delay="150">
@@ -401,5 +448,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     statCards.forEach(card => observer.observe(card));
 });
+
+function updateNotifPref(pref, value) {
+    fetch('{% url "update_notif_pref" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            'pref': pref,
+            'value': value
+        })
+    }).then(response => response.json())
+      .then(data => {
+          if(data.status !== 'success') {
+              alert("Erreur lors de la mise à jour des préférences.");
+          }
+      });
+}
 </script>
 {% endblock %}

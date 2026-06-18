@@ -58,6 +58,11 @@ urlpatterns = [
     
     # Tâches quotidiennes (Cron Gratuit)
     path('api/trigger-daily-tasks/', views.trigger_daily_tasks, name='trigger_daily_tasks'),
+    
+    # Notifications
+    path('notifications/', views.notifications_list, name='notifications'),
+    path('api/notifications/read/', views.mark_notifications_read, name='mark_notifications_read'),
+    path('api/profil/update-notif-pref/', views.update_notif_pref, name='update_notif_pref'),
 ]
 
 # Gestion des fichiers média et statiques en développement

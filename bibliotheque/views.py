@@ -37,7 +37,7 @@ def trigger_daily_tasks(request):
 
 from .models import (
     Khassida, Coran, Zikr, Wird, EtapeWird, HistoriqueWird, ProgressionWird, Son, Profile, HistoriqueConsultation, Favori, Telechargement, ContenuDuJour, ParametresPriere, ProgressionLecture, Historique, HistoriqueZikr, ProgressionGenerale,
-    SessionZikrCommunautaire, ParticipationZikrCommunautaire
+    SessionZikrCommunautaire, ParticipationZikrCommunautaire, Notification
 )
 from .forms import ModernRegisterForm
 
@@ -1019,3 +1019,38 @@ def api_zikr_communaute_add(request):
         })
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+# ── NOTIFICATIONS ──
+
+@login_required
+def notifications_list(request):
+    """Affiche la liste des notifications de l'utilisateur."""
+    notifications = Notification.objects.filter(user=request.user).order_by('-date_creation')
+    return render(request, 'bibliotheque/notifications.html', {
+        'notifications': notifications
+    })
+
+@login_required
+@require_POST
+def mark_notifications_read(request):
+    """Marque toutes les notifications non lues comme lues."""
+    Notification.objects.filter(user=request.user, est_lue=False).update(est_lue=True)
+    return JsonResponse({"status": "success"})
+
+@login_required
+@require_POST
+def update_notif_pref(request):
+    """Mise à jour des préférences de notification."""
+    try:
+        data = json.loads(request.body)
+        pref = data.get('pref')
+        value = data.get('value')
+        
+        if pref in ['notif_prieres', 'notif_wird', 'notif_nouveau_contenu']:
+            setattr(request.user.profile, pref, value)
+            request.user.profile.save()
+            return JsonResponse({"status": "success"})
+        return JsonResponse({"status": "error", "message": "Préférence invalide"}, status=400)
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)

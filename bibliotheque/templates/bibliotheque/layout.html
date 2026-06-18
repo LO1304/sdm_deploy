@@ -66,6 +66,19 @@
     <!-- FOND ÉTOILÉ (Global) -->
     <canvas id="sdm-cosmos"></canvas>
 
+    <!-- NOTIFICATION BELL (Global) -->
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'notifications' %}" class="fixed top-4 right-4 z-50 glass w-11 h-11 rounded-full flex items-center justify-center border border-white/10 hover:border-gold-500/50 transition-all shadow-glass group">
+        <i class="fa-regular fa-bell text-white/80 group-hover:text-gold-400 text-xl transition-colors"></i>
+        {% if unread_notifications_count > 0 %}
+        <span class="absolute top-1 right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+        </span>
+        {% endif %}
+    </a>
+    {% endif %}
+
     <!-- TOAST MESSAGES (Global) -->
     {% if messages %}
     <div class="toast-container" id="toast-wrapper">

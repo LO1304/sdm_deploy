@@ -79,3 +79,47 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
+// ── PUSH NOTIFICATIONS ──
+self.addEventListener('push', (event) => {
+  let data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data = { notification: { title: 'SDM Premium', body: event.data.text() } };
+    }
+  }
+
+  const title = data.notification?.title || 'Nouvelle Notification SDM';
+  const options = {
+    body: data.notification?.body || '',
+    icon: '/static/icons/icon-192x192.png',
+    badge: '/static/icons/icon-72x72.png',
+    data: data.data || { url: '/' },
+    vibrate: [200, 100, 200]
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const urlToOpen = new URL(event.notification.data.url || '/', self.location.origin).href;
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // Cherche si l'URL est déjà ouverte
+      for (let i = 0; i < windowClients.length; i++) {
+        const client = windowClients[i];
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // Sinon on l'ouvre
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});

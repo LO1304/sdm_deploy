@@ -122,4 +122,31 @@ function updateThemeUI(themeName) {
 // Initialize Theme UI on load
 document.addEventListener("DOMContentLoaded", function () {
     updateThemeUI();
+    
+    // Check Notification Permission on load if logged in (or we could trigger this via button)
+    if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+        // Optionnel : On peut afficher un custom toast demandant d'activer les notifications
+        console.log("Notifications can be enabled.");
+    }
 });
+
+// ── WEB PUSH NOTIFICATIONS ──
+window.requestNotificationPermission = function() {
+    if (!("Notification" in window)) {
+        alert("Ce navigateur ne supporte pas les notifications desktop.");
+        return;
+    }
+    
+    Notification.requestPermission().then(function (permission) {
+        if (permission === "granted") {
+            console.log("Notification permission granted.");
+            // Si on utilise Firebase JS SDK pour le front-end, on génère le token ici
+            // Pour l'instant on utilise le Service Worker Standard Web Push
+            // On peut s'abonner au pushManager
+            navigator.serviceWorker.ready.then(function(registration) {
+                // Nécessite une clé VAPID publique pour le Web Push standard
+                // Registration pushManager logic here
+            });
+        }
+    });
+};

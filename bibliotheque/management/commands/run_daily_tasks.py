@@ -58,18 +58,43 @@ class Command(BaseCommand):
                 )
                 self.stdout.write(f"Nouvelle session créée : {nouvelle_session.titre}")
                 
-                # 3. ENVOYER LA NOTIFICATION PUSH FCM
-                self.send_push_notification(
+                # 3. ENVOYER LA NOTIFICATION
+                self.send_notifications(
                     title="Nuit du Vendredi",
-                    body="La session de 12 000 Salaat a commencé ! Rejoignez la communauté."
+                    body="La session de 12 000 Salaat a commencé ! Rejoignez la communauté.",
+                    notif_type='ZIKR',
+                    url='/communaute/zikr/'
                 )
         else:
             self.stdout.write("Aujourd'hui n'est pas jeudi, pas de session spéciale.")
             
+        # 3. RAPPEL QUOTIDIEN WIRD
+        self.send_notifications(
+            title="Votre Wird Quotidien",
+            body=f"C'est un nouveau jour ! {verse}",
+            notif_type='WIRD',
+            url='/collection/wird/'
+        )
+            
         self.stdout.write("--- Fin des tâches ---")
 
-    def send_push_notification(self, title, body):
-        # Initialiser Firebase si ce n'est pas déjà fait
+    def send_notifications(self, title, body, notif_type='RAPPEL', url='/'):
+        from bibliotheque.models import Notification
+        
+        # Filtre sur les préférences
+        pref_field = 'notif_nouveau_contenu'
+        if notif_type == 'WIRD' or notif_type == 'ZIKR':
+            pref_field = 'notif_wird'
+        elif notif_type == 'PRIERE':
+            pref_field = 'notif_prieres'
+            
+        # Création interne en base de données
+        users = User.objects.filter(**{f"profile__{pref_field}": True})
+        notifs = [Notification(user=u, titre=title, message=body, type_notif=notif_type, url_action=url) for u in users]
+        if notifs:
+            Notification.objects.bulk_create(notifs)
+
+        # Envoi Push (FCM)
         try:
             if not firebase_admin._apps:
                 firebase_admin.initialize_app()
@@ -77,19 +102,19 @@ class Command(BaseCommand):
             self.stdout.write(f"Impossible d'initialiser Firebase Admin: {e}")
             return
 
-        tokens = list(Profile.objects.exclude(fcm_token__isnull=True).exclude(fcm_token="").values_list('fcm_token', flat=True))
+        tokens = list(Profile.objects.filter(user__in=users).exclude(fcm_token__isnull=True).exclude(fcm_token="").values_list('fcm_token', flat=True))
         
         if not tokens:
-            self.stdout.write("Aucun token FCM trouvé pour envoyer des notifications.")
+            self.stdout.write("Aucun token FCM valide trouvé.")
             return
 
         try:
-            # FCM limite à 500 tokens par requête, on prend les 500 premiers (à optimiser avec un batching pour bcp d'utilisateurs)
             message = messaging.MulticastMessage(
                 notification=messaging.Notification(title=title, body=body),
+                data={'url': url},
                 tokens=tokens[:500] 
             )
             response = messaging.send_multicast(message)
-            self.stdout.write(f"Notification envoyée. Succès: {response.success_count}, Échecs: {response.failure_count}")
+            self.stdout.write(f"Push FCM envoyés. Succès: {response.success_count}, Échecs: {response.failure_count}")
         except Exception as e:
             self.stdout.write(f"Erreur FCM: {str(e)}")
