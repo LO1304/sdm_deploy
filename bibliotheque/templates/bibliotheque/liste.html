@@ -163,6 +163,7 @@
             content: '';
             position: absolute; inset: 0; border-radius: 20px;
             opacity: 0; transition: opacity 0.35s;
+            pointer-events: none;
             background: linear-gradient(135deg,
                 rgba(212,175,55,0.04) 0%,
                 rgba(212,175,55,0.01) 100%);
@@ -212,6 +213,7 @@
 
         /* Bouton favori */
         .fav-btn {
+            position: relative; z-index: 5;
             width: 36px; height: 36px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 50%;
