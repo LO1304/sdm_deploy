@@ -1026,6 +1026,14 @@ def zikr_communaute_detail(request, id):
         'ma_participation': ma_participation
     })
 
+@login_required
+def zikr_communaute_delete(request, id):
+    session = get_object_or_404(SessionZikrCommunautaire, id=id)
+    # Seul le créateur peut supprimer
+    if session.createur == request.user:
+        session.delete()
+    return redirect('zikr_communaute_list')
+
 @require_POST
 def api_zikr_communaute_add(request):
     if not request.user.is_authenticated:
