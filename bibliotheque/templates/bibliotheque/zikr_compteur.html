@@ -588,7 +588,7 @@ body::before {
     <div class="chips-lbl">Objectif</div>
     <div class="chips-row" id="chipsRow"></div>
     <div class="custom-row" id="customRow">
-      <input type="number" id="customIn" placeholder="ex: 500" min="1" max="9999">
+      <input type="number" id="customIn" placeholder="ex: 500" min="1">
       <div class="cr-ok" id="crOkBtn"><i class="fa-solid fa-check"></i></div>
       <div class="cr-no" id="crNoBtn"><i class="fa-solid fa-xmark"></i></div>
     </div>
@@ -881,7 +881,7 @@ function showCustom(){
 }
 function confirmGoal(){
   const v=parseInt(document.getElementById('customIn').value);
-  if(v>0&&v<=9999){
+  if(v>0){
     if(!goalList.includes(v)){goalList.push(v);goalList.sort((a,b)=>a-b);}
     selectGoal(v);
   }
@@ -1084,6 +1084,11 @@ function openModal(){
   btn.disabled=false;
 
   document.getElementById('modal').classList.add('open');
+  
+  // Auto-save session
+  if('{{ user.is_authenticated }}' === 'True') {
+      sauvegarderSeance();
+  }
 
   // Modal particles
   const h=document.getElementById('modal-ptcls');h.innerHTML='';
