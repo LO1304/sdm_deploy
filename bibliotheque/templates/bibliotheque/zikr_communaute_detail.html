@@ -137,6 +137,11 @@
     let syncTimeout = null;
 
     btnZikr.addEventListener('click', () => {
+        let currentGlobal = parseInt(globalCounterEl.textContent);
+        if (currentGlobal >= objectifGlobal) {
+            return;
+        }
+
         // Animation du bouton
         btnZikr.style.transform = 'scale(0.9)';
         setTimeout(() => btnZikr.style.transform = 'scale(1)', 100);
@@ -145,7 +150,7 @@
         pendingCount++;
         personalCounterEl.textContent = parseInt(personalCounterEl.textContent) + 1;
         
-        const currentGlobal = parseInt(globalCounterEl.textContent) + 1;
+        currentGlobal += 1;
         globalCounterEl.textContent = currentGlobal;
         
         // Mise à jour de la barre
@@ -155,6 +160,11 @@
         // Debounce de la synchronisation (envoie au serveur après 1 seconde sans clic)
         clearTimeout(syncTimeout);
         syncTimeout = setTimeout(syncWithServer, 1000);
+
+        if (currentGlobal >= objectifGlobal) {
+            clearTimeout(syncTimeout);
+            syncWithServer(); // Force immediate sync if goal reached
+        }
     });
 
     function syncWithServer() {
@@ -181,6 +191,12 @@
                 globalCounterEl.textContent = data.global_count;
                 const percentage = Math.min(100, (data.global_count / objectifGlobal) * 100);
                 globalProgressEl.style.width = percentage + '%';
+                
+                if (data.is_completed) {
+                    location.reload();
+                }
+            } else if (data.status === 'error' && data.message === 'Session terminée') {
+                location.reload();
             }
         })
         .catch(err => console.error("Erreur de synchronisation", err));
@@ -206,6 +222,12 @@
                 globalCounterEl.textContent = data.global_count;
                 const percentage = Math.min(100, (data.global_count / objectifGlobal) * 100);
                 globalProgressEl.style.width = percentage + '%';
+                
+                if (data.is_completed) {
+                    location.reload();
+                }
+            } else if (data.status === 'error' && data.message === 'Session terminée') {
+                location.reload();
             }
         });
     }, 10000);

@@ -1061,7 +1061,8 @@ def api_zikr_communaute_add(request):
         return JsonResponse({
             'status': 'success',
             'global_count': session.compteur_actuel,
-            'personal_count': participation.contribution
+            'personal_count': participation.contribution,
+            'is_completed': not session.est_actif
         })
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
