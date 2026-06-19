@@ -140,15 +140,40 @@ window.requestNotificationPermission = function() {
     Notification.requestPermission().then(function (permission) {
         if (permission === "granted") {
             console.log("Notification permission granted.");
-            // Si on utilise Firebase JS SDK pour le front-end, on génère le token ici
-            // Pour l'instant on utilise le Service Worker Standard Web Push
-            // On peut s'abonner au pushManager
+            // Demander la localisation pour les prières
+            updateUserLocation();
+            
             navigator.serviceWorker.ready.then(function(registration) {
-                // Nécessite une clé VAPID publique pour le Web Push standard
-                // Registration pushManager logic here
+                // Initialiser FCM ou Web Push ici
             });
         }
     });
+};
+
+window.updateUserLocation = function() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            
+            // Récupérer CSRF token
+            const csrfMatch = document.cookie.match(/csrftoken=([^;]+)/);
+            const csrf = csrfMatch ? csrfMatch[1] : '';
+            
+            fetch('/api/profil/update-location/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf
+                },
+                body: JSON.stringify({ latitude: lat, longitude: lng, timezone: tz })
+            }).then(res => res.json()).then(data => console.log('Location updated'))
+              .catch(err => console.error('Erreur loc:', err));
+        }, function(err) {
+            console.log("Geolocation error:", err);
+        });
+    }
 };
 
 // ── AJAX FAVORIS ──

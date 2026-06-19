@@ -181,7 +181,10 @@ class Profile(models.Model):
     date_expiration = models.DateField(null=True, blank=True)
     type_soutien = models.CharField(max_length=20, choices=[('DON', 'Don'), ('ABO', 'Abonnement')], null=True)
     fcm_token = models.CharField(max_length=255, blank=True, null=True, help_text="Jeton Firebase Cloud Messaging pour les notifications push")
-    
+    latitude = models.FloatField(blank=True, null=True, help_text="Latitude pour le calcul des heures de prières")
+    longitude = models.FloatField(blank=True, null=True, help_text="Longitude pour le calcul des heures de prières")
+    fuseau_horaire = models.CharField(max_length=50, blank=True, null=True, help_text="Ex: Africa/Dakar")
+
     # Préférences de notifications
     notif_prieres = models.BooleanField(default=True, help_text="Recevoir les rappels de prière")
     notif_wird = models.BooleanField(default=True, help_text="Recevoir les rappels du wird quotidien")

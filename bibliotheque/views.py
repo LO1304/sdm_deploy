@@ -1109,3 +1109,23 @@ def update_notif_pref(request):
         return JsonResponse({"status": "error", "message": "Préférence invalide"}, status=400)
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+@login_required
+@require_POST
+def update_location(request):
+    """Mise à jour de la localisation de l'utilisateur pour l'Adhan."""
+    try:
+        data = json.loads(request.body)
+        lat = data.get('latitude')
+        lng = data.get('longitude')
+        tz = data.get('timezone')
+        if lat is not None and lng is not None:
+            request.user.profile.latitude = float(lat)
+            request.user.profile.longitude = float(lng)
+            if tz:
+                request.user.profile.fuseau_horaire = tz
+            request.user.profile.save(update_fields=['latitude', 'longitude', 'fuseau_horaire'])
+            return JsonResponse({'status': 'success'})
+        return JsonResponse({'status': 'error', 'message': 'Données manquantes'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)

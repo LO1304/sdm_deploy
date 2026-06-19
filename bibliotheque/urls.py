@@ -64,6 +64,7 @@ urlpatterns = [
     path('notifications/', views.notifications_list, name='notifications'),
     path('api/notifications/read/', views.mark_notifications_read, name='mark_notifications_read'),
     path('api/profil/update-notif-pref/', views.update_notif_pref, name='update_notif_pref'),
+    path('api/profil/update-location/', views.update_location, name='update_location'),
 ]
 
 # Gestion des fichiers média et statiques en développement
