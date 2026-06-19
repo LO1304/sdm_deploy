@@ -11,20 +11,20 @@
     
     <!-- Calligraphie Arabe ou Formule Personnalisée -->
     {% if session.zikr_personnalise %}
-    <div style="margin: 20px auto; padding: 20px 30px; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.2); border-radius: 20px; max-width: 500px; position: relative; overflow: hidden;">
+    <div style="margin: 10px auto; padding: 10px 15px; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.2); border-radius: 15px; max-width: 500px; position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(212,175,55,0.06), transparent 70%);"></div>
-        <p style="font-family: 'Amiri', serif; font-size: 32px; font-weight: 700; color: #ffd700; text-align: center; line-height: 1.8; text-shadow: 0 0 30px rgba(212,175,55,0.3); margin: 0; position: relative; z-index: 1;">
+        <p style="font-family: 'Amiri', serif; font-size: 24px; font-weight: 700; color: #ffd700; text-align: center; line-height: 1.5; text-shadow: 0 0 30px rgba(212,175,55,0.3); margin: 0; position: relative; z-index: 1;">
             {{ session.zikr_personnalise|linebreaksbr }}
         </p>
     </div>
     {% elif session.zikr and session.zikr.texte_arabe %}
-    <div style="margin: 20px auto; padding: 20px 30px; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.2); border-radius: 20px; max-width: 400px; position: relative; overflow: hidden;">
+    <div style="margin: 10px auto; padding: 10px 15px; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.2); border-radius: 15px; max-width: 400px; position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(212,175,55,0.06), transparent 70%);"></div>
-        <p style="font-family: 'Amiri', serif; font-size: 36px; font-weight: 700; color: #ffd700; direction: rtl; text-align: center; line-height: 1.8; text-shadow: 0 0 30px rgba(212,175,55,0.3); margin: 0; position: relative; z-index: 1;">
+        <p style="font-family: 'Amiri', serif; font-size: 28px; font-weight: 700; color: #ffd700; direction: rtl; text-align: center; line-height: 1.5; text-shadow: 0 0 30px rgba(212,175,55,0.3); margin: 0; position: relative; z-index: 1;">
             {{ session.zikr.texte_arabe }}
         </p>
         {% if session.zikr.transcription %}
-        <p style="color: rgba(255,255,255,0.5); font-size: 13px; font-style: italic; margin-top: 10px; position: relative; z-index: 1;">{{ session.zikr.transcription }}</p>
+        <p style="color: rgba(255,255,255,0.5); font-size: 12px; font-style: italic; margin-top: 5px; position: relative; z-index: 1;">{{ session.zikr.transcription }}</p>
         {% endif %}
     </div>
     {% elif session.zikr %}
@@ -33,15 +33,15 @@
 
     <!-- ACTIONS DE L'UTILISATEUR -->
     {% if user.is_authenticated %}
-    <div style="text-align: center; margin-top: 10px; margin-bottom: 40px;">
-        <div style="font-size: 24px; color: white; margin-bottom: 15px;">
+    <div style="text-align: center; margin-top: 5px; margin-bottom: 20px;">
+        <div style="font-size: 20px; color: white; margin-bottom: 10px;">
             Votre contribution : <span id="personal-counter" style="color: var(--gold); font-weight: bold;">{{ ma_participation.contribution|default:0 }}</span>
         </div>
         
-        <button id="btn-zikr" style="width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, var(--gold) 0%, #b8860b 100%); border: none; color: var(--bg-dark); font-size: 36px; cursor: pointer; box-shadow: 0 10px 30px rgba(212,175,55,0.4); margin-bottom: 20px; transition: transform 0.1s;">
+        <button id="btn-zikr" style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, var(--gold) 0%, #b8860b 100%); border: none; color: var(--bg-dark); font-size: 28px; cursor: pointer; box-shadow: 0 10px 30px rgba(212,175,55,0.4); margin-bottom: 10px; transition: transform 0.1s;">
             <i class="fas fa-hand-holding-heart"></i>
         </button>
-        <p style="color: var(--dim); font-size: 14px;">Appuyez pour compter</p>
+        <p style="color: var(--dim); font-size: 12px; margin-bottom: 0;">Appuyez pour compter</p>
     </div>
     {% else %}
     <div style="text-align: center; margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
@@ -52,20 +52,20 @@
 </div>
 
     <!-- LE COMPTEUR GLOBAL -->
-    <div class="global-counter-card" style="background: var(--card-bg); border: 2px solid var(--gold); border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 30px; box-shadow: 0 0 20px rgba(212,175,55,0.2);">
-        <h3 style="color: var(--text-light); margin-top: 0;">Objectif de la Communauté</h3>
-        <div style="font-size: 48px; font-weight: bold; color: var(--gold); font-family: monospace; margin: 10px 0;" id="global-counter">
+    <div class="global-counter-card" style="background: var(--card-bg); border: 2px solid var(--gold); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 0 20px rgba(212,175,55,0.2);">
+        <h3 style="color: var(--text-light); margin-top: 0; font-size: 16px;">Objectif de la Communauté</h3>
+        <div style="font-size: 32px; font-weight: bold; color: var(--gold); font-family: monospace; margin: 5px 0;" id="global-counter">
             {{ session.compteur_actuel }}
         </div>
-        <div style="color: var(--dim); font-size: 14px;">Sur {{ session.objectif_global }} Zikrs</div>
+        <div style="color: var(--dim); font-size: 12px;">Sur {{ session.objectif_global }} Zikrs</div>
         
-        <div class="progress-container" style="background: rgba(255,255,255,0.05); border-radius: 10px; height: 12px; margin-top: 20px; overflow: hidden;">
+        <div class="progress-container" style="background: rgba(255,255,255,0.05); border-radius: 10px; height: 10px; margin-top: 10px; overflow: hidden;">
             {% widthratio session.compteur_actuel session.objectif_global 100 as percentage %}
             <div class="progress-bar" id="global-progress" style="background: linear-gradient(90deg, #b8860b, #ffd700); height: 100%; width: {% if percentage|add:"0" > 100 %}100{% else %}{{ percentage }}{% endif %}%; transition: width 0.5s;"></div>
         </div>
 
         <!-- BOUTON DE PARTAGE -->
-        <button onclick="shareSession()" style="margin-top: 20px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.5); color: var(--gold); padding: 10px 24px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-size: 15px; display: inline-flex; align-items: center; gap: 8px;">
+        <button onclick="shareSession()" style="margin-top: 10px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.5); color: var(--gold); padding: 8px 16px; border-radius: 15px; cursor: pointer; transition: all 0.3s; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
             <i class="fas fa-share-nodes"></i> Inviter à participer
         </button>
         <script>
