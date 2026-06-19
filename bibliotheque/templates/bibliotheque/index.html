@@ -612,10 +612,25 @@
                 <div class="w-8 h-8 rounded-full bg-black/20 border border-gold-500/20 flex items-center justify-center mb-5">
                     <i class="fa-solid fa-quote-left text-xs text-gold-400"></i>
                 </div>
+                
+                {% if contenu.verset.arabe %}
                 <div class="text-center font-arabic text-3xl md:text-5xl text-white leading-loose md:leading-relaxed text-shadow-glow py-2 px-2" dir="rtl">
-                    {{ contenu.verset_du_jour|default:"بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ" }}
+                    {{ contenu.verset.arabe }}
                 </div>
-                <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+                {% endif %}
+                
+                <div class="mt-4 text-center">
+                    <p class="text-sm md:text-base font-medium text-white/80 leading-relaxed italic px-4">
+                        "{{ contenu.verset.francais|default:'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ' }}"
+                    </p>
+                    {% if contenu.verset.ref %}
+                    <p class="mt-3 text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] text-gold-400/80">
+                        {{ contenu.verset.ref }}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
                     <div class="inline-block px-4 py-1.5 rounded-full border border-gold-400/30 bg-black/20 text-[9px] font-bold uppercase tracking-widest text-gold-400">
                         Verset du Jour
                     </div>
@@ -629,18 +644,24 @@
             <div class="flex flex-col gap-6 w-full h-full lg:col-span-1">
                 <!-- Rappel Card -->
                 <div class="glass rounded-[28px] p-6 md:p-8 border border-white/5 relative flex-1 flex flex-col justify-center">
-                    <p class="text-[13px] md:text-base font-medium text-white/70 leading-relaxed text-center">
-                        {{ contenu.rappel_dujour|default:"La sagesse est une lumière pour le cœur de celui qui cherche la vérité chaque jour." }}
+                    <p class="text-[13px] md:text-base font-medium text-white/80 leading-relaxed text-center">
+                        {{ contenu.rappel.francais|default:"La sagesse est une lumière..." }}
                     </p>
+                    {% if contenu.rappel.ref %}
+                    <p class="mt-2 text-[10px] font-bold uppercase tracking-widest text-center text-gold-500/60">{{ contenu.rappel.ref }}</p>
+                    {% endif %}
                     <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mt-6 mb-4"></div>
-                    <p class="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-center text-white/30">Rappel</p>
+                    <p class="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-center text-white/30">Hadith du Jour</p>
                 </div>
 
                 <!-- Beuyitt Card -->
                 <div class="glass rounded-[28px] p-6 md:p-8 border border-white/5 relative flex-1 flex flex-col justify-center">
                     <p class="text-sm md:text-[15px] italic font-medium text-white/80 leading-relaxed text-center font-serif px-2">
-                        "{{ contenu.beuyit_du_jour|default:'La poésie divine nourrit l\'âme du croyant sincère, l\'élevant vers son Seigneur.' }}"
+                        "{{ contenu.beuyit.francais|default:'La poésie divine nourrit l\'âme...' }}"
                     </p>
+                    {% if contenu.beuyit.ref %}
+                    <p class="mt-2 text-[10px] font-bold uppercase tracking-widest text-center text-gold-500/60">{{ contenu.beuyit.ref }}</p>
+                    {% endif %}
                     <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-gold-500/50 to-transparent mx-auto mt-6 mb-4"></div>
                     <p class="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-center text-white/30">Beuyitt du Jour</p>
                 </div>
@@ -1006,13 +1027,29 @@
     
     /* ═══ SHARE CONTENU DU JOUR ═══ */
     window.shareDailyContent = function() {
-        const verset = `{{ contenu.verset_du_jour|escapejs|default:"بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ" }}`;
-        const rappel = `{{ contenu.rappel_dujour|escapejs|default:"La sagesse est une lumière pour le cœur de celui qui cherche la vérité chaque jour." }}`;
-        const ref = `{{ contenu.beuyit_du_jour|escapejs|default:"" }}`;
+        const ar = `{{ contenu.verset.arabe|escapejs|default:'' }}`;
+        const fr = `{{ contenu.verset.francais|escapejs|default:'' }}`;
+        const vRef = `{{ contenu.verset.ref|escapejs|default:'' }}`;
+        const hadith = `{{ contenu.rappel.francais|escapejs|default:'' }}`;
+        const hRef = `{{ contenu.rappel.ref|escapejs|default:'' }}`;
+        const beuyit = `{{ contenu.beuyit.francais|escapejs|default:'' }}`;
+        const bRef = `{{ contenu.beuyit.ref|escapejs|default:'' }}`;
         
-        let text = `*Verset du jour*\n\n"${verset}"\n\n`;
-        if(ref) text += `_(${ref})_\n\n`;
-        text += `*Rappel* : ${rappel}\n\n`;
+        let text = `*Verset du jour*\n\n`;
+        if (ar) text += `${ar}\n`;
+        if (fr) text += `"${fr}"\n`;
+        if (vRef) text += `_— ${vRef}_\n\n`;
+
+        if (hadith) {
+            text += `*Hadith*\n"${hadith}"\n`;
+            if (hRef) text += `_— ${hRef}_\n\n`;
+        }
+
+        if (beuyit) {
+            text += `*Beuyitt*\n"${beuyit}"\n`;
+            if (bRef) text += `_— ${bRef}_\n\n`;
+        }
+
         text += `📱 Téléchargez l'application SDM Premium pour plus de contenus quotidiens !`;
 
         if (navigator.share) {

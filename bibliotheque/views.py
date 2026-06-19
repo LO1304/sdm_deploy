@@ -77,7 +77,25 @@ def home(request):
         count = tous_les_contenus.count()
         if count > 0:
             index = jour_annee % count
-            contenu = tous_les_contenus[index]
+            raw_contenu = tous_les_contenus[index]
+            
+            # Helper pour parser les textes avec "\n\n" et "\n— "
+            def parse_text(text):
+                parts = text.split('\n— ')
+                main_text = parts[0]
+                ref = parts[1] if len(parts) > 1 else ""
+                
+                sub_parts = main_text.split('\n\n')
+                ar = sub_parts[0] if len(sub_parts) > 1 else ""
+                fr = sub_parts[1] if len(sub_parts) > 1 else sub_parts[0]
+                
+                return {'arabe': ar, 'francais': fr, 'ref': ref}
+
+            contenu = {
+                'verset': parse_text(raw_contenu.verset_du_jour),
+                'beuyit': parse_text(raw_contenu.beuyit_du_jour),
+                'rappel': parse_text(raw_contenu.rappel_dujour),
+            }
     khassida = Khassida.objects.all()
     zikrs = Zikr.objects.all()
     recents_khassidas = Khassida.objects.order_by('-id')[:6]
