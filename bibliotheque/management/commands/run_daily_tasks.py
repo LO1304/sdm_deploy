@@ -7,18 +7,20 @@ from django.contrib.auth.models import User
 import firebase_admin
 from firebase_admin import credentials, messaging
 
-MASALIKOUL_DJINANE_VERSES = [
-    "Le repentir est une obligation immédiate pour tout pécheur.",
-    "Purifie ton cœur de l'ostentation et de l'orgueil.",
-    "La meilleure des provisions est la crainte pieuse (Taqwa).",
-    "Consacre ton temps à l'évocation d'Allah (Zikr).",
-    "L'amour du Prophète (PSL) est la clé de la réussite.",
-    "Garde le silence sauf pour dire du bien.",
-    "Pardonne à ceux qui t'ont fait du tort.",
-    "La patience dans les épreuves est une lumière.",
-    "Ne méprise aucun musulman, car le secret d'Allah peut être en lui.",
-    "Sois constant dans tes prières à l'heure."
-]
+import json
+from django.conf import settings
+
+def load_massalikoul_verses():
+    json_path = os.path.join(settings.BASE_DIR, 'bibliotheque', 'data', 'massalikoul_djinane.json')
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return [item['texte'] for item in data if 'texte' in item]
+    except Exception as e:
+        print(f"Erreur chargement Massalikoul Djinane: {e}")
+        return ["Le repentir est une obligation immédiate pour tout pécheur."]
+
+MASALIKOUL_DJINANE_VERSES = load_massalikoul_verses()
 
 class Command(BaseCommand):
     help = "Tâche quotidienne : Contenu du jour, Zikr du jeudi, Notifications"
@@ -33,10 +35,10 @@ class Command(BaseCommand):
         verse = MASALIKOUL_DJINANE_VERSES[verse_index]
         ContenuDuJour.objects.create(
             verset_du_jour=f"{verse}",
-            beuyit_du_jour="Tiré de Masalikoul Djinane",
+            beuyit_du_jour="Massalikoul Djinane (Itinéraires du Paradis)",
             rappel_dujour="Méditez sur ces paroles de Cheikh Ahmadou Bamba aujourd'hui."
         )
-        self.stdout.write(f"Contenu du jour généré pour le jour {day_of_year} de l'année (verset {verse_index + 1}).")
+        self.stdout.write(f"Contenu du jour généré pour le jour {day_of_year} de l'année (verset {verse_index + 1}/{len(MASALIKOUL_DJINANE_VERSES)}).")
 
         # 2. VÉRIFIER SI C'EST JEUDI
         today = datetime.now(timezone.utc)
