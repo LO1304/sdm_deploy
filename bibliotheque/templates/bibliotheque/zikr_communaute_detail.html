@@ -31,86 +31,86 @@
     <p style="color: var(--dim);">{{ session.zikr.titre }}</p>
     {% endif %}
 
-    <!-- BOUTON DE PARTAGE -->
-    <button onclick="shareSession()" style="margin-top: 10px; margin-bottom: 20px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.5); color: var(--gold); padding: 10px 24px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-size: 15px; display: inline-flex; align-items: center; gap: 8px;">
-        <i class="fas fa-share-nodes"></i> Inviter à participer
-    </button>
-    <script>
-        function shareSession() {
-            const shareData = {
-                title: '{{ session.titre|escapejs }}',
-                text: "Rejoignez-moi pour cette session de Zikr communautaire et atteignons ensemble l'objectif de {{ session.objectif_global }} !",
-                url: window.location.href
+    <!-- ACTIONS DE L'UTILISATEUR -->
+    {% if user.is_authenticated %}
+    <div style="text-align: center; margin-top: 10px; margin-bottom: 40px;">
+        <div style="font-size: 24px; color: white; margin-bottom: 15px;">
+            Votre contribution : <span id="personal-counter" style="color: var(--gold); font-weight: bold;">{{ ma_participation.contribution|default:0 }}</span>
+        </div>
+        
+        <button id="btn-zikr" style="width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, var(--gold) 0%, #b8860b 100%); border: none; color: var(--bg-dark); font-size: 36px; cursor: pointer; box-shadow: 0 10px 30px rgba(212,175,55,0.4); margin-bottom: 20px; transition: transform 0.1s;">
+            <i class="fas fa-hand-holding-heart"></i>
+        </button>
+        <p style="color: var(--dim); font-size: 14px;">Appuyez pour compter</p>
+    </div>
+    {% else %}
+    <div style="text-align: center; margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
+        <p style="color: var(--text-light); margin-bottom: 15px;">Connectez-vous pour participer à cette session et entrer dans le classement.</p>
+        <a href="{% url 'login' %}?next={{ request.path }}" class="btn-primary" style="background: var(--gold); color: var(--bg-dark); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold;">Se connecter</a>
+    </div>
+    {% endif %}
+</div>
+
+    <!-- LE COMPTEUR GLOBAL -->
+    <div class="global-counter-card" style="background: var(--card-bg); border: 2px solid var(--gold); border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 30px; box-shadow: 0 0 20px rgba(212,175,55,0.2);">
+        <h3 style="color: var(--text-light); margin-top: 0;">Objectif de la Communauté</h3>
+        <div style="font-size: 48px; font-weight: bold; color: var(--gold); font-family: monospace; margin: 10px 0;" id="global-counter">
+            {{ session.compteur_actuel }}
+        </div>
+        <div style="color: var(--dim); font-size: 14px;">Sur {{ session.objectif_global }} Zikrs</div>
+        
+        <div class="progress-container" style="background: rgba(255,255,255,0.05); border-radius: 10px; height: 12px; margin-top: 20px; overflow: hidden;">
+            {% widthratio session.compteur_actuel session.objectif_global 100 as percentage %}
+            <div class="progress-bar" id="global-progress" style="background: linear-gradient(90deg, #b8860b, #ffd700); height: 100%; width: {% if percentage|add:"0" > 100 %}100{% else %}{{ percentage }}{% endif %}%; transition: width 0.5s;"></div>
+        </div>
+
+        <!-- BOUTON DE PARTAGE -->
+        <button onclick="shareSession()" style="margin-top: 20px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.5); color: var(--gold); padding: 10px 24px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-size: 15px; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fas fa-share-nodes"></i> Inviter à participer
+        </button>
+        <script>
+            function shareSession() {
+                const shareData = {
+                    title: '{{ session.titre|escapejs }}',
+                    text: "Rejoignez-moi pour cette session de Zikr communautaire et atteignons ensemble l'objectif de {{ session.objectif_global }} !",
+                    url: window.location.href
+                }
+                if (navigator.share) {
+                    navigator.share(shareData).catch(err => console.error('Erreur de partage:', err));
+                } else {
+                    navigator.clipboard.writeText(shareData.url).then(() => {
+                        alert('Lien copié dans le presse-papier !');
+                    });
+                }
             }
-            if (navigator.share) {
-                navigator.share(shareData).catch(err => console.error('Erreur de partage:', err));
-            } else {
-                navigator.clipboard.writeText(shareData.url).then(() => {
-                    alert('Lien copié dans le presse-papier !');
-                });
-            }
-        }
-    </script>
-</div>
-
-<!-- LE COMPTEUR GLOBAL -->
-<div class="global-counter-card" style="background: var(--card-bg); border: 2px solid var(--gold); border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 30px; box-shadow: 0 0 20px rgba(212,175,55,0.2);">
-    <h3 style="color: var(--text-light); margin-top: 0;">Objectif de la Communauté</h3>
-    <div style="font-size: 48px; font-weight: bold; color: var(--gold); font-family: monospace; margin: 10px 0;" id="global-counter">
-        {{ session.compteur_actuel }}
+        </script>
     </div>
-    <div style="color: var(--dim); font-size: 14px;">Sur {{ session.objectif_global }} Zikrs</div>
-    
-    <div class="progress-container" style="background: rgba(255,255,255,0.05); border-radius: 10px; height: 12px; margin-top: 20px; overflow: hidden;">
-        {% widthratio session.compteur_actuel session.objectif_global 100 as percentage %}
-        <div class="progress-bar" id="global-progress" style="background: linear-gradient(90deg, #b8860b, #ffd700); height: 100%; width: {% if percentage|add:"0" > 100 %}100{% else %}{{ percentage }}{% endif %}%; transition: width 0.5s;"></div>
-    </div>
-</div>
 
-<!-- ACTIONS DE L'UTILISATEUR -->
-{% if user.is_authenticated %}
-<div style="text-align: center; margin-bottom: 40px;">
-    <div style="font-size: 24px; color: white; margin-bottom: 10px;">
-        Votre contribution : <span id="personal-counter" style="color: var(--gold); font-weight: bold;">{{ ma_participation.contribution|default:0 }}</span>
-    </div>
-    
-    <button id="btn-zikr" style="width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, var(--gold) 0%, #b8860b 100%); border: none; color: var(--bg-dark); font-size: 36px; cursor: pointer; box-shadow: 0 10px 30px rgba(212,175,55,0.4); margin-bottom: 20px; transition: transform 0.1s;">
-        <i class="fas fa-hand-holding-heart"></i>
-    </button>
-    <p style="color: var(--dim);">Cliquez pour ajouter +1</p>
-</div>
-{% else %}
-<div style="text-align: center; margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
-    <p style="color: var(--text-light); margin-bottom: 15px;">Connectez-vous pour participer à cette session et entrer dans le classement.</p>
-    <a href="{% url 'login' %}?next={{ request.path }}" class="btn-primary" style="background: var(--gold); color: var(--bg-dark); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold;">Se connecter</a>
-</div>
-{% endif %}
+    <!-- LE CLASSEMENT (LEADERBOARD) -->
+    <h2 style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 10px; margin-bottom: 20px;">
+        <i class="fas fa-trophy"></i> Top Contributeurs
+    </h2>
 
-<!-- LE CLASSEMENT (LEADERBOARD) -->
-<h2 style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 10px; margin-bottom: 20px;">
-    <i class="fas fa-trophy"></i> Top Contributeurs
-</h2>
-
-<div class="leaderboard" style="background: var(--card-bg); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
-    {% for part in classement %}
-    <div style="display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.02); {% if part.utilisateur == request.user %}background: rgba(212,175,55,0.1);{% endif %}">
-        <div style="width: 40px; font-weight: bold; font-size: 18px; color: {% if forloop.counter == 1 %}#ffd700{% elif forloop.counter == 2 %}#c0c0c0{% elif forloop.counter == 3 %}#cd7f32{% else %}var(--dim){% endif %};">
-            #{{ forloop.counter }}
+    <div class="leaderboard" style="background: var(--card-bg); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 100px;">
+        {% for part in classement %}
+        <div style="display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.02); {% if part.utilisateur == request.user %}background: rgba(212,175,55,0.1);{% endif %}">
+            <div style="width: 40px; font-weight: bold; font-size: 18px; color: {% if forloop.counter == 1 %}#ffd700{% elif forloop.counter == 2 %}#c0c0c0{% elif forloop.counter == 3 %}#cd7f32{% else %}var(--dim){% endif %};">
+                #{{ forloop.counter }}
+            </div>
+            <div style="flex-grow: 1; color: white;">
+                {{ part.utilisateur.username }}
+                {% if part.utilisateur == request.user %}
+                    <span style="font-size: 10px; background: var(--gold); color: black; padding: 2px 6px; border-radius: 4px; margin-left: 10px;">VOUS</span>
+                {% endif %}
+            </div>
+            <div style="font-weight: bold; color: var(--gold);">
+                {{ part.contribution }}
+            </div>
         </div>
-        <div style="flex-grow: 1; color: white;">
-            {{ part.utilisateur.username }}
-            {% if part.utilisateur == request.user %}
-                <span style="font-size: 10px; background: var(--gold); color: black; padding: 2px 6px; border-radius: 4px; margin-left: 10px;">VOUS</span>
-            {% endif %}
-        </div>
-        <div style="font-weight: bold; color: var(--gold);">
-            {{ part.contribution }}
-        </div>
+        {% empty %}
+        <div style="padding: 20px; text-align: center; color: var(--dim);">Aucun participant pour le moment. Soyez le premier !</div>
+        {% endfor %}
     </div>
-    {% empty %}
-    <div style="padding: 20px; text-align: center; color: var(--dim);">Aucun participant pour le moment. Soyez le premier !</div>
-    {% endfor %}
-</div>
 
 {% if user.is_authenticated %}
 <script>
