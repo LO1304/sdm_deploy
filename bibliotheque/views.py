@@ -962,9 +962,26 @@ def dashboard(request):
 
 # ── ZIKR COMMUNAUTAIRE ──
 
+from django.db.models import Q
+
 def zikr_communaute_list(request):
-    sessions = SessionZikrCommunautaire.objects.filter(est_actif=True).order_by('-date_debut')
-    return render(request, 'bibliotheque/zikr_communaute_list.html', {'sessions': sessions})
+    # Les sessions publiques sont celles qui n'ont pas de formule personnalisée
+    sessions = SessionZikrCommunautaire.objects.filter(
+        est_actif=True
+    ).filter(
+        Q(zikr_personnalise__isnull=True) | Q(zikr_personnalise__exact='')
+    ).order_by('-date_debut')
+
+    mes_sessions = []
+    if request.user.is_authenticated:
+        mes_sessions = SessionZikrCommunautaire.objects.filter(
+            Q(createur=request.user) | Q(participations__utilisateur=request.user)
+        ).distinct().order_by('-est_actif', '-date_debut')
+
+    return render(request, 'bibliotheque/zikr_communaute_list.html', {
+        'sessions': sessions,
+        'mes_sessions': mes_sessions
+    })
 
 @login_required
 def zikr_communaute_create(request):
@@ -1025,7 +1042,13 @@ def api_zikr_communaute_add(request):
             
         # Mise à jour globale
         session.compteur_actuel += count_to_add
-        session.save(update_fields=['compteur_actuel'])
+        
+        # Vérification si l'objectif est atteint
+        if session.compteur_actuel >= session.objectif_global:
+            session.compteur_actuel = session.objectif_global
+            session.est_actif = False
+            
+        session.save(update_fields=['compteur_actuel', 'est_actif'])
         
         # Mise à jour personnelle
         participation, _ = ParticipationZikrCommunautaire.objects.get_or_create(
