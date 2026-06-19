@@ -338,7 +338,7 @@
                             <div class="item-subtitle">Objectif : {{ item.objectif_par_defaut }} fois</div>
                         </a>
                     </div>
-                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
+                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" onclick="toggleFavoriAjax(event, this)">
                         <i class="fa-solid fa-star"></i>
                     </a>
                     <a href="{% url 'zikr_compteur' item.id %}" style="text-decoration:none">
@@ -358,7 +358,7 @@
                             <div class="item-subtitle">Consulter le Wird</div>
                         </a>
                     </div>
-                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
+                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" onclick="toggleFavoriAjax(event, this)">
                         <i class="fa-solid fa-star"></i>
                     </a>
                     <a href="{% url 'lire_wird' item.slug %}" style="text-decoration:none">
@@ -377,7 +377,7 @@
                             <div class="item-subtitle">{{ item.auteur_voix|default:item.get_categorie_display|default:"Audio" }}</div>
                         </a>
                     </div>
-                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
+                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" onclick="toggleFavoriAjax(event, this)">
                         <i class="fa-solid fa-star"></i>
                     </a>
                     <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
@@ -397,7 +397,7 @@
                         </a>
                     </div>
                     <div style="display:flex; gap:6px; flex-shrink:0;">
-                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
+                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" onclick="toggleFavoriAjax(event, this)">
                             <i class="fa-solid fa-star"></i>
                         </a>
                         <a href="{% url 'proxy_pdf' categorie item.id %}" download class="fav-btn" onclick="registerDownload(event, '{{ categorie }}', {{ item.id }})">
@@ -425,7 +425,7 @@
                         </a>
                     </div>
                     <div style="display:flex; gap:6px; flex-shrink:0;">
-                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
+                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" onclick="toggleFavoriAjax(event, this)">
                             <i class="fa-solid fa-star"></i>
                         </a>
                         <a href="{% url 'proxy_pdf' categorie item.id %}" download class="fav-btn" onclick="registerDownload(event, '{{ categorie }}', {{ item.id }})">

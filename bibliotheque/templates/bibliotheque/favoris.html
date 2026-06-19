@@ -228,7 +228,7 @@
         <div class="fav-grid">
             {% for item in items %}
             {% if item %}
-            <div class="fav-card" style="animation-delay: {{ forloop.counter0 }}5ms">
+            <div class="fav-card" style="animation-delay: {{ forloop.counter0 }}5ms; cursor: pointer;" onclick="window.location.href='{% if type == 'Zikr' %}{% url 'zikr_compteur' item.id %}{% elif type == 'Wird' %}{% url 'lire_wird' item.slug %}{% else %}{% url 'lire_pdf' type|lower item.id %}{% endif %}'">
                 <div class="fav-icon {% if type == 'Son' %}green{% elif type == 'Wird' %}white{% endif %}">
                     {% if type == 'Son' %}<i class="fa-solid fa-headphones"></i>
                     {% elif type == 'Khassida' %}<i class="fa-solid fa-book-open"></i>
@@ -245,7 +245,7 @@
                         {% else %}Collection SDM{% endif %}
                     </div>
                 </div>
-                <a href="{% url 'toggle_favori' type|lower item.id %}" class="fav-heart" title="Retirer">
+                <a href="{% url 'toggle_favori' type|lower item.id %}" class="fav-heart" title="Retirer" onclick="toggleFavoriAjax(event, this, true)">
                     <i class="fa-solid fa-heart"></i>
                 </a>
             </div>
