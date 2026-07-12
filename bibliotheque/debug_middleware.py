@@ -6,7 +6,11 @@ class GlobalDebugMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        return self.get_response(request)
+        try:
+            return self.get_response(request)
+        except Exception as e:
+            error_msg = traceback.format_exc()
+            return HttpResponse(f"<pre>Global Catch-All: {str(e)}\n\n{error_msg}</pre>", status=500)
 
     def process_exception(self, request, exception):
         error_msg = traceback.format_exc()
