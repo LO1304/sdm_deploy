@@ -67,9 +67,6 @@ def _check_premium_access(request, content_obj):
 
 def home(request):
     """Page d'accueil avec horaires de prières et contenus récents."""
-    import traceback
-    from django.http import HttpResponse
-    try:
     import datetime
     
     # Automatisation du contenu du jour : rotation quotidienne
@@ -164,112 +161,14 @@ def home(request):
         'wird_mahuz': wird_mahuz,
         'wird_en_cours': wird_en_cours,
         'total_zikr_user': total_zikr_user,
-    try:
-        import datetime
-        
-        # Automatisation du contenu du jour : rotation quotidienne
-        tous_les_contenus = ContenuDuJour.objects.order_by('id')
-        contenu = None
-        if tous_les_contenus.exists():
-            jour_annee = datetime.date.today().timetuple().tm_yday
-            count = tous_les_contenus.count()
-            if count > 0:
-                index = jour_annee % count
-                raw_contenu = tous_les_contenus[index]
-                
-                # Helper pour parser les textes avec "\n\n" et "\n— "
-                def parse_text(text):
-                    parts = text.split('\n— ')
-                    main_text = parts[0]
-                    ref = parts[1] if len(parts) > 1 else ""
-                    
-                    sub_parts = main_text.split('\n\n')
-                    ar = sub_parts[0] if len(sub_parts) > 1 else ""
-                    fr = sub_parts[1] if len(sub_parts) > 1 else sub_parts[0]
-                    
-                    return {'arabe': ar, 'francais': fr, 'ref': ref}
-
-                contenu = {
-                    'verset': parse_text(raw_contenu.verset_du_jour),
-                    'beuyit': parse_text(raw_contenu.beuyit_du_jour),
-                    'rappel': parse_text(raw_contenu.rappel_dujour),
-                }
-        khassida = Khassida.objects.all()
-        zikrs = Zikr.objects.all()
-        recents_khassidas = Khassida.objects.order_by('-id')[:6]
-
-        config = ParametresPriere.objects.first()
-        
-        # Données réservées aux utilisateurs connectés
-        derniere_lecture = None
-        dernier_son = None
-        wird_mahuz = None
-        wird_en_cours = None
-        total_zikr_user = 0
-        niveau_spirituel = 1
-        total_ecoutes = 0
-        
-        if request.user.is_authenticated:
-            # Récupérer la dernière lecture pour le bouton "Reprendre"
-            derniere_progression = ProgressionLecture.objects.filter(user=request.user).order_by('-derniere_mise_a_jour').first()
-            if derniere_progression and derniere_progression.content_object:
-                derniere_lecture = {
-                    'obj': derniere_progression.content_object,
-                    'page': derniere_progression.page_actuelle,
-                    'categorie': 'coran' if isinstance(derniere_progression.content_object, Coran) else 'khassida'
-                }
-
-            # Récupérer le dernier son écouté depuis l'historique
-            try:
-                son_ct = ContentType.objects.get_for_model(Son)
-                dernier_historique_son = Historique.objects.filter(user=request.user, content_type=son_ct).order_by('-date_lecture').first()
-                dernier_son = dernier_historique_son.content_object if dernier_historique_son else None
-            except Exception:
-                dernier_son = None
-                
-            # --- NOUVEAUTÉS DASHBOARD MOBILE ---
-            # 1. Total Zikr
-            zikr_aggr = HistoriqueZikr.objects.filter(user=request.user).aggregate(total=Sum('nombre_total'))
-            total_zikr_user = zikr_aggr['total'] or 0
-            
-            # 2. Wird Mahuz
-            wird_mahuz = Wird.objects.filter(titre__icontains='Mahuz').first()
-            # Vérifier si l'utilisateur a un Wird en cours (via ProgressionWird qui garde l'état courant)
-            wird_en_cours = ProgressionWird.objects.filter(user=request.user).order_by('-derniere_modif').first()
-            
-            # 3. Calcul du niveau spirituel (Basé sur les interactions : Zikr + Ecoutes + Lectures)
-            total_ecoutes = Historique.objects.filter(user=request.user).count()
-            points = (total_zikr_user // 100) + total_ecoutes
-            niveau_spirituel = 1 + (points // 50)  # Niveau 1 par défaut, augmente tous les 50 "points"
-
-        # Nombre de contenus pour les badges
-        total_khassidas = Khassida.objects.count()
-        total_corans = Coran.objects.count()
-        total_sons = Son.objects.count()
-        total_zikrs = Zikr.objects.count()
-
-        context = {
-            'contenu': contenu,
-            'khassidas': khassida,
-            'recents': recents_khassidas,
-            'zikrs': zikrs,
-            'config': config,
-            'derniere_lecture': derniere_lecture,
-            'dernier_son': dernier_son,
-            'wird_mahuz': wird_mahuz,
-            'wird_en_cours': wird_en_cours,
-            'total_zikr_user': total_zikr_user,
-            'niveau_spirituel': niveau_spirituel,
-            'total_ecoutes': total_ecoutes,
-            'total_khassidas': total_khassidas,
-            'total_corans': total_corans,
-            'total_sons': total_sons,
-            'total_zikrs': total_zikrs,
-        }
-        return render(request, 'bibliotheque/index.html', context)
-    except Exception as e:
-        error_msg = traceback.format_exc()
-        return HttpResponse(f"<pre>Error in home: {str(e)}\n\n{error_msg}</pre>", status=500)
+        'niveau_spirituel': niveau_spirituel,
+        'total_ecoutes': total_ecoutes,
+        'total_khassidas': total_khassidas,
+        'total_corans': total_corans,
+        'total_sons': total_sons,
+        'total_zikrs': total_zikrs,
+    }
+    return render(request, 'bibliotheque/index.html', context)
 
 def liste_dynamique(request, categorie):
     """Affiche les listes filtrées par catégorie (Khassida, Coran, etc.)."""
