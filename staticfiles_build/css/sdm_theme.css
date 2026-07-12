@@ -8,7 +8,49 @@
     --gold: #d4af37; 
     --gold-lt: #f5dc6e; 
     --gold-dk: #9a7520;
-    --bg: #030408;
+    --bg: var(--theme-bg);
+
+    /* --- THEMES DYNAMIQUES --- */
+    /* THEME DEFAUT (SOMBRE & DORE) */
+    --theme-bg: #040B08;
+    --theme-bg-lighter: #081711;
+    --theme-bg-lightest: #0C2219;
+    --theme-surface: rgba(12, 34, 25, 0.45);
+    --theme-light: rgba(255, 255, 255, 0.05);
+    --theme-accent-light: #FDE047;
+    --theme-accent: #D4AF37;
+    --theme-accent-dark: #A68A28;
+    --theme-glass-bg: rgba(12, 34, 25, 0.5);
+    --theme-nav-bg: rgba(8, 23, 17, 0.85);
+    --theme-glow: rgba(212, 175, 55, 0.3);
+}
+
+/* THEME VERT ISLAMIQUE */
+[data-theme="vert"] {
+    --theme-bg: #01140A;
+    --theme-bg-lighter: #022312;
+    --theme-bg-lightest: #03361C;
+    --theme-surface: rgba(2, 35, 18, 0.5);
+    --theme-accent-light: #6EE7B7; 
+    --theme-accent: #10B981; 
+    --theme-accent-dark: #047857;
+    --theme-glass-bg: rgba(2, 35, 18, 0.6);
+    --theme-nav-bg: rgba(1, 20, 10, 0.85);
+    --theme-glow: rgba(16, 185, 129, 0.3);
+}
+
+/* THEME BLEU NUIT */
+[data-theme="bleu"] {
+    --theme-bg: #020617; 
+    --theme-bg-lighter: #0F172A; 
+    --theme-bg-lightest: #1E293B; 
+    --theme-surface: rgba(15, 23, 42, 0.5);
+    --theme-accent-light: #7DD3FC; 
+    --theme-accent: #38BDF8; 
+    --theme-accent-dark: #0284C7;
+    --theme-glass-bg: rgba(15, 23, 42, 0.6);
+    --theme-nav-bg: rgba(2, 6, 23, 0.85);
+    --theme-glow: rgba(56, 189, 248, 0.3);
 }
 
 /* Base Resets */
@@ -54,7 +96,7 @@ body::after {
 
 /* Glassmorphism Classes */
 .glass {
-    background: rgba(12, 34, 25, 0.5);
+    background: var(--theme-glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -84,7 +126,7 @@ body::after {
     max-width: 420px;
     height: 65px;
     border-radius: 99px;
-    background: rgba(8, 23, 17, 0.85); /* Deep emerald glass */
+    background: var(--theme-nav-bg); /* Deep emerald glass */
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
     border: 1px solid rgba(255, 255, 255, 0.08);

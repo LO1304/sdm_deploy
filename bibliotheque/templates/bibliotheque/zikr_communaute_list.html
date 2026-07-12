@@ -93,9 +93,16 @@
             <span>{% if percentage|add:"0" > 100 %}100{% else %}{{ percentage }}{% endif %}%</span>
         </div>
         
-        <a href="{% url 'zikr_communaute_detail' session.id %}" class="btn-block" style="display: block; text-align: center; background: rgba(212,175,55,0.1); color: var(--gold); padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold;">
-            Participer <i class="fas fa-arrow-right"></i>
-        </a>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'zikr_communaute_detail' session.id %}" class="btn-block" style="flex: 1; text-align: center; background: rgba(212,175,55,0.1); color: var(--gold); padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                Participer <i class="fas fa-arrow-right"></i>
+            </a>
+            {% if session.createur == request.user %}
+            <a href="{% url 'zikr_communaute_delete' session.id %}" onclick="return confirm('Voulez-vous vraiment supprimer cette session ?');" style="background: rgba(255,0,0,0.1); color: #ff4444; padding: 10px 15px; border-radius: 8px; text-decoration: none; display: flex; align-items: center; justify-content: center;" title="Supprimer">
+                <i class="fas fa-trash"></i>
+            </a>
+            {% endif %}
+        </div>
     </div>
     {% empty %}
     <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--dim);">

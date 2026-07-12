@@ -4,6 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import uuid
 
 
 # ── KHASSIDA ──
@@ -52,9 +53,16 @@ class SessionZikrCommunautaire(models.Model):
     objectif_global = models.PositiveIntegerField(default=100000, help_text="Objectif total à atteindre par la communauté")
     compteur_actuel = models.PositiveIntegerField(default=0, help_text="Progression actuelle")
     createur = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sessions_creees')
+    est_prive = models.BooleanField(default=False)
+    code_partage = models.CharField(max_length=50, blank=True, null=True, unique=True)
     date_debut = models.DateTimeField(auto_now_add=True)
     date_fin = models.DateTimeField(blank=True, null=True)
     est_actif = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if self.est_prive and not self.code_partage:
+            self.code_partage = str(uuid.uuid4())[:8]
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ['-date_debut']

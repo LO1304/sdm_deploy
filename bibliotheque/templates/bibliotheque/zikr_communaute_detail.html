@@ -81,10 +81,15 @@
         </button>
         <script>
             function shareSession() {
+                let shareUrl = window.location.href.split('?')[0]; // Enlever les paramètres existants
+                {% if session.est_prive %}
+                shareUrl += '?code={{ session.code_partage }}';
+                {% endif %}
+                
                 const shareData = {
                     title: '{{ session.titre|escapejs }}',
                     text: "Rejoignez-moi pour cette session de Zikr communautaire et atteignons ensemble l'objectif de {{ session.objectif_global }} !",
-                    url: window.location.href
+                    url: shareUrl
                 }
                 if (navigator.share) {
                     navigator.share(shareData).catch(err => console.error('Erreur de partage:', err));

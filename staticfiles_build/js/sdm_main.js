@@ -88,3 +88,140 @@ function initToasts() {
         });
     }, 5000);
 }
+
+/* ── THEMES LOGIC ── */
+window.setTheme = function(themeName) {
+    // Save to localStorage
+    if (themeName) {
+        localStorage.setItem('sdm_theme', themeName);
+        document.documentElement.setAttribute('data-theme', themeName);
+    } else {
+        localStorage.removeItem('sdm_theme');
+        document.documentElement.removeAttribute('data-theme');
+    }
+    
+    // Update active state on buttons if they exist
+    updateThemeUI(themeName);
+};
+
+function updateThemeUI(themeName) {
+    const currentTheme = themeName !== undefined ? themeName : (localStorage.getItem('sdm_theme') || '');
+    const buttons = document.querySelectorAll('.theme-btn');
+    
+    buttons.forEach(btn => {
+        if (btn.getAttribute('data-theme-id') === currentTheme) {
+            btn.classList.add('ring-2', 'ring-white');
+            btn.classList.remove('opacity-70');
+        } else {
+            btn.classList.remove('ring-2', 'ring-white');
+            btn.classList.add('opacity-70');
+        }
+    });
+}
+
+// Initialize Theme UI on load
+document.addEventListener("DOMContentLoaded", function () {
+    updateThemeUI();
+    
+    // Check Notification Permission on load if logged in (or we could trigger this via button)
+    if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+        // Optionnel : On peut afficher un custom toast demandant d'activer les notifications
+        console.log("Notifications can be enabled.");
+    }
+});
+
+// ── WEB PUSH NOTIFICATIONS ──
+window.requestNotificationPermission = function() {
+    if (!("Notification" in window)) {
+        alert("Ce navigateur ne supporte pas les notifications desktop.");
+        return;
+    }
+    
+    Notification.requestPermission().then(function (permission) {
+        if (permission === "granted") {
+            console.log("Notification permission granted.");
+            // Demander la localisation pour les prières
+            updateUserLocation();
+            
+            navigator.serviceWorker.ready.then(function(registration) {
+                // Initialiser FCM ou Web Push ici
+            });
+        }
+    });
+};
+
+window.updateUserLocation = function() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            
+            // Récupérer CSRF token
+            const csrfMatch = document.cookie.match(/csrftoken=([^;]+)/);
+            const csrf = csrfMatch ? csrfMatch[1] : '';
+            
+            fetch('/api/profil/update-location/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf
+                },
+                body: JSON.stringify({ latitude: lat, longitude: lng, timezone: tz })
+            }).then(res => res.json()).then(data => console.log('Location updated'))
+              .catch(err => console.error('Erreur loc:', err));
+        }, function(err) {
+            console.log("Geolocation error:", err);
+        });
+    }
+};
+
+// ── AJAX FAVORIS ──
+window.toggleFavoriAjax = function(event, element, removeCard = false) {
+    event.preventDefault();
+    if(event.stopPropagation) event.stopPropagation();
+
+    const url = element.getAttribute('href');
+    if (!url) return;
+    
+    // Feedback visuel immédiat (animation du bouton)
+    const icon = element.querySelector('i');
+    element.style.transform = 'scale(0.8)';
+    setTimeout(() => { element.style.transform = ''; }, 200);
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'added') {
+            if (icon) {
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+                icon.style.color = 'var(--gold)';
+            }
+        } else if (data.status === 'removed') {
+            if (removeCard) {
+                // Sur la page Favoris, on retire la carte
+                const card = element.closest('.fav-card');
+                if (card) {
+                    card.style.transition = 'all 0.4s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => card.remove(), 400);
+                }
+            } else {
+                // Sur les autres pages, on grise l'icône
+                if (icon) {
+                    icon.classList.remove('fa-solid');
+                    icon.classList.add('fa-regular');
+                    icon.style.color = ''; // Remet la couleur par défaut
+                }
+            }
+        }
+    })
+    .catch(err => console.error('Erreur AJAX favoris:', err));
+};

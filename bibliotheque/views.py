@@ -990,6 +990,7 @@ def zikr_communaute_create(request):
         zikr_id = request.POST.get('zikr_id')
         zikr_personnalise = request.POST.get('zikr_personnalise')
         objectif = int(request.POST.get('objectif_global', 100000))
+        est_prive = request.POST.get('est_prive') == 'on'
         
         if titre and (zikr_id or zikr_personnalise):
             zikr = None
@@ -1001,7 +1002,8 @@ def zikr_communaute_create(request):
                 zikr=zikr,
                 zikr_personnalise=zikr_personnalise,
                 objectif_global=objectif,
-                createur=request.user
+                createur=request.user,
+                est_prive=est_prive
             )
             return redirect('zikr_communaute_list')
     
@@ -1010,6 +1012,14 @@ def zikr_communaute_create(request):
 
 def zikr_communaute_detail(request, id):
     session = get_object_or_404(SessionZikrCommunautaire, id=id)
+    
+    if session.est_prive:
+        code = request.GET.get('code')
+        if code != session.code_partage and session.createur != request.user:
+            has_participated = request.user.is_authenticated and session.participations.filter(utilisateur=request.user).exists()
+            if not has_participated:
+                return redirect('zikr_communaute_list')
+
     # Récupérer les top 50 participants
     classement = session.participations.all()[:50]
     
@@ -1048,12 +1058,17 @@ def api_zikr_communaute_add(request):
         if not session.est_actif:
             return JsonResponse({'status': 'error', 'message': 'Session terminée'})
             
+        remaining = session.objectif_global - session.compteur_actuel
+        if remaining <= 0:
+            return JsonResponse({'status': 'error', 'message': 'Session terminée'})
+            
+        actual_count_to_add = min(count_to_add, remaining)
+        
         # Mise à jour globale
-        session.compteur_actuel += count_to_add
+        session.compteur_actuel += actual_count_to_add
         
         # Vérification si l'objectif est atteint
         if session.compteur_actuel >= session.objectif_global:
-            session.compteur_actuel = session.objectif_global
             session.est_actif = False
             
         session.save(update_fields=['compteur_actuel', 'est_actif'])
@@ -1063,7 +1078,7 @@ def api_zikr_communaute_add(request):
             session=session,
             utilisateur=request.user
         )
-        participation.contribution += count_to_add
+        participation.contribution += actual_count_to_add
         participation.save(update_fields=['contribution', 'date_derniere_contribution'])
         
         return JsonResponse({
