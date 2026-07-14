@@ -62,16 +62,18 @@
         <h3 style="margin: 0 0 10px 0; color: white;">Jukki {{ jukki.numero }}</h3>
         
         {% if jukki.est_termine %}
-            <div style="color: #00C851; font-size: 12px; margin-bottom: 10px;">
-                <i class="fas fa-check-circle"></i> Terminé par<br><b>{{ jukki.utilisateur.username }}</b>
+            <div style="color: #00C851; font-size: 11px; margin-bottom: 10px;">
+                <i class="fas fa-check-circle"></i> Terminé par<br>
+                <b style="display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px;">{{ jukki.utilisateur.username }}</b>
             </div>
             {% if jukki.utilisateur == request.user %}
             <a href="{% url 'kaamil_lire_jukki' jukki.id %}" style="display: block; width: 100%; background: rgba(0, 200, 81, 0.1); color: #00C851; border: 1px solid #00C851; padding: 5px; border-radius: 5px; text-decoration: none; font-size: 12px; margin-bottom: 5px;">Relire</a>
             {% endif %}
             
         {% elif jukki.utilisateur %}
-            <div style="color: #ffbb33; font-size: 12px; margin-bottom: 10px;">
-                <i class="fas fa-book-reader"></i> Pris par<br><b>{{ jukki.utilisateur.username }}</b>
+            <div style="color: #ffbb33; font-size: 11px; margin-bottom: 10px;">
+                <i class="fas fa-book-reader"></i> Pris par<br>
+                <b style="display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px;">{{ jukki.utilisateur.username }}</b>
             </div>
             
             {% if jukki.utilisateur == request.user %}
