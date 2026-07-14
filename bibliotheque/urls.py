@@ -57,6 +57,16 @@ urlpatterns = [
     path('communaute/zikr/<int:id>/supprimer/', views.zikr_communaute_delete, name='zikr_communaute_delete'),
     path('api/communaute/zikr/add/', views.api_zikr_communaute_add, name='api_zikr_communaute_add'),
     
+    # KAAMIL BI (Khatm du Coran)
+    path('kaamil/', views.kaamil_list, name='kaamil_list'),
+    path('kaamil/creer/', views.kaamil_create, name='kaamil_create'),
+    path('kaamil/<int:id>/', views.kaamil_detail, name='kaamil_detail'),
+    path('kaamil/<int:id>/supprimer/', views.kaamil_delete, name='kaamil_delete'),
+    path('kaamil/jukki/<int:jukki_id>/prendre/', views.kaamil_prendre_jukki, name='kaamil_prendre_jukki'),
+    path('kaamil/jukki/<int:jukki_id>/terminer/', views.kaamil_terminer_jukki, name='kaamil_terminer_jukki'),
+    path('kaamil/jukki/<int:jukki_id>/liberer/', views.kaamil_liberer_jukki, name='kaamil_liberer_jukki'),
+    path('kaamil/lire/<int:jukki_id>/', views.kaamil_lire_jukki, name='kaamil_lire_jukki'),
+    
     # Tâches quotidiennes (Cron Gratuit)
     path('api/trigger-daily-tasks/', views.trigger_daily_tasks, name='trigger_daily_tasks'),
     

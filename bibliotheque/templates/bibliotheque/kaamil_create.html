@@ -1,0 +1,39 @@
+{% extends 'bibliotheque/layout.html' %}
+
+{% block title %}Créer une Session Kaamil{% endblock %}
+
+{% block content %}
+<div class="content-header" style="text-align: center; margin-bottom: 2rem;">
+    <a href="{% url 'kaamil_list' %}" style="color: var(--dim); text-decoration: none; display: block; margin-bottom: 15px;">
+        <i class="fas fa-arrow-left"></i> Retour aux sessions Kaamil
+    </a>
+    <h1 style="color: var(--gold); font-size: 28px; margin-bottom: 10px;">Nouvelle Session KAAMIL BI</h1>
+    <p style="color: var(--dim);">Lancez la lecture collective des 30 Jukki du Coran.</p>
+</div>
+
+<div class="form-container" style="max-width: 500px; margin: 0 auto; background: var(--card-bg); padding: 30px; border-radius: 15px; border: 1px solid rgba(212,175,55,0.1);">
+    <form method="POST" action="{% url 'kaamil_create' %}">
+        {% csrf_token %}
+        
+        <div class="field-group" style="margin-bottom: 20px;">
+            <label for="titre" style="display: block; color: var(--gold); margin-bottom: 8px;">Titre de l'événement</label>
+            <input type="text" id="titre" name="titre" required placeholder="Ex: Khatm du Vendredi - Magal" 
+                   style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white;">
+        </div>
+
+        <div class="field-group" style="margin-bottom: 30px;">
+            <label style="display: flex; align-items: center; gap: 10px; color: white; cursor: pointer; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                <input type="checkbox" id="est_prive" name="est_prive" style="width: 20px; height: 20px; accent-color: var(--gold);">
+                <div>
+                    <strong style="color: var(--gold); display: block;">Session Privée (Sur invitation uniquement)</strong>
+                    <span style="color: var(--dim); font-size: 12px;">Cette session n'apparaîtra pas dans la liste publique. Seuls ceux qui ont le lien pourront y participer.</span>
+                </div>
+            </label>
+        </div>
+
+        <button type="submit" class="btn-block" style="width: 100%; background: var(--gold); color: var(--bg-dark); font-weight: bold; padding: 15px; border-radius: 8px; border: none; cursor: pointer; font-size: 16px;">
+            Lancer la session
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -37,7 +37,8 @@ def trigger_daily_tasks(request):
 
 from .models import (
     Khassida, Coran, Zikr, Wird, EtapeWird, HistoriqueWird, ProgressionWird, Son, Profile, HistoriqueConsultation, Favori, Telechargement, ContenuDuJour, ParametresPriere, ProgressionLecture, Historique, HistoriqueZikr, ProgressionGenerale,
-    SessionZikrCommunautaire, ParticipationZikrCommunautaire, Notification
+    SessionZikrCommunautaire, ParticipationZikrCommunautaire, Notification,
+    SessionKaamil, JukkiKaamil
 )
 from .forms import ModernRegisterForm
 
@@ -1090,6 +1091,141 @@ def api_zikr_communaute_add(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
+# ── KAAMIL BI (Khatm du Coran) ──
+
+def kaamil_list(request):
+    sessions = SessionKaamil.objects.filter(
+        est_actif=True,
+        est_prive=False
+    ).order_by('-date_debut')
+
+    mes_sessions = []
+    if request.user.is_authenticated:
+        mes_sessions = SessionKaamil.objects.filter(
+            Q(createur=request.user) | Q(jukkis__utilisateur=request.user)
+        ).distinct().order_by('-est_actif', '-date_debut')
+
+    return render(request, 'bibliotheque/kaamil_list.html', {
+        'sessions': sessions,
+        'mes_sessions': mes_sessions
+    })
+
+@login_required
+def kaamil_create(request):
+    if request.method == 'POST':
+        titre = request.POST.get('titre')
+        est_prive = request.POST.get('est_prive') == 'on'
+        
+        if titre:
+            SessionKaamil.objects.create(
+                titre=titre,
+                createur=request.user,
+                est_prive=est_prive
+            )
+            return redirect('kaamil_list')
+    
+    return render(request, 'bibliotheque/kaamil_create.html')
+
+def kaamil_detail(request, id):
+    session = get_object_or_404(SessionKaamil, id=id)
+    
+    if session.est_prive:
+        code = request.GET.get('code')
+        if code != session.code_partage and session.createur != request.user:
+            has_participated = request.user.is_authenticated and session.jukkis.filter(utilisateur=request.user).exists()
+            if not has_participated:
+                return redirect('kaamil_list')
+
+    jukkis = session.jukkis.all().order_by('numero')
+    
+    # Calculs pour la barre de progression
+    total_jukkis = 30
+    jukkis_termines = jukkis.filter(est_termine=True).count()
+    jukkis_pris = jukkis.filter(utilisateur__isnull=False).count()
+    
+    return render(request, 'bibliotheque/kaamil_detail.html', {
+        'session': session,
+        'jukkis': jukkis,
+        'jukkis_termines': jukkis_termines,
+        'jukkis_pris': jukkis_pris,
+        'total_jukkis': total_jukkis
+    })
+
+@login_required
+def kaamil_delete(request, id):
+    session = get_object_or_404(SessionKaamil, id=id)
+    if session.createur == request.user:
+        session.delete()
+    return redirect('kaamil_list')
+
+@require_POST
+def kaamil_prendre_jukki(request, jukki_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Non connecté'}, status=403)
+        
+    jukki = get_object_or_404(JukkiKaamil, id=jukki_id)
+    
+    if jukki.utilisateur is not None:
+        return JsonResponse({'status': 'error', 'message': 'Ce Jukki est déjà pris'})
+        
+    jukki.utilisateur = request.user
+    from django.utils import timezone
+    jukki.date_prise = timezone.now()
+    jukki.save()
+    
+    return JsonResponse({'status': 'success', 'message': f'Vous avez pris le Jukki {jukki.numero}'})
+
+@require_POST
+def kaamil_terminer_jukki(request, jukki_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Non connecté'}, status=403)
+        
+    jukki = get_object_or_404(JukkiKaamil, id=jukki_id)
+    
+    if jukki.utilisateur != request.user:
+        return JsonResponse({'status': 'error', 'message': "Vous n'avez pas pris ce Jukki"})
+        
+    jukki.est_termine = True
+    from django.utils import timezone
+    jukki.date_fin = timezone.now()
+    jukki.save()
+    
+    # Vérifier si toute la session est terminée
+    if not jukki.session.jukkis.filter(est_termine=False).exists():
+        jukki.session.est_actif = False
+        jukki.session.save()
+        
+    return JsonResponse({'status': 'success', 'message': f'Jukki {jukki.numero} terminé !'})
+
+@require_POST
+def kaamil_liberer_jukki(request, jukki_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Non connecté'}, status=403)
+        
+    jukki = get_object_or_404(JukkiKaamil, id=jukki_id)
+    
+    if jukki.utilisateur != request.user and jukki.session.createur != request.user:
+        return JsonResponse({'status': 'error', 'message': "Non autorisé"})
+        
+    jukki.utilisateur = None
+    jukki.est_termine = False
+    jukki.date_prise = None
+    jukki.date_fin = None
+    jukki.save()
+    
+    # Réactiver la session au cas où
+    if not jukki.session.est_actif:
+        jukki.session.est_actif = True
+        jukki.session.save()
+        
+    return JsonResponse({'status': 'success'})
+
+def kaamil_lire_jukki(request, jukki_id):
+    jukki = get_object_or_404(JukkiKaamil, id=jukki_id)
+    # The actual quran content fetching is done via JS in the template using the Al Quran Cloud API
+    return render(request, 'bibliotheque/kaamil_lire.html', {
+        'jukki': jukki
+    })
 
 # ── NOTIFICATIONS ──
 

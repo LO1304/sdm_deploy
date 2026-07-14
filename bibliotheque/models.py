@@ -368,3 +368,41 @@ class ProgressionWird(models.Model):
 
     class Meta:
         unique_together = ('user', 'wird')
+
+# ── KAAMIL BI (Khatm du Coran) ──
+class SessionKaamil(models.Model):
+    titre = models.CharField(max_length=200, default="KAAMIL BI - Lecture du Coran", help_text="Titre de la session")
+    createur = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sessions_kaamil_creees')
+    est_prive = models.BooleanField(default=False, help_text="Si coché, accessible uniquement par lien")
+    code_partage = models.CharField(max_length=50, blank=True, null=True, unique=True)
+    date_debut = models.DateTimeField(auto_now_add=True)
+    est_actif = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if self.est_prive and not self.code_partage:
+            self.code_partage = str(uuid.uuid4())[:8]
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.titre} ({'Privé' if self.est_prive else 'Public'})"
+
+class JukkiKaamil(models.Model):
+    session = models.ForeignKey(SessionKaamil, on_delete=models.CASCADE, related_name='jukkis')
+    numero = models.IntegerField(help_text="Numéro du Jukki (1 à 30)")
+    utilisateur = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='jukkis_pris')
+    est_termine = models.BooleanField(default=False)
+    date_prise = models.DateTimeField(null=True, blank=True)
+    date_fin = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('session', 'numero')
+        ordering = ['numero']
+
+    def __str__(self):
+        return f"Jukki {self.numero} - {self.session.titre}"
+
+@receiver(post_save, sender=SessionKaamil)
+def creer_les_30_jukkis(sender, instance, created, **kwargs):
+    if created:
+        jukkis = [JukkiKaamil(session=instance, numero=i) for i in range(1, 31)]
+        JukkiKaamil.objects.bulk_create(jukkis)

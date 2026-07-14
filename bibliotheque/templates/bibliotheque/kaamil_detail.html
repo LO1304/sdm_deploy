@@ -1,0 +1,157 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}{{ session.titre }}{% endblock %}
+
+{% block content %}
+<div class="content-header" style="text-align: center; margin-bottom: 2rem;">
+    <a href="{% url 'kaamil_list' %}" style="color: var(--dim); text-decoration: none; display: block; margin-bottom: 15px;">
+        <i class="fas fa-arrow-left"></i> Retour
+    </a>
+    <h1 style="color: var(--gold); font-size: 28px; margin-bottom: 5px;">{{ session.titre }}</h1>
+    
+    {% if not session.est_actif %}
+    <div style="display: inline-block; background: rgba(255,255,255,0.1); color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 10px;">
+        <i class="fas fa-check-circle" style="color: #00C851;"></i> KAAMIL TERMINÉ !
+    </div>
+    {% endif %}
+
+    {% if not user.is_authenticated %}
+    <div style="background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); padding: 15px; border-radius: 10px; margin: 20px 0;">
+        <p style="color: var(--text-light); margin-bottom: 10px;">Connectez-vous pour participer à ce Kaamil.</p>
+        <a href="{% url 'login' %}?next={{ request.path }}" class="btn-primary" style="background: var(--gold); color: var(--bg-dark); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold;">Se connecter</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- LE COMPTEUR GLOBAL -->
+<div class="global-counter-card" style="background: var(--card-bg); border: 2px solid var(--gold); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 30px; box-shadow: 0 0 20px rgba(212,175,55,0.2);">
+    <h3 style="color: var(--text-light); margin-top: 0; font-size: 16px;">Progression du Kaamil</h3>
+    <div style="font-size: 32px; font-weight: bold; color: var(--gold); font-family: monospace; margin: 5px 0;">
+        {{ jukkis_termines }} / 30
+    </div>
+    <div style="color: var(--dim); font-size: 12px;">({{ jukkis_pris }} Jukkis attribués au total)</div>
+    
+    <div class="progress-container" style="background: rgba(255,255,255,0.05); border-radius: 10px; height: 10px; margin-top: 10px; overflow: hidden;">
+        {% widthratio jukkis_termines 30 100 as percentage %}
+        <div class="progress-bar" style="background: linear-gradient(90deg, #b8860b, #ffd700); height: 100%; width: {{ percentage }}%; transition: width 0.5s;"></div>
+    </div>
+
+    <!-- BOUTON DE PARTAGE -->
+    <button onclick="shareSession()" style="margin-top: 15px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.5); color: var(--gold); padding: 8px 16px; border-radius: 15px; cursor: pointer; transition: all 0.3s; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+        <i class="fas fa-share-nodes"></i> Inviter à participer
+    </button>
+</div>
+
+<!-- GRILLE DES 30 JUKKIS -->
+<div class="jukkis-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-bottom: 50px;">
+    {% for jukki in jukkis %}
+    <div class="jukki-card" style="
+        background: var(--card-bg); 
+        border: 2px solid 
+        {% if jukki.est_termine %}#00C851
+        {% elif jukki.utilisateur %}#ffbb33
+        {% else %}rgba(255,255,255,0.1){% endif %}; 
+        border-radius: 10px; 
+        padding: 15px; 
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    ">
+        <h3 style="margin: 0 0 10px 0; color: white;">Jukki {{ jukki.numero }}</h3>
+        
+        {% if jukki.est_termine %}
+            <div style="color: #00C851; font-size: 12px; margin-bottom: 10px;">
+                <i class="fas fa-check-circle"></i> Terminé par<br><b>{{ jukki.utilisateur.username }}</b>
+            </div>
+            {% if jukki.utilisateur == request.user %}
+            <a href="{% url 'kaamil_lire_jukki' jukki.id %}" style="display: block; width: 100%; background: rgba(0, 200, 81, 0.1); color: #00C851; border: 1px solid #00C851; padding: 5px; border-radius: 5px; text-decoration: none; font-size: 12px; margin-bottom: 5px;">Relire</a>
+            {% endif %}
+            
+        {% elif jukki.utilisateur %}
+            <div style="color: #ffbb33; font-size: 12px; margin-bottom: 10px;">
+                <i class="fas fa-book-reader"></i> Pris par<br><b>{{ jukki.utilisateur.username }}</b>
+            </div>
+            
+            {% if jukki.utilisateur == request.user %}
+            <a href="{% url 'kaamil_lire_jukki' jukki.id %}" style="display: block; width: 100%; background: rgba(212,175,55,0.2); color: var(--gold); border: 1px solid var(--gold); padding: 5px; border-radius: 5px; text-decoration: none; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Lire</a>
+            <button onclick="terminerJukki({{ jukki.id }})" style="width: 100%; background: #00C851; color: white; border: none; padding: 5px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Valider</button>
+            <button onclick="libererJukki({{ jukki.id }})" style="width: 100%; background: transparent; color: var(--dim); border: 1px solid var(--dim); padding: 5px; border-radius: 5px; cursor: pointer; font-size: 12px;">Annuler</button>
+            {% elif session.createur == request.user %}
+            <button onclick="libererJukki({{ jukki.id }})" style="width: 100%; background: transparent; color: var(--dim); border: 1px solid var(--dim); padding: 5px; border-radius: 5px; cursor: pointer; font-size: 12px;" title="Libérer en tant que créateur">Libérer</button>
+            {% endif %}
+            
+        {% else %}
+            <div style="color: var(--dim); font-size: 12px; margin-bottom: 10px;">
+                <i class="fas fa-lock-open"></i> Disponible
+            </div>
+            {% if user.is_authenticated %}
+            <button onclick="prendreJukki({{ jukki.id }})" style="width: 100%; background: var(--gold); color: black; border: none; padding: 5px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold;">Prendre</button>
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    function shareSession() {
+        let shareUrl = window.location.href.split('?')[0];
+        {% if session.est_prive %}
+        shareUrl += '?code={{ session.code_partage }}';
+        {% endif %}
+        
+        const shareData = {
+            title: '{{ session.titre|escapejs }}',
+            text: "Rejoignez-moi pour cette session de lecture du Coran (Kaamil) et prenons des Jukki !",
+            url: shareUrl
+        }
+        if (navigator.share) {
+            navigator.share(shareData).catch(err => console.error('Erreur:', err));
+        } else {
+            navigator.clipboard.writeText(shareData.url).then(() => {
+                alert('Lien copié dans le presse-papier !');
+            });
+        }
+    }
+
+    function csrfSafeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    function sendApiRequest(url) {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(err => alert("Erreur réseau"));
+    }
+
+    function prendreJukki(id) {
+        sendApiRequest(`/kaamil/jukki/${id}/prendre/`);
+    }
+
+    function terminerJukki(id) {
+        if(confirm("Confirmez-vous avoir terminé la lecture intégrale de ce Jukki ?")) {
+            sendApiRequest(`/kaamil/jukki/${id}/terminer/`);
+        }
+    }
+
+    function libererJukki(id) {
+        if(confirm("Voulez-vous vraiment libérer ce Jukki pour que quelqu'un d'autre le prenne ?")) {
+            sendApiRequest(`/kaamil/jukki/${id}/liberer/`);
+        }
+    }
+</script>
+{% endblock %}
