@@ -1,105 +1,77 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Leaderboard - Défi {{ defi.code_partage }}{% endblock %}
+{% block title %}Leaderboard - Defi {{ defi.code_partage }}{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto py-10 px-4 md:px-0">
-    <div class="text-center mb-10">
-        <div class="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wide mb-2">Défi Multijoueur</div>
-        <h1 class="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-2">Code: <span class="text-blue-600 font-mono">{{ defi.code_partage }}</span></h1>
-        <p class="text-gray-500 dark:text-gray-400">Créé par {{ defi.createur.username }} - Niveau {{ defi.niveau_choisi.numero }}</p>
+<div class="max-w-2xl mx-auto pb-8">
+
+    <!-- Header -->
+    <div class="glass rounded-[28px] overflow-hidden border border-white/5 shadow-2xl mb-6">
+        <div class="bg-gradient-to-r from-yellow-600/80 to-amber-700/80 p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute -top-16 -right-16 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
+            <div class="relative z-10 flex justify-between items-center">
+                <div>
+                    <p class="text-yellow-200/80 text-[10px] font-bold uppercase tracking-widest mb-1">Defi Multijoueur</p>
+                    <h1 class="text-3xl md:text-4xl font-black text-white">{{ defi.code_partage }}</h1>
+                    <p class="text-yellow-100/60 text-sm mt-1">Niveau {{ defi.niveau_choisi.numero }} — {{ defi.niveau_choisi.nom }}</p>
+                </div>
+                <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20">
+                    <i class="fa-solid fa-bolt text-3xl text-yellow-300"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Share -->
+        <div class="p-5 border-b border-white/5">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3">Partager le defi</p>
+            <a href="https://wa.me/?text={{ whatsapp_text|urlencode }}" target="_blank" 
+               class="w-full flex items-center justify-center gap-2 py-3 bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold rounded-2xl transition-all active:scale-95 text-sm shadow-lg shadow-[#25D366]/20">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                Envoyer via WhatsApp
+            </a>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="p-5">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-ranking-star text-yellow-400 text-xs"></i> Classement
+            </p>
+            
+            {% if participations %}
+            <div class="space-y-2">
+                {% for p in participations %}
+                <div class="glass rounded-xl p-4 border {% if forloop.first %}border-yellow-500/30 bg-yellow-500/5{% else %}border-white/5{% endif %} flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full {% if forloop.first %}bg-yellow-500/20 text-yellow-400{% elif forloop.counter == 2 %}bg-gray-400/20 text-gray-400{% elif forloop.counter == 3 %}bg-amber-700/20 text-amber-600{% else %}bg-white/5 text-white/40{% endif %} flex items-center justify-center font-black text-sm">
+                            {% if forloop.first %}<i class="fa-solid fa-crown text-xs"></i>{% else %}{{ forloop.counter }}{% endif %}
+                        </div>
+                        <span class="font-semibold text-white/80 text-sm">{{ p.utilisateur.username }}</span>
+                    </div>
+                    <span class="font-bold text-emerald-400 tabular-nums">{{ p.score }} pts</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <i class="fa-solid fa-users text-white/10 text-4xl mb-3"></i>
+                <p class="text-white/30 text-sm">Aucun participant pour le moment. Partagez le lien !</p>
+            </div>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        
-        <!-- Leaderboard -->
-        <div class="md:col-span-2">
-            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-                <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                    <h3 class="font-bold text-gray-800 dark:text-gray-200"><i class="fa-solid fa-ranking-star text-yellow-500 mr-2"></i> Classement</h3>
-                    <span class="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-gray-600 dark:text-gray-300">{{ participations.count }} joueurs</span>
-                </div>
-                
-                <ul class="divide-y divide-gray-100 dark:divide-gray-800">
-                    {% for p in participations %}
-                    <li class="px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                        <div class="flex items-center gap-4">
-                            <!-- Rang -->
-                            <div class="w-8 text-center font-black text-gray-400 dark:text-gray-500 text-lg">
-                                {% if forloop.counter == 1 %}
-                                    <i class="fa-solid fa-trophy text-yellow-400 text-xl"></i>
-                                {% elif forloop.counter == 2 %}
-                                    <i class="fa-solid fa-medal text-gray-400 text-xl"></i>
-                                {% elif forloop.counter == 3 %}
-                                    <i class="fa-solid fa-medal text-amber-600 text-xl"></i>
-                                {% else %}
-                                    #{{ forloop.counter }}
-                                {% endif %}
-                            </div>
-                            <!-- User -->
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-700 dark:text-blue-400 font-bold uppercase">
-                                    {{ p.utilisateur.username|make_list|first }}
-                                </div>
-                                <span class="font-bold text-gray-900 dark:text-white {% if p.utilisateur == request.user %}text-blue-600 dark:text-blue-400{% endif %}">
-                                    {{ p.utilisateur.username }}
-                                    {% if p.utilisateur == request.user %} (Vous){% endif %}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="font-black text-xl text-emerald-600 dark:text-emerald-400">
-                            {{ p.score }} pts
-                        </div>
-                    </li>
-                    {% empty %}
-                    <li class="px-6 py-10 text-center text-gray-500">Aucun joueur n'a encore participé.</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+    <!-- Play button if not played yet -->
+    {% if not a_deja_joue %}
+    <a href="{% url 'defi_play' defi.code_partage %}" class="block w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white text-center font-bold rounded-2xl shadow-lg shadow-emerald-600/20 transition-all active:scale-95 text-sm mb-4">
+        <i class="fa-solid fa-play mr-2"></i> Participer au Defi
+    </a>
+    {% endif %}
 
-        <!-- Actions -->
-        <div>
-            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-3xl p-6 border border-blue-100 dark:border-blue-800/30 sticky top-24">
-                <h3 class="font-bold text-blue-900 dark:text-blue-300 mb-4 text-center">Rejoindre la bataille</h3>
-                
-                {% if not a_deja_joue %}
-                <a href="{% url 'defi_play' defi.code_partage %}" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 text-center rounded-xl shadow-lg transition-all mb-4">
-                    <i class="fa-solid fa-play mr-2"></i> Jouer maintenant
-                </a>
-                {% else %}
-                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center mb-4 border border-emerald-500/30">
-                    <i class="fa-solid fa-check-circle text-emerald-500 text-2xl mb-2"></i>
-                    <p class="text-sm font-bold text-gray-800 dark:text-gray-200">Vous avez déjà joué !</p>
-                    <p class="text-xs text-gray-500">Attendez que vos amis terminent pour voir le résultat final.</p>
-                </div>
-                {% endif %}
-                
-                <hr class="border-blue-200 dark:border-blue-800/50 my-4">
-                
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 font-semibold">Inviter des amis :</p>
-                
-                <a href="https://api.whatsapp.com/send?text={{ whatsapp_text|urlencode }}" target="_blank" class="block w-full bg-[#25D366] hover:bg-[#1DA851] text-white font-bold py-3 text-center rounded-xl shadow transition-all mb-2">
-                    <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Partager sur WhatsApp
-                </a>
-                
-                <button onclick="copyLink()" class="block w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold py-3 text-center rounded-xl shadow-sm transition-all" id="copy-btn">
-                    <i class="fa-solid fa-copy mr-2"></i> Copier le lien
-                </button>
-            </div>
-        </div>
+    <div class="text-center">
+        <a href="{% url 'quiz_home' %}" class="text-sm text-white/40 hover:text-white/60 transition-colors">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Retour au Quizz
+        </a>
     </div>
 </div>
-
-<script>
-    function copyLink() {
-        navigator.clipboard.writeText(window.location.href).then(() => {
-            const btn = document.getElementById('copy-btn');
-            const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check text-emerald-500 mr-2"></i> Lien copié !';
-            setTimeout(() => { btn.innerHTML = originalHtml; }, 2000);
-        });
-    }
-</script>
 {% endblock %}

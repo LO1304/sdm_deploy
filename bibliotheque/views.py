@@ -1294,10 +1294,12 @@ def quiz_home(request):
     score, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
     score.verifier_niveau()
     niveaux = NiveauQuiz.objects.all().order_by('numero')
+    categories = CategorieQuiz.objects.all()
     
     context = {
         'score': score,
         'niveaux': niveaux,
+        'categories': categories,
         'defis_recents': ParticipationDefi.objects.filter(utilisateur=request.user).order_by('-date_participation')[:5]
     }
     return render(request, 'bibliotheque/quiz/quiz_home.html', context)
@@ -1330,6 +1332,33 @@ def quiz_play(request, niveau_id):
         
     context = {
         'niveau': niveau,
+        'questions_json': json.dumps(questions_data)
+    }
+    return render(request, 'bibliotheque/quiz/quiz_play.html', context)
+
+@login_required(login_url='login')
+def quiz_play_theme(request, categorie_id):
+    categorie = get_object_or_404(CategorieQuiz, id=categorie_id)
+    
+    questions = list(categorie.questions.all())
+    import random
+    random.shuffle(questions)
+    questions = questions[:10]
+    
+    questions_data = []
+    for q in questions:
+        choix = list(q.choix.all())
+        random.shuffle(choix)
+        questions_data.append({
+            'id': q.id,
+            'texte': q.texte,
+            'points': q.points,
+            'explication': q.explication,
+            'choix': [{'id': c.id, 'texte': c.texte, 'est_correct': c.est_correct} for c in choix]
+        })
+        
+    context = {
+        'theme': categorie,
         'questions_json': json.dumps(questions_data)
     }
     return render(request, 'bibliotheque/quiz/quiz_play.html', context)

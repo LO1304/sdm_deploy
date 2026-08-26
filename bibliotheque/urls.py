@@ -70,6 +70,7 @@ urlpatterns = [
     # QUIZZ ISLAMIQUE
     path('quiz/', views.quiz_home, name='quiz_home'),
     path('quiz/jouer/<int:niveau_id>/', views.quiz_play, name='quiz_play'),
+    path('quiz/jouer/theme/<int:categorie_id>/', views.quiz_play_theme, name='quiz_play_theme'),
     path('quiz/resultat/<int:score>/<int:total>/', views.quiz_result, name='quiz_result'),
     path('api/quiz/save-score/', views.api_quiz_save_score, name='api_quiz_save_score'),
     path('quiz/defi/creer/', views.defi_create, name='defi_create'),

@@ -1,31 +1,82 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Résultat - Quizz Islamique{% endblock %}
+{% block title %}Resultat - Quizz Islamique{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto py-16 px-4 md:px-0 text-center">
-    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden p-10 border border-emerald-500/30">
+<style>
+    @keyframes scoreCount { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes confetti { 0% { transform: translateY(0) rotate(0); opacity:1; } 100% { transform: translateY(-60px) rotate(360deg); opacity:0; } }
+    .score-anim { animation: scoreCount 0.8s cubic-bezier(0.16,1,0.3,1); }
+    .confetti-dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; animation: confetti 1.5s ease-out forwards; }
+</style>
+
+<div class="max-w-2xl mx-auto pb-8">
+    <div class="glass rounded-[32px] overflow-hidden border border-white/5 shadow-2xl relative">
         
-        <div class="w-32 h-32 mx-auto bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center mb-6">
-            <i class="fa-solid fa-star text-6xl text-yellow-400"></i>
+        <!-- Confetti dots for good scores -->
+        {% if score > 50 %}
+        <div class="confetti-dot bg-emerald-400" style="top:20%; left:15%; animation-delay:0.1s;"></div>
+        <div class="confetti-dot bg-yellow-400" style="top:10%; left:45%; animation-delay:0.3s;"></div>
+        <div class="confetti-dot bg-teal-400" style="top:25%; left:75%; animation-delay:0.2s;"></div>
+        <div class="confetti-dot bg-emerald-300" style="top:15%; left:60%; animation-delay:0.5s;"></div>
+        <div class="confetti-dot bg-yellow-300" style="top:30%; left:30%; animation-delay:0.4s;"></div>
+        {% endif %}
+
+        <!-- Header gradient -->
+        <div class="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-8 md:p-12 text-center relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-56 h-56 bg-white/5 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-16 -left-16 w-40 h-40 bg-emerald-400/10 rounded-full blur-2xl"></div>
+            
+            <div class="relative z-10">
+                {% if score >= 70 %}
+                <div class="w-24 h-24 mx-auto mb-6 bg-yellow-500/20 rounded-full flex items-center justify-center border-2 border-yellow-400/30 score-anim">
+                    <i class="fa-solid fa-trophy text-5xl text-yellow-300 drop-shadow-lg"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-black text-white mb-2">Excellent !</h1>
+                <p class="text-emerald-200/80">MashaAllah, vous avez une grande connaissance !</p>
+                {% elif score >= 40 %}
+                <div class="w-24 h-24 mx-auto mb-6 bg-emerald-500/20 rounded-full flex items-center justify-center border-2 border-emerald-400/30 score-anim">
+                    <i class="fa-solid fa-star text-5xl text-emerald-300 drop-shadow-lg"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-black text-white mb-2">Bien joue !</h1>
+                <p class="text-emerald-200/80">Continuez a apprendre, vous progressez bien !</p>
+                {% else %}
+                <div class="w-24 h-24 mx-auto mb-6 bg-white/10 rounded-full flex items-center justify-center border-2 border-white/20 score-anim">
+                    <i class="fa-solid fa-book-open text-5xl text-white/60 drop-shadow-lg"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-black text-white mb-2">Continuez !</h1>
+                <p class="text-emerald-200/80">Chaque erreur est une occasion d'apprendre</p>
+                {% endif %}
+            </div>
         </div>
-        
-        <h2 class="text-3xl font-black text-gray-800 dark:text-gray-100 mb-2">Partie Terminée !</h2>
-        <p class="text-gray-500 dark:text-gray-400 mb-8">Vous avez complété ce niveau.</p>
-        
-        <div class="bg-emerald-50 dark:bg-gray-700/50 rounded-2xl p-6 mb-8 border border-emerald-200 dark:border-emerald-800/50">
-            <p class="text-sm font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-1">Votre Score</p>
-            <p class="text-6xl font-black text-emerald-600 dark:text-emerald-400">{{ score }} <span class="text-3xl text-emerald-500/50">/ {{ total }}</span></p>
-        </div>
-        
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="{% url 'quiz_home' %}" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold py-3 px-8 rounded-full transition-all">
-                Retour aux Niveaux
-            </a>
-            <a href="{% url 'defi_create' %}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-emerald-500/30 transition-all">
-                Défier un ami <i class="fa-solid fa-user-group ml-2"></i>
-            </a>
+
+        <!-- Score display -->
+        <div class="p-8 md:p-10 text-center">
+            <div class="mb-8">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3">Votre Score</p>
+                <div class="flex items-baseline justify-center gap-2 score-anim">
+                    <span class="text-6xl md:text-7xl font-black text-white tabular-nums">{{ score }}</span>
+                    <span class="text-2xl font-bold text-white/30">/ {{ total }}</span>
+                </div>
+                <p class="text-white/40 text-sm mt-2">points</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <a href="{% url 'quiz_home' %}" class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-8 rounded-2xl shadow-lg shadow-emerald-600/20 transition-all active:scale-95 text-sm">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    Rejouer
+                </a>
+                <a href="{% url 'defi_create' %}" class="inline-flex items-center justify-center gap-2 glass border border-white/10 hover:border-yellow-500/30 text-white font-bold py-3.5 px-8 rounded-2xl transition-all active:scale-95 text-sm">
+                    <i class="fa-solid fa-user-group text-yellow-400"></i>
+                    Defier un ami
+                </a>
+                <a href="{% url 'home' %}" class="inline-flex items-center justify-center gap-2 glass border border-white/10 hover:border-white/20 text-white/60 font-bold py-3.5 px-8 rounded-2xl transition-all active:scale-95 text-sm">
+                    <i class="fa-solid fa-home"></i>
+                    Accueil
+                </a>
+            </div>
         </div>
     </div>
 </div>

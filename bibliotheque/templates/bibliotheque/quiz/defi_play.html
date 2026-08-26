@@ -1,48 +1,65 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Jouer - Défi {{ defi.code_partage }}{% endblock %}
+{% block title %}Jouer - Defi {{ defi.code_partage }}{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto py-10 px-4 md:px-0" id="quiz-container">
-    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden border border-blue-500/20">
+<style>
+    .choice-btn { transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
+    .choice-btn:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(16,185,129,0.5) !important; background: rgba(16,185,129,0.08) !important; }
+    .choice-btn:active:not(:disabled) { transform: scale(0.97); }
+    .choice-btn.correct { background: rgba(16,185,129,0.2) !important; border-color: rgba(16,185,129,0.6) !important; color: #34d399 !important; }
+    .choice-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: rgba(239,68,68,0.5) !important; color: #f87171 !important; }
+    .choice-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+    @keyframes slideIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .slide-in { animation: slideIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .timer-ring { transition: stroke-dashoffset 1s linear; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+    .shake { animation: shake 0.3s ease; }
+</style>
+
+<div class="max-w-3xl mx-auto pb-8" id="quiz-app">
+
+    <div class="glass rounded-[28px] overflow-hidden border border-white/5 shadow-2xl">
         
-        <!-- Header / Progress -->
-        <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-6 text-white flex justify-between items-center">
-            <div>
-                <p class="text-blue-200 text-sm font-bold uppercase tracking-wider mb-1">Défi Multijoueur</p>
-                <h2 class="text-2xl font-black">Code: {{ defi.code_partage }}</h2>
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-yellow-600/80 to-amber-700/80 p-5 md:p-6 flex justify-between items-center relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
+            <div class="relative z-10">
+                <p class="text-yellow-200/80 text-[10px] font-bold uppercase tracking-widest mb-1">Defi {{ defi.code_partage }}</p>
+                <h2 class="text-xl md:text-2xl font-black text-white">{{ defi.niveau_choisi.nom }}</h2>
             </div>
-            <div class="text-right">
-                <div class="text-3xl font-black" id="timer">15</div>
-                <p class="text-blue-200 text-xs">secondes</p>
+            <div class="relative z-10 flex flex-col items-center">
+                <svg width="56" height="56" class="transform -rotate-90">
+                    <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="none"/>
+                    <circle id="timer-ring" cx="28" cy="28" r="24" stroke="#fbbf24" stroke-width="4" fill="none" 
+                            stroke-dasharray="150.8" stroke-dashoffset="0" stroke-linecap="round" class="timer-ring"/>
+                </svg>
+                <span id="timer" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-black text-white">15</span>
             </div>
         </div>
         
-        <!-- Progress Bar -->
-        <div class="h-2 bg-gray-200 dark:bg-gray-700 w-full">
-            <div id="progress-bar" class="h-full bg-yellow-400 transition-all duration-300" style="width: 0%"></div>
+        <div class="h-1 bg-white/5 w-full">
+            <div id="progress-bar" class="h-full bg-gradient-to-r from-yellow-500 to-amber-400 transition-all duration-500" style="width: 0%"></div>
         </div>
 
-        <!-- Question Area -->
-        <div class="p-8 md:p-12 text-center" id="question-area">
-            <h3 class="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest">Question <span id="current-q">1</span> / <span id="total-q">10</span></h3>
-            <p class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-10" id="question-text">
-                Chargement...
+        <div class="p-6 md:p-10" id="question-area">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-6 text-center">
+                Question <span id="current-q">1</span> / <span id="total-q">10</span>
             </p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="choices-container">
-                <!-- Buttons injected by JS -->
-            </div>
+            <p class="text-xl md:text-2xl font-bold text-white/90 mb-8 text-center leading-relaxed" id="question-text">Chargement...</p>
+            <div class="grid grid-cols-1 gap-3" id="choices-container"></div>
         </div>
 
-        <!-- Result / Next btn -->
-        <div class="p-6 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 hidden text-center" id="action-area">
+        <div class="p-5 bg-white/[0.02] border-t border-white/5 hidden text-center" id="action-area">
             <p id="feedback-msg" class="text-lg font-bold mb-4"></p>
-            <button id="next-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all hidden">Question Suivante <i class="fa-solid fa-arrow-right ml-2"></i></button>
-            <button id="finish-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all hidden">Terminer le défi <i class="fa-solid fa-flag-checkered ml-2"></i></button>
+            <button id="next-btn" class="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3.5 px-10 rounded-2xl shadow-lg transition-all active:scale-95 hidden text-sm">
+                Question Suivante <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+            <button id="finish-btn" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold py-3.5 px-10 rounded-2xl shadow-lg transition-all active:scale-95 hidden text-sm">
+                Terminer <i class="fa-solid fa-flag-checkered ml-2"></i>
+            </button>
         </div>
-
     </div>
 </div>
 
@@ -50,162 +67,105 @@
     const questions = JSON.parse('{{ questions_json|escapejs }}');
     const csrfToken = '{{ csrf_token }}';
     const defiCode = '{{ defi.code_partage }}';
+    const TOTAL_TIME = 15;
     
-    let currentIdx = 0;
-    let score = 0;
-    let timerInterval;
-    let timeLeft = 15; // 15s per question
+    let currentIdx = 0, score = 0, timerInterval, timeLeft = TOTAL_TIME;
+    const circumference = 2 * Math.PI * 24;
     
-    const uiQuestion = document.getElementById('question-text');
-    const uiChoices = document.getElementById('choices-container');
-    const uiCurrentQ = document.getElementById('current-q');
-    const uiTotalQ = document.getElementById('total-q');
-    const uiTimer = document.getElementById('timer');
-    const uiProgress = document.getElementById('progress-bar');
-    const uiActionArea = document.getElementById('action-area');
-    const uiFeedback = document.getElementById('feedback-msg');
-    const uiNextBtn = document.getElementById('next-btn');
-    const uiFinishBtn = document.getElementById('finish-btn');
+    const ui = {
+        question: document.getElementById('question-text'),
+        choices: document.getElementById('choices-container'),
+        currentQ: document.getElementById('current-q'),
+        totalQ: document.getElementById('total-q'),
+        timer: document.getElementById('timer'),
+        timerRing: document.getElementById('timer-ring'),
+        progress: document.getElementById('progress-bar'),
+        actionArea: document.getElementById('action-area'),
+        feedback: document.getElementById('feedback-msg'),
+        nextBtn: document.getElementById('next-btn'),
+        finishBtn: document.getElementById('finish-btn'),
+    };
     
-    uiTotalQ.innerText = questions.length;
+    ui.totalQ.innerText = questions.length;
     
     function loadQuestion() {
-        if (currentIdx >= questions.length) {
-            endGame();
-            return;
-        }
-        
-        uiActionArea.classList.add('hidden');
-        uiNextBtn.classList.add('hidden');
-        uiFinishBtn.classList.add('hidden');
-        
+        if (currentIdx >= questions.length) { endGame(); return; }
+        ui.actionArea.classList.add('hidden');
+        ui.nextBtn.classList.add('hidden');
+        ui.finishBtn.classList.add('hidden');
         const q = questions[currentIdx];
-        uiQuestion.innerText = q.texte;
-        uiCurrentQ.innerText = currentIdx + 1;
-        uiProgress.style.width = ((currentIdx / questions.length) * 100) + '%';
-        
-        uiChoices.innerHTML = '';
-        q.choix.forEach(c => {
+        ui.question.innerText = q.texte;
+        ui.currentQ.innerText = currentIdx + 1;
+        ui.progress.style.width = ((currentIdx / questions.length) * 100) + '%';
+        ui.choices.innerHTML = '';
+        q.choix.forEach((c, idx) => {
             const btn = document.createElement('button');
-            btn.className = "py-4 px-6 text-left rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all font-semibold text-gray-700 dark:text-gray-200";
-            btn.innerText = c.texte;
+            btn.className = "choice-btn w-full py-4 px-5 text-left rounded-2xl border border-white/10 bg-white/[0.03] font-semibold text-white/80 text-sm slide-in";
+            btn.style.animationDelay = (idx * 80) + 'ms';
+            btn.innerHTML = `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white/10 text-[11px] font-bold mr-3 text-white/50">${String.fromCharCode(65+idx)}</span>${c.texte}`;
             btn.onclick = () => handleAnswer(c.est_correct, q.points, btn);
-            uiChoices.appendChild(btn);
+            ui.choices.appendChild(btn);
         });
-        
         startTimer();
     }
     
     function startTimer() {
-        timeLeft = 15;
-        uiTimer.innerText = timeLeft;
-        uiTimer.classList.remove('text-red-500');
+        timeLeft = TOTAL_TIME;
+        ui.timer.innerText = timeLeft;
+        ui.timer.style.color = '#fff';
+        ui.timerRing.style.stroke = '#fbbf24';
+        ui.timerRing.style.strokeDashoffset = '0';
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             timeLeft--;
-            uiTimer.innerText = timeLeft;
-            if (timeLeft <= 5) uiTimer.classList.add('text-red-500');
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                handleTimeOut();
-            }
+            ui.timer.innerText = timeLeft;
+            ui.timerRing.style.strokeDashoffset = circumference * (1 - timeLeft / TOTAL_TIME);
+            if (timeLeft <= 5) { ui.timer.style.color = '#f87171'; ui.timerRing.style.stroke = '#ef4444'; }
+            if (timeLeft <= 0) { clearInterval(timerInterval); handleTimeOut(); }
         }, 1000);
     }
     
     function handleAnswer(isCorrect, points, selectedBtn) {
         clearInterval(timerInterval);
-        disableAllButtons();
-        
+        disableAll();
         if (isCorrect) {
             score += points;
-            selectedBtn.classList.add('bg-blue-500', 'text-white', 'border-blue-600');
-            selectedBtn.classList.remove('text-gray-700', 'dark:text-gray-200');
-            uiFeedback.innerText = "Bonne réponse ! +" + points + " pts";
-            uiFeedback.className = "text-lg font-bold mb-4 text-blue-600";
+            selectedBtn.classList.add('correct');
+            ui.feedback.innerText = `Bonne reponse ! +${points} pts`;
+            ui.feedback.className = "text-lg font-bold mb-4 text-emerald-400";
         } else {
-            selectedBtn.classList.add('bg-red-500', 'text-white', 'border-red-600');
-            selectedBtn.classList.remove('text-gray-700', 'dark:text-gray-200');
-            uiFeedback.innerText = "Mauvaise réponse !";
-            uiFeedback.className = "text-lg font-bold mb-4 text-red-600";
-            highlightCorrectAnswer();
+            selectedBtn.classList.add('wrong', 'shake');
+            ui.feedback.innerText = "Mauvaise reponse !";
+            ui.feedback.className = "text-lg font-bold mb-4 text-red-400";
+            highlightCorrect();
         }
-        
-        showNextAction();
+        showNext();
     }
     
-    function handleTimeOut() {
-        disableAllButtons();
-        uiFeedback.innerText = "Temps écoulé !";
-        uiFeedback.className = "text-lg font-bold mb-4 text-yellow-600";
-        highlightCorrectAnswer();
-        showNextAction();
-    }
+    function handleTimeOut() { disableAll(); ui.feedback.innerText = "Temps ecoule !"; ui.feedback.className = "text-lg font-bold mb-4 text-yellow-400"; highlightCorrect(); showNext(); }
+    function highlightCorrect() { const q = questions[currentIdx]; q.choix.forEach((c, i) => { if (c.est_correct) { ui.choices.children[i].classList.add('correct'); ui.choices.children[i].innerHTML += ' <i class="fa-solid fa-check text-emerald-400 float-right mt-1"></i>'; } }); }
+    function disableAll() { for (let b of ui.choices.children) b.disabled = true; }
+    function showNext() { ui.actionArea.classList.remove('hidden'); if (currentIdx < questions.length - 1) ui.nextBtn.classList.remove('hidden'); else ui.finishBtn.classList.remove('hidden'); }
     
-    function highlightCorrectAnswer() {
-        const q = questions[currentIdx];
-        const buttons = uiChoices.children;
-        q.choix.forEach((c, idx) => {
-            if (c.est_correct) {
-                buttons[idx].classList.add('border-emerald-500', 'border-2');
-                buttons[idx].innerHTML += ' <i class="fa-solid fa-check text-emerald-500 float-right mt-1"></i>';
-            }
-        });
-    }
-    
-    function disableAllButtons() {
-        const buttons = uiChoices.children;
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].disabled = true;
-            buttons[i].classList.add('opacity-70', 'cursor-not-allowed');
-        }
-    }
-    
-    function showNextAction() {
-        uiActionArea.classList.remove('hidden');
-        if (currentIdx < questions.length - 1) {
-            uiNextBtn.classList.remove('hidden');
-        } else {
-            uiFinishBtn.classList.remove('hidden');
-        }
-    }
-    
-    uiNextBtn.onclick = () => {
-        currentIdx++;
-        loadQuestion();
-    };
-    
-    uiFinishBtn.onclick = () => {
-        endGame();
-    };
+    ui.nextBtn.onclick = () => { currentIdx++; loadQuestion(); };
+    ui.finishBtn.onclick = () => { endGame(); };
     
     function endGame() {
-        uiProgress.style.width = '100%';
-        uiQuestion.innerText = "Sauvegarde en cours...";
-        uiChoices.innerHTML = '';
-        uiActionArea.classList.add('hidden');
-        uiTimer.innerText = "-";
-        
-        // Save score via API
+        ui.progress.style.width = '100%';
+        ui.question.innerText = "Sauvegarde...";
+        ui.choices.innerHTML = '<div class="flex justify-center py-8"><div class="w-10 h-10 border-4 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin"></div></div>';
+        ui.actionArea.classList.add('hidden');
+        ui.timer.innerText = "-";
         fetch("{% url 'api_defi_save_score' %}", {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
             body: JSON.stringify({ score: score, code: defiCode })
         })
-        .then(res => res.json())
-        .then(data => {
-            window.location.href = `/quiz/defi/${defiCode}/`;
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Erreur lors de la sauvegarde.");
-            window.location.href = `/quiz/defi/${defiCode}/`;
-        });
+        .then(r => r.json())
+        .then(() => { window.location.href = "{% url 'defi_detail' defi.code_partage %}"; })
+        .catch(() => { window.location.href = "{% url 'defi_detail' defi.code_partage %}"; });
     }
     
-    // Init
     loadQuestion();
 </script>
 {% endblock %}
