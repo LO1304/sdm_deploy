@@ -406,3 +406,88 @@ def creer_les_30_jukkis(sender, instance, created, **kwargs):
     if created:
         jukkis = [JukkiKaamil(session=instance, numero=i) for i in range(1, 31)]
         JukkiKaamil.objects.bulk_create(jukkis)
+
+
+# ── QUIZZ ISLAMIQUE ──
+class CategorieQuiz(models.Model):
+    nom = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    icone = models.CharField(max_length=50, default='fa-solid fa-book', help_text="Classe FontAwesome")
+
+    def __str__(self):
+        return self.nom
+
+class NiveauQuiz(models.Model):
+    numero = models.IntegerField(unique=True)
+    nom = models.CharField(max_length=100)
+    points_requis = models.IntegerField(default=0, help_text="Points cumulés nécessaires pour débloquer ce niveau")
+
+    class Meta:
+        ordering = ['numero']
+
+    def __str__(self):
+        return f"Niveau {self.numero}: {self.nom}"
+
+class Question(models.Model):
+    categorie = models.ForeignKey(CategorieQuiz, on_delete=models.CASCADE, related_name='questions')
+    niveau = models.ForeignKey(NiveauQuiz, on_delete=models.CASCADE, related_name='questions')
+    texte = models.TextField()
+    points = models.IntegerField(default=10)
+    explication = models.TextField(blank=True, null=True, help_text="Affiché après réponse pour éduquer le joueur")
+
+    def __str__(self):
+        return self.texte
+
+class Choix(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='choix')
+    texte = models.CharField(max_length=255)
+    est_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.texte} ({self.question.texte})"
+
+class ScoreJoueur(models.Model):
+    utilisateur = models.OneToOneField(User, on_delete=models.CASCADE, related_name='score_quiz')
+    points_totaux = models.IntegerField(default=0)
+    niveau_actuel = models.ForeignKey(NiveauQuiz, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def verifier_niveau(self):
+        niveaux = NiveauQuiz.objects.filter(points_requis__lte=self.points_totaux).order_by('-points_requis')
+        if niveaux.exists():
+            self.niveau_actuel = niveaux.first()
+            self.save()
+
+    def __str__(self):
+        return f"{self.utilisateur.username} - {self.points_totaux} pts"
+
+@receiver(post_save, sender=User)
+def creer_score_joueur(sender, instance, created, **kwargs):
+    if created:
+        ScoreJoueur.objects.create(utilisateur=instance)
+
+class DefiMultijoueur(models.Model):
+    createur = models.ForeignKey(User, on_delete=models.CASCADE, related_name='defis_crees')
+    code_partage = models.CharField(max_length=10, unique=True, blank=True)
+    niveau_choisi = models.ForeignKey(NiveauQuiz, on_delete=models.CASCADE)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    est_actif = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if not self.code_partage:
+            self.code_partage = str(uuid.uuid4())[:6].upper()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Défi {self.code_partage} par {self.createur.username}"
+
+class ParticipationDefi(models.Model):
+    defi = models.ForeignKey(DefiMultijoueur, on_delete=models.CASCADE, related_name='participations')
+    utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
+    score = models.IntegerField(default=0)
+    date_participation = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('defi', 'utilisateur')
+
+    def __str__(self):
+        return f"{self.utilisateur.username} - {self.score} pts sur Défi {self.defi.code_partage}"

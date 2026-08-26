@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quizz Islamique - Niveaux{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-10 px-4 md:px-0">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl md:text-5xl font-black text-emerald-900 dark:text-emerald-400 mb-4 tracking-tight">Quizz Islamique</h1>
+        <p class="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">Testez vos connaissances, cumulez des points et débloquez les niveaux supérieurs !</p>
+    </div>
+
+    <!-- User Score Card -->
+    <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-6 md:p-8 shadow-xl text-white flex flex-col md:flex-row items-center justify-between mb-12">
+        <div class="flex items-center gap-6">
+            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
+                <i class="fa-solid fa-trophy text-4xl text-yellow-300"></i>
+            </div>
+            <div>
+                <p class="text-emerald-100 font-medium text-lg">Vos Points Totaux</p>
+                <h2 class="text-5xl font-black">{{ score.points_totaux }} <span class="text-2xl font-bold text-emerald-200">PTS</span></h2>
+            </div>
+        </div>
+        <div class="mt-6 md:mt-0">
+            <a href="{% url 'defi_create' %}" class="inline-flex items-center gap-2 bg-white text-emerald-700 px-6 py-3 rounded-full font-bold shadow-lg hover:bg-emerald-50 hover:scale-105 transition-all">
+                <i class="fa-solid fa-user-group"></i>
+                Défier un ami
+            </a>
+        </div>
+    </div>
+
+    <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-200 dark:border-gray-800 pb-2">Les Niveaux</h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for nv in niveaux %}
+            {% if score.points_totaux >= nv.points_requis %}
+            <!-- Unlocked Level -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-emerald-500/30 hover:shadow-emerald-500/20 transition-all group">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 font-bold px-3 py-1 rounded-lg text-sm">
+                        Niveau {{ nv.numero }}
+                    </div>
+                    <i class="fa-solid fa-unlock text-emerald-500 text-xl"></i>
+                </div>
+                <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ nv.nom }}</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6"><i class="fa-solid fa-check-circle text-emerald-500 mr-1"></i> Débloqué (Requis: {{ nv.points_requis }} pts)</p>
+                <a href="{% url 'quiz_play' nv.id %}" class="block w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-center rounded-xl font-bold transition-colors shadow-md">
+                    Jouer ce niveau
+                </a>
+            </div>
+            {% else %}
+            <!-- Locked Level -->
+            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-6 shadow border border-gray-200 dark:border-gray-700 opacity-75 grayscale hover:grayscale-0 transition-all">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 font-bold px-3 py-1 rounded-lg text-sm">
+                        Niveau {{ nv.numero }}
+                    </div>
+                    <i class="fa-solid fa-lock text-gray-400 text-xl"></i>
+                </div>
+                <h4 class="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2">{{ nv.nom }}</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-500 mb-6">
+                    <i class="fa-solid fa-circle-exclamation text-yellow-500 mr-1"></i> 
+                    Requis: {{ nv.points_requis }} pts
+                </p>
+                <button disabled class="block w-full py-3 bg-gray-300 dark:bg-gray-700 text-gray-500 text-center rounded-xl font-bold cursor-not-allowed">
+                    Verrouillé
+                </button>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if defis_recents %}
+    <div class="mt-16">
+        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-200 dark:border-gray-800 pb-2">Mes Défis Récents</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {% for participation in defis_recents %}
+            <a href="{% url 'defi_detail' participation.defi.code_partage %}" class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow hover:shadow-md border border-gray-100 dark:border-gray-700 transition-shadow">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-900 dark:text-white">Défi {{ participation.defi.code_partage }}</p>
+                        <p class="text-xs text-gray-500">Niveau {{ participation.defi.niveau_choisi.numero }}</p>
+                    </div>
+                </div>
+                <div class="mt-3 flex justify-between items-end">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Score:</span>
+                    <span class="font-bold text-emerald-600 text-lg">{{ participation.score }} pts</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -389,8 +389,12 @@
 
             {% elif 'coran' in categorie|lower %}
                 <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
-                    <a href="{% url 'lire_pdf' categorie item.id %}" class="item-icon white" style="text-decoration:none">
-                        <i class="fa-solid fa-quran"></i>
+                    <a href="{% url 'lire_pdf' categorie item.id %}" class="item-icon white" style="text-decoration:none; overflow:hidden; padding:0;">
+                        {% if item.fichier_pdf %}
+                            <img src="{{ item.fichier_pdf.url|slice:':-4' }}.jpg" alt="{{ item.titre }}" style="width:100%; height:100%; object-fit:cover;">
+                        {% else %}
+                            <i class="fa-solid fa-quran"></i>
+                        {% endif %}
                     </a>
                     <div class="item-body">
                         <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
@@ -416,6 +420,8 @@
                     <a href="{% url 'lire_pdf' categorie item.id %}" class="item-icon" style="text-decoration:none; overflow:hidden; padding:0;">
                         {% if item.image_couverture %}
                             <img src="{{ item.image_couverture.url }}" alt="{{ item.titre }}" style="width:100%; height:100%; object-fit:cover;">
+                        {% elif item.fichier_pdf %}
+                            <img src="{{ item.fichier_pdf.url|slice:':-4' }}.jpg" alt="{{ item.titre }}" style="width:100%; height:100%; object-fit:cover;">
                         {% else %}
                             <i class="fa-solid fa-book-open"></i>
                         {% endif %}

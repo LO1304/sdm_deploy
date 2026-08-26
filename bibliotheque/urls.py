@@ -67,6 +67,16 @@ urlpatterns = [
     path('kaamil/jukki/<int:jukki_id>/liberer/', views.kaamil_liberer_jukki, name='kaamil_liberer_jukki'),
     path('kaamil/lire/<int:jukki_id>/', views.kaamil_lire_jukki, name='kaamil_lire_jukki'),
     
+    # QUIZZ ISLAMIQUE
+    path('quiz/', views.quiz_home, name='quiz_home'),
+    path('quiz/jouer/<int:niveau_id>/', views.quiz_play, name='quiz_play'),
+    path('quiz/resultat/<int:score>/<int:total>/', views.quiz_result, name='quiz_result'),
+    path('api/quiz/save-score/', views.api_quiz_save_score, name='api_quiz_save_score'),
+    path('quiz/defi/creer/', views.defi_create, name='defi_create'),
+    path('quiz/defi/<str:code>/', views.defi_detail, name='defi_detail'),
+    path('quiz/defi/<str:code>/jouer/', views.defi_play, name='defi_play'),
+    path('api/defi/save-score/', views.api_defi_save_score, name='api_defi_save_score'),
+    
     # Tâches quotidiennes (Cron Gratuit)
     path('api/trigger-daily-tasks/', views.trigger_daily_tasks, name='trigger_daily_tasks'),
     

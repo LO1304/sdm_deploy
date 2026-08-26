@@ -11,6 +11,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Sum, Count
 from django.contrib.contenttypes.models import ContentType
+from django.contrib import messages
+
 from django.utils.timezone import now
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -1280,3 +1282,153 @@ def update_location(request):
         return JsonResponse({'status': 'error', 'message': 'Données manquantes'}, status=400)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+# ── QUIZZ ISLAMIQUE ──
+from django.db.models import Sum
+from .models import CategorieQuiz, NiveauQuiz, Question, Choix, ScoreJoueur, DefiMultijoueur, ParticipationDefi
+import json
+
+@login_required(login_url='login')
+def quiz_home(request):
+    score, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
+    score.verifier_niveau()
+    niveaux = NiveauQuiz.objects.all().order_by('numero')
+    
+    context = {
+        'score': score,
+        'niveaux': niveaux,
+        'defis_recents': ParticipationDefi.objects.filter(utilisateur=request.user).order_by('-date_participation')[:5]
+    }
+    return render(request, 'bibliotheque/quiz/quiz_home.html', context)
+
+@login_required(login_url='login')
+def quiz_play(request, niveau_id):
+    niveau = get_object_or_404(NiveauQuiz, id=niveau_id)
+    score = ScoreJoueur.objects.get(utilisateur=request.user)
+    
+    if score.points_totaux < niveau.points_requis:
+        messages.error(request, "Vous n'avez pas assez de points pour débloquer ce niveau.")
+        return redirect('quiz_home')
+        
+    questions = list(niveau.questions.all())
+    import random
+    random.shuffle(questions)
+    # On prend max 10 questions pour la partie
+    questions = questions[:10]
+    
+    questions_data = []
+    for q in questions:
+        choix = list(q.choix.all())
+        random.shuffle(choix)
+        questions_data.append({
+            'id': q.id,
+            'texte': q.texte,
+            'points': q.points,
+            'choix': [{'id': c.id, 'texte': c.texte, 'est_correct': c.est_correct} for c in choix]
+        })
+        
+    context = {
+        'niveau': niveau,
+        'questions_json': json.dumps(questions_data)
+    }
+    return render(request, 'bibliotheque/quiz/quiz_play.html', context)
+
+@csrf_exempt
+@login_required
+def api_quiz_save_score(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            points_gagnes = int(data.get('score', 0))
+            score, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
+            score.points_totaux += points_gagnes
+            score.verifier_niveau()
+            return JsonResponse({'status': 'success', 'nouveau_total': score.points_totaux})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error'}, status=400)
+
+@login_required
+def quiz_result(request, score, total):
+    return render(request, 'bibliotheque/quiz/quiz_result.html', {'score': score, 'total': total})
+
+@login_required
+def defi_create(request):
+    if request.method == 'POST':
+        niveau_id = request.POST.get('niveau_id')
+        niveau = get_object_or_404(NiveauQuiz, id=niveau_id)
+        defi = DefiMultijoueur.objects.create(createur=request.user, niveau_choisi=niveau)
+        return redirect('defi_detail', code=defi.code_partage)
+        
+    niveaux = NiveauQuiz.objects.all().order_by('numero')
+    return render(request, 'bibliotheque/quiz/defi_create.html', {'niveaux': niveaux})
+
+@login_required
+def defi_detail(request, code):
+    defi = get_object_or_404(DefiMultijoueur, code_partage=code)
+    participations = defi.participations.all().order_by('-score')
+    
+    a_deja_joue = participations.filter(utilisateur=request.user).exists()
+    
+    # URL de partage WhatsApp
+    share_url = request.build_absolute_import_url(f"/quiz/defi/{code}/") if hasattr(request, 'build_absolute_import_url') else request.build_absolute_uri()
+    whatsapp_text = f"Viens me défier au Quizz Islamique ! Clique ici : {share_url}"
+    
+    return render(request, 'bibliotheque/quiz/defi_detail.html', {
+        'defi': defi, 
+        'participations': participations,
+        'a_deja_joue': a_deja_joue,
+        'whatsapp_text': whatsapp_text
+    })
+
+@login_required
+def defi_play(request, code):
+    defi = get_object_or_404(DefiMultijoueur, code_partage=code)
+    
+    if ParticipationDefi.objects.filter(defi=defi, utilisateur=request.user).exists():
+        messages.error(request, "Vous avez déjà participé à ce défi.")
+        return redirect('defi_detail', code=code)
+        
+    questions = list(defi.niveau_choisi.questions.all())
+    import random
+    random.shuffle(questions)
+    questions = questions[:10]
+    
+    questions_data = []
+    for q in questions:
+        choix = list(q.choix.all())
+        random.shuffle(choix)
+        questions_data.append({
+            'id': q.id,
+            'texte': q.texte,
+            'points': q.points,
+            'choix': [{'id': c.id, 'texte': c.texte, 'est_correct': c.est_correct} for c in choix]
+        })
+        
+    return render(request, 'bibliotheque/quiz/defi_play.html', {
+        'defi': defi,
+        'questions_json': json.dumps(questions_data)
+    })
+
+@csrf_exempt
+@login_required
+def api_defi_save_score(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            points_gagnes = int(data.get('score', 0))
+            code = data.get('code')
+            
+            defi = get_object_or_404(DefiMultijoueur, code_partage=code)
+            ParticipationDefi.objects.get_or_create(defi=defi, utilisateur=request.user, defaults={'score': points_gagnes})
+            
+            # Update global score too
+            score_joueur, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
+            score_joueur.points_totaux += points_gagnes
+            score_joueur.verifier_niveau()
+            
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error'}, status=400)
