@@ -1461,3 +1461,122 @@ def api_defi_save_score(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error'}, status=400)
+
+# ── TAZAWWUDU-Ç-ÇIGHÂR VIEWS ──
+from django.shortcuts import get_object_or_404
+from .models import TazawwudModule, TazawwudLecon, TazawwudProgression, TazawwudQuestion
+import json
+
+@login_required
+def tazawwud_home(request):
+    modules = TazawwudModule.objects.all()
+    progression, _ = TazawwudProgression.objects.get_or_create(user=request.user)
+    
+    # Calculate global completion
+    total_lecons = TazawwudLecon.objects.count()
+    lecons_terminees = progression.lecons_terminees.count()
+    pourcentage = int((lecons_terminees / total_lecons * 100) if total_lecons > 0 else 0)
+    
+    context = {
+        'modules': modules,
+        'progression': progression,
+        'pourcentage': pourcentage,
+    }
+    return render(request, 'bibliotheque/tazawwud/home.html', context)
+
+@login_required
+def tazawwud_module(request, module_id):
+    module = get_object_or_404(TazawwudModule, id=module_id)
+    lecons = module.lecons.all()
+    progression, _ = TazawwudProgression.objects.get_or_create(user=request.user)
+    
+    # Check what is unlocked
+    terminees_ids = progression.lecons_terminees.values_list('id', flat=True)
+    
+    context = {
+        'module': module,
+        'lecons': lecons,
+        'terminees_ids': terminees_ids,
+        'progression': progression,
+    }
+    return render(request, 'bibliotheque/tazawwud/module.html', context)
+
+@login_required
+def tazawwud_lecon(request, lecon_id):
+    lecon = get_object_or_404(TazawwudLecon, id=lecon_id)
+    
+    # If it's the intensive revision, redirect to revision view
+    if lecon.est_revision_finale:
+        return redirect('tazawwud_revision', lecon_id=lecon.id)
+        
+    context = {
+        'lecon': lecon,
+    }
+    return render(request, 'bibliotheque/tazawwud/lecon.html', context)
+
+@login_required
+def tazawwud_quiz(request, lecon_id):
+    lecon = get_object_or_404(TazawwudLecon, id=lecon_id)
+    questions = lecon.questions.all()
+    
+    questions_data = []
+    for q in questions:
+        choix_list = [{'id': c.id, 'texte': c.texte, 'est_correct': c.est_correct} for c in q.choix.all()]
+        questions_data.append({
+            'id': q.id,
+            'texte': q.texte,
+            'points': q.points,
+            'choix': choix_list,
+            'explication': q.explication_reponse
+        })
+        
+    context = {
+        'lecon': lecon,
+        'questions_json': json.dumps(questions_data),
+    }
+    return render(request, 'bibliotheque/tazawwud/quiz.html', context)
+
+@login_required
+def tazawwud_revision(request, lecon_id):
+    lecon = get_object_or_404(TazawwudLecon, id=lecon_id)
+    questions = lecon.questions.all()
+    
+    questions_data = []
+    for q in questions:
+        choix_list = [{'id': c.id, 'texte': c.texte, 'est_correct': c.est_correct} for c in q.choix.all()]
+        questions_data.append({
+            'id': q.id,
+            'texte': q.texte,
+            'points': q.points,
+            'choix': choix_list,
+            'explication': q.explication_reponse
+        })
+        
+    context = {
+        'lecon': lecon,
+        'module': lecon.module,
+        'questions_json': json.dumps(questions_data),
+        'is_revision': True,
+    }
+    return render(request, 'bibliotheque/tazawwud/quiz.html', context) # Reusing the quiz template but with a revision flag
+
+@login_required
+def api_tazawwud_save_score(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            lecon_id = data.get('lecon_id')
+            score = int(data.get('score', 0))
+            
+            lecon = get_object_or_404(TazawwudLecon, id=lecon_id)
+            progression, _ = TazawwudProgression.objects.get_or_create(user=request.user)
+            
+            # Mark as finished
+            progression.lecons_terminees.add(lecon)
+            progression.score_total += score
+            progression.save()
+            
+            return JsonResponse({'status': 'success', 'message': 'Leçon validée'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error'}, status=405)

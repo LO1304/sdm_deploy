@@ -86,7 +86,16 @@ urlpatterns = [
     path('api/notifications/read/', views.mark_notifications_read, name='mark_notifications_read'),
     path('api/profil/update-notif-pref/', views.update_notif_pref, name='update_notif_pref'),
     path('api/profil/update-location/', views.update_location, name='update_location'),
+
+    # ── TAZAWWUDU-Ç-ÇIGHÂR ──
+    path('tazawwud/', views.tazawwud_home, name='tazawwud_home'),
+    path('tazawwud/module/<int:module_id>/', views.tazawwud_module, name='tazawwud_module'),
+    path('tazawwud/lecon/<int:lecon_id>/', views.tazawwud_lecon, name='tazawwud_lecon'),
+    path('tazawwud/quiz/<int:lecon_id>/', views.tazawwud_quiz, name='tazawwud_quiz'),
+    path('tazawwud/revision/<int:lecon_id>/', views.tazawwud_revision, name='tazawwud_revision'),
+    path('api/tazawwud/save_score/', views.api_tazawwud_save_score, name='api_tazawwud_save_score'),
 ]
+
 
 # Gestion des fichiers média et statiques en développement
 if settings.DEBUG:

@@ -491,3 +491,93 @@ class ParticipationDefi(models.Model):
 
     def __str__(self):
         return f"{self.utilisateur.username} - {self.score} pts sur Défi {self.defi.code_partage}"
+
+# ── TAZAWWUDU-Ç-ÇIGHÂR (Gamification) ──
+
+class TazawwudModule(models.Model):
+    numero = models.IntegerField(unique=True)
+    titre = models.CharField(max_length=255)
+    description = models.TextField()
+    icone = models.CharField(max_length=100, default="fa-book-open")
+    
+    class Meta:
+        ordering = ['numero']
+
+    def __str__(self):
+        return f"Module {self.numero} : {self.titre}"
+
+class TazawwudLecon(models.Model):
+    module = models.ForeignKey(TazawwudModule, on_delete=models.CASCADE, related_name="lecons")
+    numero = models.IntegerField()
+    titre = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    texte_source = models.TextField(help_text="Texte original du livre", blank=True, null=True)
+    explication = models.TextField(help_text="Explication pédagogique", blank=True, null=True)
+    a_retenir = models.TextField(help_text="Points clés (Markdown)", blank=True, null=True)
+    vers_debut = models.IntegerField(blank=True, null=True)
+    vers_fin = models.IntegerField(blank=True, null=True)
+    est_revision_finale = models.BooleanField(default=False, help_text="Vrai si c'est la révision intense de fin de module")
+
+    class Meta:
+        ordering = ['module__numero', 'numero']
+
+    def __str__(self):
+        return f"{self.module.numero}.{self.numero} - {self.titre}"
+
+class TazawwudQuestion(models.Model):
+    TYPE_CHOICES = [
+        ('qcm', 'QCM'),
+        ('vrai_faux', 'Vrai/Faux'),
+    ]
+    lecon = models.ForeignKey(TazawwudLecon, on_delete=models.CASCADE, related_name="questions")
+    texte = models.CharField(max_length=500)
+    type_question = models.CharField(max_length=20, choices=TYPE_CHOICES, default='qcm')
+    explication_reponse = models.TextField(help_text="S'affiche après la réponse pour expliquer")
+    points = models.IntegerField(default=10)
+
+    def __str__(self):
+        return self.texte
+
+class TazawwudChoix(models.Model):
+    question = models.ForeignKey(TazawwudQuestion, on_delete=models.CASCADE, related_name="choix")
+    texte = models.CharField(max_length=255)
+    est_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.texte
+
+class TazawwudConcept(models.Model):
+    lecon = models.ForeignKey(TazawwudLecon, on_delete=models.CASCADE, related_name="concepts")
+    titre = models.CharField(max_length=255)
+    definition = models.TextField()
+
+    def __str__(self):
+        return self.titre
+
+class TazawwudProgression(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="tazawwud_progression")
+    module_courant = models.ForeignKey(TazawwudModule, on_delete=models.SET_NULL, null=True, blank=True)
+    lecon_courante = models.ForeignKey(TazawwudLecon, on_delete=models.SET_NULL, null=True, blank=True)
+    lecons_terminees = models.ManyToManyField(TazawwudLecon, related_name="users_termines", blank=True)
+    concepts_maitrises = models.ManyToManyField(TazawwudConcept, related_name="users_maitrises", blank=True)
+    concepts_a_revoir = models.ManyToManyField(TazawwudConcept, related_name="users_a_revoir", blank=True)
+    score_total = models.IntegerField(default=0)
+    serie_jours = models.IntegerField(default=0)
+    derniere_activite = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return f"Progression de {self.user.username}"
+
+class TazawwudBadge(models.Model):
+    nom = models.CharField(max_length=100)
+    description = models.TextField()
+    icone = models.CharField(max_length=100)
+    condition = models.CharField(max_length=255, help_text="Description de la condition d'obtention")
+
+    def __str__(self):
+        return self.nom
+
+class TazawwudUserBadge(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tazawwud_badges")
+    badge = models.ForeignKey(TazawwudBadge, on_delete=models.CASCADE)
+    date_obtention = models.DateTimeField(auto_now_add=True)

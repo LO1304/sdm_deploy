@@ -1,0 +1,72 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}Tazawwudu-ç-Çighâr - Mon Parcours{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto pb-12">
+
+    <!-- Onboarding / Header -->
+    <div class="glass rounded-[32px] overflow-hidden border border-white/5 shadow-2xl mb-10" data-aos="fade-down">
+        <div class="bg-gradient-to-r from-amber-700 to-yellow-800 p-8 md:p-12 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-xl"></div>
+            
+            <p class="text-amber-200/80 text-[10px] font-bold uppercase tracking-widest mb-2">Le Viatique des Adolescents</p>
+            <h1 class="text-3xl md:text-5xl font-black text-white mb-4">Tazawwudu-ç-Çighâr</h1>
+            <p class="text-white/80 max-w-lg text-sm md:text-base leading-relaxed mb-6">
+                Découvre les enseignements de Cheikh Ahmadou Bamba. Apprends progressivement, comprends et teste tes connaissances étape par étape.
+            </p>
+            
+            <div class="flex items-center gap-4 bg-black/20 p-4 rounded-2xl border border-white/10">
+                <div class="w-14 h-14 rounded-full border-4 border-amber-400 flex items-center justify-center bg-white/5">
+                    <span class="font-black text-white text-lg">{{ pourcentage }}%</span>
+                </div>
+                <div>
+                    <p class="font-bold text-white">Ta progression globale</p>
+                    <p class="text-xs text-white/50">{{ progression.lecons_terminees.count }} leçon(s) terminée(s)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Learning Path -->
+    <div class="relative px-4">
+        <!-- Vertical Line -->
+        <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-white/5 -translate-x-1/2 rounded-full"></div>
+
+        <div class="space-y-12">
+            {% for module in modules %}
+            <div class="relative flex items-center justify-center" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:1 }}00">
+                
+                <!-- Connector Dot -->
+                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#0a0a0a] border-4 border-amber-500 z-10"></div>
+                
+                <!-- Card -->
+                <a href="{% url 'tazawwud_module' module.id %}" class="w-[85%] md:w-2/3 glass rounded-[24px] p-6 border border-white/5 hover:border-amber-500/30 hover:bg-amber-500/5 transition-all group z-20 {% if forloop.counter|divisibleby:2 %}ml-auto{% else %}mr-auto{% endif %}">
+                    
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                            <i class="{{ module.icone }}"></i>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 bg-white/5 px-3 py-1 rounded-full">
+                            Niveau {{ module.numero }}
+                        </span>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">{{ module.titre }}</h3>
+                    <p class="text-xs text-white/50 line-clamp-2">{{ module.description }}</p>
+                    
+                </a>
+            </div>
+            {% endfor %}
+            
+            <!-- Final Mastery -->
+            <div class="relative flex items-center justify-center pt-8" data-aos="fade-up">
+                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[#0a0a0a] border-4 border-emerald-500 flex items-center justify-center z-10 shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                    <i class="fa-solid fa-star text-emerald-400 text-sm"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

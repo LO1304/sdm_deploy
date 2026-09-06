@@ -1,0 +1,189 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}Quiz - {{ lecon.titre }}{% endblock %}
+
+{% block content %}
+<style>
+    .choice-btn { transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
+    .choice-btn:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(245,158,11,0.5) !important; background: rgba(245,158,11,0.08) !important; }
+    .choice-btn:active:not(:disabled) { transform: scale(0.97); }
+    .choice-btn.correct { background: rgba(16,185,129,0.2) !important; border-color: rgba(16,185,129,0.6) !important; color: #34d399 !important; }
+    .choice-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: rgba(239,68,68,0.5) !important; color: #f87171 !important; }
+    .choice-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+    @keyframes slideIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .slide-in { animation: slideIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .explication-box { animation: slideIn 0.5s cubic-bezier(0.16,1,0.3,1); }
+</style>
+
+<div class="max-w-3xl mx-auto pb-12" id="quiz-app">
+
+    <!-- Progress Indicator -->
+    <div class="flex items-center justify-between mb-8 px-2">
+        <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden mr-4">
+            <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <a href="{% url 'tazawwud_module' lecon.module.id %}" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+            <i class="fa-solid fa-xmark"></i>
+        </a>
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="glass rounded-[32px] overflow-hidden border border-white/5 shadow-2xl">
+        
+        <div class="p-6 md:p-10" id="question-area">
+            
+            <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400/80 mb-6 text-center">
+                {% if is_revision %}<i class="fa-solid fa-fire mr-1 text-red-500"></i> <span class="text-red-400">RÉVISION INTENSIVE</span>{% else %}VÉRIFICATION{% endif %} — <span id="current-q">1</span> / <span id="total-q">10</span>
+            </p>
+            
+            <p class="text-xl md:text-2xl font-bold text-white mb-10 text-center leading-relaxed" id="question-text">Chargement...</p>
+            
+            <div class="grid grid-cols-1 gap-4" id="choices-container"></div>
+            
+        </div>
+
+        <!-- Explication Box (Hidden initially) -->
+        <div id="explication-box" class="hidden p-6 md:p-8 bg-white/[0.03] border-t border-white/5">
+            <div class="flex items-start gap-4">
+                <div id="feedback-icon" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg"></div>
+                <div>
+                    <h4 id="feedback-title" class="font-bold text-base mb-1"></h4>
+                    <p id="feedback-text" class="text-white/70 text-sm leading-relaxed"></p>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end">
+                <button id="next-btn" class="px-8 py-3 rounded-full bg-white/10 text-white font-bold hover:bg-white/20 transition-colors text-sm">
+                    Question Suivante <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- End Screen (Hidden initially) -->
+        <div id="end-screen" class="hidden p-8 md:p-12 text-center">
+            <div class="w-24 h-24 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-5xl mb-6 border-4 border-emerald-500/30">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h2 class="text-3xl font-black text-white mb-2">{% if is_revision %}Chapitre Validé !{% else %}Leçon Terminée !{% endif %}</h2>
+            <p class="text-white/60 mb-8">Vous avez accumulé <span id="final-score" class="font-bold text-emerald-400"></span> points.</p>
+            
+            <button id="finish-btn" class="w-full md:w-auto px-10 py-4 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold hover:scale-105 transition-all text-sm shadow-lg shadow-emerald-500/20">
+                Continuer le parcours <i class="fa-solid fa-check ml-2"></i>
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const questions = JSON.parse('{{ questions_json|escapejs }}');
+    const csrfToken = '{{ csrf_token }}';
+    const leconId = {{ lecon.id }};
+    
+    let currentIdx = 0;
+    let score = 0;
+    
+    const ui = {
+        question: document.getElementById('question-text'),
+        choices: document.getElementById('choices-container'),
+        currentQ: document.getElementById('current-q'),
+        totalQ: document.getElementById('total-q'),
+        progress: document.getElementById('progress-bar'),
+        explBox: document.getElementById('explication-box'),
+        feedIcon: document.getElementById('feedback-icon'),
+        feedTitle: document.getElementById('feedback-title'),
+        feedText: document.getElementById('feedback-text'),
+        nextBtn: document.getElementById('next-btn'),
+        qArea: document.getElementById('question-area'),
+        endScreen: document.getElementById('end-screen'),
+        finalScore: document.getElementById('final-score'),
+        finishBtn: document.getElementById('finish-btn'),
+    };
+    
+    ui.totalQ.innerText = questions.length;
+    
+    function loadQuestion() {
+        if (currentIdx >= questions.length) { endGame(); return; }
+        
+        const q = questions[currentIdx];
+        ui.explBox.classList.add('hidden');
+        ui.progress.style.width = ((currentIdx / questions.length) * 100) + '%';
+        ui.currentQ.innerText = currentIdx + 1;
+        ui.question.innerText = q.texte;
+        ui.choices.innerHTML = '';
+        
+        q.choix.forEach((c, idx) => {
+            const btn = document.createElement('button');
+            btn.className = "choice-btn w-full py-4 px-6 text-left rounded-2xl border border-white/10 bg-white/[0.03] font-semibold text-white/80 text-sm md:text-base slide-in";
+            btn.style.animationDelay = (idx * 80) + 'ms';
+            btn.innerHTML = c.texte;
+            btn.onclick = () => handleAnswer(c.est_correct, q.points, q.explication, btn);
+            ui.choices.appendChild(btn);
+        });
+    }
+    
+    function handleAnswer(isCorrect, points, explication, selectedBtn) {
+        for (let b of ui.choices.children) b.disabled = true;
+        
+        if (isCorrect) {
+            score += points;
+            selectedBtn.classList.add('correct');
+            ui.feedIcon.className = "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg bg-emerald-500/20 text-emerald-400";
+            ui.feedIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
+            ui.feedTitle.className = "font-bold text-base mb-1 text-emerald-400";
+            ui.feedTitle.innerText = "Exact !";
+        } else {
+            selectedBtn.classList.add('wrong');
+            ui.feedIcon.className = "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg bg-red-500/20 text-red-400";
+            ui.feedIcon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            ui.feedTitle.className = "font-bold text-base mb-1 text-red-400";
+            ui.feedTitle.innerText = "Pas exactement...";
+            
+            const q = questions[currentIdx];
+            q.choix.forEach((c, i) => { 
+                if (c.est_correct) { 
+                    ui.choices.children[i].classList.add('correct'); 
+                    ui.choices.children[i].innerHTML += ' <i class="fa-solid fa-check text-emerald-400 float-right mt-1"></i>'; 
+                } 
+            });
+        }
+        
+        ui.feedText.innerText = explication;
+        ui.explBox.classList.remove('hidden');
+        
+        if (currentIdx === questions.length - 1) {
+            ui.nextBtn.innerText = "Terminer";
+        }
+    }
+    
+    ui.nextBtn.onclick = () => {
+        currentIdx++;
+        loadQuestion();
+    };
+    
+    function endGame() {
+        ui.progress.style.width = '100%';
+        ui.qArea.classList.add('hidden');
+        ui.explBox.classList.add('hidden');
+        ui.endScreen.classList.remove('hidden');
+        ui.finalScore.innerText = score;
+    }
+    
+    ui.finishBtn.onclick = () => {
+        ui.finishBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Validation...';
+        ui.finishBtn.disabled = true;
+        
+        fetch("{% url 'api_tazawwud_save_score' %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+            body: JSON.stringify({ score: score, lecon_id: leconId })
+        })
+        .then(r => r.json())
+        .then(() => { window.location.href = "{% url 'tazawwud_module' lecon.module.id %}"; })
+        .catch(() => { window.location.href = "{% url 'tazawwud_module' lecon.module.id %}"; });
+    };
+    
+    loadQuestion();
+</script>
+{% endblock %}
