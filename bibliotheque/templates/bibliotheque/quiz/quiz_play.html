@@ -1,7 +1,7 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Quizz - {{ niveau.nom|default:theme.nom }}{% endblock %}
+{% block title %}Quizz - {% if niveau %}{{ niveau.nom }}{% elif theme %}{{ theme.nom }}{% endif %}{% endblock %}
 
 {% block content %}
 <style>
@@ -31,7 +31,7 @@
                 <p class="text-emerald-300/80 text-[10px] font-bold uppercase tracking-widest mb-1">
                     {% if niveau %}Niveau {{ niveau.numero }}{% elif theme %}Theme{% endif %}
                 </p>
-                <h2 class="text-xl md:text-2xl font-black text-white">{{ niveau.nom|default:theme.nom }}</h2>
+                <h2 class="text-xl md:text-2xl font-black text-white">{% if niveau %}{{ niveau.nom }}{% elif theme %}{{ theme.nom }}{% endif %}</h2>
             </div>
             <!-- Timer Circle -->
             <div class="relative z-10 flex flex-col items-center">
