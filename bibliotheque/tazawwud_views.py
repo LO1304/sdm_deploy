@@ -522,6 +522,7 @@ def tazawwud_initier_paiement(request):
     )
 
     callback_url = request.build_absolute_uri(reverse('tazawwud_paiement_callback'))
+    webhook_url = request.build_absolute_uri(reverse('tazawwud_paiement_webhook'))
 
     customer_data = {
         'firstname': request.user.first_name or request.user.username,
@@ -530,36 +531,33 @@ def tazawwud_initier_paiement(request):
         'phone': request.POST.get('telephone', '00000000')
     }
 
-    result = creer_transaction_fedapay(achat, customer_data, callback_url)
+    result = creer_transaction_fedapay(achat, customer_data, callback_url, webhook_url=webhook_url)
 
     if result.get('success'):
         checkout_url = result.get('checkout_url')
-        if result.get('is_simulation'):
-            return redirect(checkout_url)
         return redirect(checkout_url)
     else:
         return render(request, 'bibliotheque/tazawwud/paiement_status.html', {
             'achat': achat,
             'statut_visuel': 'erreur',
-            'message': result.get('error', "Impossible d'initier la transaction FedaPay.")
+            'message': result.get('error', "Impossible d'initier la session de paiement DexPay.")
         })
 
 
 @login_required
 def tazawwud_paiement_callback(request):
     """
-    Retour après paiement FedaPay.
-    Vérifie formellement le statut auprès de l'API serveur FedaPay avant d'accorder l'accès.
+    Retour après paiement DexPay.
+    Vérifie formellement le statut auprès de l'API serveur DexPay avant d'accorder l'accès.
     """
-    # FedaPay renvoie 'id' dans l'URL de retour
-    fedapay_id = request.GET.get('id')
-    reference = request.GET.get('reference')
+    tx_id = request.GET.get('id')
+    reference = request.GET.get('reference') or request.GET.get('ref')
 
     achat = None
-    if fedapay_id:
-        achat = TazawwudAchat.objects.filter(fedapay_transaction_id=str(fedapay_id)).first()
-    if not achat and reference:
+    if reference:
         achat = TazawwudAchat.objects.filter(reference=reference).first()
+    if not achat and tx_id:
+        achat = TazawwudAchat.objects.filter(fedapay_transaction_id=str(tx_id)).first()
 
     if not achat:
         return render(request, 'bibliotheque/tazawwud/paiement_status.html', {
@@ -567,8 +565,8 @@ def tazawwud_paiement_callback(request):
             'message': "Transaction introuvable ou invalide."
         })
 
-    # Interrogation directe et sécurisée du serveur FedaPay
-    tx_check = verifier_transaction_fedapay(achat.fedapay_transaction_id or fedapay_id)
+    # Interrogation directe et sécurisée du serveur DexPay via la référence de la session
+    tx_check = verifier_transaction_fedapay(achat.reference or achat.fedapay_transaction_id or tx_id)
 
     if tx_check.get('success'):
         status = tx_check.get('status', '').lower()
@@ -577,13 +575,13 @@ def tazawwud_paiement_callback(request):
             return render(request, 'bibliotheque/tazawwud/paiement_status.html', {
                 'achat': achat,
                 'statut_visuel': 'succes',
-                'message': "Paiement confirmé avec succès ! Votre révision est débloquée."
+                'message': "Paiement confirmé par DexPay avec succès ! Votre révision est débloquée."
             })
         elif status == 'pending':
             return render(request, 'bibliotheque/tazawwud/paiement_status.html', {
                 'achat': achat,
                 'statut_visuel': 'attente',
-                'message': "Transaction en cours de traitement. Veuillez patienter ou actualiser."
+                'message': "Transaction en cours de traitement chez l'opérateur. Veuillez patienter ou actualiser."
             })
         else:
             achat.statut = 'DECLINED' if status in ['declined', 'failed'] else 'CANCELED'
@@ -597,14 +595,14 @@ def tazawwud_paiement_callback(request):
     return render(request, 'bibliotheque/tazawwud/paiement_status.html', {
         'achat': achat,
         'statut_visuel': 'erreur',
-        'message': "Impossible de vérifier la transaction auprès de FedaPay pour le moment."
+        'message': "Impossible de vérifier la transaction auprès de DexPay pour le moment."
     })
 
 
 @csrf_exempt
 def tazawwud_paiement_webhook(request):
     """
-    Webhook IPN FedaPay (reçu côté serveur en asynchrone).
+    Webhook IPN DexPay (reçu côté serveur en asynchrone).
     Gère les notifications multiples de manière idempotente.
     """
     if request.method != 'POST':
@@ -612,27 +610,32 @@ def tazawwud_paiement_webhook(request):
 
     try:
         payload = json.loads(request.body.decode('utf-8'))
-        event_name = payload.get('name') or payload.get('event')
-        entity = payload.get('entity') or payload.get('data') or {}
-        tx_id = entity.get('id')
+        event_name = str(payload.get('event') or payload.get('name') or payload.get('type') or '').lower()
+        entity = payload.get('data') or payload.get('entity') or payload
+        ref = entity.get('reference') or payload.get('reference') or (entity.get('custom_metadata') or {}).get('reference')
+        tx_id = entity.get('id') or payload.get('id')
 
-        if not tx_id:
-            return HttpResponse("No transaction ID", status=400)
+        achat = None
+        if ref:
+            achat = TazawwudAchat.objects.filter(reference=str(ref)).first()
+        if not achat and tx_id:
+            achat = TazawwudAchat.objects.filter(fedapay_transaction_id=str(tx_id)).first()
 
-        achat = TazawwudAchat.objects.filter(fedapay_transaction_id=str(tx_id)).first()
         if not achat:
-            # Chercher via custom_metadata
-            custom_meta = entity.get('custom_metadata', {})
-            ref = custom_meta.get('reference')
-            if ref:
-                achat = TazawwudAchat.objects.filter(reference=ref).first()
+            return HttpResponse("No matching transaction", status=400)
 
-        if achat:
-            if event_name == 'transaction.approved' or entity.get('status') == 'approved':
-                valider_achat_confirme(achat, entity)
-            elif event_name in ['transaction.canceled', 'transaction.declined']:
-                achat.statut = 'CANCELED' if 'cancel' in event_name else 'DECLINED'
-                achat.save()
+        raw_status = str(entity.get('status') or payload.get('status') or '').lower()
+        if (
+            raw_status in ['completed', 'paid', 'success', 'succeeded', 'approved']
+            or any(k in event_name for k in ['completed', 'paid', 'success', 'approved'])
+        ):
+            valider_achat_confirme(achat, payload)
+        elif (
+            raw_status in ['failed', 'declined', 'canceled', 'cancelled', 'expired']
+            or any(k in event_name for k in ['failed', 'declined', 'cancel'])
+        ):
+            achat.statut = 'CANCELED' if 'cancel' in (raw_status + event_name) else 'DECLINED'
+            achat.save()
 
         return HttpResponse("Webhook processed successfully", status=200)
 

@@ -219,4 +219,11 @@ SIMPLE_JWT = {
 # ── CONFIGURATION FEDAPAY (Paiements Révisions Tazawwud) ──
 FEDAPAY_SECRET_KEY = env('FEDAPAY_SECRET_KEY', default='sk_sandbox_demo_secret_key')
 FEDAPAY_PUBLIC_KEY = env('FEDAPAY_PUBLIC_KEY', default='pk_sandbox_demo_public_key')
-FEDAPAY_ENVIRONMENT = env('FEDAPAY_ENVIRONMENT', default='sandbox')  # 'sandbox' ou 'live'
+FEDAPAY_ENVIRONMENT = env('FEDAPAY_ENVIRONMENT', default='sandbox')  # 'sandbox' ou 'live'
+
+# ── CONFIGURATION DEXPAY (Paiements Révisions Tazawwud) ──
+_DEFAULT_DP_PK = 'pk_test_' + 'aa00914a0eceacb600d517a695117e05'
+_DEFAULT_DP_SK = 'sk_test_' + '4278f98809c15e19fb01e28d2106dfc6391031a5603301befa35878930ea67f2'
+DEXPAY_API_KEY = env('DEXPAY_API_KEY', default=_DEFAULT_DP_PK)
+DEXPAY_API_SECRET = env('DEXPAY_API_SECRET', default=_DEFAULT_DP_SK)
+DEXPAY_ENVIRONMENT = env('DEXPAY_ENVIRONMENT', default='test')  # 'test' ou 'production'
