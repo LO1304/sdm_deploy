@@ -222,8 +222,8 @@ FEDAPAY_PUBLIC_KEY = env('FEDAPAY_PUBLIC_KEY', default='pk_sandbox_demo_public_k
 FEDAPAY_ENVIRONMENT = env('FEDAPAY_ENVIRONMENT', default='sandbox')  # 'sandbox' ou 'live'
 
 # ── CONFIGURATION DEXPAY (Paiements Révisions Tazawwud) ──
-_DEFAULT_DP_PK = 'pk_test_' + 'aa00914a0eceacb600d517a695117e05'
-_DEFAULT_DP_SK = 'sk_test_' + '4278f98809c15e19fb01e28d2106dfc6391031a5603301befa35878930ea67f2'
+_DEFAULT_DP_PK = 'pk_live_' + '8dd9e0872f7c7744ffc45bbda6203a8f'
+_DEFAULT_DP_SK = 'sk_live_' + '1c7436d51e35647945b677b41a283730dbcb39527cd33205a4295450e6c67ed5'
 DEXPAY_API_KEY = env('DEXPAY_API_KEY', default=_DEFAULT_DP_PK)
 DEXPAY_API_SECRET = env('DEXPAY_API_SECRET', default=_DEFAULT_DP_SK)
-DEXPAY_ENVIRONMENT = env('DEXPAY_ENVIRONMENT', default='test')  # 'test' ou 'production'
+DEXPAY_ENVIRONMENT = env('DEXPAY_ENVIRONMENT', default='production')  # 'test' ou 'production'
