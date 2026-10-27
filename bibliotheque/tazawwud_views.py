@@ -52,6 +52,86 @@ def get_rappels_tazawwud():
     return rappels
 
 
+GRANDES_ETAPES_META = {
+    1: {
+        'plage_vers': 'Vers 1 à 92 · 92 vers',
+        'arabe': 'بَابُ الْمُقَدِّمَةِ وَالْإِيمَانِ وَالتَّوْحِيدِ',
+        'sous_titre': 'Al-Muqaddimah & Al-Imân (La Profession de Foi)',
+        'objectif_spirituel': "Enraciner la croyance authentique (Aqîdah) dans le cœur et connaître son Créateur par Ses Attributs de perfection.",
+        'piliers_cles': [
+            'Intention & Jeunesse',
+            'Imân · Islâm · Ihsân',
+            'Tawhîd (41 Attributs)',
+            'Les 10 Grands Anges',
+            'Les 104 Livres Célestes',
+            'Les 25 Prophètes & Envoyés',
+            'Jour Ultime & Décret Divin',
+        ],
+        'chiffres_cles': '41 Attributs · 10 Anges · 104 Livres · 6 Piliers de la Foi',
+    },
+    2: {
+        'plage_vers': 'Vers 93 à 163 · 71 vers',
+        'arabe': 'بَابُ الْإِسْلَامِ وَالتَّزْكِيَةِ وَالتَّوْبَةِ',
+        'sous_titre': 'Al-Islâm I · Piliers, Pureté & Garde des 7 Membres',
+        'objectif_spirituel': "Purifier son corps, ses habits et ses 7 organes par le repentir sincère avant de se tenir devant Allah.",
+        'piliers_cles': [
+            'Les 5 Piliers de l\'Islâm',
+            'Shahâdah & Excellence du Dhikr',
+            'Sacralité des 5 Prières',
+            'Pureté Légale (Tahârah)',
+            'Garde des 7 Organes',
+            'Repentir Sincère (At-Tawbah)',
+            'Distinction Fard / Sunnah',
+        ],
+        'chiffres_cles': '5 Piliers · 3 Puretés · 7 Organes à garder · 4 Conditions du Repentir',
+    },
+    3: {
+        'plage_vers': 'Vers 164 à 205 · 42 vers',
+        'arabe': 'بَابُ فَرَائِضِ الصَّلَاةِ وَالطَّهَارَةِ',
+        'sous_titre': 'Al-Islâm II · Fiqh de la Prière, du Wudû\', du Ghusl & du Tayammum',
+        'objectif_spirituel': "Accomplir ses ablutions, son bain rituel et sa prière exactement selon les règles validées par les savants malikites.",
+        'piliers_cles': [
+            '15 Obligations de la Prière',
+            '18 Sunan (8 Mu\'akkadah)',
+            'Ablutions Wudû\' (7 Fard / 8 Sunan)',
+            'Bain Rituel Ghusl (5 Fard / 4 Sunan)',
+            'Tayammum (8 Fard / 3 Sunan)',
+        ],
+        'chiffres_cles': '15 Fard Prière · 7 Fard Wudû\' · 5 Fard Ghusl · 8 Fard Tayammum',
+    },
+    4: {
+        'plage_vers': 'Vers 206 à 273 · 68 vers',
+        'arabe': 'بَابُ الصِّيَامِ وَالزَّكَاةِ وَالْحَجِّ وَالْقَضَاءِ',
+        'sous_titre': 'Al-Islâm III · Jeûne, Zakât, Hajj & Rattrapage des Prières',
+        'objectif_spirituel': "Maîtriser le Jeûne, la Zakât, le Hajj et savoir rattraper sans erreur toute unité de prière manquée derrière l'Imam.",
+        'piliers_cles': [
+            'Jeûne Siyâm (2 Fard / 3 Sunan)',
+            'Aumône Zakât (4 Fard / 3 Sunan)',
+            'Pèlerinage Hajj (4 Piliers / 12 Sunan)',
+            'Invocation après le Wudû\'',
+            'Rattrapage derrière l\'Imam (Masbûq)',
+            'Prière du Malade',
+        ],
+        'chiffres_cles': '2 Fard Jeûne · 4 Fard Zakât · 4 Piliers Hajj · 5 Cas de Rattrapage',
+    },
+    5: {
+        'plage_vers': 'Vers 274 à 308 · 35 vers',
+        'arabe': 'بَابُ الْإِحْسَانِ وَالتَّصَوُّفِ وَالْخَاتِمَةِ',
+        'sous_titre': 'Al-Ihsân & At-Tasawwuf · Excellence Spirituelle & Sagesse Finale',
+        'objectif_spirituel': "Atteindre la présence du cœur (Ihsân), polir son âme auprès d'un Guide éclairé et saisir les 5 trésors de la vie.",
+        'piliers_cles': [
+            'Degré suprême de l\'Ihsân',
+            'Science & Scrupule (Wara\')',
+            'Sincérité (Ikhlâs) & Gratitude',
+            'Guide Spirituel Éclairé (Cheikh)',
+            'Les 5 Situations avant leurs 5 contraires',
+            'Épilogue & Du\'â de Bonne Fin',
+        ],
+        'chiffres_cles': '2 Stations de l\'Ihsân · 4 Vertus Cardinales · 5 Trésors de la Vie',
+    },
+}
+
+
 # ── 1. ACCUEIL DU PARCOURS TAZAWWUD ──
 
 @login_required
@@ -70,20 +150,26 @@ def tazawwud_home(request):
     modules_payes_ids = list(TazawwudAchat.objects.filter(
         user=request.user, type_achat='MODULE', statut='APPROVED'
     ).values_list('module_id', flat=True))
+    terminees_ids = set(progression.lecons_terminees.values_list('id', flat=True))
 
     modules_data = []
     for m in modules:
-        m_lecons = m.lecons.all()
+        m_lecons = m.lecons.exclude(numero=99).order_by('numero')
         m_total = m_lecons.count()
-        m_done = m_lecons.filter(id__in=progression.lecons_terminees.values_list('id', flat=True)).count()
+        m_done = m_lecons.filter(id__in=terminees_ids).count()
         m_pct = int((m_done / m_total * 100) if m_total > 0 else 0)
         is_unlocked = a_forfait_complet or (m.id in modules_payes_ids)
+        meta = GRANDES_ETAPES_META.get(m.numero, {})
+        nb_questions_mod = TazawwudQuestion.objects.filter(lecon__module=m).exclude(lecon__numero=99).count()
         modules_data.append({
             'module': m,
             'total_lecons': m_total,
             'lecons_terminees': m_done,
             'pourcentage': m_pct,
             'revision_payee': is_unlocked,
+            'meta': meta,
+            'lecons_list': m_lecons,
+            'nb_questions': nb_questions_mod,
         })
 
     # Réponses à revoir
@@ -95,6 +181,7 @@ def tazawwud_home(request):
 
     context = {
         'modules_data': modules_data,
+        'terminees_ids': terminees_ids,
         'progression': progression,
         'pourcentage': pourcentage,
         'a_forfait_complet': a_forfait_complet,
@@ -220,15 +307,17 @@ def tazawwud_dashboard(request):
 def tazawwud_module(request, module_id):
     """Affiche la liste des leçons d'un module et son étape de révision bloquante."""
     module = get_object_or_404(TazawwudModule, id=module_id)
-    lecons = module.lecons.all().order_by('numero')
+    lecons = module.lecons.exclude(numero=99).order_by('numero')
     progression, _ = TazawwudProgression.objects.get_or_create(user=request.user)
 
     terminees_ids = list(progression.lecons_terminees.values_list('id', flat=True))
     a_acces_revision = TazawwudAchat.a_acces_revision(request.user, module)
     a_forfait_complet = TazawwudAchat.a_acces_revision(request.user)
+    meta = GRANDES_ETAPES_META.get(module.numero, {})
 
     context = {
         'module': module,
+        'meta': meta,
         'lecons': lecons,
         'terminees_ids': terminees_ids,
         'progression': progression,

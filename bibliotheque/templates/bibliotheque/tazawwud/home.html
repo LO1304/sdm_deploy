@@ -220,21 +220,27 @@
                     {{ item.module.numero }}
                 </div>
                 
-                <!-- Carte Mihrab du Chapitre -->
-                <a href="{% url 'tazawwud_module' item.module.id %}" 
-                   class="w-full sm:w-[86%] md:w-[78%] glass mihrab-card aurora-shimmer-card islamic-geo-bg p-5 md:p-6 border border-amber-500/20 hover:border-amber-400/50 transition-all group z-20 {% if forloop.counter|divisibleby:2 %}sm:ml-auto{% else %}sm:mr-auto{% endif %} shadow-2xl">
+                <!-- Carte Mihrab Enrichie de la Grande Étape -->
+                <div class="w-full sm:w-[88%] md:w-[82%] glass mihrab-card aurora-shimmer-card islamic-geo-bg p-5 md:p-6 border border-amber-500/25 hover:border-amber-400/50 transition-all group z-20 {% if forloop.counter|divisibleby:2 %}sm:ml-auto{% else %}sm:mr-auto{% endif %} shadow-2xl">
                     
-                    <div class="flex justify-between items-start gap-2 mb-3">
+                    <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
                         <div class="flex items-center gap-3">
-                            <div class="rub-el-hizb-badge w-11 h-11 text-amber-400 text-base group-hover:scale-110 transition-transform float-medallion">
+                            <div class="rub-el-hizb-badge w-12 h-12 text-amber-400 text-lg group-hover:scale-110 transition-transform float-medallion">
                                 <i class="{{ item.module.icone }}"></i>
                             </div>
                             <div>
-                                <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400/90 block">
-                                    Bâb {{ item.module.numero }} · Grande Partie {{ item.module.numero }}
-                                </span>
-                                <span class="arabic-calligraphy text-xs text-white/50" dir="rtl">
-                                    {% if item.module.numero == 1 %}بَابُ الْمُقَدِّمَةِ وَالتَّوْبَةِ{% elif item.module.numero == 2 %}بَابُ الْإِيمَانِ وَالتَّوْحِيدِ{% elif item.module.numero == 3 %}بَابُ الْإِسْلَامِ وَالطَّهَارَةِ{% elif item.module.numero == 4 %}بَابُ الصَّلَاةِ وَالصِّيَامِ{% else %}بَابُ الْإِحْسَانِ وَالتَّصَوُّفِ{% endif %}
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400">
+                                        Grande Étape {{ item.module.numero }}
+                                    </span>
+                                    {% if item.meta.plage_vers %}
+                                    <span class="text-[9px] font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                                        {{ item.meta.plage_vers }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <span class="arabic-calligraphy text-sm text-amber-300/90 block mt-0.5" dir="rtl">
+                                    {{ item.meta.arabe|default:"تَزَوُّدُ الصِّغَارِ" }}
                                 </span>
                             </div>
                         </div>
@@ -252,10 +258,66 @@
                         </div>
                     </div>
                     
-                    <h3 class="text-base md:text-lg font-extrabold text-white mb-1.5 group-hover:text-amber-300 transition-colors">
-                        {{ item.module.titre }}
-                    </h3>
-                    <p class="text-xs text-white/60 line-clamp-2 mb-4 leading-relaxed">{{ item.module.description }}</p>
+                    <a href="{% url 'tazawwud_module' item.module.id %}" class="block">
+                        <h3 class="text-base md:text-xl font-extrabold text-white mb-1 group-hover:text-amber-300 transition-colors">
+                            {{ item.module.titre }}
+                        </h3>
+                        {% if item.meta.sous_titre %}
+                        <p class="text-[11px] font-semibold text-amber-400/80 mb-2">{{ item.meta.sous_titre }}</p>
+                        {% endif %}
+                        <p class="text-xs text-white/70 leading-relaxed mb-3">{{ item.module.description }}</p>
+                    </a>
+
+                    <!-- Badges des Piliers & Thèmes Clés de la Grande Étape -->
+                    {% if item.meta.piliers_cles %}
+                    <div class="flex flex-wrap gap-1.5 mb-3">
+                        {% for pilier in item.meta.piliers_cles %}
+                        <span class="text-[10px] font-semibold text-amber-200/90 bg-amber-500/10 border border-amber-500/25 px-2.5 py-0.5 rounded-lg">
+                            ۞ {{ pilier }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Objectif Spirituel & Repères Numériques -->
+                    {% if item.meta.objectif_spirituel %}
+                    <div class="p-3 rounded-xl bg-black/40 border border-white/10 mb-3 text-[11px]">
+                        <p class="text-emerald-300 font-bold mb-0.5">
+                            <i class="fas fa-compass mr-1"></i> Objectif de l'Étape :
+                        </p>
+                        <p class="text-white/75 leading-relaxed">{{ item.meta.objectif_spirituel }}</p>
+                        {% if item.meta.chiffres_cles %}
+                        <p class="text-[10px] text-amber-400/90 font-semibold mt-1.5 pt-1.5 border-t border-white/5">
+                            <i class="fas fa-key mr-1"></i> Repères à mémoriser : {{ item.meta.chiffres_cles }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Accordéon : Sommaire détaillé des leçons de cette Grande Étape -->
+                    <div class="mb-3">
+                        <button type="button" onclick="toggleEtapeSommaire('sommaire-{{ item.module.id }}')" class="w-full py-2 px-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 text-[11px] font-bold text-amber-300 flex items-center justify-between transition-colors">
+                            <span><i class="fas fa-list-ul mr-1.5"></i> Voir le programme détaillé ({{ item.total_lecons }} leçons · {{ item.nb_questions }} questions)</span>
+                            <i class="fas fa-chevron-down text-[10px]"></i>
+                        </button>
+                        <div id="sommaire-{{ item.module.id }}" class="hidden mt-2 space-y-1.5 pl-1">
+                            {% for l in item.lecons_list %}
+                            <a href="{% url 'tazawwud_lecon' l.id %}" class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-amber-500/10 border border-white/5 hover:border-amber-500/30 transition-all text-xs">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    {% if l.id in terminees_ids %}
+                                        <span class="w-5 h-5 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] flex-shrink-0"><i class="fas fa-check"></i></span>
+                                    {% elif l.est_revision_finale %}
+                                        <span class="w-5 h-5 rounded-md bg-amber-500/20 text-amber-400 flex items-center justify-center text-[10px] flex-shrink-0">۞</span>
+                                    {% else %}
+                                        <span class="w-5 h-5 rounded-md bg-white/10 text-white/60 flex items-center justify-center text-[10px] font-bold flex-shrink-0">{{ l.numero }}</span>
+                                    {% endif %}
+                                    <span class="text-white/90 font-semibold truncate">{{ l.titre }}</span>
+                                </div>
+                                <span class="text-[10px] text-amber-400 flex-shrink-0 ml-2">Étudier →</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
                     
                     <!-- Jauge de progression du chapitre -->
                     <div class="w-full h-1.5 bg-black/50 rounded-full overflow-hidden mb-2 border border-white/5">
@@ -263,13 +325,14 @@
                              style="width: {{ item.pourcentage }}%;"></div>
                     </div>
 
-                    <div class="flex items-center justify-between text-[11px] text-white/50 pt-1">
+                    <div class="flex items-center justify-between text-[11px] text-white/55 pt-1">
                         <span><i class="fas fa-scroll text-amber-400/70 mr-1"></i> {{ item.lecons_terminees }}/{{ item.total_lecons }} leçons validées</span>
-                        <span class="font-bold text-amber-400 flex items-center gap-1">
-                            {{ item.pourcentage }}% <i class="fas fa-chevron-right text-[9px] group-hover:translate-x-0.5 transition-transform"></i>
-                        </span>
+                        <a href="{% url 'tazawwud_module' item.module.id %}" class="px-3 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-[11px] flex items-center gap-1 shadow">
+                            <span>Ouvrir l'Étape {{ item.module.numero }} ({{ item.pourcentage }}%)</span>
+                            <i class="fas fa-arrow-right text-[9px]"></i>
+                        </a>
                     </div>
-                </a>
+                </div>
             </div>
             {% endfor %}
             
@@ -360,6 +423,11 @@
         btn.className = "px-3 py-1.5 rounded-xl bg-amber-500 text-black font-extrabold text-xs flex items-center gap-1.5 transition-all scale-105 shadow-lg shadow-amber-500/30";
         btn.innerHTML = '<i class="fas fa-check-double"></i><span>Mâ shâ\' Allâh · Rappel Ancré !</span>';
         setTimeout(() => { nextHomeRappel(); }, 1200);
+    }
+
+    function toggleEtapeSommaire(id) {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden');
     }
 </script>
 {% endblock %}

@@ -20,14 +20,43 @@
             <i class="{{ module.icone }}"></i>
         </div>
 
-        <p class="arabic-calligraphy text-xl text-amber-400/90 mb-1" dir="rtl">
-            {% if module.numero == 1 %}بَابُ الْمُقَدِّمَةِ وَالتَّوْبَةِ{% elif module.numero == 2 %}بَابُ الْإِيمَانِ وَالتَّوْحِيدِ{% elif module.numero == 3 %}بَابُ الْإِسْلَامِ وَالطَّهَارَةِ{% elif module.numero == 4 %}بَابُ الصَّلَاةِ وَالصِّيَامِ{% else %}بَابُ الْإِحْسَانِ وَالتَّصَوُّفِ{% endif %}
+        <p class="arabic-calligraphy text-2xl text-amber-400/95 mb-1" dir="rtl">
+            {{ meta.arabe|default:"تَزَوُّدُ الصِّغَارِ" }}
         </p>
-        <p class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300/80 mb-1">
-            Bâb {{ module.numero }} · Grande Partie {{ module.numero }}
-        </p>
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300/90">
+                Bâb {{ module.numero }} · Grande Étape {{ module.numero }}
+            </span>
+            {% if meta.plage_vers %}
+            <span class="text-[10px] font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+                {{ meta.plage_vers }}
+            </span>
+            {% endif %}
+        </div>
         <h1 class="text-2xl md:text-3xl font-black text-white mb-2">{{ module.titre }}</h1>
-        <p class="text-white/65 text-xs md:text-sm max-w-md mx-auto leading-relaxed">{{ module.description }}</p>
+        <p class="text-white/70 text-xs md:text-sm max-w-xl mx-auto leading-relaxed mb-4">{{ module.description }}</p>
+
+        {% if meta.piliers_cles %}
+        <div class="flex flex-wrap justify-center gap-1.5 mb-4">
+            {% for pilier in meta.piliers_cles %}
+            <span class="text-[10px] font-semibold text-amber-200 bg-amber-500/10 border border-amber-500/25 px-2.5 py-0.5 rounded-lg">
+                ۞ {{ pilier }}
+            </span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if meta.objectif_spirituel %}
+        <div class="p-3.5 rounded-2xl bg-black/45 border border-amber-500/20 text-left max-w-xl mx-auto text-xs">
+            <p class="text-emerald-300 font-bold mb-1"><i class="fas fa-compass mr-1"></i> Objectif Spirituel & Pratique :</p>
+            <p class="text-white/80 leading-relaxed">{{ meta.objectif_spirituel }}</p>
+            {% if meta.chiffres_cles %}
+            <p class="text-[11px] text-amber-400 font-semibold mt-2 pt-2 border-t border-white/10">
+                <i class="fas fa-key mr-1"></i> Repères essentiels : {{ meta.chiffres_cles }}
+            </p>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 
     <div class="ornament-divider">
@@ -84,11 +113,11 @@
                 </div>
             </a>
         {% else %}
-            <!-- CARTE DE LEÇON ORDINAIRE (ACCÈS LIBRE & GRATUIT) -->
-            <a href="{% url 'tazawwud_lecon' lecon.id %}" class="block glass rounded-2xl p-4 border border-white/10 hover:border-amber-500/40 hover:bg-amber-500/[0.04] transition-all group">
-                <div class="flex items-center gap-3.5">
+            <!-- CARTE DE LEÇON ORDINAIRE ENRICHIE (ACCÈS LIBRE & GRATUIT) -->
+            <a href="{% url 'tazawwud_lecon' lecon.id %}" class="block glass mihrab-card p-4 md:p-5 border border-white/10 hover:border-amber-500/45 hover:bg-amber-500/[0.04] transition-all group">
+                <div class="flex items-start gap-3.5">
                     
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-black transition-colors
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-black transition-colors mt-0.5
                         {% if lecon.id in terminees_ids %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
                         {% else %}bg-amber-500/10 text-amber-400/80 border border-amber-500/20 group-hover:bg-amber-500/20 group-hover:text-amber-300{% endif %}">
                         {% if lecon.id in terminees_ids %}
@@ -99,15 +128,20 @@
                     </div>
                     
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-0.5">
-                            <span class="text-[9px] font-bold text-amber-400/70 uppercase tracking-wider">Dars {{ lecon.numero }}</span>
-                            <span class="text-[9px] font-semibold text-emerald-400/90 bg-emerald-500/10 px-2 py-0.2 rounded-full border border-emerald-500/20">Accès Libre</span>
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span class="text-[10px] font-extrabold text-amber-400 uppercase tracking-wider">Dars {{ lecon.numero }}</span>
+                            <span class="text-[9px] font-semibold text-emerald-400/90 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Accès Libre & Quiz Gratuit</span>
                         </div>
-                        <h3 class="font-bold text-white text-sm group-hover:text-amber-300 transition-colors truncate">{{ lecon.titre }}</h3>
-                        <p class="text-[11px] text-white/45 mt-0.5 line-clamp-1">{{ lecon.description }}</p>
+                        <h3 class="font-bold text-white text-sm md:text-base group-hover:text-amber-300 transition-colors">{{ lecon.titre }}</h3>
+                        <p class="text-xs text-white/65 mt-1 leading-relaxed">{{ lecon.description }}</p>
+                        {% if lecon.a_retenir %}
+                        <div class="mt-2.5 pt-2 border-t border-white/5 text-[11px] text-amber-200/80 line-clamp-2 whitespace-pre-line">
+                            {{ lecon.a_retenir }}
+                        </div>
+                        {% endif %}
                     </div>
                     
-                    <i class="fas fa-chevron-right text-white/25 group-hover:text-amber-400 text-xs group-hover:translate-x-0.5 transition-all"></i>
+                    <i class="fas fa-chevron-right text-white/30 group-hover:text-amber-400 text-xs group-hover:translate-x-0.5 transition-all mt-2"></i>
                 </div>
             </a>
         {% endif %}
