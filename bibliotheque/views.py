@@ -605,6 +605,7 @@ def profil_view(request):
     points_vers_prochain = points % 50
     # Progression Tazawwud
     from .models import TazawwudProgression, TazawwudLecon, TazawwudAchat, TazawwudReponseHistorique
+    from .tazawwud_views import get_rappels_tazawwud
     taz_prog, _ = TazawwudProgression.objects.get_or_create(user=request.user)
     taz_prog.verifier_semaine_reset()
     total_lecons_taz = TazawwudLecon.objects.count()
@@ -636,6 +637,8 @@ def profil_view(request):
         'taz_a_forfait_complet': taz_a_forfait_complet,
         'taz_modules_payes_count': taz_modules_payes_count,
         'taz_nb_erreurs': taz_nb_erreurs,
+        'taz_rappel_du_jour': (get_rappels_tazawwud()[timezone.now().day % len(get_rappels_tazawwud())] if get_rappels_tazawwud() else None),
+        'taz_rappels_json': json.dumps(get_rappels_tazawwud()),
     }
     return render(request, 'bibliotheque/profile.html', context)
 

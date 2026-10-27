@@ -43,9 +43,12 @@
         </div>
     </div>
 
-    <!-- Bannière Titre de l'Élève (Mihrab) -->
-    <div class="glass mihrab-card islamic-geo-bg p-6 md:p-8 border border-amber-500/30 bg-gradient-to-r from-emerald-950/50 via-[#040B08]/90 to-amber-950/40 relative overflow-hidden shadow-2xl" data-aos="fade-up">
+    <!-- Bannière Titre de l'Élève (Mihrab Animé) -->
+    <div class="glass mihrab-card aurora-shimmer-card islamic-geo-bg p-6 md:p-8 border border-amber-500/30 bg-gradient-to-r from-emerald-950/50 via-[#040B08]/90 to-amber-950/40 relative overflow-hidden shadow-2xl" data-aos="fade-up">
         <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <span class="noor-particle" style="left:15%; bottom:12px; animation-delay:0.2s;"></span>
+        <span class="noor-particle" style="left:55%; bottom:18px; animation-delay:1.9s;"></span>
+        <span class="noor-particle" style="left:85%; bottom:10px; animation-delay:3.1s;"></span>
 
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
             <div>
@@ -63,7 +66,7 @@
 
             <!-- Score & Streak Card -->
             <div class="flex items-center gap-3">
-                <div class="text-center bg-black/50 px-4 py-3 rounded-2xl border border-amber-500/20 flex-1 md:flex-initial">
+                <div class="text-center bg-black/50 px-4 py-3 rounded-2xl border border-amber-500/20 flex-1 md:flex-initial pulse-halo">
                     <p class="text-[10px] text-white/50 uppercase font-semibold">Points de Savoir</p>
                     <p class="text-xl font-black text-amber-400">{{ progression.score_total }}</p>
                 </div>
@@ -75,6 +78,25 @@
                 </div>
             </div>
         </div>
+
+        {% if rappel_du_jour %}
+        <div class="mt-5 pt-4 border-t border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+            <div class="flex items-start gap-2.5">
+                <div class="rub-el-hizb-badge w-8 h-8 text-amber-400 text-xs flex-shrink-0 mt-0.5">
+                    <i class="fas fa-bell bell-ring-anim"></i>
+                </div>
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300">
+                        Rappel du Jour · {{ rappel_du_jour.chapitre }}
+                    </span>
+                    <p class="text-xs text-white/90 italic mt-0.5">« {{ rappel_du_jour.sagesse }} »</p>
+                </div>
+            </div>
+            <a href="{% url 'tazawwud_lecon' rappel_du_jour.lecon_id %}" class="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-bold text-[11px] flex-shrink-0 text-center transition-all">
+                Méditer la Leçon {{ rappel_du_jour.numero }} →
+            </a>
+        </div>
+        {% endif %}
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->

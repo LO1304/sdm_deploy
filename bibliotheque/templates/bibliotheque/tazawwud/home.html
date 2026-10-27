@@ -7,12 +7,18 @@
 <div class="max-w-3xl mx-auto pb-28 px-4 space-y-8">
 
     <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- EN-TÊTE SACRÉ : BASMALA & CARTE D'ACCUEIL MIHRAB                   -->
+    <!-- EN-TÊTE SACRÉ : BASMALA & CARTE D'ACCUEIL MIHRAB ANIMÉE            -->
     <!-- ══════════════════════════════════════════════════════════════════ -->
-    <div class="glass mihrab-card islamic-geo-bg overflow-hidden border border-amber-500/30 shadow-2xl relative" data-aos="fade-down">
+    <div class="glass mihrab-card aurora-shimmer-card islamic-geo-bg overflow-hidden border border-amber-500/30 shadow-2xl relative" data-aos="fade-down">
         <div class="bg-gradient-to-b from-emerald-950/80 via-[#040B08]/90 to-amber-950/40 p-6 md:p-10 relative overflow-hidden">
             <div class="absolute -top-12 -right-12 w-52 h-52 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -bottom-12 -left-12 w-52 h-52 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Particules Noor flottantes -->
+            <span class="noor-particle" style="left:10%; bottom:18px; animation-delay:0s;"></span>
+            <span class="noor-particle" style="left:32%; bottom:12px; animation-delay:1.4s;"></span>
+            <span class="noor-particle" style="left:65%; bottom:22px; animation-delay:2.6s;"></span>
+            <span class="noor-particle" style="left:88%; bottom:15px; animation-delay:3.8s;"></span>
 
             <!-- Basmala Sacrée -->
             <div class="text-center mb-4 pb-3 border-b border-amber-500/15">
@@ -61,7 +67,7 @@
             <!-- Barre de résumé & Actions rapides -->
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-black/45 p-4 rounded-2xl border border-amber-500/20 backdrop-blur-md">
                 <div class="flex items-center gap-3.5">
-                    <div class="w-13 h-13 p-2.5 rounded-full border-2 border-amber-400 flex items-center justify-center bg-amber-500/10 flex-shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.25)]">
+                    <div class="w-13 h-13 p-2.5 rounded-full border-2 border-amber-400 flex items-center justify-center bg-amber-500/10 flex-shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.25)] pulse-halo">
                         <span class="font-black text-amber-300 text-sm md:text-base">{{ pourcentage }}%</span>
                     </div>
                     <div>
@@ -88,6 +94,107 @@
         </div>
     </div>
 
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- SECTION ANIMÉE : LES RAPPELS VIVANTS DU VIATIQUE (CARROUSEL 3D)    -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    {% if rappel_du_jour %}
+    <div class="glass mihrab-card islamic-geo-bg p-5 md:p-7 border border-amber-500/30 shadow-2xl relative overflow-hidden" data-aos="fade-up">
+        <!-- Particules Noor -->
+        <span class="noor-particle" style="left:18%; bottom:12px; animation-delay:0.5s;"></span>
+        <span class="noor-particle" style="left:75%; bottom:16px; animation-delay:2.1s;"></span>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div class="flex items-center gap-2.5">
+                <div class="rub-el-hizb-badge w-9 h-9 text-amber-400 text-sm float-medallion">
+                    <i class="fas fa-bell bell-ring-anim"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-sm md:text-base font-extrabold text-white">Rappels Vivants du Viatique</h2>
+                        <span class="arabic-calligraphy text-sm text-amber-400" dir="rtl">تَذْكِرَةُ الْيَوْمِ</span>
+                    </div>
+                    <p class="text-[10px] text-white/50">Touchez la carte pour la retourner en 3D (Verset ⇄ Sagesse à retenir)</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5">
+                <button type="button" onclick="prevHomeRappel()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white text-xs flex items-center justify-center transition-all">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button type="button" onclick="flipHomeRappel()" class="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-bold text-[11px] flex items-center gap-1.5 transition-all">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Retourner 3D</span>
+                </button>
+                <button type="button" onclick="nextHomeRappel()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white text-xs flex items-center justify-center transition-all">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Barre de progression automatique du rappel -->
+        <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden mb-3">
+            <div id="rappel-auto-bar" class="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-400 transition-all duration-300" style="width: 15%;"></div>
+        </div>
+
+        <!-- Carte 3D Recto / Verso -->
+        <div class="rappel-3d-scene cursor-pointer" onclick="flipHomeRappel()">
+            <div id="home-rappel-3d" class="rappel-3d-card">
+                <!-- FACE RECTO : Le Verset Source Enluminé -->
+                <div class="rappel-face aurora-shimmer-card p-5 bg-gradient-to-br from-emerald-950/85 via-[#05120C] to-amber-950/60 border border-amber-500/35 shadow-inner">
+                    <div class="flex items-center justify-between text-[10px] text-amber-300/90">
+                        <span id="hr-chapitre" class="font-extrabold uppercase tracking-wider bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/25">
+                            {{ rappel_du_jour.chapitre }}
+                        </span>
+                        <span id="hr-arabe" class="arabic-calligraphy text-base text-amber-400" dir="rtl">{{ rappel_du_jour.arabe }}</span>
+                    </div>
+
+                    <div class="my-auto py-2 text-center">
+                        <p id="hr-verset" class="text-sm md:text-base text-white/95 font-serif italic leading-relaxed max-w-xl mx-auto">
+                            « {{ rappel_du_jour.verset }} »
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[11px] text-white/50 pt-2 border-t border-white/10">
+                        <span id="hr-titre" class="font-bold text-amber-300 truncate">
+                            ۞ Leçon {{ rappel_du_jour.numero }} : {{ rappel_du_jour.titre }}
+                        </span>
+                        <span class="text-amber-400 font-semibold flex items-center gap-1 flex-shrink-0">
+                            <i class="fas fa-hand-pointer animate-bounce"></i> Retourner pour la sagesse
+                        </span>
+                    </div>
+                </div>
+
+                <!-- FACE VERSO : La Sagesse à Retenir & Méditation -->
+                <div class="rappel-face rappel-face-back p-5 bg-gradient-to-br from-amber-950/85 via-[#07150F] to-emerald-950/80 border border-emerald-500/45 shadow-inner">
+                    <div class="flex items-center justify-between text-[10px] text-emerald-300">
+                        <span class="font-extrabold uppercase tracking-wider bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                            <i class="fas fa-gem mr-1"></i> Sagesse & Rappel à Retenir
+                        </span>
+                        <span class="arabic-calligraphy text-base text-emerald-400" dir="rtl">الخُلَاصَةُ وَالحِكْمَةُ</span>
+                    </div>
+
+                    <div class="my-auto py-2">
+                        <p id="hr-sagesse" class="text-sm md:text-base text-white font-semibold leading-relaxed text-center max-w-xl mx-auto">
+                            {{ rappel_du_jour.sagesse }}
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/10" onclick="event.stopPropagation();">
+                        <button type="button" id="btn-mediter-rappel" onclick="markRappelMedite(this)" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95">
+                            <i class="fas fa-heart"></i>
+                            <span>Médité & Ancré ✨</span>
+                        </button>
+                        <a id="hr-link" href="{% url 'tazawwud_lecon' rappel_du_jour.lecon_id %}" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-xs flex items-center gap-1.5 shadow-md hover:scale-105 transition-transform">
+                            <span>Ouvrir la Leçon</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Séparateur Ornemental Islamique -->
     <div class="ornament-divider">
         <span class="text-sm">۞</span>
@@ -96,28 +203,30 @@
     </div>
 
     <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- LE CHEMIN SPIRITUEL DES 5 GRANDES PARTIES                          -->
+    <!-- LE CHEMIN SPIRITUEL DES 5 GRANDES PARTIES (AVEC FLUX LUMINEUX)     -->
     <!-- ══════════════════════════════════════════════════════════════════ -->
     <div class="relative px-1 md:px-2">
-        <!-- Ligne centrale dorée -->
-        <div class="absolute left-1/2 top-4 bottom-12 w-0.5 bg-gradient-to-b from-amber-500/40 via-amber-500/20 to-emerald-500/40 -translate-x-1/2 rounded-full"></div>
+        <!-- Ligne centrale dorée + faisceau lumineux animé -->
+        <div class="absolute left-1/2 top-4 bottom-12 w-0.5 bg-gradient-to-b from-amber-500/40 via-amber-500/20 to-emerald-500/40 -translate-x-1/2 rounded-full overflow-hidden">
+            <div class="path-light-beam"></div>
+        </div>
 
         <div class="space-y-8">
             {% for item in modules_data %}
             <div class="relative flex items-center justify-center" data-aos="fade-up">
                 
-                <!-- Médaillon connecteur central -->
-                <div class=" hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#040B08] border-2 border-amber-400 z-10 shadow-[0_0_12px_rgba(212,175,55,0.5)] items-center justify-center text-[11px] text-amber-400 font-bold">
+                <!-- Médaillon connecteur central pulsant -->
+                <div class="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#040B08] border-2 border-amber-400 z-10 shadow-[0_0_12px_rgba(212,175,55,0.5)] items-center justify-center text-[11px] text-amber-400 font-bold pulse-halo">
                     {{ item.module.numero }}
                 </div>
                 
                 <!-- Carte Mihrab du Chapitre -->
                 <a href="{% url 'tazawwud_module' item.module.id %}" 
-                   class="w-full sm:w-[86%] md:w-[78%] glass mihrab-card islamic-geo-bg p-5 md:p-6 border border-amber-500/20 hover:border-amber-400/50 transition-all group z-20 {% if forloop.counter|divisibleby:2 %}sm:ml-auto{% else %}sm:mr-auto{% endif %} shadow-2xl">
+                   class="w-full sm:w-[86%] md:w-[78%] glass mihrab-card aurora-shimmer-card islamic-geo-bg p-5 md:p-6 border border-amber-500/20 hover:border-amber-400/50 transition-all group z-20 {% if forloop.counter|divisibleby:2 %}sm:ml-auto{% else %}sm:mr-auto{% endif %} shadow-2xl">
                     
                     <div class="flex justify-between items-start gap-2 mb-3">
                         <div class="flex items-center gap-3">
-                            <div class="rub-el-hizb-badge text-amber-400 text-base group-hover:scale-110 transition-transform">
+                            <div class="rub-el-hizb-badge w-11 h-11 text-amber-400 text-base group-hover:scale-110 transition-transform float-medallion">
                                 <i class="{{ item.module.icone }}"></i>
                             </div>
                             <div>
@@ -168,8 +277,8 @@
             <!-- KHÂTIMAH : GRANDE RÉVISION FINALE DE L'OUVRAGE (100+ QUESTIONS)-->
             <!-- ══════════════════════════════════════════════════════════════ -->
             <div class="relative flex items-center justify-center pt-6" data-aos="fade-up">
-                <a href="{% url 'tazawwud_revision' 99 %}" class="w-full max-w-md glass mihrab-card islamic-geo-bg p-6 border-2 border-amber-400/40 bg-gradient-to-b from-amber-950/50 via-[#040B08]/95 to-emerald-950/50 text-center group z-20 shadow-[0_0_35px_rgba(212,175,55,0.2)]">
-                    <div class="w-16 h-16 mx-auto rounded-2xl rotate-45 bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 text-black border-2 border-white/30 flex items-center justify-center text-2xl shadow-[0_0_25px_rgba(245,158,11,0.6)] group-hover:scale-110 transition-transform mb-4">
+                <a href="{% url 'tazawwud_revision' 99 %}" class="w-full max-w-md glass mihrab-card aurora-shimmer-card islamic-geo-bg p-6 border-2 border-amber-400/40 bg-gradient-to-b from-amber-950/50 via-[#040B08]/95 to-emerald-950/50 text-center group z-20 shadow-[0_0_35px_rgba(212,175,55,0.2)]">
+                    <div class="w-16 h-16 mx-auto rounded-2xl rotate-45 bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 text-black border-2 border-white/30 flex items-center justify-center text-2xl shadow-[0_0_25px_rgba(245,158,11,0.6)] group-hover:scale-110 transition-transform mb-4 pulse-halo">
                         <span class="-rotate-45 font-black">۞</span>
                     </div>
                     <p class="arabic-calligraphy text-xl text-amber-400 mb-0.5" dir="rtl">خَاتِمَةُ الْكِتَابِ — المُرَاجَعَةُ الكُبْرَى</p>
@@ -187,4 +296,70 @@
         </div>
     </div>
 </div>
+
+<script>
+    const homeRappels = JSON.parse('{{ rappels_json|default:"[]"|escapejs }}');
+    let homeRappelIdx = 0;
+
+    function flipHomeRappel() {
+        const card = document.getElementById('home-rappel-3d');
+        if (card) card.classList.toggle('is-flipped');
+    }
+
+    function renderHomeRappel() {
+        if (!homeRappels.length) return;
+        const card = document.getElementById('home-rappel-3d');
+        if (card) card.classList.remove('is-flipped');
+
+        const r = homeRappels[homeRappelIdx];
+        const bar = document.getElementById('rappel-auto-bar');
+        if (bar) {
+            bar.style.width = `${((homeRappelIdx + 1) / homeRappels.length) * 100}%`;
+        }
+
+        setTimeout(() => {
+            const ch = document.getElementById('hr-chapitre');
+            const ar = document.getElementById('hr-arabe');
+            const vs = document.getElementById('hr-verset');
+            const ti = document.getElementById('hr-titre');
+            const sg = document.getElementById('hr-sagesse');
+            const lk = document.getElementById('hr-link');
+            const btnMed = document.getElementById('btn-mediter-rappel');
+
+            if (ch) ch.innerText = r.chapitre;
+            if (ar) ar.innerText = r.arabe;
+            if (vs) {
+                vs.classList.remove('rappel-morph-enter');
+                void vs.offsetWidth;
+                vs.innerText = `« ${r.verset} »`;
+                vs.classList.add('rappel-morph-enter');
+            }
+            if (ti) ti.innerText = `۞ Leçon ${r.numero} : ${r.titre}`;
+            if (sg) sg.innerText = r.sagesse;
+            if (lk) lk.href = `/tazawwud/lecon/${r.lecon_id}/`;
+            if (btnMed) {
+                btnMed.className = "px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95";
+                btnMed.innerHTML = '<i class="fas fa-heart"></i><span>Médité & Ancré ✨</span>';
+            }
+        }, 140);
+    }
+
+    function nextHomeRappel() {
+        if (!homeRappels.length) return;
+        homeRappelIdx = (homeRappelIdx + 1) % homeRappels.length;
+        renderHomeRappel();
+    }
+
+    function prevHomeRappel() {
+        if (!homeRappels.length) return;
+        homeRappelIdx = (homeRappelIdx - 1 + homeRappels.length) % homeRappels.length;
+        renderHomeRappel();
+    }
+
+    function markRappelMedite(btn) {
+        btn.className = "px-3 py-1.5 rounded-xl bg-amber-500 text-black font-extrabold text-xs flex items-center gap-1.5 transition-all scale-105 shadow-lg shadow-amber-500/30";
+        btn.innerHTML = '<i class="fas fa-check-double"></i><span>Mâ shâ\' Allâh · Rappel Ancré !</span>';
+        setTimeout(() => { nextHomeRappel(); }, 1200);
+    }
+</script>
 {% endblock %}

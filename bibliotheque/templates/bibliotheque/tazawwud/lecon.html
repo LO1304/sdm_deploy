@@ -133,19 +133,23 @@
             </div>
         </div>
 
-        <!-- STEP 4 : Khulâsah / Synthèse à Retenir -->
+        <!-- STEP 4 : Khulâsah / Cartes de Rappel Interactives à Ancrer -->
         <div id="step-4" class="step-content flex-1">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-2">
                 <p class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
-                    <i class="fas fa-gem"></i> Al-Khulâsah · Synthèse Précieuse
+                    <i class="fas fa-bell bell-ring-anim"></i> Al-Khulâsah · Rappels Vivants à Ancrer
                 </p>
-                <span class="arabic-calligraphy text-sm text-amber-400/80" dir="rtl">الخُلَاصَةُ</span>
+                <span class="arabic-calligraphy text-sm text-amber-400/80" dir="rtl">الخُلَاصَةُ وَالتَّذْكِرَةُ</span>
             </div>
-            <div class="p-6 rounded-2xl bg-gradient-to-br from-amber-500/15 via-amber-950/20 to-black/40 border border-amber-500/30 shadow-inner">
-                <div class="text-white/95 text-xs md:text-sm font-medium leading-loose whitespace-pre-line">
-                    {{ lecon.a_retenir }}
-                </div>
+            <p class="text-[11px] text-white/55 mb-3">
+                Touchez chaque rappel pour l'illuminer et l'ancrer dans votre mémoire avant le quiz :
+            </p>
+
+            <!-- Conteneur dynamique de cartes de rappel animées -->
+            <div id="interactive-rappels-list" class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                <!-- Généré automatiquement à partir de lecon.a_retenir -->
             </div>
+            <div id="raw-a-retenir" class="hidden">{{ lecon.a_retenir }}</div>
         </div>
 
         <!-- ACTION BUTTONS -->
@@ -221,6 +225,42 @@
         currentFontSize = Math.min(26, Math.max(13, currentFontSize + delta));
         mushafText.style.fontSize = currentFontSize + 'px';
     }
+
+    // Transformation de a_retenir en Cartes de Rappel Interactives animées
+    (function buildInteractiveRappels() {
+        const rawEl = document.getElementById('raw-a-retenir');
+        const listEl = document.getElementById('interactive-rappels-list');
+        if (!rawEl || !listEl) return;
+        const lines = rawEl.innerText.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
+        lines.forEach((line, idx) => {
+            const card = document.createElement('div');
+            card.className = "p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-[#07150F] to-black/50 border border-amber-500/25 hover:border-amber-400/60 cursor-pointer transition-all duration-300 flex items-start gap-3 group aurora-shimmer-card";
+            card.style.animationDelay = `${idx * 90}ms`;
+            card.innerHTML = `
+                <div class="rappel-check w-7 h-7 rounded-xl bg-amber-500/15 border border-amber-500/35 text-amber-300 flex items-center justify-center text-xs font-extrabold flex-shrink-0 mt-0.5 transition-all">
+                    ${idx + 1}
+                </div>
+                <div class="flex-1">
+                    <p class="text-xs md:text-sm text-white/90 font-medium leading-relaxed">${line}</p>
+                    <span class="rappel-status text-[10px] text-amber-400/70 mt-1 inline-block">Toucher pour ancrer ce rappel ۞</span>
+                </div>
+            `;
+            card.onclick = () => {
+                const check = card.querySelector('.rappel-check');
+                const st = card.querySelector('.rappel-status');
+                card.className = "p-4 rounded-2xl bg-gradient-to-r from-emerald-500/20 via-emerald-950/40 to-amber-950/30 border-2 border-emerald-400/60 cursor-pointer transition-all duration-300 flex items-start gap-3 shadow-[0_0_20px_rgba(16,185,129,0.2)] scale-[1.01]";
+                if (check) {
+                    check.className = "rappel-check w-7 h-7 rounded-xl bg-emerald-500 text-black flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5";
+                    check.innerHTML = '<i class="fas fa-check"></i>';
+                }
+                if (st) {
+                    st.className = "rappel-status text-[10px] text-emerald-300 font-bold mt-1 inline-block";
+                    st.innerHTML = "✨ Rappel médité et ancré dans le cœur · Al-Ḥamdulillāh";
+                }
+            };
+            listEl.appendChild(card);
+        });
+    })();
 
     btnNext.addEventListener('click', () => { if(currentStep < totalSteps) { currentStep++; updateUI(); } });
     btnPrev.addEventListener('click', () => { if(currentStep > 1) { currentStep--; updateUI(); } });

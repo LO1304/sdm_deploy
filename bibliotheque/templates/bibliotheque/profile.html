@@ -254,7 +254,7 @@
         </div>
 
         <!-- Boutons d'actions -->
-        <div class="flex gap-2 relative z-10">
+        <div class="flex gap-2 relative z-10 mb-4">
             <a href="{% url 'tazawwud_dashboard' %}" class="flex-1 text-center py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-black font-bold text-xs shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-1.5">
                 <i class="fas fa-chart-pie"></i>
                 <span>Tableau de bord</span>
@@ -269,6 +269,67 @@
             </a>
             {% endif %}
         </div>
+
+        <!-- ── CARTE 3D ANIMÉE : RAPPEL VIVANT DU VIATIQUE (TADHKIRAH) ── -->
+        {% if taz_rappel_du_jour %}
+        <div class="relative z-10 pt-3 border-t border-amber-500/20">
+            <!-- Particules Noor flottantes -->
+            <span class="noor-particle" style="left:12%; bottom:10px; animation-delay:0s;"></span>
+            <span class="noor-particle" style="left:48%; bottom:6px; animation-delay:1.8s;"></span>
+            <span class="noor-particle" style="left:82%; bottom:14px; animation-delay:3.2s;"></span>
+
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300 flex items-center gap-1.5">
+                    <i class="fas fa-bell text-amber-400 bell-ring-anim"></i>
+                    <span>Rappel Vivant · Tadhkirat al-Yawm</span>
+                </span>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="flipProfileRappel()" class="px-2 py-0.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] text-amber-300 font-semibold transition-all" title="Retourner la carte en 3D">
+                        <i class="fas fa-sync-alt mr-1"></i>Recto/Verso
+                    </button>
+                    <button type="button" onclick="nextProfileRappel()" class="px-2.5 py-0.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-[10px] text-amber-300 font-bold transition-all">
+                        ۞ Autre Rappel
+                    </button>
+                </div>
+            </div>
+
+            <div class="rappel-3d-scene cursor-pointer" onclick="flipProfileRappel()">
+                <div id="profile-rappel-3d" class="rappel-3d-card">
+                    <!-- RECTO : Verset & Source -->
+                    <div class="rappel-face aurora-shimmer-card p-4 bg-gradient-to-br from-emerald-950/80 via-[#06150E] to-amber-950/60 border border-amber-500/30 shadow-inner">
+                        <div class="flex items-center justify-between text-[10px] text-amber-400/80">
+                            <span id="pr-chapitre" class="font-bold uppercase tracking-wider truncate">{{ taz_rappel_du_jour.chapitre }}</span>
+                            <span id="pr-arabe" class="arabic-calligraphy text-xs" dir="rtl">{{ taz_rappel_du_jour.arabe }}</span>
+                        </div>
+                        <p id="pr-verset" class="text-xs md:text-sm text-white/95 font-serif italic leading-relaxed my-2 line-clamp-3">
+                            « {{ taz_rappel_du_jour.verset }} »
+                        </p>
+                        <div class="flex items-center justify-between text-[10px] text-white/45 pt-1 border-t border-white/5">
+                            <span id="pr-titre" class="text-amber-300/90 font-semibold truncate">Leçon {{ taz_rappel_du_jour.numero }} : {{ taz_rappel_du_jour.titre }}</span>
+                            <span class="text-amber-400/80 flex items-center gap-1 flex-shrink-0"><i class="fas fa-hand-pointer"></i> Voir la sagesse</span>
+                        </div>
+                    </div>
+
+                    <!-- VERSO : Sagesse à Retenir & Action -->
+                    <div class="rappel-face rappel-face-back p-4 bg-gradient-to-br from-amber-950/80 via-[#08120D] to-emerald-950/70 border border-emerald-500/40 shadow-inner">
+                        <div class="flex items-center justify-between text-[10px] text-emerald-400">
+                            <span class="font-extrabold uppercase tracking-wider"><i class="fas fa-gem mr-1"></i> Sagesse à Retenir (Al-Khulâsah)</span>
+                            <span class="arabic-calligraphy text-xs" dir="rtl">الحِكْمَةُ</span>
+                        </div>
+                        <p id="pr-sagesse" class="text-xs md:text-sm text-white/95 font-medium leading-relaxed my-2 line-clamp-3">
+                            {{ taz_rappel_du_jour.sagesse }}
+                        </p>
+                        <div class="flex items-center justify-between pt-1 border-t border-white/10">
+                            <span class="text-[10px] text-white/40">Toucher pour revenir au verset</span>
+                            <a id="pr-link" href="{% url 'tazawwud_lecon' taz_rappel_du_jour.lecon_id %}" onclick="event.stopPropagation();" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-black font-extrabold text-[10px] hover:bg-emerald-400 transition-colors">
+                                Étudier la leçon →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     {# ══════════════════════════════════════════ #}
@@ -313,14 +374,49 @@
     </div>
 
     {# ══════════════════════════════════════════ #}
-    {# C3. PARAMÈTRES DE NOTIFICATIONS             #}
+    {# C3. PARAMÈTRES DE NOTIFICATIONS & RAPPELS   #}
     {# ══════════════════════════════════════════ #}
-    <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up" data-aos-delay="130">
-        <h2 class="text-sm font-semibold text-white/80 mb-4">
-            <i class="fas fa-bell text-yellow-500 mr-2"></i>Notifications
-        </h2>
+    <div class="glass mihrab-card islamic-geo-bg p-5 border border-amber-500/25" data-aos="fade-up" data-aos-delay="130">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fas fa-bell text-amber-400 bell-ring-anim"></i>
+                <span>Rappels Spirituels & Notifications</span>
+            </h2>
+            <span class="arabic-calligraphy text-sm text-amber-400/90" dir="rtl">التَّذْكِرَةُ</span>
+        </div>
         
         <div class="space-y-4">
+            <!-- Rappel Quotidien Tazawwudu-ç-Çighâr (Interactif avec choix d'horaire) -->
+            <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-emerald-950/30 to-black/40 border border-amber-500/25">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <p class="text-xs md:text-sm text-amber-300 font-bold flex items-center gap-1.5">
+                            <span>۞</span> Rappel d'Étude Tazawwudu-ç-Çighâr
+                        </p>
+                        <p class="text-[11px] text-white/55">Recevoir une perle du Viatique chaque jour</p>
+                    </div>
+                    <button type="button" onclick="triggerLiveRappelToast()" class="px-2.5 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500/35 border border-amber-400/40 text-amber-300 text-[10px] font-extrabold transition-all active:scale-95 flex items-center gap-1 pulse-halo">
+                        <i class="fas fa-sparkles"></i> Tester un Rappel
+                    </button>
+                </div>
+
+                <!-- Créneaux spirituels d'étude -->
+                <div class="grid grid-cols-3 gap-1.5 mt-2">
+                    <button type="button" onclick="selectRappelSlot(this, 'Sobh (06:30)')" class="rappel-slot-btn py-1.5 px-2 rounded-xl bg-amber-500 text-black font-bold text-[10px] transition-all text-center">
+                        🌅 Après Sobh<br><span class="opacity-75">06:30</span>
+                    </button>
+                    <button type="button" onclick="selectRappelSlot(this, 'Tisbar (14:15)')" class="rappel-slot-btn py-1.5 px-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 font-semibold text-[10px] border border-white/10 transition-all text-center">
+                        ☀️ Après Tisbar<br><span class="opacity-75">14:15</span>
+                    </button>
+                    <button type="button" onclick="selectRappelSlot(this, 'Timis (20:30)')" class="rappel-slot-btn py-1.5 px-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 font-semibold text-[10px] border border-white/10 transition-all text-center">
+                        🌙 Après Timis<br><span class="opacity-75">20:30</span>
+                    </button>
+                </div>
+                <p id="rappel-slot-status" class="text-[10px] text-emerald-400/90 mt-2 font-medium">
+                    <i class="fas fa-check-circle mr-1"></i>Rappel programmé chaque jour après la prière de Sobh (06:30).
+                </p>
+            </div>
+
             <!-- Rappels de prières -->
             <div class="flex items-center justify-between">
                 <div>
@@ -586,6 +682,90 @@ function updateNotifPref(pref, value) {
               alert("Erreur lors de la mise à jour des préférences.");
           }
       });
+}
+
+// ── RAPPELS VIVANTS 3D TAZAWWUDU-Ç-ÇIGHÂR ──
+const profileRappels = JSON.parse('{{ taz_rappels_json|default:"[]"|escapejs }}');
+let profileRappelIdx = 0;
+
+function flipProfileRappel() {
+    const card = document.getElementById('profile-rappel-3d');
+    if (card) card.classList.toggle('is-flipped');
+}
+
+function nextProfileRappel() {
+    if (!profileRappels.length) return;
+    const card = document.getElementById('profile-rappel-3d');
+    if (card) card.classList.remove('is-flipped');
+    profileRappelIdx = (profileRappelIdx + 1) % profileRappels.length;
+    const r = profileRappels[profileRappelIdx];
+
+    setTimeout(() => {
+        const ch = document.getElementById('pr-chapitre');
+        const ar = document.getElementById('pr-arabe');
+        const vs = document.getElementById('pr-verset');
+        const ti = document.getElementById('pr-titre');
+        const sg = document.getElementById('pr-sagesse');
+        const lk = document.getElementById('pr-link');
+        if (ch) ch.innerText = r.chapitre;
+        if (ar) ar.innerText = r.arabe;
+        if (vs) {
+            vs.classList.remove('rappel-morph-enter');
+            void vs.offsetWidth;
+            vs.innerText = `« ${r.verset} »`;
+            vs.classList.add('rappel-morph-enter');
+        }
+        if (ti) ti.innerText = `Leçon ${r.numero} : ${r.titre}`;
+        if (sg) sg.innerText = r.sagesse;
+        if (lk) lk.href = `/tazawwud/lecon/${r.lecon_id}/`;
+    }, 150);
+}
+
+function selectRappelSlot(btnEl, slotName) {
+    document.querySelectorAll('.rappel-slot-btn').forEach(b => {
+        b.className = "rappel-slot-btn py-1.5 px-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 font-semibold text-[10px] border border-white/10 transition-all text-center";
+    });
+    btnEl.className = "rappel-slot-btn py-1.5 px-2 rounded-xl bg-amber-500 text-black font-bold text-[10px] transition-all text-center shadow-md";
+    const st = document.getElementById('rappel-slot-status');
+    if (st) {
+        st.innerHTML = `<i class="fas fa-check-circle mr-1"></i>Rappel programmé chaque jour : <strong>${slotName}</strong>.`;
+    }
+    localStorage.setItem('taz_rappel_slot', slotName);
+}
+
+function triggerLiveRappelToast() {
+    const r = profileRappels.length ? profileRappels[Math.floor(Math.random() * profileRappels.length)] : {
+        titre: "La Sincérité et le Repentir",
+        chapitre: "Tazawwudu-ç-Çighâr",
+        sagesse: "La quête de la science religieuse est le plus noble viatique pour la jeunesse."
+    };
+
+    let toast = document.getElementById('live-rappel-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'live-rappel-toast';
+        toast.className = "fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md glass mihrab-card islamic-geo-bg p-4 border-2 border-amber-400/60 shadow-[0_0_40px_rgba(212,175,55,0.35)] rappel-morph-enter";
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = `
+        <div class="flex items-start gap-3">
+            <div class="rub-el-hizb-badge text-amber-400 text-lg flex-shrink-0 w-10 h-10">
+                <i class="fas fa-bell bell-ring-anim"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300">۞ Rappel Spirituel · Tazawwud</span>
+                    <button onclick="this.closest('#live-rappel-toast').remove()" class="text-white/40 hover:text-white text-xs"><i class="fas fa-times"></i></button>
+                </div>
+                <p class="text-xs font-bold text-white mt-0.5">${r.titre}</p>
+                <p class="text-xs text-amber-200/90 italic mt-1 leading-relaxed">« ${r.sagesse} »</p>
+            </div>
+        </div>
+    `;
+    if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+    }
+    setTimeout(() => { if (toast && toast.parentNode) toast.remove(); }, 6500);
 }
 </script>
 {% endblock %}

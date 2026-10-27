@@ -20,6 +20,38 @@ from .fedapay_service import (
     creer_transaction_fedapay, verifier_transaction_fedapay, valider_achat_confirme
 )
 
+
+def get_rappels_tazawwud():
+    """
+    Extrait les rappels spirituels vérifiés (versets sources et synthèses à retenir)
+    directement depuis les leçons de Tazawwudu-ç-Çighâr.
+    """
+    lecons = TazawwudLecon.objects.filter(est_revision_finale=False).select_related('module').order_by('module__numero', 'numero')
+    rappels = []
+    arabic_headers = {
+        1: "بَابُ الْمُقَدِّمَةِ وَالتَّوْبَةِ",
+        2: "بَابُ الْإِيمَانِ وَالتَّوْحِيدِ",
+        3: "بَابُ الْإِسْلَامِ وَالطَّهَارَةِ",
+        4: "بَابُ الصَّلَاةِ وَالصِّيَامِ",
+        5: "بَابُ الْإِحْسَانِ وَالتَّصَوُّفِ",
+    }
+    for l in lecons:
+        verset_extrait = (l.texte_source or "").strip().split('\n')[0][:220]
+        retenir_lignes = [line.strip("•-* \t") for line in (l.a_retenir or "").strip().split('\n') if line.strip()]
+        sagesse = retenir_lignes[0] if retenir_lignes else l.description
+        rappels.append({
+            'lecon_id': l.id,
+            'numero': l.numero,
+            'titre': l.titre,
+            'chapitre': f"Partie {l.module.numero} · {l.module.titre}" if l.module else "Le Viatique",
+            'arabe': arabic_headers.get(l.module.numero if l.module else 1, "تَزَوُّدُ الصِّغَارِ"),
+            'verset': verset_extrait,
+            'sagesse': sagesse,
+            'points_cles': retenir_lignes[:3],
+        })
+    return rappels
+
+
 # ── 1. ACCUEIL DU PARCOURS TAZAWWUD ──
 
 @login_required
@@ -57,12 +89,18 @@ def tazawwud_home(request):
     # Réponses à revoir
     nb_erreurs = TazawwudReponseHistorique.objects.filter(user=request.user, est_correct=False).count()
 
+    # Rappels vivants du Viatique
+    rappels_list = get_rappels_tazawwud()
+    rappel_du_jour = rappels_list[timezone.now().day % len(rappels_list)] if rappels_list else None
+
     context = {
         'modules_data': modules_data,
         'progression': progression,
         'pourcentage': pourcentage,
         'a_forfait_complet': a_forfait_complet,
         'nb_erreurs': nb_erreurs,
+        'rappel_du_jour': rappel_du_jour,
+        'rappels_json': json.dumps(rappels_list),
     }
     return render(request, 'bibliotheque/tazawwud/home.html', context)
 
@@ -157,6 +195,9 @@ def tazawwud_dashboard(request):
         est_profil_public=True, points_semaine__gt=0
     ).select_related('user').order_by('-points_semaine')[:10]
 
+    rappels_list = get_rappels_tazawwud()
+    rappel_du_jour = rappels_list[timezone.now().day % len(rappels_list)] if rappels_list else None
+
     context = {
         'progression': progression,
         'modules_stats': modules_stats,
@@ -167,6 +208,8 @@ def tazawwud_dashboard(request):
         'a_forfait_complet': a_forfait_complet,
         'compagnons': compagnons,
         'classement_hebdo': classement_hebdo,
+        'rappel_du_jour': rappel_du_jour,
+        'rappels_json': json.dumps(rappels_list),
     }
     return render(request, 'bibliotheque/tazawwud/dashboard.html', context)
 
