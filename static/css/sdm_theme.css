@@ -240,3 +240,100 @@ body::after {
         bottom: calc(20px + env(safe-area-inset-bottom));
     }
 }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   ISLAMIC & MOURIDE SACRED UI/UX DESIGN SYSTEM
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Motif géométrique islamique subtil (Zellige / Rub el Hizb) */
+.islamic-geo-bg {
+    background-image: radial-gradient(rgba(212, 175, 55, 0.07) 1px, transparent 1px),
+                      radial-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: 0 0, 14px 14px;
+}
+
+/* Carte style Mihrab avec arche lumineuse subtile et liseré doré */
+.mihrab-card {
+    background: linear-gradient(165deg, rgba(10, 36, 25, 0.78) 0%, rgba(4, 14, 10, 0.92) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.65),
+                inset 0 1px 0 rgba(253, 224, 71, 0.18);
+    position: relative;
+    overflow: hidden;
+}
+.mihrab-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #FDE047, #D4AF37, transparent);
+    opacity: 0.75;
+}
+
+/* Cadre Manuscrit Enluminé (Mushaf / Khassida) pour les textes sacrés */
+.mushaf-frame {
+    background: linear-gradient(180deg, rgba(12, 34, 24, 0.75) 0%, rgba(6, 19, 13, 0.9) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    outline: 1px solid rgba(212, 175, 55, 0.12);
+    outline-offset: -6px;
+    box-shadow: inset 0 0 35px rgba(212, 175, 55, 0.06), 0 12px 30px rgba(0, 0, 0, 0.45);
+    position: relative;
+    transition: all 0.3s ease;
+}
+.mushaf-frame.parchment-mode {
+    background: linear-gradient(180deg, #FDFBF4 0%, #F5EEDB 100%) !important;
+    color: #1E2923 !important;
+    border-color: #B68D2C !important;
+    outline-color: rgba(182, 141, 44, 0.3) !important;
+}
+.mushaf-frame.parchment-mode p,
+.mushaf-frame.parchment-mode .verse-text {
+    color: #1A241E !important;
+}
+
+/* Séparateur ornemental islamique (─── ۞ ───) */
+.ornament-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: rgba(212, 175, 55, 0.65);
+    font-size: 14px;
+    margin: 12px 0;
+}
+.ornament-divider::before,
+.ornament-divider::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    max-width: 90px;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.45), transparent);
+}
+
+/* Médaillon étoile islamique à 8 branches (Rub el Hizb) */
+.rub-el-hizb-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(16, 185, 129, 0.12));
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.18);
+}
+
+/* Calligraphie Arabe Dorée */
+.arabic-calligraphy {
+    font-family: 'Amiri', serif;
+    background: linear-gradient(135deg, #FEF08A 0%, #D4AF37 55%, #B48327 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.6;
+}

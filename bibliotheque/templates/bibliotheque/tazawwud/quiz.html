@@ -91,18 +91,18 @@
         <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-300" style="width: 0%"></div>
     </div>
 
-    <!-- MAIN QUESTION CARD -->
-    <div class="glass rounded-[32px] overflow-hidden border border-white/5 shadow-2xl relative" id="main-card">
+    <!-- MAIN QUESTION CARD (MIHRAB) -->
+    <div class="glass mihrab-card islamic-geo-bg overflow-hidden border border-amber-500/25 shadow-2xl relative" id="main-card">
         
         <!-- Question Content Area -->
         <div class="p-6 md:p-10" id="question-area">
             
             <div class="flex items-center justify-between mb-4">
-                <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400/80 bg-amber-500/10 px-2.5 py-1 rounded-full" id="q-counter">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300 bg-amber-500/15 border border-amber-500/25 px-3 py-1 rounded-full" id="q-counter">
                     Question 1 / 10
                 </span>
-                <span class="text-[10px] font-semibold text-white/40 uppercase tracking-wider" id="q-type-badge">
-                    QCM
+                <span class="text-[10px] font-bold text-amber-400/80 uppercase tracking-wider flex items-center gap-1" id="q-type-badge">
+                    <span>۞</span> QCM
                 </span>
             </div>
 
@@ -146,17 +146,18 @@
 
         <!-- Écran de Fin de Session -->
         <div id="end-screen" class="hidden p-8 md:p-12 text-center">
-            <div class="w-20 h-20 mx-auto rounded-3xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-4xl mb-6 shadow-xl shadow-amber-500/20 animate-bounce">
-                <i class="fas fa-award"></i>
+            <div class="rub-el-hizb-badge text-amber-400 text-3xl mx-auto mb-4 shadow-xl shadow-amber-500/20">
+                <span>۞</span>
             </div>
+            <p class="arabic-calligraphy text-2xl text-amber-400 mb-1" dir="rtl">ٱلْحَمْدُ لِلَّٰهِ رَبِّ ٱلْعَالَمِينَ</p>
             
             <h2 class="text-2xl md:text-3xl font-black text-white mb-2">
                 {% if mode_entrainement %}
-                    Entraînement Terminé !
+                    Entraînement Validé · Al-Ḥamdulillāh !
                 {% elif is_revision %}
-                    Révision Validée !
+                    Révision Validée · Mâ shâ' Allâh !
                 {% else %}
-                    Leçon Validée !
+                    Leçon Validée · Mâ shâ' Allâh !
                 {% endif %}
             </h2>
             <p class="text-xs md:text-sm text-white/60 mb-6 max-w-sm mx-auto">
@@ -428,14 +429,14 @@
                 ui.feedbackIcon.className = "w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-lg";
                 ui.feedbackIcon.innerHTML = '<i class="fas fa-check"></i>';
                 ui.feedbackTitle.className = "font-bold text-base text-emerald-400";
-                ui.feedbackTitle.innerText = "Exact ! Bien joué.";
+                ui.feedbackTitle.innerText = "Mâ shâ' Allâh ! Excellente réponse ۞";
             } else {
                 activeButtons.forEach(b => b.classList.add('wrong'));
 
                 ui.feedbackIcon.className = "w-10 h-10 rounded-2xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center text-lg";
                 ui.feedbackIcon.innerHTML = '<i class="fas fa-times"></i>';
                 ui.feedbackTitle.className = "font-bold text-base text-red-400";
-                ui.feedbackTitle.innerText = isEntrainement ? "Pas tout à fait..." : "Pas tout à fait... (-1 vie 💔)";
+                ui.feedbackTitle.innerText = isEntrainement ? "Sabr & Persévérance... Méditons l'explication :" : "Sabr & Persévérance... (-1 cœur 💔)";
 
                 if (!isEntrainement && newLives < currentLives) {
                     currentLives = newLives;

@@ -10,20 +10,20 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 
-<div class="max-w-2xl mx-auto pb-24 px-4">
+<div class="max-w-2xl mx-auto pb-28 px-4">
 
-    <!-- Progress Indicator & Vies -->
-    <div class="flex items-center justify-between mb-6 pt-2">
-        <div class="flex gap-1.5 flex-1 mr-4">
-            <div id="dot-1" class="h-1.5 flex-1 rounded-full bg-amber-500 transition-colors"></div>
-            <div id="dot-2" class="h-1.5 flex-1 rounded-full bg-white/10 transition-colors"></div>
-            <div id="dot-3" class="h-1.5 flex-1 rounded-full bg-white/10 transition-colors"></div>
-            <div id="dot-4" class="h-1.5 flex-1 rounded-full bg-white/10 transition-colors"></div>
-        </div>
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- BARRE SUPÉRIEURE : ÉTAPES DE LECTURE, CŒURS & RETOUR               -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div class="flex items-center justify-between mb-3 pt-2">
+        <a href="{% url 'tazawwud_module' lecon.module.id %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-xs border border-white/10 transition-colors">
+            <i class="fas fa-arrow-left text-[10px]"></i>
+            <span>Chapitre {{ lecon.module.numero }}</span>
+        </a>
 
         <div class="flex items-center gap-2">
-            <!-- Vies Indicator -->
-            <div class="flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-full border border-white/10 text-xs">
+            <!-- Cœurs de Persévérance -->
+            <div class="flex items-center gap-1 bg-black/50 px-3 py-1 rounded-full border border-amber-500/20 text-xs">
                 {% if progression.vies_actuelles >= 3 %}
                     <span class="text-red-500">❤️</span><span class="text-red-500">❤️</span><span class="text-red-500">❤️</span>
                 {% elif progression.vies_actuelles == 2 %}
@@ -33,71 +33,134 @@
                 {% else %}
                     <span class="text-white/20">🤍</span><span class="text-white/20">🤍</span><span class="text-white/20">🤍</span>
                 {% endif %}
+                <span class="text-[11px] font-bold text-white ml-1">{{ progression.vies_actuelles }}/3</span>
             </div>
-
-            <a href="{% url 'tazawwud_module' lecon.module.id %}" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-                <i class="fas fa-times"></i>
-            </a>
         </div>
     </div>
 
-    <!-- MAIN CARD -->
-    <div class="glass rounded-[32px] p-6 md:p-10 border border-white/5 shadow-2xl min-h-[420px] flex flex-col justify-between">
+    <!-- Onglets des 4 Étapes Spirituelles d'Apprentissage -->
+    <div class="grid grid-cols-4 gap-1.5 mb-5 bg-black/40 p-1.5 rounded-2xl border border-white/10">
+        <button type="button" onclick="goToStep(1)" id="tab-1" class="py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center bg-amber-500 text-black shadow">
+            1. Iftitâh<br><span class="text-[9px] opacity-80 font-normal">Découverte</span>
+        </button>
+        <button type="button" onclick="goToStep(2)" id="tab-2" class="py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center text-white/50 hover:text-white">
+            2. Al-Matn<br><span class="text-[9px] opacity-80 font-normal">Manuscrit</span>
+        </button>
+        <button type="button" onclick="goToStep(3)" id="tab-3" class="py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center text-white/50 hover:text-white">
+            3. Al-Fahm<br><span class="text-[9px] opacity-80 font-normal">Sens & Fiqh</span>
+        </button>
+        <button type="button" onclick="goToStep(4)" id="tab-4" class="py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center text-white/50 hover:text-white">
+            4. Khulâsah<br><span class="text-[9px] opacity-80 font-normal">À Retenir</span>
+        </button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- CARTE MIHRAB PRINCIPALE DE LA LEÇON                                -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div class="glass mihrab-card islamic-geo-bg p-6 md:p-9 border border-amber-500/25 shadow-2xl min-h-[440px] flex flex-col justify-between">
         
-        <!-- STEP 1 : Découverte (Intro) -->
-        <div id="step-1" class="step-content active flex-1 flex flex-col justify-center text-center">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 inline-block mx-auto mb-4">
-                Aujourd'hui, découvrons...
-            </span>
-            <h2 class="text-2xl md:text-3xl font-black text-white mb-4 leading-tight">{{ lecon.titre }}</h2>
-            <p class="text-white/60 text-xs md:text-sm max-w-md mx-auto">{{ lecon.description }}</p>
-        </div>
-
-        <!-- STEP 2 : Texte Source -->
-        <div id="step-2" class="step-content flex-1">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-4 flex items-center gap-2">
-                <i class="fas fa-book-open"></i> Le Texte Source du Livre
-            </p>
-            <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 mb-3 max-h-72 overflow-y-auto">
-                <p class="text-base md:text-lg text-white/90 leading-relaxed font-serif italic whitespace-pre-line">{{ lecon.texte_source }}</p>
+        <!-- STEP 1 : Iftitâh / Découverte (Intro) -->
+        <div id="step-1" class="step-content active flex-1 flex flex-col justify-center text-center py-4">
+            <div class="rub-el-hizb-badge text-amber-400 text-xl mx-auto mb-4 shadow-lg shadow-amber-500/15">
+                <span>۞</span>
             </div>
-            <p class="text-xs text-white/30 text-right">— Cheikh Ahmadou Bamba · Le Viatique des Adolescents</p>
+            <p class="arabic-calligraphy text-xl text-amber-400/90 mb-1" dir="rtl">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300 bg-amber-500/10 px-3.5 py-1 rounded-full border border-amber-500/25 inline-block mx-auto mb-4">
+                Leçon {{ lecon.numero }} · Porte de la Connaissance
+            </span>
+            <h1 class="text-2xl md:text-3xl font-black text-white mb-4 leading-tight">{{ lecon.titre }}</h1>
+            <p class="text-white/70 text-xs md:text-sm max-w-md mx-auto leading-relaxed">{{ lecon.description }}</p>
+
+            <div class="ornament-divider max-w-xs mx-auto mt-6">
+                <span>۞</span>
+            </div>
         </div>
 
-        <!-- STEP 3 : Comprendre (Explication) -->
-        <div id="step-3" class="step-content flex-1">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-4 flex items-center gap-2">
-                <i class="fas fa-lightbulb"></i> Comprendre l'Enseignement
+        <!-- STEP 2 : Al-Matn / Le Manuscrit Source Enluminé -->
+        <div id="step-2" class="step-content flex-1">
+            <!-- Barre d'outils du Lecteur Mushaf -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
+                        <i class="fas fa-feather-pointed"></i> Al-Matn · Texte Authentique
+                    </span>
+                </div>
+
+                <!-- Contrôles : Mode Parchemin & Taille de Police -->
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="toggleParchmentMode()" id="btn-parchment"
+                            class="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-[10px] font-bold flex items-center gap-1 transition-all"
+                            title="Basculer entre le Mode Parchemin et le Mode Nuit Émeraude">
+                        <i class="fas fa-scroll"></i>
+                        <span id="parchment-label">Mode Parchemin</span>
+                    </button>
+                    <button type="button" onclick="changeFontSize(-2)" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[10px] font-bold">
+                        A-
+                    </button>
+                    <button type="button" onclick="changeFontSize(2)" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[10px] font-bold">
+                        A+
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cadre Mushaf Enluminé -->
+            <div id="mushaf-reader" class="mushaf-frame p-6 md:p-8 mb-3 max-h-80 overflow-y-auto shadow-inner">
+                <div class="text-center mb-3 pb-2 border-b border-amber-500/20">
+                    <span class="arabic-calligraphy text-lg text-amber-500" dir="rtl">۞ قَالَ الشَّيْخُ أَحْمَدُ بَمْبَ رَضِيَ اللَّهُ عَنْهُ ۞</span>
+                </div>
+                <p id="mushaf-text" class="mushaf-text text-base md:text-lg text-white/95 leading-loose font-serif whitespace-pre-line">{{ lecon.texte_source }}</p>
+                <div class="text-center mt-4 pt-2 border-t border-amber-500/20">
+                    <span class="text-xs text-amber-500/80">─── ۞ ───</span>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-amber-400/70 text-right italic">
+                — Cheikh Ahmadou Bamba Khâdimu-r-Rasûl · Tazawwudu-ç-Çighâr
             </p>
-            <h3 class="text-lg md:text-xl font-bold text-white mb-3">Qu'est-ce que cela signifie ?</h3>
-            <div class="text-white/70 text-xs md:text-sm leading-relaxed space-y-3 max-h-72 overflow-y-auto pr-1">
+        </div>
+
+        <!-- STEP 3 : Al-Fahm / Comprendre l'Enseignement (Fiqh & Sens) -->
+        <div id="step-3" class="step-content flex-1">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                    <i class="fas fa-lantern"></i> Al-Fahm · Explication & Sagesse
+                </p>
+                <span class="arabic-calligraphy text-sm text-emerald-400/80" dir="rtl">الفَهْمُ وَالشَّرْحُ</span>
+            </div>
+            <h3 class="text-lg md:text-xl font-bold text-white mb-3">Méditation et sens des vers</h3>
+            <div class="p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/20 text-white/85 text-xs md:text-sm leading-relaxed space-y-3 max-h-72 overflow-y-auto">
                 {{ lecon.explication|linebreaks }}
             </div>
         </div>
 
-        <!-- STEP 4 : À Retenir -->
+        <!-- STEP 4 : Khulâsah / Synthèse à Retenir -->
         <div id="step-4" class="step-content flex-1">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-4 flex items-center gap-2">
-                <i class="fas fa-brain"></i> Synthèse à Retenir
-            </p>
-            <div class="p-6 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-                <div class="text-white/90 text-xs md:text-sm font-medium leading-loose whitespace-pre-line">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
+                    <i class="fas fa-gem"></i> Al-Khulâsah · Synthèse Précieuse
+                </p>
+                <span class="arabic-calligraphy text-sm text-amber-400/80" dir="rtl">الخُلَاصَةُ</span>
+            </div>
+            <div class="p-6 rounded-2xl bg-gradient-to-br from-amber-500/15 via-amber-950/20 to-black/40 border border-amber-500/30 shadow-inner">
+                <div class="text-white/95 text-xs md:text-sm font-medium leading-loose whitespace-pre-line">
                     {{ lecon.a_retenir }}
                 </div>
             </div>
         </div>
 
         <!-- ACTION BUTTONS -->
-        <div class="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
-            <button id="btn-prev" class="hidden px-5 py-2.5 rounded-full border border-white/10 text-white/60 font-semibold hover:bg-white/5 transition-colors text-xs">
+        <div class="mt-7 pt-5 border-t border-white/10 flex items-center justify-between gap-3">
+            <button id="btn-prev" class="hidden px-5 py-2.5 rounded-xl border border-white/15 text-white/70 font-semibold hover:bg-white/5 transition-colors text-xs">
                 <i class="fas fa-arrow-left mr-1.5"></i> Précédent
             </button>
             <div class="flex-1"></div>
-            <button id="btn-next" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-xs shadow-md shadow-amber-500/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5">
-                <span>Lire le texte</span> <i class="fas fa-arrow-right"></i>
+            <button id="btn-next" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-xs shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-2">
+                <span>Ouvrir le Manuscrit</span> <i class="fas fa-arrow-right"></i>
             </button>
-            <a id="btn-quiz" href="{% url 'tazawwud_quiz' lecon.id %}" class="hidden px-6 py-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs shadow-md shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5">
-                <span>Passer au Quiz</span> <i class="fas fa-arrow-right"></i>
+            <a id="btn-quiz" href="{% url 'tazawwud_quiz' lecon.id %}" class="hidden px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/25 transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-2">
+                <i class="fas fa-feather"></i>
+                <span>Évaluer mes Connaissances (Quiz)</span>
+                <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     </div>
@@ -106,19 +169,30 @@
 <script>
     let currentStep = 1;
     const totalSteps = 4;
+    let currentFontSize = 17;
     
     const btnPrev = document.getElementById('btn-prev');
     const btnNext = document.getElementById('btn-next');
     const btnQuiz = document.getElementById('btn-quiz');
+    const mushafReader = document.getElementById('mushaf-reader');
+    const mushafText = document.getElementById('mushaf-text');
+    const parchmentLabel = document.getElementById('parchment-label');
     
+    function goToStep(stepNumber) {
+        currentStep = stepNumber;
+        updateUI();
+    }
+
     function updateUI() {
         for(let i = 1; i <= totalSteps; i++) {
             document.getElementById('step-' + i).classList.remove('active');
-            const dot = document.getElementById('dot-' + i);
-            if(i <= currentStep) {
-                dot.className = "h-1.5 flex-1 rounded-full bg-amber-500 transition-colors";
+            const tab = document.getElementById('tab-' + i);
+            if(i === currentStep) {
+                tab.className = "py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center bg-amber-500 text-black shadow";
+            } else if(i < currentStep) {
+                tab.className = "py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center bg-amber-500/15 text-amber-300 border border-amber-500/30";
             } else {
-                dot.className = "h-1.5 flex-1 rounded-full bg-white/10 transition-colors";
+                tab.className = "py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center text-white/50 hover:text-white";
             }
         }
         document.getElementById('step-' + currentStep).classList.add('active');
@@ -131,12 +205,23 @@
         } else {
             btnNext.classList.remove('hidden');
             btnQuiz.classList.add('hidden');
-            if(currentStep === 1) btnNext.innerHTML = 'Lire le texte <i class="fas fa-arrow-right ml-1.5"></i>';
-            if(currentStep === 2) btnNext.innerHTML = 'Voir l\'explication <i class="fas fa-arrow-right ml-1.5"></i>';
-            if(currentStep === 3) btnNext.innerHTML = 'Aller à l\'essentiel <i class="fas fa-arrow-right ml-1.5"></i>';
+            if(currentStep === 1) btnNext.innerHTML = '<span>Ouvrir le Manuscrit</span> <i class="fas fa-arrow-right"></i>';
+            if(currentStep === 2) btnNext.innerHTML = '<span>Méditer l\'Explication</span> <i class="fas fa-arrow-right"></i>';
+            if(currentStep === 3) btnNext.innerHTML = '<span>Points Essentiels</span> <i class="fas fa-arrow-right"></i>';
         }
     }
     
+    function toggleParchmentMode() {
+        mushafReader.classList.toggle('parchment-mode');
+        const isParchment = mushafReader.classList.contains('parchment-mode');
+        parchmentLabel.innerText = isParchment ? 'Mode Nuit' : 'Mode Parchemin';
+    }
+
+    function changeFontSize(delta) {
+        currentFontSize = Math.min(26, Math.max(13, currentFontSize + delta));
+        mushafText.style.fontSize = currentFontSize + 'px';
+    }
+
     btnNext.addEventListener('click', () => { if(currentStep < totalSteps) { currentStep++; updateUI(); } });
     btnPrev.addEventListener('click', () => { if(currentStep > 1) { currentStep--; updateUI(); } });
 </script>

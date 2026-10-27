@@ -43,29 +43,32 @@
         </div>
     </div>
 
-    <!-- Bannière Titre de l'Élève -->
-    <div class="glass rounded-[32px] p-6 md:p-8 border border-amber-500/20 bg-gradient-to-r from-amber-950/40 via-yellow-950/30 to-black/60 relative overflow-hidden shadow-2xl" data-aos="fade-up">
+    <!-- Bannière Titre de l'Élève (Mihrab) -->
+    <div class="glass mihrab-card islamic-geo-bg p-6 md:p-8 border border-amber-500/30 bg-gradient-to-r from-emerald-950/50 via-[#040B08]/90 to-amber-950/40 relative overflow-hidden shadow-2xl" data-aos="fade-up">
         <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
             <div>
-                <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 mb-2">
-                    <i class="fas fa-graduation-cap"></i> Espace d'Apprentissage
-                </span>
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-300 bg-amber-500/15 px-3 py-1 rounded-full border border-amber-500/25">
+                        <span>۞</span> Carnet Spirituel & Académique
+                    </span>
+                    <span class="arabic-calligraphy text-lg text-amber-400/90" dir="rtl">دَفْتَرُ الطَّالِبِ</span>
+                </div>
                 <h1 class="text-2xl md:text-3xl font-black text-white">Tableau de Bord de l'Élève</h1>
-                <p class="text-white/60 text-xs md:text-sm mt-1 max-w-md">
-                    Suis ta progression dans <strong class="text-amber-300">Tazawwudu-ç-Çighâr</strong>, revois tes erreurs et débloque les révisions intensives.
+                <p class="text-white/65 text-xs md:text-sm mt-1 max-w-md">
+                    Suis ton avancement dans <strong class="text-amber-300">Tazawwudu-ç-Çighâr</strong>, consolide tes acquis et débloque les révisions intensives.
                 </p>
             </div>
 
             <!-- Score & Streak Card -->
             <div class="flex items-center gap-3">
-                <div class="text-center bg-black/40 px-4 py-3 rounded-2xl border border-white/5 flex-1 md:flex-initial">
-                    <p class="text-[10px] text-white/50 uppercase font-semibold">Points Totaux</p>
+                <div class="text-center bg-black/50 px-4 py-3 rounded-2xl border border-amber-500/20 flex-1 md:flex-initial">
+                    <p class="text-[10px] text-white/50 uppercase font-semibold">Points de Savoir</p>
                     <p class="text-xl font-black text-amber-400">{{ progression.score_total }}</p>
                 </div>
-                <div class="text-center bg-black/40 px-4 py-3 rounded-2xl border border-white/5 flex-1 md:flex-initial">
-                    <p class="text-[10px] text-white/50 uppercase font-semibold">Série (Jours)</p>
+                <div class="text-center bg-black/50 px-4 py-3 rounded-2xl border border-amber-500/20 flex-1 md:flex-initial">
+                    <p class="text-[10px] text-white/50 uppercase font-semibold">Assiduité (Jours)</p>
                     <p class="text-xl font-black text-white flex items-center justify-center gap-1">
                         <span>🔥</span> {{ progression.serie_jours }}
                     </p>

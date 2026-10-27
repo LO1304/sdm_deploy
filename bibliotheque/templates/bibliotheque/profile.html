@@ -51,7 +51,11 @@
     {# ══════════════════════════════════════════ #}
     {# A. HERO CARD                               #}
     {# ══════════════════════════════════════════ #}
-    <div class="glass rounded-3xl p-6 border border-yellow-500/20 text-center" data-aos="fade-up">
+    <div class="glass mihrab-card islamic-geo-bg p-6 border border-yellow-500/20 text-center" data-aos="fade-up">
+        <!-- Salutation Islamique -->
+        <p class="arabic-calligraphy text-lg text-amber-400/90 mb-1" dir="rtl">ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ</p>
+        <p class="text-[10px] uppercase tracking-widest text-white/40 mb-4">As-salāmu ʿalaykum wa raḥmatullāh</p>
+
         <!-- Avatar -->
         <div class="flex justify-center mb-4">
             <div class="avatar-ring">
@@ -154,22 +158,26 @@
     {# ══════════════════════════════════════════ #}
     {# C1. TAZAWWUDU-Ç-ÇIGHÂR (Le Viatique)       #}
     {# ══════════════════════════════════════════ #}
-    <div class="glass rounded-3xl p-5 border border-amber-500/20 bg-gradient-to-br from-amber-950/30 via-black/40 to-yellow-950/20 relative overflow-hidden shadow-xl" data-aos="fade-up" data-aos-delay="110">
-        <div class="absolute -right-8 -top-8 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+    <div class="glass mihrab-card islamic-geo-bg p-5 border border-amber-500/30 bg-gradient-to-br from-emerald-950/40 via-[#040B08]/90 to-amber-950/30 relative overflow-hidden shadow-2xl" data-aos="fade-up" data-aos-delay="110">
+        <div class="absolute -right-8 -top-8 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
+        <!-- En-tête Calligraphique Sacré -->
         <div class="flex items-center justify-between mb-3 relative z-10">
-            <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-base border border-amber-500/30">
-                    <i class="fas fa-book-open"></i>
+            <div class="flex items-center gap-2.5">
+                <div class="rub-el-hizb-badge text-amber-400 text-lg shadow-lg shadow-amber-500/10">
+                    <span>۞</span>
                 </div>
                 <div>
-                    <h2 class="text-sm font-bold text-white leading-tight">Tazawwudu-ç-Çighâr</h2>
-                    <p class="text-[10px] text-amber-300/80 font-medium">Le Viatique des Adolescents</p>
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-sm font-bold text-white leading-tight">Tazawwudu-ç-Çighâr</h2>
+                        <span class="arabic-calligraphy text-sm text-amber-400" dir="rtl">تَزَوُّدُ الصِّغَارِ</span>
+                    </div>
+                    <p class="text-[10px] text-amber-300/80 font-medium">Le Viatique des Adolescents · 308 Vers</p>
                 </div>
             </div>
 
-            <!-- Vies Indicator -->
-            <div class="flex items-center gap-1 bg-black/40 px-3 py-1.5 rounded-full border border-white/10" title="Vos vies pour les quiz">
+            <!-- Vies Indicator (Cœurs de Persévérance) -->
+            <div class="flex items-center gap-1 bg-black/50 px-3 py-1.5 rounded-full border border-amber-500/20" title="Cœurs de persévérance pour les quiz">
                 {% if taz_prog.vies_actuelles >= 3 %}
                     <span class="text-red-500 animate-pulse text-xs">❤️</span>
                     <span class="text-red-500 animate-pulse text-xs">❤️</span>

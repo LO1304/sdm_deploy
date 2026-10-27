@@ -1,23 +1,37 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Tazawwudu-ç-Çighâr - Mon Parcours{% endblock %}
+{% block title %}Tazawwudu-ç-Çighâr - Mon Parcours Spirituel{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto pb-24 px-4 space-y-8">
+<div class="max-w-3xl mx-auto pb-28 px-4 space-y-8">
 
-    <!-- Header / Carte Onboarding -->
-    <div class="glass rounded-[32px] overflow-hidden border border-amber-500/20 shadow-2xl relative" data-aos="fade-down">
-        <div class="bg-gradient-to-r from-amber-800/90 via-yellow-900/80 to-black/80 p-6 md:p-10 relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-44 h-44 bg-amber-400/10 rounded-full blur-2xl"></div>
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- EN-TÊTE SACRÉ : BASMALA & CARTE D'ACCUEIL MIHRAB                   -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div class="glass mihrab-card islamic-geo-bg overflow-hidden border border-amber-500/30 shadow-2xl relative" data-aos="fade-down">
+        <div class="bg-gradient-to-b from-emerald-950/80 via-[#040B08]/90 to-amber-950/40 p-6 md:p-10 relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-52 h-52 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -left-12 w-52 h-52 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-            <div class="flex items-center justify-between mb-4">
-                <span class="text-amber-200/90 text-[10px] font-black uppercase tracking-widest bg-black/30 px-3 py-1 rounded-full border border-white/10">
-                    Le Viatique des Adolescents
+            <!-- Basmala Sacrée -->
+            <div class="text-center mb-4 pb-3 border-b border-amber-500/15">
+                <p class="arabic-calligraphy text-2xl md:text-3xl text-amber-400/95 tracking-wide" dir="rtl">
+                    بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                </p>
+                <p class="text-[10px] text-white/40 uppercase tracking-widest mt-0.5">
+                    Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux
+                </p>
+            </div>
+
+            <!-- Top Bar : Badge & Cœurs de Persévérance -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+                <span class="inline-flex items-center gap-1.5 text-amber-300 text-[10px] font-extrabold uppercase tracking-widest bg-amber-500/10 px-3.5 py-1.5 rounded-full border border-amber-500/25">
+                    <span>۞</span> Cheikh Ahmadou Bamba · 308 Vers
                 </span>
 
-                <!-- Vies -->
-                <div class="flex items-center gap-1.5 bg-black/40 px-3 py-1.5 rounded-full border border-white/10 text-xs">
+                <!-- Cœurs de Persévérance (Vies) -->
+                <div class="flex items-center gap-1.5 bg-black/50 px-3.5 py-1.5 rounded-full border border-amber-500/20 text-xs shadow-inner" title="Cœurs de persévérance">
                     {% if progression.vies_actuelles >= 3 %}
                         <span class="text-red-500 animate-pulse">❤️</span><span class="text-red-500 animate-pulse">❤️</span><span class="text-red-500 animate-pulse">❤️</span>
                     {% elif progression.vies_actuelles == 2 %}
@@ -31,29 +45,40 @@
                 </div>
             </div>
 
-            <h1 class="text-3xl md:text-5xl font-black text-white mb-2 tracking-tight">Tazawwudu-ç-Çighâr</h1>
-            <p class="text-white/80 max-w-lg text-xs md:text-sm leading-relaxed mb-6">
-                Parcours interactif structuré en 5 grandes parties et 30 leçons couvrant fidèlement l'intégralité des 308 vers de Cheikh Ahmadou Bamba.
+            <!-- Titre Bilingue Français & Calligraphie Arabe -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-2 mb-3">
+                <div>
+                    <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">Tazawwudu-ç-Çighâr</h1>
+                    <p class="text-amber-400/90 text-xs md:text-sm font-semibold mt-0.5">Le Viatique des Adolescents vers les Jardins de la Connaissance</p>
+                </div>
+                <p class="arabic-calligraphy text-2xl md:text-3xl text-amber-400/90" dir="rtl">تَزَوُّدُ الصِّغَارِ</p>
+            </div>
+
+            <p class="text-white/75 max-w-xl text-xs md:text-sm leading-relaxed mb-6">
+                Étudiez méthodiquement les <strong class="text-amber-300">5 grands chapitres</strong> (Foi, Pratique, Soufisme et Purification de l'âme) à travers <strong class="text-white">30 leçons vérifiées</strong> fidèles au manuscrit authentique.
             </p>
 
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-black/30 p-4 rounded-2xl border border-white/10">
+            <!-- Barre de résumé & Actions rapides -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-black/45 p-4 rounded-2xl border border-amber-500/20 backdrop-blur-md">
                 <div class="flex items-center gap-3.5">
-                    <div class="w-12 h-12 rounded-full border-4 border-amber-400 flex items-center justify-center bg-white/5 flex-shrink-0">
-                        <span class="font-black text-white text-sm md:text-base">{{ pourcentage }}%</span>
+                    <div class="w-13 h-13 p-2.5 rounded-full border-2 border-amber-400 flex items-center justify-center bg-amber-500/10 flex-shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.25)]">
+                        <span class="font-black text-amber-300 text-sm md:text-base">{{ pourcentage }}%</span>
                     </div>
                     <div>
-                        <p class="font-bold text-white text-xs md:text-sm">Progression globale</p>
-                        <p class="text-[11px] text-white/50">{{ progression.lecons_terminees.count }} leçon(s) validée(s)</p>
+                        <p class="font-bold text-white text-xs md:text-sm">Avancement dans l'Ouvrage</p>
+                        <p class="text-[11px] text-white/55">
+                            {{ progression.lecons_terminees.count }} leçon(s) validée(s) · <span class="text-amber-300 font-semibold">{{ progression.score_total }} pts de savoir</span>
+                        </p>
                     </div>
                 </div>
 
                 <div class="flex gap-2">
-                    <a href="{% url 'tazawwud_dashboard' %}" class="flex-1 sm:flex-initial py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5">
-                        <i class="fas fa-chart-pie"></i>
-                        <span>Tableau de bord</span>
+                    <a href="{% url 'tazawwud_dashboard' %}" class="flex-1 sm:flex-initial py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-extrabold text-xs shadow-lg shadow-amber-500/20 transition-all active:scale-95 flex items-center justify-center gap-1.5">
+                        <i class="fas fa-compass"></i>
+                        <span>Carnet de l'Élève</span>
                     </a>
                     {% if nb_erreurs > 0 %}
-                    <a href="{% url 'tazawwud_entrainement' %}" class="py-2.5 px-3 rounded-xl bg-red-500/20 text-red-300 font-bold text-xs border border-red-500/30 flex items-center justify-center gap-1" title="{{ nb_erreurs }} réponse(s) à revoir">
+                    <a href="{% url 'tazawwud_entrainement' %}" class="py-2.5 px-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-bold text-xs border border-red-500/30 flex items-center justify-center gap-1.5" title="{{ nb_erreurs }} notion(s) à consolider">
                         <i class="fas fa-rotate-left"></i>
                         <span>{{ nb_erreurs }}</span>
                     </a>
@@ -63,65 +88,100 @@
         </div>
     </div>
 
-    <!-- Le Chemin Visuel du Parcours -->
-    <div class="relative px-2">
-        <!-- Ligne centrale connectrice -->
-        <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-white/5 -translate-x-1/2 rounded-full"></div>
+    <!-- Séparateur Ornemental Islamique -->
+    <div class="ornament-divider">
+        <span class="text-sm">۞</span>
+        <span class="text-[10px] uppercase tracking-widest font-bold text-amber-400/70">Les 5 Portes du Savoir (Al-Abwâb)</span>
+        <span class="text-sm">۞</span>
+    </div>
 
-        <div class="space-y-10">
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- LE CHEMIN SPIRITUEL DES 5 GRANDES PARTIES                          -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div class="relative px-1 md:px-2">
+        <!-- Ligne centrale dorée -->
+        <div class="absolute left-1/2 top-4 bottom-12 w-0.5 bg-gradient-to-b from-amber-500/40 via-amber-500/20 to-emerald-500/40 -translate-x-1/2 rounded-full"></div>
+
+        <div class="space-y-8">
             {% for item in modules_data %}
             <div class="relative flex items-center justify-center" data-aos="fade-up">
                 
-                <!-- Point connecteur -->
-                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#0a0a0a] border-4 border-amber-500 z-10 shadow-[0_0_10px_rgba(245,158,11,0.5)]"></div>
+                <!-- Médaillon connecteur central -->
+                <div class=" hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#040B08] border-2 border-amber-400 z-10 shadow-[0_0_12px_rgba(212,175,55,0.5)] items-center justify-center text-[11px] text-amber-400 font-bold">
+                    {{ item.module.numero }}
+                </div>
                 
-                <!-- Carte du Module -->
+                <!-- Carte Mihrab du Chapitre -->
                 <a href="{% url 'tazawwud_module' item.module.id %}" 
-                   class="w-[88%] md:w-3/4 glass rounded-[24px] p-5 border border-white/10 hover:border-amber-500/40 hover:bg-amber-500/5 transition-all group z-20 {% if forloop.counter|divisibleby:2 %}ml-auto{% else %}mr-auto{% endif %} shadow-xl">
+                   class="w-full sm:w-[86%] md:w-[78%] glass mihrab-card islamic-geo-bg p-5 md:p-6 border border-amber-500/20 hover:border-amber-400/50 transition-all group z-20 {% if forloop.counter|divisibleby:2 %}sm:ml-auto{% else %}sm:mr-auto{% endif %} shadow-2xl">
                     
-                    <div class="flex justify-between items-start mb-2.5">
-                        <div class="w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg group-hover:scale-110 transition-transform border border-amber-500/30">
-                            <i class="{{ item.module.icone }}"></i>
+                    <div class="flex justify-between items-start gap-2 mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="rub-el-hizb-badge text-amber-400 text-base group-hover:scale-110 transition-transform">
+                                <i class="{{ item.module.icone }}"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400/90 block">
+                                    Bâb {{ item.module.numero }} · Grande Partie {{ item.module.numero }}
+                                </span>
+                                <span class="arabic-calligraphy text-xs text-white/50" dir="rtl">
+                                    {% if item.module.numero == 1 %}بَابُ الْمُقَدِّمَةِ وَالتَّوْبَةِ{% elif item.module.numero == 2 %}بَابُ الْإِيمَانِ وَالتَّوْحِيدِ{% elif item.module.numero == 3 %}بَابُ الْإِسْلَامِ وَالطَّهَارَةِ{% elif item.module.numero == 4 %}بَابُ الصَّلَاةِ وَالصِّيَامِ{% else %}بَابُ الْإِحْسَانِ وَالتَّصَوُّفِ{% endif %}
+                                </span>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2">
+
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
                             {% if item.revision_payee %}
-                                <span class="text-[9px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                    <i class="fas fa-check"></i> Débloqué
+                                <span class="text-[9px] font-black uppercase tracking-wider text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-full flex items-center gap-1">
+                                    <i class="fas fa-unlock"></i> Révision Débloquée
                                 </span>
                             {% else %}
-                                <span class="text-[9px] font-bold uppercase tracking-wider text-amber-400/80 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
-                                    500 F révision
+                                <span class="text-[9px] font-bold uppercase tracking-wider text-amber-300/90 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1 rounded-full">
+                                    Quiz Gratuits · Révision 500 F
                                 </span>
                             {% endif %}
-                            <span class="text-[9px] font-bold uppercase tracking-widest text-white/40 bg-white/5 px-2.5 py-0.5 rounded-full">
-                                Niveau {{ item.module.numero }}
-                            </span>
                         </div>
                     </div>
                     
-                    <h3 class="text-base md:text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">
+                    <h3 class="text-base md:text-lg font-extrabold text-white mb-1.5 group-hover:text-amber-300 transition-colors">
                         {{ item.module.titre }}
                     </h3>
-                    <p class="text-xs text-white/50 line-clamp-2 mb-3">{{ item.module.description }}</p>
+                    <p class="text-xs text-white/60 line-clamp-2 mb-4 leading-relaxed">{{ item.module.description }}</p>
                     
-                    <div class="flex items-center justify-between text-[10px] text-white/40 pt-2 border-t border-white/5">
-                        <span>{{ item.lecons_terminees }}/{{ item.total_lecons }} leçons validées</span>
-                        <span class="font-bold text-amber-400">{{ item.pourcentage }}%</span>
+                    <!-- Jauge de progression du chapitre -->
+                    <div class="w-full h-1.5 bg-black/50 rounded-full overflow-hidden mb-2 border border-white/5">
+                        <div class="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-yellow-400 rounded-full transition-all duration-700"
+                             style="width: {{ item.pourcentage }}%;"></div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[11px] text-white/50 pt-1">
+                        <span><i class="fas fa-scroll text-amber-400/70 mr-1"></i> {{ item.lecons_terminees }}/{{ item.total_lecons }} leçons validées</span>
+                        <span class="font-bold text-amber-400 flex items-center gap-1">
+                            {{ item.pourcentage }}% <i class="fas fa-chevron-right text-[9px] group-hover:translate-x-0.5 transition-transform"></i>
+                        </span>
                     </div>
                 </a>
             </div>
             {% endfor %}
             
-            <!-- Étoile Finale : Grande Révision du Livre -->
+            <!-- ══════════════════════════════════════════════════════════════ -->
+            <!-- KHÂTIMAH : GRANDE RÉVISION FINALE DE L'OUVRAGE (100+ QUESTIONS)-->
+            <!-- ══════════════════════════════════════════════════════════════ -->
             <div class="relative flex items-center justify-center pt-6" data-aos="fade-up">
-                <a href="{% url 'tazawwud_revision' 99 %}" class="text-center group z-20">
-                    <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-amber-400 to-yellow-600 text-black border-4 border-black flex items-center justify-center text-xl shadow-[0_0_25px_rgba(245,158,11,0.6)] group-hover:scale-110 transition-transform mb-2">
-                        <i class="fas fa-star"></i>
+                <a href="{% url 'tazawwud_revision' 99 %}" class="w-full max-w-md glass mihrab-card islamic-geo-bg p-6 border-2 border-amber-400/40 bg-gradient-to-b from-amber-950/50 via-[#040B08]/95 to-emerald-950/50 text-center group z-20 shadow-[0_0_35px_rgba(212,175,55,0.2)]">
+                    <div class="w-16 h-16 mx-auto rounded-2xl rotate-45 bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 text-black border-2 border-white/30 flex items-center justify-center text-2xl shadow-[0_0_25px_rgba(245,158,11,0.6)] group-hover:scale-110 transition-transform mb-4">
+                        <span class="-rotate-45 font-black">۞</span>
                     </div>
-                    <span class="text-xs font-bold text-amber-400 block group-hover:text-yellow-300">
-                        Grande Révision Finale (100+ questions)
+                    <p class="arabic-calligraphy text-xl text-amber-400 mb-0.5" dir="rtl">خَاتِمَةُ الْكِتَابِ — المُرَاجَعَةُ الكُبْرَى</p>
+                    <h3 class="text-base md:text-lg font-black text-white group-hover:text-amber-300 transition-colors">
+                        Grande Révision Finale du Livre (100+ Questions)
+                    </h3>
+                    <p class="text-xs text-white/60 mt-1 mb-3">
+                        Synthèse complète et variée couvrant les 308 vers (Foi, Pratique, Purification & Soufisme)
+                    </p>
+                    <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-extrabold">
+                        <i class="fas fa-award"></i> Relevé de Maîtrise Générale
                     </span>
-                    <span class="text-[10px] text-white/40 block">Synthèse complète de tout l'ouvrage</span>
                 </a>
             </div>
         </div>

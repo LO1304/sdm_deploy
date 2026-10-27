@@ -4,75 +4,93 @@
 {% block title %}{{ module.titre }} - Tazawwudu-ç-Çighâr{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto pb-24 px-4 space-y-6">
+<div class="max-w-2xl mx-auto pb-28 px-4 space-y-6">
 
-    <!-- Header -->
-    <div class="text-center pt-2" data-aos="fade-down">
-        <a href="{% url 'tazawwud_home' %}" class="inline-flex items-center gap-2 text-xs font-semibold text-white/50 hover:text-white mb-4">
-            <i class="fas fa-arrow-left"></i> Retour au Parcours
-        </a>
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- EN-TÊTE MIHRAB DU CHAPITRE                                         -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div class="glass mihrab-card islamic-geo-bg p-6 md:p-8 text-center border border-amber-500/25 relative overflow-hidden" data-aos="fade-down">
+        <div class="flex justify-start mb-2">
+            <a href="{% url 'tazawwud_home' %}" class="inline-flex items-center gap-2 text-xs font-semibold text-white/60 hover:text-amber-300 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 transition-colors">
+                <i class="fas fa-arrow-left text-[10px]"></i> Retour au Parcours
+            </a>
+        </div>
 
-        <div class="w-16 h-16 mx-auto rounded-3xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mb-3 border border-amber-500/30 shadow-xl shadow-amber-500/10">
+        <div class="rub-el-hizb-badge text-amber-400 text-2xl mx-auto mb-3 shadow-lg shadow-amber-500/15">
             <i class="{{ module.icone }}"></i>
         </div>
-        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400/90 mb-1">Grande Partie {{ module.numero }}</p>
+
+        <p class="arabic-calligraphy text-xl text-amber-400/90 mb-1" dir="rtl">
+            {% if module.numero == 1 %}بَابُ الْمُقَدِّمَةِ وَالتَّوْبَةِ{% elif module.numero == 2 %}بَابُ الْإِيمَانِ وَالتَّوْحِيدِ{% elif module.numero == 3 %}بَابُ الْإِسْلَامِ وَالطَّهَارَةِ{% elif module.numero == 4 %}بَابُ الصَّلَاةِ وَالصِّيَامِ{% else %}بَابُ الْإِحْسَانِ وَالتَّصَوُّفِ{% endif %}
+        </p>
+        <p class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300/80 mb-1">
+            Bâb {{ module.numero }} · Grande Partie {{ module.numero }}
+        </p>
         <h1 class="text-2xl md:text-3xl font-black text-white mb-2">{{ module.titre }}</h1>
-        <p class="text-white/60 text-xs md:text-sm max-w-md mx-auto">{{ module.description }}</p>
+        <p class="text-white/65 text-xs md:text-sm max-w-md mx-auto leading-relaxed">{{ module.description }}</p>
     </div>
 
-    <!-- Leçons List -->
+    <div class="ornament-divider">
+        <span>۞</span>
+        <span class="text-[10px] uppercase tracking-widest font-bold text-amber-400/70">Leçons & Manuscrits du Chapitre</span>
+        <span>۞</span>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- LISTE DES LEÇONS DU CHAPITRE                                       -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
     <div class="space-y-3" data-aos="fade-up">
         {% for lecon in lecons %}
         
         {% if lecon.est_revision_finale %}
-            <!-- REVISION INTENSE CARD (PAYANTE OU DÉBLOQUÉE) -->
+            <!-- CARTE DE RÉVISION INTENSIVE (AL-MURÂJA'AH) -->
             <a href="{% url 'tazawwud_lecon' lecon.id %}" 
-               class="block glass rounded-[28px] p-5 border {% if a_acces_revision %}border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10{% else %}border-red-500/30 bg-red-500/5 hover:bg-red-500/10{% endif %} transition-all group relative overflow-hidden mt-6 shadow-xl">
-                <div class="absolute top-0 right-0 w-36 h-36 {% if a_acces_revision %}bg-emerald-500/10{% else %}bg-red-500/10{% endif %} rounded-full blur-2xl pointer-events-none"></div>
+               class="block glass mihrab-card islamic-geo-bg p-5 border {% if a_acces_revision %}border-emerald-500/40 bg-emerald-950/30 hover:border-emerald-400/60{% else %}border-amber-500/40 bg-amber-950/25 hover:border-amber-400/60{% endif %} transition-all group relative overflow-hidden mt-6 shadow-2xl">
+                <div class="absolute top-0 right-0 w-36 h-36 {% if a_acces_revision %}bg-emerald-500/10{% else %}bg-amber-500/10{% endif %} rounded-full blur-2xl pointer-events-none"></div>
 
                 <div class="flex items-center gap-4 relative z-10">
-                    <div class="w-12 h-12 rounded-2xl {% if a_acces_revision %}bg-emerald-500/20 text-emerald-400 border-emerald-500/30{% else %}bg-red-500/20 text-red-400 border-red-500/30{% endif %} flex items-center justify-center flex-shrink-0 border text-lg">
-                        <i class="fas {% if a_acces_revision %}fa-fire{% else %}fa-lock{% endif %}"></i>
+                    <div class="rub-el-hizb-badge {% if a_acces_revision %}text-emerald-400 border-emerald-500/40{% else %}text-amber-400 border-amber-500/40{% endif %} text-base flex-shrink-0">
+                        <i class="fas {% if a_acces_revision %}fa-award{% else %}fa-lock{% endif %}"></i>
                     </div>
 
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[10px] font-black uppercase tracking-wider {% if a_acces_revision %}text-emerald-400{% else %}text-red-400{% endif %}">
-                                Étape de Révision Intensive
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span class="text-[10px] font-black uppercase tracking-wider {% if a_acces_revision %}text-emerald-400{% else %}text-amber-400{% endif %}">
+                                ۞ Al-Murâja'ah · Révision Intensive
                             </span>
                             {% if a_acces_revision %}
-                                <span class="text-[9px] font-bold uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">Débloqué ✨</span>
+                                <span class="text-[9px] font-bold uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">Accès Débloqué ✨</span>
                             {% else %}
-                                <span class="text-[9px] font-bold uppercase bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full border border-red-500/30">500 FCFA</span>
+                                <span class="text-[9px] font-bold uppercase bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30">500 FCFA</span>
                             {% endif %}
                         </div>
-                        <h3 class="font-bold text-white text-sm md:text-base truncate">{{ lecon.titre }}</h3>
-                        <p class="text-xs text-white/50 mt-0.5 line-clamp-1">{{ lecon.description }}</p>
+                        <h3 class="font-bold text-white text-sm md:text-base truncate group-hover:text-amber-300 transition-colors">{{ lecon.titre }}</h3>
+                        <p class="text-xs text-white/55 mt-0.5 line-clamp-1">{{ lecon.description }}</p>
                     </div>
 
                     {% if lecon.id in terminees_ids %}
-                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm border border-emerald-500/30">
+                        <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm border border-emerald-500/30">
                             <i class="fas fa-check"></i>
                         </div>
                     {% elif a_acces_revision %}
-                        <div class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center text-xs">
+                        <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs border border-emerald-500/30">
                             <i class="fas fa-play"></i>
                         </div>
                     {% else %}
-                        <div class="w-8 h-8 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center text-xs">
+                        <div class="w-9 h-9 rounded-full bg-amber-500/15 text-amber-400 flex items-center justify-center text-xs border border-amber-500/30">
                             <i class="fas fa-lock"></i>
                         </div>
                     {% endif %}
                 </div>
             </a>
         {% else %}
-            <!-- STANDARD LESSON CARD (GRATUIT) -->
-            <a href="{% url 'tazawwud_lecon' lecon.id %}" class="block glass rounded-2xl p-4 border border-white/5 hover:border-amber-500/30 hover:bg-white/[0.04] transition-all group">
+            <!-- CARTE DE LEÇON ORDINAIRE (ACCÈS LIBRE & GRATUIT) -->
+            <a href="{% url 'tazawwud_lecon' lecon.id %}" class="block glass rounded-2xl p-4 border border-white/10 hover:border-amber-500/40 hover:bg-amber-500/[0.04] transition-all group">
                 <div class="flex items-center gap-3.5">
                     
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-black transition-colors
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-black transition-colors
                         {% if lecon.id in terminees_ids %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
-                        {% else %}bg-white/5 text-white/40 group-hover:bg-amber-500/10 group-hover:text-amber-400{% endif %}">
+                        {% else %}bg-amber-500/10 text-amber-400/80 border border-amber-500/20 group-hover:bg-amber-500/20 group-hover:text-amber-300{% endif %}">
                         {% if lecon.id in terminees_ids %}
                             <i class="fas fa-check"></i>
                         {% else %}
@@ -81,15 +99,15 @@
                     </div>
                     
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2">
-                            <span class="text-[9px] font-bold text-white/30 uppercase tracking-wider">Leçon {{ lecon.numero }}</span>
-                            <span class="text-[9px] font-semibold text-emerald-400/80 bg-emerald-500/10 px-1.5 py-0.2 rounded">Gratuit</span>
+                        <div class="flex items-center gap-2 mb-0.5">
+                            <span class="text-[9px] font-bold text-amber-400/70 uppercase tracking-wider">Dars {{ lecon.numero }}</span>
+                            <span class="text-[9px] font-semibold text-emerald-400/90 bg-emerald-500/10 px-2 py-0.2 rounded-full border border-emerald-500/20">Accès Libre</span>
                         </div>
-                        <h3 class="font-bold text-white text-sm group-hover:text-amber-400 transition-colors truncate">{{ lecon.titre }}</h3>
-                        <p class="text-[11px] text-white/40 mt-0.5 line-clamp-1">{{ lecon.description }}</p>
+                        <h3 class="font-bold text-white text-sm group-hover:text-amber-300 transition-colors truncate">{{ lecon.titre }}</h3>
+                        <p class="text-[11px] text-white/45 mt-0.5 line-clamp-1">{{ lecon.description }}</p>
                     </div>
                     
-                    <i class="fas fa-chevron-right text-white/20 group-hover:text-amber-400 text-xs"></i>
+                    <i class="fas fa-chevron-right text-white/25 group-hover:text-amber-400 text-xs group-hover:translate-x-0.5 transition-all"></i>
                 </div>
             </a>
         {% endif %}
@@ -98,9 +116,9 @@
     </div>
 
     <div class="text-center pt-4">
-        <a href="{% url 'tazawwud_dashboard' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 text-xs text-white/60 hover:text-white border border-white/10 transition-colors">
-            <i class="fas fa-chart-pie"></i>
-            <span>Voir mon Tableau de Bord de l'Élève</span>
+        <a href="{% url 'tazawwud_dashboard' %}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-xs font-bold text-amber-300 border border-amber-500/25 transition-colors">
+            <i class="fas fa-compass"></i>
+            <span>Ouvrir mon Carnet de l'Élève</span>
         </a>
     </div>
 </div>
