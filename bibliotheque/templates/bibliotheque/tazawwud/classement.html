@@ -1,0 +1,96 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}Classement Hebdomadaire - Tazawwudu-ç-Çighâr{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto pb-24 px-4 space-y-6 pt-2">
+
+    <!-- Navigation -->
+    <div class="flex items-center justify-between" data-aos="fade-down">
+        <a href="{% url 'tazawwud_dashboard' %}" class="inline-flex items-center gap-2 text-xs font-semibold text-white/50 hover:text-white">
+            <i class="fas fa-arrow-left"></i> Tableau de Bord
+        </a>
+        <a href="{% url 'tazawwud_compagnons' %}" class="text-xs font-bold text-blue-400 hover:underline flex items-center gap-1.5">
+            <i class="fas fa-user-friends"></i> Mes Compagnons
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="text-center" data-aos="fade-up">
+        <div class="w-16 h-16 mx-auto rounded-3xl bg-yellow-500/20 text-yellow-400 flex items-center justify-center text-3xl mb-3 border border-yellow-500/30 shadow-xl shadow-yellow-500/10">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-black text-white">Classement de la Semaine</h1>
+        <p class="text-xs md:text-sm text-white/60 mt-1 max-w-sm mx-auto">
+            Fondé sur l'activité et les progrès de la semaine. Remise à zéro chaque lundi à 00h00 GMT.
+        </p>
+    </div>
+
+    <!-- Ma position actuelle -->
+    <div class="glass rounded-3xl p-5 border border-amber-500/30 bg-amber-500/10 flex items-center justify-between shadow-xl" data-aos="fade-up">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500 text-black font-black text-lg flex items-center justify-center shadow-md">
+                {{ request.user.username|first|upper }}
+            </div>
+            <div>
+                <p class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Votre activité</p>
+                <h3 class="text-base font-bold text-white">{{ request.user.username }}</h3>
+                <p class="text-xs text-white/60">{{ progression.lecons_terminees.count }} leçons terminées au total</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <span class="text-xl font-black text-amber-400">{{ progression.points_semaine }}</span>
+            <p class="text-[10px] text-white/50">points cette semaine</p>
+        </div>
+    </div>
+
+    <!-- CLASSEMENT TOP ÉLÈVES -->
+    <div class="glass rounded-3xl p-5 border border-white/10 space-y-3" data-aos="fade-up">
+        <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-white/70">Top 30 des Élèves</h2>
+            <span class="text-[11px] text-white/40">Profils publics</span>
+        </div>
+
+        <div class="space-y-2">
+            {% for item in top_eleves %}
+            <div class="flex items-center justify-between p-3 rounded-2xl transition-colors {% if item.user == request.user %}bg-amber-500/20 border border-amber-500/40{% else %}bg-white/[0.02] border border-white/5{% endif %}">
+                <div class="flex items-center gap-3.5">
+                    <!-- Podium Rang -->
+                    <div class="w-8 text-center font-black text-sm">
+                        {% if forloop.counter == 1 %}
+                            <span class="text-2xl text-yellow-400">🥇</span>
+                        {% elif forloop.counter == 2 %}
+                            <span class="text-2xl text-slate-300">🥈</span>
+                        {% elif forloop.counter == 3 %}
+                            <span class="text-2xl text-amber-600">🥉</span>
+                        {% else %}
+                            <span class="text-white/40 font-mono">#{{ forloop.counter }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center font-bold text-xs text-white">
+                        {{ item.user.username|first|upper }}
+                    </div>
+
+                    <div>
+                        <p class="text-xs md:text-sm font-bold text-white truncate max-w-[150px] md:max-w-xs">
+                            {{ item.user.username }} {% if item.user == request.user %}<span class="text-amber-400 text-xs font-normal">(Vous)</span>{% endif %}
+                        </p>
+                        <p class="text-[10px] text-white/40">{{ item.lecons_terminees.count }} leçon(s) validée(s)</p>
+                    </div>
+                </div>
+
+                <div class="text-right">
+                    <span class="text-sm font-black text-amber-400">{{ item.points_semaine }}</span>
+                    <span class="text-[10px] text-white/40 block">pts</span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-xs text-white/40 text-center py-6">Aucun point marqué pour le moment cette semaine. Soyez le premier !</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

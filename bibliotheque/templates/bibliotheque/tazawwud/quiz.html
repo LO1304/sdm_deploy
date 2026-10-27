@@ -1,189 +1,504 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Quiz - {{ lecon.titre }}{% endblock %}
+{% block title %}Quiz - {{ lecon.titre|default:"Tazawwudu-ç-Çighâr" }}{% endblock %}
 
 {% block content %}
 <style>
-    .choice-btn { transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
-    .choice-btn:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(245,158,11,0.5) !important; background: rgba(245,158,11,0.08) !important; }
-    .choice-btn:active:not(:disabled) { transform: scale(0.97); }
-    .choice-btn.correct { background: rgba(16,185,129,0.2) !important; border-color: rgba(16,185,129,0.6) !important; color: #34d399 !important; }
-    .choice-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: rgba(239,68,68,0.5) !important; color: #f87171 !important; }
-    .choice-btn:disabled { cursor: not-allowed; opacity: 0.7; }
-    @keyframes slideIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .slide-in { animation: slideIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
-    .explication-box { animation: slideIn 0.5s cubic-bezier(0.16,1,0.3,1); }
+    /* Animations & Cards */
+    .card-choice {
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-choice:hover:not(:disabled) {
+        transform: translateY(-2px);
+        border-color: rgba(245, 158, 11, 0.5) !important;
+        background: rgba(245, 158, 11, 0.08) !important;
+    }
+    .card-choice.correct {
+        background: rgba(16, 185, 129, 0.2) !important;
+        border-color: rgba(16, 185, 129, 0.6) !important;
+        color: #34d399 !important;
+    }
+    .card-choice.wrong {
+        background: rgba(239, 68, 68, 0.2) !important;
+        border-color: rgba(239, 68, 68, 0.6) !important;
+        color: #f87171 !important;
+    }
+    
+    /* Association match styles */
+    .assoc-btn {
+        transition: all 0.2s ease;
+    }
+    .assoc-btn.selected {
+        border-color: #f59e0b !important;
+        background: rgba(245, 158, 11, 0.2) !important;
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+    }
+    .assoc-btn.matched {
+        border-color: #10b981 !important;
+        background: rgba(16, 185, 129, 0.15) !important;
+        color: #34d399 !important;
+        pointer-events: none;
+    }
+
+    @keyframes heartBreak {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.3) rotate(-15deg); filter: drop-shadow(0 0 8px red); }
+        100% { transform: scale(1) rotate(0); }
+    }
+    .heart-lost {
+        animation: heartBreak 0.5s ease-out;
+    }
 </style>
 
-<div class="max-w-3xl mx-auto pb-12" id="quiz-app">
+<div class="max-w-3xl mx-auto pb-24 px-4" id="quiz-app">
 
-    <!-- Progress Indicator -->
-    <div class="flex items-center justify-between mb-8 px-2">
-        <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden mr-4">
-            <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500" style="width: 0%"></div>
-        </div>
-        <a href="{% url 'tazawwud_module' lecon.module.id %}" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-            <i class="fa-solid fa-xmark"></i>
+    <!-- Top Bar : Navigation, Vies & Progression -->
+    <div class="flex items-center justify-between mb-4 pt-2">
+        <a href="{% if module %}{% url 'tazawwud_module' module.id %}{% else %}{% url 'tazawwud_dashboard' %}{% endif %}" 
+           class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+            <i class="fas fa-times"></i>
         </a>
+
+        <!-- Vies Widget -->
+        <div class="flex items-center gap-1.5 bg-black/40 px-3.5 py-1.5 rounded-full border border-white/10" id="lives-container">
+            <div id="lives-icons" class="flex items-center gap-1 text-sm">
+                <!-- Rendu dynamiquement par JS -->
+            </div>
+            <span class="text-xs font-bold text-white ml-1" id="lives-text">3/3</span>
+        </div>
+
+        <!-- Mode Indicator -->
+        <div>
+            {% if mode_entrainement %}
+                <span class="text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full flex items-center gap-1">
+                    <i class="fas fa-shield-heart"></i> Entraînement
+                </span>
+            {% elif is_revision %}
+                <span class="text-[10px] font-black uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-1 rounded-full flex items-center gap-1">
+                    <i class="fas fa-fire"></i> Révision
+                </span>
+            {% else %}
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full">
+                    Quiz
+                </span>
+            {% endif %}
+        </div>
     </div>
 
-    <!-- MAIN CARD -->
-    <div class="glass rounded-[32px] overflow-hidden border border-white/5 shadow-2xl">
+    <!-- Barre de Progression Fine -->
+    <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden mb-6 shadow-inner">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-300" style="width: 0%"></div>
+    </div>
+
+    <!-- MAIN QUESTION CARD -->
+    <div class="glass rounded-[32px] overflow-hidden border border-white/5 shadow-2xl relative" id="main-card">
         
+        <!-- Question Content Area -->
         <div class="p-6 md:p-10" id="question-area">
             
-            <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400/80 mb-6 text-center">
-                {% if is_revision %}<i class="fa-solid fa-fire mr-1 text-red-500"></i> <span class="text-red-400">RÉVISION INTENSIVE</span>{% else %}VÉRIFICATION{% endif %} — <span id="current-q">1</span> / <span id="total-q">10</span>
-            </p>
-            
-            <p class="text-xl md:text-2xl font-bold text-white mb-10 text-center leading-relaxed" id="question-text">Chargement...</p>
-            
-            <div class="grid grid-cols-1 gap-4" id="choices-container"></div>
-            
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400/80 bg-amber-500/10 px-2.5 py-1 rounded-full" id="q-counter">
+                    Question 1 / 10
+                </span>
+                <span class="text-[10px] font-semibold text-white/40 uppercase tracking-wider" id="q-type-badge">
+                    QCM
+                </span>
+            </div>
+
+            <!-- Énoncé de la question -->
+            <h2 class="text-lg md:text-2xl font-bold text-white mb-8 leading-relaxed" id="question-text">
+                Chargement...
+            </h2>
+
+            <!-- Conteneur dynamique selon le type de question -->
+            <div id="dynamic-input-area" class="space-y-3">
+                <!-- Rendu dynamique par JS pour QCM, Vrai/Faux, Association, Texte Court -->
+            </div>
+
+            <!-- Bouton de validation pour les types Association ou Texte Court -->
+            <div id="submit-action-area" class="mt-6 hidden">
+                <button id="btn-valider-reponse" class="w-full py-3.5 px-6 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20">
+                    <i class="fas fa-check"></i>
+                    <span>Valider ma réponse</span>
+                </button>
+            </div>
+
         </div>
 
-        <!-- Explication Box (Hidden initially) -->
-        <div id="explication-box" class="hidden p-6 md:p-8 bg-white/[0.03] border-t border-white/5">
-            <div class="flex items-start gap-4">
-                <div id="feedback-icon" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg"></div>
-                <div>
-                    <h4 id="feedback-title" class="font-bold text-base mb-1"></h4>
-                    <p id="feedback-text" class="text-white/70 text-sm leading-relaxed"></p>
+        <!-- Correction & Explication Drawer -->
+        <div id="feedback-drawer" class="hidden p-6 md:p-8 bg-black/60 border-t border-white/10 backdrop-blur-md transition-all">
+            <div class="flex items-start gap-3.5">
+                <div id="feedback-icon" class="w-10 h-10 rounded-2xl flex items-center justify-center text-lg flex-shrink-0 shadow-lg"></div>
+                <div class="flex-1">
+                    <h3 id="feedback-title" class="font-bold text-base mb-1"></h3>
+                    <p id="feedback-text" class="text-white/80 text-xs md:text-sm leading-relaxed"></p>
                 </div>
             </div>
-            
+
             <div class="mt-6 flex justify-end">
-                <button id="next-btn" class="px-8 py-3 rounded-full bg-white/10 text-white font-bold hover:bg-white/20 transition-colors text-sm">
-                    Question Suivante <i class="fa-solid fa-arrow-right ml-2"></i>
+                <button id="btn-next" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black text-xs md:text-sm hover:scale-105 active:scale-95 transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2">
+                    <span>Question Suivante</span>
+                    <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </div>
-        
-        <!-- End Screen (Hidden initially) -->
+
+        <!-- Écran de Fin de Session -->
         <div id="end-screen" class="hidden p-8 md:p-12 text-center">
-            <div class="w-24 h-24 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-5xl mb-6 border-4 border-emerald-500/30">
-                <i class="fa-solid fa-trophy"></i>
+            <div class="w-20 h-20 mx-auto rounded-3xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-4xl mb-6 shadow-xl shadow-amber-500/20 animate-bounce">
+                <i class="fas fa-award"></i>
             </div>
-            <h2 class="text-3xl font-black text-white mb-2">{% if is_revision %}Chapitre Validé !{% else %}Leçon Terminée !{% endif %}</h2>
-            <p class="text-white/60 mb-8">Vous avez accumulé <span id="final-score" class="font-bold text-emerald-400"></span> points.</p>
             
-            <button id="finish-btn" class="w-full md:w-auto px-10 py-4 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold hover:scale-105 transition-all text-sm shadow-lg shadow-emerald-500/20">
-                Continuer le parcours <i class="fa-solid fa-check ml-2"></i>
-            </button>
+            <h2 class="text-2xl md:text-3xl font-black text-white mb-2">
+                {% if mode_entrainement %}
+                    Entraînement Terminé !
+                {% elif is_revision %}
+                    Révision Validée !
+                {% else %}
+                    Leçon Validée !
+                {% endif %}
+            </h2>
+            <p class="text-xs md:text-sm text-white/60 mb-6 max-w-sm mx-auto">
+                {% if mode_entrainement %}
+                    Bravo ! Tu as consolidé tes connaissances et tes vies ont été rechargées.
+                {% else %}
+                    Excellente progression dans l'assimilation des versets du livre.
+                {% endif %}
+            </p>
+
+            <!-- Score Summary Card -->
+            <div class="p-4 rounded-2xl bg-black/40 border border-white/5 max-w-xs mx-auto mb-8 space-y-2 text-xs">
+                <div class="flex justify-between text-white/60">
+                    <span>Score obtenu :</span>
+                    <strong class="text-amber-400 text-sm" id="final-score">0 pts</strong>
+                </div>
+                <div class="flex justify-between text-white/60">
+                    <span>Bonnes réponses :</span>
+                    <strong class="text-emerald-400 text-sm" id="final-stats">0/0</strong>
+                </div>
+                <div class="flex justify-between text-white/60">
+                    <span>Vies restantes :</span>
+                    <strong class="text-white text-sm" id="final-lives">❤️❤️❤️</strong>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button id="btn-finish" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xs md:text-sm hover:scale-105 active:scale-95 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+                    <i class="fas fa-check"></i> Continuer le parcours
+                </button>
+                <a href="{% url 'tazawwud_dashboard' %}" class="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs flex items-center justify-center gap-2">
+                    <i class="fas fa-chart-pie"></i> Tableau de bord
+                </a>
+            </div>
         </div>
 
     </div>
+
 </div>
 
 <script>
     const questions = JSON.parse('{{ questions_json|escapejs }}');
+    const isRevision = {{ is_revision|yesno:"true,false" }};
+    const isEntrainement = {{ mode_entrainement|yesno:"true,false" }};
     const csrfToken = '{{ csrf_token }}';
-    const leconId = {{ lecon.id }};
+    const leconId = {% if lecon %}{{ lecon.id }}{% else %}null{% endif %};
     
     let currentIdx = 0;
-    let score = 0;
-    
+    let scoreTotal = 0;
+    let correctCount = 0;
+    let currentLives = {{ progression.vies_actuelles|default:3 }};
+    const maxLives = {{ progression.vies_max|default:3 }};
+
+    // Pour le mode association
+    let assocSelection = { gauche: null, droite: null };
+    let assocMatches = {}; // { gauche: droite }
+
     const ui = {
+        counter: document.getElementById('q-counter'),
+        typeBadge: document.getElementById('q-type-badge'),
         question: document.getElementById('question-text'),
-        choices: document.getElementById('choices-container'),
-        currentQ: document.getElementById('current-q'),
-        totalQ: document.getElementById('total-q'),
-        progress: document.getElementById('progress-bar'),
-        explBox: document.getElementById('explication-box'),
-        feedIcon: document.getElementById('feedback-icon'),
-        feedTitle: document.getElementById('feedback-title'),
-        feedText: document.getElementById('feedback-text'),
-        nextBtn: document.getElementById('next-btn'),
+        inputArea: document.getElementById('dynamic-input-area'),
+        submitArea: document.getElementById('submit-action-area'),
+        btnValider: document.getElementById('btn-valider-reponse'),
+        feedbackDrawer: document.getElementById('feedback-drawer'),
+        feedbackIcon: document.getElementById('feedback-icon'),
+        feedbackTitle: document.getElementById('feedback-title'),
+        feedbackText: document.getElementById('feedback-text'),
+        btnNext: document.getElementById('btn-next'),
+        progressBar: document.getElementById('progress-bar'),
+        livesIcons: document.getElementById('lives-icons'),
+        livesText: document.getElementById('lives-text'),
         qArea: document.getElementById('question-area'),
         endScreen: document.getElementById('end-screen'),
         finalScore: document.getElementById('final-score'),
-        finishBtn: document.getElementById('finish-btn'),
+        finalStats: document.getElementById('final-stats'),
+        finalLives: document.getElementById('final-lives'),
+        btnFinish: document.getElementById('btn-finish'),
     };
-    
-    ui.totalQ.innerText = questions.length;
-    
-    function loadQuestion() {
-        if (currentIdx >= questions.length) { endGame(); return; }
-        
-        const q = questions[currentIdx];
-        ui.explBox.classList.add('hidden');
-        ui.progress.style.width = ((currentIdx / questions.length) * 100) + '%';
-        ui.currentQ.innerText = currentIdx + 1;
-        ui.question.innerText = q.texte;
-        ui.choices.innerHTML = '';
-        
-        q.choix.forEach((c, idx) => {
-            const btn = document.createElement('button');
-            btn.className = "choice-btn w-full py-4 px-6 text-left rounded-2xl border border-white/10 bg-white/[0.03] font-semibold text-white/80 text-sm md:text-base slide-in";
-            btn.style.animationDelay = (idx * 80) + 'ms';
-            btn.innerHTML = c.texte;
-            btn.onclick = () => handleAnswer(c.est_correct, q.points, q.explication, btn);
-            ui.choices.appendChild(btn);
-        });
+
+    function updateLivesUI(lost = false) {
+        let html = '';
+        for (let i = 1; i <= maxLives; i++) {
+            if (i <= currentLives) {
+                html += '<span class="text-red-500">❤️</span>';
+            } else if (lost && i === currentLives + 1) {
+                html += '<span class="heart-lost inline-block text-red-500">💔</span>';
+            } else {
+                html += '<span class="text-white/20">🤍</span>';
+            }
+        }
+        ui.livesIcons.innerHTML = html;
+        ui.livesText.innerText = currentLives + '/' + maxLives;
     }
-    
-    function handleAnswer(isCorrect, points, explication, selectedBtn) {
-        for (let b of ui.choices.children) b.disabled = true;
+
+    function renderQuestion() {
+        if (currentIdx >= questions.length) {
+            finishSession();
+            return;
+        }
+
+        const q = questions[currentIdx];
+        ui.feedbackDrawer.classList.add('hidden');
+        ui.submitArea.classList.add('hidden');
+        ui.inputArea.innerHTML = '';
         
-        if (isCorrect) {
-            score += points;
-            selectedBtn.classList.add('correct');
-            ui.feedIcon.className = "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg bg-emerald-500/20 text-emerald-400";
-            ui.feedIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
-            ui.feedTitle.className = "font-bold text-base mb-1 text-emerald-400";
-            ui.feedTitle.innerText = "Exact !";
-        } else {
-            selectedBtn.classList.add('wrong');
-            ui.feedIcon.className = "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg bg-red-500/20 text-red-400";
-            ui.feedIcon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-            ui.feedTitle.className = "font-bold text-base mb-1 text-red-400";
-            ui.feedTitle.innerText = "Pas exactement...";
-            
-            const q = questions[currentIdx];
-            q.choix.forEach((c, i) => { 
-                if (c.est_correct) { 
-                    ui.choices.children[i].classList.add('correct'); 
-                    ui.choices.children[i].innerHTML += ' <i class="fa-solid fa-check text-emerald-400 float-right mt-1"></i>'; 
-                } 
+        ui.counter.innerText = `Question ${currentIdx + 1} / ${questions.length}`;
+        ui.progressBar.style.width = `${((currentIdx) / questions.length) * 100}%`;
+        ui.question.innerText = q.texte;
+
+        const typeLabels = {
+            'qcm': 'Choix Multiple',
+            'vrai_faux': 'Vrai ou Faux',
+            'association': 'Association de paires',
+            'texte_court': 'Réponse Courte'
+        };
+        ui.typeBadge.innerText = typeLabels[q.type_question] || 'Quiz';
+
+        // ── FORMAT 1 : QCM ──
+        if (q.type_question === 'qcm') {
+            q.choix.forEach((c, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "card-choice w-full p-4 rounded-2xl border border-white/10 bg-white/[0.03] text-left text-xs md:text-sm font-semibold text-white/90 flex items-center justify-between";
+                btn.innerHTML = `<span>${c.texte}</span> <span class="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-[10px] text-white/40">${String.fromCharCode(65 + idx)}</span>`;
+                btn.onclick = () => submitAnswer(c.id, [btn]);
+                ui.inputArea.appendChild(btn);
             });
         }
         
-        ui.feedText.innerText = explication;
-        ui.explBox.classList.remove('hidden');
-        
-        if (currentIdx === questions.length - 1) {
-            ui.nextBtn.innerText = "Terminer";
+        // ── FORMAT 2 : VRAI / FAUX ──
+        else if (q.type_question === 'vrai_faux') {
+            const grid = document.createElement('div');
+            grid.className = "grid grid-cols-2 gap-3";
+
+            const btnVrai = document.createElement('button');
+            btnVrai.className = "card-choice p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold text-sm md:text-base flex flex-col items-center justify-center gap-2";
+            btnVrai.innerHTML = '<i class="fas fa-check-circle text-2xl"></i><span>VRAI</span>';
+            btnVrai.onclick = () => submitAnswer("Vrai", [btnVrai, btnFaux]);
+
+            const btnFaux = document.createElement('button');
+            btnFaux.className = "card-choice p-5 rounded-2xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-sm md:text-base flex flex-col items-center justify-center gap-2";
+            btnFaux.innerHTML = '<i class="fas fa-times-circle text-2xl"></i><span>FAUX</span>';
+            btnFaux.onclick = () => submitAnswer("Faux", [btnVrai, btnFaux]);
+
+            grid.appendChild(btnVrai);
+            grid.appendChild(btnFaux);
+            ui.inputArea.appendChild(grid);
+        }
+
+        // ── FORMAT 3 : RÉPONSE COURTE ──
+        else if (q.type_question === 'texte_court') {
+            const inputContainer = document.createElement('div');
+            inputContainer.className = "space-y-3";
+            inputContainer.innerHTML = `
+                <input type="text" id="short-answer-input" 
+                       placeholder="Tapez le mot ou le chiffre clé..." 
+                       class="w-full p-4 rounded-2xl bg-white/[0.04] border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-amber-400 transition-colors"
+                       autocomplete="off" />
+            `;
+            ui.inputArea.appendChild(inputContainer);
+            ui.submitArea.classList.remove('hidden');
+
+            const inputEl = document.getElementById('short-answer-input');
+            inputEl.focus();
+            inputEl.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    submitAnswer(inputEl.value.trim(), []);
+                }
+            };
+            ui.btnValider.onclick = () => submitAnswer(inputEl.value.trim(), []);
+        }
+
+        // ── FORMAT 4 : ASSOCIATION DE PAIRES ──
+        else if (q.type_question === 'association') {
+            assocSelection = { gauche: null, droite: null };
+            assocMatches = {};
+
+            const paires = q.donnees_extra.paires || [];
+            const gauches = paires.map(p => p.gauche);
+            const droites = [...paires.map(p => p.droite)].sort(() => Math.random() - 0.5);
+
+            const container = document.createElement('div');
+            container.className = "grid grid-cols-2 gap-3 text-xs md:text-sm";
+
+            const colGauche = document.createElement('div');
+            colGauche.className = "space-y-2";
+            gauches.forEach(g => {
+                const btn = document.createElement('button');
+                btn.className = "assoc-btn w-full p-3 rounded-xl bg-white/[0.03] border border-white/10 text-left text-white/90 font-medium";
+                btn.innerText = g;
+                btn.dataset.item = g;
+                btn.onclick = () => selectAssocItem('gauche', g, btn);
+                colGauche.appendChild(btn);
+            });
+
+            const colDroite = document.createElement('div');
+            colDroite.className = "space-y-2";
+            droites.forEach(d => {
+                const btn = document.createElement('button');
+                btn.className = "assoc-btn w-full p-3 rounded-xl bg-white/[0.03] border border-white/10 text-left text-white/90 font-medium";
+                btn.innerText = d;
+                btn.dataset.item = d;
+                btn.onclick = () => selectAssocItem('droite', d, btn);
+                colDroite.appendChild(btn);
+            });
+
+            container.appendChild(colGauche);
+            container.appendChild(colDroite);
+            ui.inputArea.appendChild(container);
+
+            ui.submitArea.classList.remove('hidden');
+            ui.btnValider.onclick = () => submitAnswer(assocMatches, []);
         }
     }
-    
-    ui.nextBtn.onclick = () => {
-        currentIdx++;
-        loadQuestion();
-    };
-    
-    function endGame() {
-        ui.progress.style.width = '100%';
-        ui.qArea.classList.add('hidden');
-        ui.explBox.classList.add('hidden');
-        ui.endScreen.classList.remove('hidden');
-        ui.finalScore.innerText = score;
+
+    function selectAssocItem(cote, valeur, btnElement) {
+        // Déselectionner anciens sur ce côté
+        const col = btnElement.parentElement;
+        col.querySelectorAll('.assoc-btn').forEach(b => b.classList.remove('selected'));
+
+        assocSelection[cote] = valeur;
+        btnElement.classList.add('selected');
+
+        // Si les deux côtés sont sélectionnés -> créer le lien
+        if (assocSelection.gauche && assocSelection.droite) {
+            assocMatches[assocSelection.gauche] = assocSelection.droite;
+
+            // Marquer comme matché
+            const gBtn = document.querySelector(`.assoc-btn[data-item="${assocSelection.gauche}"]`);
+            const dBtn = document.querySelector(`.assoc-btn[data-item="${assocSelection.droite}"]`);
+            if (gBtn) { gBtn.classList.add('matched'); gBtn.classList.remove('selected'); }
+            if (dBtn) { dBtn.classList.add('matched'); dBtn.classList.remove('selected'); }
+
+            assocSelection = { gauche: null, droite: null };
+        }
     }
-    
-    ui.finishBtn.onclick = () => {
-        ui.finishBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Validation...';
-        ui.finishBtn.disabled = true;
-        
-        fetch("{% url 'api_tazawwud_save_score' %}", {
+
+    function submitAnswer(reponseUser, activeButtons) {
+        const q = questions[currentIdx];
+
+        // Désactiver les boutons
+        activeButtons.forEach(b => b.disabled = true);
+        if (ui.submitArea) ui.submitArea.classList.add('hidden');
+
+        fetch("{% url 'api_tazawwud_reponse' %}", {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-            body: JSON.stringify({ score: score, lecon_id: leconId })
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                question_id: q.id,
+                reponse: reponseUser,
+                mode_entrainement: isEntrainement
+            })
         })
         .then(r => r.json())
-        .then(() => { window.location.href = "{% url 'tazawwud_module' lecon.module.id %}"; })
-        .catch(() => { window.location.href = "{% url 'tazawwud_module' lecon.module.id %}"; });
+        .then(data => {
+            const isCorrect = data.est_correct;
+            const explication = data.explication;
+            const newLives = data.vies_restantes;
+
+            if (isCorrect) {
+                correctCount++;
+                scoreTotal += (q.points || 10);
+                activeButtons.forEach(b => b.classList.add('correct'));
+
+                ui.feedbackIcon.className = "w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-lg";
+                ui.feedbackIcon.innerHTML = '<i class="fas fa-check"></i>';
+                ui.feedbackTitle.className = "font-bold text-base text-emerald-400";
+                ui.feedbackTitle.innerText = "Exact ! Bien joué.";
+            } else {
+                activeButtons.forEach(b => b.classList.add('wrong'));
+
+                ui.feedbackIcon.className = "w-10 h-10 rounded-2xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center text-lg";
+                ui.feedbackIcon.innerHTML = '<i class="fas fa-times"></i>';
+                ui.feedbackTitle.className = "font-bold text-base text-red-400";
+                ui.feedbackTitle.innerText = isEntrainement ? "Pas tout à fait..." : "Pas tout à fait... (-1 vie 💔)";
+
+                if (!isEntrainement && newLives < currentLives) {
+                    currentLives = newLives;
+                    updateLivesUI(true);
+                }
+            }
+
+            ui.feedbackText.innerText = explication;
+            ui.feedbackDrawer.classList.remove('hidden');
+
+            // Scroll fluide vers le tiroir de feedback sur mobile
+            ui.feedbackDrawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        })
+        .catch(err => {
+            console.error(err);
+            ui.feedbackText.innerText = q.explication;
+            ui.feedbackDrawer.classList.remove('hidden');
+        });
+    }
+
+    ui.btnNext.onclick = () => {
+        currentIdx++;
+        renderQuestion();
     };
-    
-    loadQuestion();
+
+    function finishSession() {
+        ui.qArea.classList.add('hidden');
+        ui.feedbackDrawer.classList.add('hidden');
+        ui.endScreen.classList.remove('hidden');
+
+        ui.progressBar.style.width = '100%';
+        ui.finalScore.innerText = `${scoreTotal} pts`;
+        ui.finalStats.innerText = `${correctCount} / ${questions.length}`;
+
+        let hearts = '';
+        for (let i = 0; i < currentLives; i++) hearts += '❤️';
+        ui.finalLives.innerText = hearts || '🤍';
+
+        // Sauvegarde de score final en BDD
+        fetch("{% url 'api_tazawwud_save_score' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                lecon_id: leconId,
+                score: scoreTotal,
+                mode_entrainement: isEntrainement
+            })
+        });
+    }
+
+    ui.btnFinish.onclick = () => {
+        {% if module %}
+            window.location.href = "{% url 'tazawwud_module' module.id %}";
+        {% else %}
+            window.location.href = "{% url 'tazawwud_home' %}";
+        {% endif %}
+    };
+
+    // Initialisation
+    updateLivesUI();
+    renderQuestion();
 </script>
 {% endblock %}

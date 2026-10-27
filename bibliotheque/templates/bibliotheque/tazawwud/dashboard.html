@@ -1,0 +1,395 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}Tableau de Bord de l'Élève - Tazawwudu-ç-Çighâr{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 pb-24 space-y-6">
+
+    <!-- Header & Navigation -->
+    <div class="flex items-center justify-between pt-2" data-aos="fade-down">
+        <a href="{% url 'tazawwud_home' %}" class="inline-flex items-center gap-2 text-xs font-semibold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 transition-colors">
+            <i class="fas fa-arrow-left"></i>
+            <span>Retour au Parcours</span>
+        </a>
+
+        <!-- Vies Widget -->
+        <div class="flex items-center gap-2 bg-black/40 px-3.5 py-1.5 rounded-full border border-white/10 shadow-inner">
+            <div class="flex items-center gap-1 text-sm">
+                {% if progression.vies_actuelles >= 3 %}
+                    <span class="text-red-500 animate-pulse">❤️</span>
+                    <span class="text-red-500 animate-pulse">❤️</span>
+                    <span class="text-red-500 animate-pulse">❤️</span>
+                {% elif progression.vies_actuelles == 2 %}
+                    <span class="text-red-500">❤️</span>
+                    <span class="text-red-500">❤️</span>
+                    <span class="text-white/20">🤍</span>
+                {% elif progression.vies_actuelles == 1 %}
+                    <span class="text-red-500">❤️</span>
+                    <span class="text-white/20">🤍</span>
+                    <span class="text-white/20">🤍</span>
+                {% else %}
+                    <span class="text-white/20">🤍</span>
+                    <span class="text-white/20">🤍</span>
+                    <span class="text-white/20">🤍</span>
+                {% endif %}
+            </div>
+            <span class="text-xs font-bold text-white">{{ progression.vies_actuelles }}/{{ progression.vies_max }}</span>
+            {% if progression.vies_actuelles < progression.vies_max %}
+            <a href="{% url 'tazawwud_entrainement' %}" class="ml-1 text-[10px] text-amber-400 font-bold hover:underline" title="S'entraîner pour récupérer des vies">
+                + Recharger
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Bannière Titre de l'Élève -->
+    <div class="glass rounded-[32px] p-6 md:p-8 border border-amber-500/20 bg-gradient-to-r from-amber-950/40 via-yellow-950/30 to-black/60 relative overflow-hidden shadow-2xl" data-aos="fade-up">
+        <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div>
+                <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 mb-2">
+                    <i class="fas fa-graduation-cap"></i> Espace d'Apprentissage
+                </span>
+                <h1 class="text-2xl md:text-3xl font-black text-white">Tableau de Bord de l'Élève</h1>
+                <p class="text-white/60 text-xs md:text-sm mt-1 max-w-md">
+                    Suis ta progression dans <strong class="text-amber-300">Tazawwudu-ç-Çighâr</strong>, revois tes erreurs et débloque les révisions intensives.
+                </p>
+            </div>
+
+            <!-- Score & Streak Card -->
+            <div class="flex items-center gap-3">
+                <div class="text-center bg-black/40 px-4 py-3 rounded-2xl border border-white/5 flex-1 md:flex-initial">
+                    <p class="text-[10px] text-white/50 uppercase font-semibold">Points Totaux</p>
+                    <p class="text-xl font-black text-amber-400">{{ progression.score_total }}</p>
+                </div>
+                <div class="text-center bg-black/40 px-4 py-3 rounded-2xl border border-white/5 flex-1 md:flex-initial">
+                    <p class="text-[10px] text-white/50 uppercase font-semibold">Série (Jours)</p>
+                    <p class="text-xl font-black text-white flex items-center justify-center gap-1">
+                        <span>🔥</span> {{ progression.serie_jours }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- OFFRE FORFAIT COMPLET & RÉVISIONS                            -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    {% if not a_forfait_complet %}
+    <div class="glass rounded-3xl p-5 md:p-6 border border-yellow-500/30 bg-gradient-to-r from-amber-900/30 via-yellow-900/20 to-black/40 relative overflow-hidden shadow-xl" data-aos="fade-up">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-500 to-amber-600 text-black flex items-center justify-center text-xl font-black flex-shrink-0 shadow-lg shadow-amber-500/20">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-bold text-white text-base">Forfait Complet Révisions</h3>
+                        <span class="text-[10px] font-black uppercase tracking-wider bg-yellow-500 text-black px-2 py-0.5 rounded-full">Meilleure offre</span>
+                    </div>
+                    <p class="text-xs text-white/60 mt-0.5">
+                        Débloque <strong>toutes les 5 révisions intensives</strong> + la <strong>Grande Révision Finale</strong> de plus de 100 questions.
+                    </p>
+                    <p class="text-xs font-bold text-amber-400 mt-1">
+                        2 000 FCFA <span class="text-[10px] text-white/40 font-normal">au lieu de 2 500 FCFA</span>
+                    </p>
+                </div>
+            </div>
+
+            <form method="POST" action="{% url 'tazawwud_initier_paiement' %}" class="w-full sm:w-auto">
+                {% csrf_token %}
+                <input type="hidden" name="type_achat" value="COMPLET">
+                <button type="submit" class="w-full sm:w-auto px-5 py-3 rounded-2xl bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-black font-extrabold text-xs shadow-lg shadow-amber-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fas fa-lock-open"></i>
+                    <span>Débloquer Tout (2 000 F)</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="glass rounded-2xl p-4 border border-emerald-500/30 bg-emerald-500/5 flex items-center justify-between" data-aos="fade-up">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
+                <i class="fas fa-check-double"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-emerald-400">Forfait Complet Actif ✨</p>
+                <p class="text-[11px] text-white/60">Toutes les révisions intensives et la révision finale de 100+ questions sont accessibles à volonté.</p>
+            </div>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Accès Illimité</span>
+    </div>
+    {% endif %}
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- SECTION 1 : PROGRESSION DANS CHAQUE GRANDE PARTIE DU LIVRE   -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="space-y-3" data-aos="fade-up">
+        <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-layer-group text-amber-400"></i>
+                <span>Progression par Grande Partie (5 Chapitres)</span>
+            </h2>
+            <span class="text-xs text-white/40">Quiz ordinaires gratuits</span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3">
+            {% for item in modules_stats %}
+            <div class="glass rounded-2xl p-4 border border-white/5 hover:border-amber-500/20 transition-all">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center text-base flex-shrink-0 border border-amber-500/20">
+                            <i class="{{ item.module.icone }}"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400/80">Partie {{ item.module.numero }}</span>
+                                <span class="text-white/30 text-xs">·</span>
+                                <span class="text-[11px] text-white/60">{{ item.nb_terminees }}/{{ item.nb_lecons }} leçons</span>
+                            </div>
+                            <h3 class="font-bold text-white text-sm hover:text-amber-400 transition-colors">
+                                <a href="{% url 'tazawwud_module' item.module.id %}">{{ item.module.titre }}</a>
+                            </h3>
+                        </div>
+                    </div>
+
+                    <!-- Révision Statut / Bouton d'achat -->
+                    <div class="flex items-center gap-2">
+                        {% if item.revision %}
+                            {% if item.revision_debloquee %}
+                                <a href="{% url 'tazawwud_revision' item.revision.id %}" class="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 font-bold text-xs flex items-center gap-1.5 transition-all">
+                                    <i class="fas fa-play text-[10px]"></i>
+                                    <span>{% if item.revision_terminee %}Revoir Révision{% else %}Faire Révision{% endif %}</span>
+                                    {% if item.revision_terminee %}<i class="fas fa-check text-[10px]"></i>{% endif %}
+                                </a>
+                            {% else %}
+                                <!-- Formulaire achat unitaire 500 FCFA FedaPay -->
+                                <form method="POST" action="{% url 'tazawwud_initier_paiement' %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="type_achat" value="MODULE">
+                                    <input type="hidden" name="module_id" value="{{ item.module.id }}">
+                                    <button type="submit" class="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-400 font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95" title="Débloquer la révision intensive de ce chapitre">
+                                        <i class="fas fa-lock text-[10px]"></i>
+                                        <span>Débloquer (500 F)</span>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                        <a href="{% url 'tazawwud_module' item.module.id %}" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white flex items-center justify-center text-xs transition-colors">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full h-1.5 bg-black/40 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-700" style="width: {{ item.pourcentage }}%;"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- SECTION 2 : ACTIVITÉ DE LA SEMAINE (7 DERNIERS JOURS)        -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-calendar-check text-yellow-500"></i>
+                    <span>Activité de la Semaine</span>
+                </h2>
+                <p class="text-[11px] text-white/50">Questions résolues et points cumulés ces 7 derniers jours</p>
+            </div>
+            <div class="text-right">
+                <span class="text-xs font-bold text-amber-400">{{ progression.points_semaine }} pts</span>
+                <p class="text-[9px] text-white/40">cette semaine</p>
+            </div>
+        </div>
+
+        <!-- Barres d'activité 7 jours -->
+        <div class="grid grid-cols-7 gap-2 pt-4 pb-2 items-end h-28">
+            {% for j in jours_activite %}
+            <div class="flex flex-col items-center justify-end h-full gap-1.5">
+                <div class="text-[9px] text-white/40">{{ j.points }}</div>
+                <div class="w-full max-w-[28px] bg-white/5 rounded-t-lg overflow-hidden flex flex-col justify-end" style="height: 60px;">
+                    <div class="w-full rounded-t-lg transition-all duration-500 {% if j.est_aujourdhui %}bg-gradient-to-t from-amber-600 to-yellow-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]{% else %}bg-amber-500/40{% endif %}"
+                         style="height: {% if max_pts_jour > 0 %}{% widthratio j.points max_pts_jour 60 %}{% else %}4{% endif %}px; min-height: 4px;">
+                    </div>
+                </div>
+                <span class="text-[10px] font-semibold {% if j.est_aujourdhui %}text-amber-400 font-bold{% else %}text-white/40{% endif %}">
+                    {{ j.nom_jour }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- SECTION 3 : RÉPONSES ET NOTIONS À REVOIR                    -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-rotate-left text-red-400"></i>
+                    <span>Réponses à Revoir ({{ nb_erreurs }})</span>
+                </h2>
+                <p class="text-[11px] text-white/50">Questions où tu as hésité ou fait une erreur</p>
+            </div>
+            <a href="{% url 'tazawwud_entrainement' %}" class="px-3 py-1.5 rounded-full bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 font-bold text-xs transition-all flex items-center gap-1.5">
+                <i class="fas fa-dumbbell"></i>
+                <span>S'entraîner</span>
+            </a>
+        </div>
+
+        {% if erreurs %}
+        <div class="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+            {% for err in erreurs %}
+            <div class="p-3 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-red-500/20 transition-all">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="min-w-0">
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-amber-400/70">
+                            {{ err.question.lecon.titre|default:"Leçon" }}
+                        </span>
+                        <p class="text-xs font-semibold text-white/90 mt-0.5 line-clamp-2">
+                            {{ err.question.texte }}
+                        </p>
+                        <p class="text-[10px] text-white/50 mt-1 italic">
+                            💡 {{ err.question.explication_reponse|truncatechars:120 }}
+                        </p>
+                    </div>
+                    <span class="w-6 h-6 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xs flex-shrink-0">
+                        <i class="fas fa-xmark"></i>
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-6 bg-white/[0.01] rounded-2xl border border-white/5">
+            <span class="text-3xl mb-2 block">🌟</span>
+            <p class="text-xs font-bold text-white">Aucune erreur enregistrée !</p>
+            <p class="text-[11px] text-white/40 mt-0.5">Continue d'avancer dans le parcours pour tester tes connaissances.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- SECTION 4 : COMPAGNONS & CLASSEMENT HEBDOMADAIRE            -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" data-aos="fade-up">
+
+        <!-- Compagnons Card -->
+        <div class="glass rounded-3xl p-5 border border-white/5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-user-friends text-blue-400"></i>
+                        <span>Mes Compagnons</span>
+                    </h3>
+                    <a href="{% url 'tazawwud_compagnons' %}" class="text-[11px] text-blue-400 hover:underline">Gérer</a>
+                </div>
+
+                <!-- Visibilité Toggle -->
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/5 mb-3">
+                    <div>
+                        <p class="text-xs text-white font-medium">Partager ma progression</p>
+                        <p class="text-[10px] text-white/40">Visible par mes compagnons</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggle-visibilite" {% if progression.est_profil_public %}checked{% endif %} class="sr-only peer" onchange="toggleVisibilite()">
+                        <div class="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
+                </div>
+
+                {% if compagnons %}
+                <div class="space-y-2">
+                    {% for c in compagnons %}
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-white/[0.02]">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center">
+                                {{ c.user.username|first|upper }}
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-white">{{ c.user.username }}</p>
+                                <p class="text-[10px] text-white/40">{{ c.lecons_terminees.count }} leçons</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-amber-400">{{ c.points_semaine }} pts</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-xs text-white/40 text-center py-4">Aucun compagnon pour le moment.<br><a href="{% url 'tazawwud_compagnons' %}" class="text-blue-400 underline">Inviter un ami</a></p>
+                {% endif %}
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-white/5 flex gap-2">
+                <a href="{% url 'tazawwud_creer_defi' %}" class="flex-1 text-center py-2 px-3 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-blue-300 font-bold text-xs transition-colors flex items-center justify-center gap-1.5">
+                    <i class="fas fa-bolt"></i>
+                    <span>Lancer un Défi</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Classement Hebdomadaire Card -->
+        <div class="glass rounded-3xl p-5 border border-white/5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-trophy text-yellow-400"></i>
+                        <span>Classement Semaine</span>
+                    </h3>
+                    <a href="{% url 'tazawwud_classement_hebdo' %}" class="text-[11px] text-yellow-400 hover:underline">Tout voir</a>
+                </div>
+
+                <div class="space-y-1.5">
+                    {% for top in classement_hebdo|slice:":5" %}
+                    <div class="flex items-center justify-between p-2 rounded-xl {% if top.user == request.user %}bg-amber-500/15 border border-amber-500/30{% else %}bg-white/[0.02]{% endif %}">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-5 text-center text-xs font-black {% if forloop.counter == 1 %}text-yellow-400{% elif forloop.counter == 2 %}text-slate-300{% elif forloop.counter == 3 %}text-amber-600{% else %}text-white/30{% endif %}">
+                                {{ forloop.counter }}
+                            </span>
+                            <span class="text-xs font-semibold text-white truncate max-w-[120px]">
+                                {{ top.user.username }} {% if top.user == request.user %}<span class="text-amber-400 text-[10px]">(Moi)</span>{% endif %}
+                            </span>
+                        </div>
+                        <span class="text-xs font-bold text-amber-400">{{ top.points_semaine }} pts</span>
+                    </div>
+                    {% empty %}
+                    <p class="text-xs text-white/40 text-center py-4">Soyez le premier à marquer des points cette semaine !</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <p class="text-[10px] text-white/30 text-center mt-3 pt-2 border-t border-white/5">
+                Remise à zéro chaque lundi à 00h00 GMT
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function toggleVisibilite() {
+    fetch("{% url 'api_tazawwud_toggle_visibilite' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.status !== 'success') {
+            alert("Erreur lors de la mise à jour de la visibilité.");
+        }
+    });
+}
+</script>
+{% endblock %}

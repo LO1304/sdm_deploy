@@ -1,7 +1,7 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}{{ lecon.titre }} - Tazawwud{% endblock %}
+{% block title %}{{ lecon.titre }} - Tazawwudu-ç-Çighâr{% endblock %}
 
 {% block content %}
 <style>
@@ -10,76 +10,94 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 
-<div class="max-w-2xl mx-auto pb-12">
+<div class="max-w-2xl mx-auto pb-24 px-4">
 
-    <!-- Progress Indicator -->
-    <div class="flex items-center justify-between mb-8 px-2">
-        <div class="flex gap-1 w-full mr-4">
+    <!-- Progress Indicator & Vies -->
+    <div class="flex items-center justify-between mb-6 pt-2">
+        <div class="flex gap-1.5 flex-1 mr-4">
             <div id="dot-1" class="h-1.5 flex-1 rounded-full bg-amber-500 transition-colors"></div>
             <div id="dot-2" class="h-1.5 flex-1 rounded-full bg-white/10 transition-colors"></div>
             <div id="dot-3" class="h-1.5 flex-1 rounded-full bg-white/10 transition-colors"></div>
             <div id="dot-4" class="h-1.5 flex-1 rounded-full bg-white/10 transition-colors"></div>
         </div>
-        <a href="{% url 'tazawwud_module' lecon.module.id %}" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-            <i class="fa-solid fa-xmark"></i>
-        </a>
+
+        <div class="flex items-center gap-2">
+            <!-- Vies Indicator -->
+            <div class="flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-full border border-white/10 text-xs">
+                {% if progression.vies_actuelles >= 3 %}
+                    <span class="text-red-500">❤️</span><span class="text-red-500">❤️</span><span class="text-red-500">❤️</span>
+                {% elif progression.vies_actuelles == 2 %}
+                    <span class="text-red-500">❤️</span><span class="text-red-500">❤️</span><span class="text-white/20">🤍</span>
+                {% elif progression.vies_actuelles == 1 %}
+                    <span class="text-red-500">❤️</span><span class="text-white/20">🤍</span><span class="text-white/20">🤍</span>
+                {% else %}
+                    <span class="text-white/20">🤍</span><span class="text-white/20">🤍</span><span class="text-white/20">🤍</span>
+                {% endif %}
+            </div>
+
+            <a href="{% url 'tazawwud_module' lecon.module.id %}" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                <i class="fas fa-times"></i>
+            </a>
+        </div>
     </div>
 
     <!-- MAIN CARD -->
-    <div class="glass rounded-[32px] p-6 md:p-10 border border-white/5 shadow-2xl min-h-[400px] flex flex-col">
+    <div class="glass rounded-[32px] p-6 md:p-10 border border-white/5 shadow-2xl min-h-[420px] flex flex-col justify-between">
         
         <!-- STEP 1 : Découverte (Intro) -->
-        <div id="step-1" class="step-content active flex-1 flex flex-col justify-center">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400/80 mb-4 text-center">Aujourd'hui, découvrons...</p>
-            <h2 class="text-2xl md:text-4xl font-black text-white text-center mb-6 leading-tight">{{ lecon.titre }}</h2>
-            <p class="text-white/60 text-center text-sm md:text-base">{{ lecon.description }}</p>
+        <div id="step-1" class="step-content active flex-1 flex flex-col justify-center text-center">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 inline-block mx-auto mb-4">
+                Aujourd'hui, découvrons...
+            </span>
+            <h2 class="text-2xl md:text-3xl font-black text-white mb-4 leading-tight">{{ lecon.titre }}</h2>
+            <p class="text-white/60 text-xs md:text-sm max-w-md mx-auto">{{ lecon.description }}</p>
         </div>
 
         <!-- STEP 2 : Texte Source -->
         <div id="step-2" class="step-content flex-1">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-book-open"></i> Le Texte Source
+            <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-4 flex items-center gap-2">
+                <i class="fas fa-book-open"></i> Le Texte Source du Livre
             </p>
-            <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 mb-4">
-                <p class="text-lg md:text-xl text-white/90 leading-relaxed font-serif italic">"{{ lecon.texte_source }}"</p>
+            <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 mb-3 max-h-72 overflow-y-auto">
+                <p class="text-base md:text-lg text-white/90 leading-relaxed font-serif italic whitespace-pre-line">{{ lecon.texte_source }}</p>
             </div>
-            <p class="text-xs text-white/30 text-right">— Le Viatique des Adolescents</p>
+            <p class="text-xs text-white/30 text-right">— Cheikh Ahmadou Bamba · Le Viatique des Adolescents</p>
         </div>
 
         <!-- STEP 3 : Comprendre (Explication) -->
         <div id="step-3" class="step-content flex-1">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-lightbulb"></i> Comprendre
+            <p class="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-4 flex items-center gap-2">
+                <i class="fas fa-lightbulb"></i> Comprendre l'Enseignement
             </p>
-            <h3 class="text-xl font-bold text-white mb-4">Qu'est-ce que cela signifie ?</h3>
-            <div class="text-white/70 text-sm md:text-base leading-relaxed space-y-4">
+            <h3 class="text-lg md:text-xl font-bold text-white mb-3">Qu'est-ce que cela signifie ?</h3>
+            <div class="text-white/70 text-xs md:text-sm leading-relaxed space-y-3 max-h-72 overflow-y-auto pr-1">
                 {{ lecon.explication|linebreaks }}
             </div>
         </div>
 
         <!-- STEP 4 : À Retenir -->
         <div id="step-4" class="step-content flex-1">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-brain"></i> À Retenir
+            <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-4 flex items-center gap-2">
+                <i class="fas fa-brain"></i> Synthèse à Retenir
             </p>
             <div class="p-6 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-                <div class="text-white/90 font-medium leading-loose space-y-2">
-                    {{ lecon.a_retenir|linebreaks }}
+                <div class="text-white/90 text-xs md:text-sm font-medium leading-loose whitespace-pre-line">
+                    {{ lecon.a_retenir }}
                 </div>
             </div>
         </div>
 
         <!-- ACTION BUTTONS -->
-        <div class="mt-8 pt-6 border-t border-white/5 flex justify-between">
-            <button id="btn-prev" class="hidden px-6 py-3 rounded-full border border-white/10 text-white/60 font-semibold hover:bg-white/5 transition-colors text-sm">
-                <i class="fa-solid fa-arrow-left mr-2"></i>Précédent
+        <div class="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+            <button id="btn-prev" class="hidden px-5 py-2.5 rounded-full border border-white/10 text-white/60 font-semibold hover:bg-white/5 transition-colors text-xs">
+                <i class="fas fa-arrow-left mr-1.5"></i> Précédent
             </button>
             <div class="flex-1"></div>
-            <button id="btn-next" class="px-8 py-3 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-bold hover:scale-105 transition-all text-sm shadow-lg shadow-amber-500/20">
-                J'ai compris <i class="fa-solid fa-arrow-right ml-2"></i>
+            <button id="btn-next" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-xs shadow-md shadow-amber-500/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5">
+                <span>Lire le texte</span> <i class="fas fa-arrow-right"></i>
             </button>
-            <a id="btn-quiz" href="{% url 'tazawwud_quiz' lecon.id %}" class="hidden px-8 py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold hover:scale-105 transition-all text-sm shadow-lg shadow-emerald-500/20">
-                Passer au Quiz <i class="fa-solid fa-arrow-right ml-2"></i>
+            <a id="btn-quiz" href="{% url 'tazawwud_quiz' lecon.id %}" class="hidden px-6 py-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs shadow-md shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5">
+                <span>Passer au Quiz</span> <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     </div>
@@ -94,16 +112,16 @@
     const btnQuiz = document.getElementById('btn-quiz');
     
     function updateUI() {
-        for(let i=1; i<=totalSteps; i++) {
-            document.getElementById('step-'+i).classList.remove('active');
-            const dot = document.getElementById('dot-'+i);
+        for(let i = 1; i <= totalSteps; i++) {
+            document.getElementById('step-' + i).classList.remove('active');
+            const dot = document.getElementById('dot-' + i);
             if(i <= currentStep) {
                 dot.className = "h-1.5 flex-1 rounded-full bg-amber-500 transition-colors";
             } else {
                 dot.className = "h-1.5 flex-1 rounded-full bg-white/10 transition-colors";
             }
         }
-        document.getElementById('step-'+currentStep).classList.add('active');
+        document.getElementById('step-' + currentStep).classList.add('active');
         
         btnPrev.classList.toggle('hidden', currentStep === 1);
         
@@ -113,9 +131,9 @@
         } else {
             btnNext.classList.remove('hidden');
             btnQuiz.classList.add('hidden');
-            if(currentStep === 1) btnNext.innerHTML = 'Lire le texte <i class="fa-solid fa-arrow-right ml-2"></i>';
-            if(currentStep === 2) btnNext.innerHTML = 'Voir l\'explication <i class="fa-solid fa-arrow-right ml-2"></i>';
-            if(currentStep === 3) btnNext.innerHTML = 'Aller à l\'essentiel <i class="fa-solid fa-arrow-right ml-2"></i>';
+            if(currentStep === 1) btnNext.innerHTML = 'Lire le texte <i class="fas fa-arrow-right ml-1.5"></i>';
+            if(currentStep === 2) btnNext.innerHTML = 'Voir l\'explication <i class="fas fa-arrow-right ml-1.5"></i>';
+            if(currentStep === 3) btnNext.innerHTML = 'Aller à l\'essentiel <i class="fas fa-arrow-right ml-1.5"></i>';
         }
     }
     

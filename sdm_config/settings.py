@@ -18,7 +18,7 @@ SECRET_KEY = env('SECRET_KEY', default='change-me-in-production')
 # SECURITÉ : Ne pas laisser en True en production !
 DEBUG = env('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['sdm-mouride.com', 'www.sdm-mouride.com', 'sdm-mouride.onrender.com', 'sdm-mourit.onrender.com', 'sdm-mouride-2jbn.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['sdm-mouride.com', 'www.sdm-mouride.com', 'sdm-mouride.onrender.com', 'sdm-mourit.onrender.com', 'sdm-mouride-2jbn.onrender.com', 'localhost', '127.0.0.1', 'testserver']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # ── SÉCURITÉ RENFORCÉE DES SESSIONS ──
@@ -215,3 +215,8 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+# ── CONFIGURATION FEDAPAY (Paiements Révisions Tazawwud) ──
+FEDAPAY_SECRET_KEY = env('FEDAPAY_SECRET_KEY', default='sk_sandbox_demo_secret_key')
+FEDAPAY_PUBLIC_KEY = env('FEDAPAY_PUBLIC_KEY', default='pk_sandbox_demo_public_key')
+FEDAPAY_ENVIRONMENT = env('FEDAPAY_ENVIRONMENT', default='sandbox')  # 'sandbox' ou 'live'

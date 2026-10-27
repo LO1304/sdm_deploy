@@ -152,6 +152,118 @@
     </div>
 
     {# ══════════════════════════════════════════ #}
+    {# C1. TAZAWWUDU-Ç-ÇIGHÂR (Le Viatique)       #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl p-5 border border-amber-500/20 bg-gradient-to-br from-amber-950/30 via-black/40 to-yellow-950/20 relative overflow-hidden shadow-xl" data-aos="fade-up" data-aos-delay="110">
+        <div class="absolute -right-8 -top-8 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="flex items-center justify-between mb-3 relative z-10">
+            <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-base border border-amber-500/30">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-white leading-tight">Tazawwudu-ç-Çighâr</h2>
+                    <p class="text-[10px] text-amber-300/80 font-medium">Le Viatique des Adolescents</p>
+                </div>
+            </div>
+
+            <!-- Vies Indicator -->
+            <div class="flex items-center gap-1 bg-black/40 px-3 py-1.5 rounded-full border border-white/10" title="Vos vies pour les quiz">
+                {% if taz_prog.vies_actuelles >= 3 %}
+                    <span class="text-red-500 animate-pulse text-xs">❤️</span>
+                    <span class="text-red-500 animate-pulse text-xs">❤️</span>
+                    <span class="text-red-500 animate-pulse text-xs">❤️</span>
+                {% elif taz_prog.vies_actuelles == 2 %}
+                    <span class="text-red-500 text-xs">❤️</span>
+                    <span class="text-red-500 text-xs">❤️</span>
+                    <span class="text-white/20 text-xs">🤍</span>
+                {% elif taz_prog.vies_actuelles == 1 %}
+                    <span class="text-red-500 text-xs">❤️</span>
+                    <span class="text-white/20 text-xs">🤍</span>
+                    <span class="text-white/20 text-xs">🤍</span>
+                {% else %}
+                    <span class="text-white/20 text-xs">🤍</span>
+                    <span class="text-white/20 text-xs">🤍</span>
+                    <span class="text-white/20 text-xs">🤍</span>
+                {% endif %}
+                <span class="text-[11px] font-bold text-white/90 ml-1">{{ taz_prog.vies_actuelles }}/3</span>
+            </div>
+        </div>
+
+        <!-- Jauge d'avancement globale -->
+        <div class="mb-3 relative z-10">
+            <div class="flex justify-between items-center text-xs mb-1">
+                <span class="text-white/60 text-[11px]">Progression du livre</span>
+                <span class="font-bold text-amber-400">{{ taz_pourcentage }}%</span>
+            </div>
+            <div class="w-full h-2.5 bg-black/40 rounded-full overflow-hidden border border-white/5">
+                <div class="h-full rounded-full bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-400 transition-all duration-1000 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                     style="width: {{ taz_pourcentage }}%;">
+                </div>
+            </div>
+            <div class="flex justify-between text-[10px] text-white/40 mt-1">
+                <span>{{ taz_lecons_terminees }} / {{ total_lecons_taz|default:30 }} leçons validées</span>
+                <span>Points semaine : <strong class="text-amber-300">{{ taz_prog.points_semaine }} pts</strong></span>
+            </div>
+        </div>
+
+        <!-- Statut Révisions & Réponses à revoir -->
+        <div class="grid grid-cols-2 gap-2 mb-4 relative z-10">
+            <div class="p-2.5 rounded-2xl bg-black/30 border border-white/5 flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center text-xs flex-shrink-0">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] text-white/50 truncate">Révisions</p>
+                    <p class="text-xs font-bold text-white truncate">
+                        {% if taz_a_forfait_complet %}
+                            <span class="text-emerald-400">Forfait Complet ✨</span>
+                        {% elif taz_modules_payes_count > 0 %}
+                            <span class="text-amber-400">{{ taz_modules_payes_count }} module{{ taz_modules_payes_count|pluralize }}</span>
+                        {% else %}
+                            <span class="text-white/60">500 F / partie</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="p-2.5 rounded-2xl bg-black/30 border border-white/5 flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg {% if taz_nb_erreurs > 0 %}bg-red-500/20 text-red-400{% else %}bg-emerald-500/20 text-emerald-400{% endif %} flex items-center justify-center text-xs flex-shrink-0">
+                    <i class="fas fa-rotate-left"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] text-white/50 truncate">À revoir</p>
+                    <p class="text-xs font-bold text-white truncate">
+                        {% if taz_nb_erreurs > 0 %}
+                            <span class="text-red-400">{{ taz_nb_erreurs }} question{{ taz_nb_erreurs|pluralize }}</span>
+                        {% else %}
+                            <span class="text-emerald-400">0 erreur !</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons d'actions -->
+        <div class="flex gap-2 relative z-10">
+            <a href="{% url 'tazawwud_dashboard' %}" class="flex-1 text-center py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-black font-bold text-xs shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-1.5">
+                <i class="fas fa-chart-pie"></i>
+                <span>Tableau de bord</span>
+            </a>
+            <a href="{% url 'tazawwud_home' %}" class="py-2.5 px-3.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5">
+                <i class="fas fa-play text-amber-400"></i>
+                <span>Parcours</span>
+            </a>
+            {% if taz_nb_erreurs > 0 or taz_prog.vies_actuelles == 0 %}
+            <a href="{% url 'tazawwud_entrainement' %}" class="py-2.5 px-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold text-xs border border-red-500/30 transition-all flex items-center justify-center gap-1" title="S'entraîner et récupérer des vies">
+                <i class="fas fa-heart text-red-400"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {# ══════════════════════════════════════════ #}
     {# C2. APPARENCE & THÈMES                      #}
     {# ══════════════════════════════════════════ #}
     <div class="glass rounded-3xl p-5 border border-white/5" data-aos="fade-up" data-aos-delay="120">

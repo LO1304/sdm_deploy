@@ -3,7 +3,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-from bibliotheque import views, firebase_auth_view
+from bibliotheque import views, firebase_auth_view, tazawwud_views
 
 urlpatterns = [
     # Accueil et Authentification
@@ -88,12 +88,31 @@ urlpatterns = [
     path('api/profil/update-location/', views.update_location, name='update_location'),
 
     # ── TAZAWWUDU-Ç-ÇIGHÂR ──
-    path('tazawwud/', views.tazawwud_home, name='tazawwud_home'),
-    path('tazawwud/module/<int:module_id>/', views.tazawwud_module, name='tazawwud_module'),
-    path('tazawwud/lecon/<int:lecon_id>/', views.tazawwud_lecon, name='tazawwud_lecon'),
-    path('tazawwud/quiz/<int:lecon_id>/', views.tazawwud_quiz, name='tazawwud_quiz'),
-    path('tazawwud/revision/<int:lecon_id>/', views.tazawwud_revision, name='tazawwud_revision'),
-    path('api/tazawwud/save_score/', views.api_tazawwud_save_score, name='api_tazawwud_save_score'),
+    path('tazawwud/', tazawwud_views.tazawwud_home, name='tazawwud_home'),
+    path('tazawwud/dashboard/', tazawwud_views.tazawwud_dashboard, name='tazawwud_dashboard'),
+    path('tazawwud/module/<int:module_id>/', tazawwud_views.tazawwud_module, name='tazawwud_module'),
+    path('tazawwud/lecon/<int:lecon_id>/', tazawwud_views.tazawwud_lecon, name='tazawwud_lecon'),
+    path('tazawwud/quiz/<int:lecon_id>/', tazawwud_views.tazawwud_quiz, name='tazawwud_quiz'),
+    path('tazawwud/revision/<int:lecon_id>/', tazawwud_views.tazawwud_revision, name='tazawwud_revision'),
+    path('tazawwud/entrainement/', tazawwud_views.tazawwud_entrainement, name='tazawwud_entrainement'),
+    path('tazawwud/compagnons/', tazawwud_views.tazawwud_compagnons, name='tazawwud_compagnons'),
+    path('tazawwud/classement/', tazawwud_views.tazawwud_classement_hebdo, name='tazawwud_classement_hebdo'),
+    path('tazawwud/defi/creer/', tazawwud_views.tazawwud_creer_defi, name='tazawwud_creer_defi'),
+    path('tazawwud/defi/<str:code>/', tazawwud_views.tazawwud_jouer_defi, name='tazawwud_jouer_defi'),
+    
+    # Paiements FedaPay
+    path('tazawwud/paiement/initier/', tazawwud_views.tazawwud_initier_paiement, name='tazawwud_initier_paiement'),
+    path('tazawwud/paiement/callback/', tazawwud_views.tazawwud_paiement_callback, name='tazawwud_paiement_callback'),
+    path('tazawwud/paiement/webhook/', tazawwud_views.tazawwud_paiement_webhook, name='tazawwud_paiement_webhook'),
+    path('tazawwud/paiement/simulation/<str:reference>/', tazawwud_views.tazawwud_paiement_simulation, name='tazawwud_paiement_simulation'),
+
+    # APIs Tazawwud
+    path('api/tazawwud/reponse/', tazawwud_views.api_tazawwud_reponse, name='api_tazawwud_reponse'),
+    path('api/tazawwud/save_score/', tazawwud_views.api_tazawwud_save_score, name='api_tazawwud_save_score'),
+    path('api/tazawwud/recharger-vies/', tazawwud_views.tazawwud_recharger_vies, name='api_tazawwud_recharger_vies'),
+    path('api/tazawwud/compagnon/ajouter/', tazawwud_views.api_tazawwud_ajouter_compagnon, name='api_tazawwud_ajouter_compagnon'),
+    path('api/tazawwud/compagnon/repondre/', tazawwud_views.api_tazawwud_repondre_compagnon, name='api_tazawwud_repondre_compagnon'),
+    path('api/tazawwud/visibilite/toggle/', tazawwud_views.tazawwud_toggle_visibilite, name='api_tazawwud_toggle_visibilite'),
 ]
 
 

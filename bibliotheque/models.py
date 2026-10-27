@@ -4,6 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 import uuid
 
 
@@ -528,15 +529,28 @@ class TazawwudQuestion(models.Model):
     TYPE_CHOICES = [
         ('qcm', 'QCM'),
         ('vrai_faux', 'Vrai/Faux'),
+        ('association', 'Association'),
+        ('texte_court', 'Réponse Courte'),
+    ]
+    DIFFICULTE_CHOICES = [
+        ('facile', 'Facile'),
+        ('moyen', 'Moyen'),
+        ('difficile', 'Difficile'),
     ]
     lecon = models.ForeignKey(TazawwudLecon, on_delete=models.CASCADE, related_name="questions")
     texte = models.CharField(max_length=500)
     type_question = models.CharField(max_length=20, choices=TYPE_CHOICES, default='qcm')
+    difficulte = models.CharField(max_length=20, choices=DIFFICULTE_CHOICES, default='moyen')
+    ordre = models.IntegerField(default=0)
+    donnees_extra = models.JSONField(default=dict, blank=True, help_text="Paires pour association ou variantes texte court")
     explication_reponse = models.TextField(help_text="S'affiche après la réponse pour expliquer")
     points = models.IntegerField(default=10)
 
+    class Meta:
+        ordering = ['ordre', 'id']
+
     def __str__(self):
-        return self.texte
+        return f"[{self.get_type_question_display()}] {self.texte}"
 
 class TazawwudChoix(models.Model):
     question = models.ForeignKey(TazawwudQuestion, on_delete=models.CASCADE, related_name="choix")
@@ -565,8 +579,149 @@ class TazawwudProgression(models.Model):
     serie_jours = models.IntegerField(default=0)
     derniere_activite = models.DateField(auto_now=True)
 
+    # ── Vies & Motivation ──
+    vies_actuelles = models.IntegerField(default=3)
+    vies_max = models.IntegerField(default=3)
+    derniere_recuperation_vie = models.DateTimeField(default=timezone.now)
+
+    # ── Social & Visibilité ──
+    est_profil_public = models.BooleanField(default=True, help_text="Permet aux compagnons de voir la progression")
+    points_semaine = models.IntegerField(default=0)
+    derniere_semaine_reset = models.IntegerField(default=0)
+
     def __str__(self):
         return f"Progression de {self.user.username}"
+
+    def verifier_semaine_reset(self):
+        """Réinitialise les points hebdomadaires si la semaine ISO a changé."""
+        from django.utils import timezone
+        now = timezone.now().date()
+        current_year_week = now.year * 100 + now.isocalendar()[1]
+        if self.derniere_semaine_reset != current_year_week:
+            self.points_semaine = 0
+            self.derniere_semaine_reset = current_year_week
+            self.save(update_fields=['points_semaine', 'derniere_semaine_reset'])
+
+    def ajouter_points(self, points):
+        self.verifier_semaine_reset()
+        self.score_total += points
+        self.points_semaine += points
+        self.save(update_fields=['score_total', 'points_semaine'])
+
+    def perdre_vie(self):
+        if self.vies_actuelles > 0:
+            self.vies_actuelles -= 1
+            self.save(update_fields=['vies_actuelles'])
+        return self.vies_actuelles
+
+    def recharger_vies(self, nb=None):
+        if nb is None:
+            self.vies_actuelles = self.vies_max
+        else:
+            self.vies_actuelles = min(self.vies_max, self.vies_actuelles + nb)
+        self.save(update_fields=['vies_actuelles'])
+        return self.vies_actuelles
+
+class TazawwudReponseHistorique(models.Model):
+    """Enregistre chaque réponse pour identifier les notions mal maîtrisées."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tazawwud_reponses_historique")
+    question = models.ForeignKey(TazawwudQuestion, on_delete=models.CASCADE, related_name="tentatives")
+    est_correct = models.BooleanField()
+    reponse_donnee = models.TextField(blank=True, null=True)
+    date_tentative = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-date_tentative']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.question.texte[:30]} ({'OK' if self.est_correct else 'ERR'})"
+
+class TazawwudAchat(models.Model):
+    """Gestion des paiements FedaPay pour les révisions intensives."""
+    TYPE_ACHAT_CHOICES = [
+        ('MODULE', 'Révision Intensive par Chapitre (500 FCFA)'),
+        ('COMPLET', 'Forfait Complet Révisions & Finale (2000 FCFA)'),
+    ]
+    STATUT_CHOICES = [
+        ('PENDING', 'En attente'),
+        ('APPROVED', 'Payé / Validé'),
+        ('DECLINED', 'Refusé'),
+        ('CANCELED', 'Annulé'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tazawwud_achats")
+    type_achat = models.CharField(max_length=20, choices=TYPE_ACHAT_CHOICES)
+    module = models.ForeignKey(TazawwudModule, on_delete=models.SET_NULL, null=True, blank=True, related_name="achats")
+    montant = models.IntegerField(help_text="Montant en FCFA (500 ou 2000)")
+    reference = models.CharField(max_length=100, unique=True)
+    fedapay_transaction_id = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='PENDING')
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_confirmation = models.DateTimeField(null=True, blank=True)
+    metadata_json = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.type_achat} - {self.statut} ({self.montant} FCFA)"
+
+    @classmethod
+    def a_acces_revision(cls, user, module=None):
+        """Vérifie si l'utilisateur a débloqué la révision d'un module ou tout le livre."""
+        if not user or not user.is_authenticated:
+            return False
+        if user.is_superuser or user.is_staff:
+            return True
+        # Forfait complet valide ?
+        if cls.objects.filter(user=user, type_achat='COMPLET', statut='APPROVED').exists():
+            return True
+        # Achat du module spécifique valide ?
+        if module and cls.objects.filter(user=user, type_achat='MODULE', module=module, statut='APPROVED').exists():
+            return True
+        return False
+
+class TazawwudCompagnon(models.Model):
+    """Lien social entre apprenants."""
+    STATUT_CHOICES = [
+        ('EN_ATTENTE', 'En attente'),
+        ('ACCEPTE', 'Accepté'),
+        ('REFUSE', 'Refusé'),
+    ]
+    demandeur = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tazawwud_demandes_envoyees")
+    ami = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tazawwud_demandes_recues")
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='EN_ATTENTE')
+    date_creation = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('demandeur', 'ami')
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"{self.demandeur.username} -> {self.ami.username} ({self.statut})"
+
+class TazawwudDefi(models.Model):
+    """Défis de quiz entre compagnons."""
+    STATUT_CHOICES = [
+        ('EN_ATTENTE', 'En attente'),
+        ('TERMINE', 'Terminé'),
+        ('ANNULE', 'Annulé'),
+    ]
+    createur = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tazawwud_defis_crees")
+    adversaire = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="tazawwud_defis_recus")
+    code = models.CharField(max_length=12, unique=True)
+    module = models.ForeignKey(TazawwudModule, on_delete=models.SET_NULL, null=True, blank=True)
+    questions_ids = models.JSONField(default=list)
+    score_createur = models.IntegerField(null=True, blank=True)
+    score_adversaire = models.IntegerField(null=True, blank=True)
+    vainqueur = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="tazawwud_defis_gagnes")
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='EN_ATTENTE')
+    date_creation = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"Défi {self.code} ({self.createur.username} vs {self.adversaire.username if self.adversaire else '?'})"
 
 class TazawwudBadge(models.Model):
     nom = models.CharField(max_length=100)

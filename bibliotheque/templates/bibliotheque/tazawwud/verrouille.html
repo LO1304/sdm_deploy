@@ -1,0 +1,110 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}Révision Intensive Verrouillée - Tazawwudu-ç-Çighâr{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 pb-24 pt-6" data-aos="fade-up">
+
+    <div class="text-center mb-6">
+        <a href="{% url 'tazawwud_module' module.id %}" class="inline-flex items-center gap-2 text-xs font-semibold text-white/50 hover:text-white mb-4">
+            <i class="fas fa-arrow-left"></i> Retour au Chapitre {{ module.numero }}
+        </a>
+        <div class="w-16 h-16 mx-auto rounded-3xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-2xl shadow-xl shadow-amber-500/10 mb-3">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-black text-white">Étape de Révision Intensive</h1>
+        <p class="text-xs md:text-sm text-white/60 mt-1 max-w-md mx-auto">
+            {{ lecon.titre }} — Chapitre {{ module.numero }} : {{ module.titre }}
+        </p>
+    </div>
+
+    <!-- CARTE EXPLICATIVE DU CONTENU INCLUS -->
+    <div class="glass rounded-3xl p-6 border border-white/10 mb-6 space-y-4">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-amber-400">Contenu inclus dans cette révision</h2>
+        
+        <ul class="space-y-3 text-xs md:text-sm text-white/80">
+            <li class="flex items-start gap-2.5">
+                <i class="fas fa-check-circle text-emerald-400 mt-0.5"></i>
+                <span>Épreuve complète de validation des connaissances de ce chapitre.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+                <i class="fas fa-check-circle text-emerald-400 mt-0.5"></i>
+                <span>Correction détaillée et explications pédagogiques verset par verset.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+                <i class="fas fa-check-circle text-emerald-400 mt-0.5"></i>
+                <span>Accès définitif et illimité après paiement (aucune expiration).</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+                <i class="fas fa-check-circle text-emerald-400 mt-0.5"></i>
+                <span>Validation du chapitre et déblocage de l'insigne d'excellence.</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- OPTIONS DE DÉBLOCAGE -->
+    <div class="space-y-4">
+
+        <!-- Option 1 : Débloquer ce module seul (500 FCFA) -->
+        <div class="glass rounded-3xl p-5 border border-amber-500/30 hover:border-amber-500/60 transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h3 class="font-bold text-white text-base">Révision de ce Chapitre seul</h3>
+                    <p class="text-xs text-white/50">Module {{ module.numero }} : {{ module.titre }}</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-lg font-black text-amber-400">500 FCFA</span>
+                </div>
+            </div>
+
+            <form method="POST" action="{% url 'tazawwud_initier_paiement' %}">
+                {% csrf_token %}
+                <input type="hidden" name="type_achat" value="MODULE">
+                <input type="hidden" name="module_id" value="{{ module.id }}">
+                <button type="submit" class="w-full py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition-all active:scale-98 flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20">
+                    <i class="fas fa-lock-open"></i>
+                    <span>Débloquer ce Chapitre via FedaPay (500 F)</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Option 2 : Forfait Complet Tout le Livre (2000 FCFA) -->
+        <div class="glass rounded-3xl p-6 border-2 border-yellow-500/50 bg-gradient-to-br from-amber-950/40 via-yellow-950/30 to-black/60 relative overflow-hidden shadow-2xl">
+            <div class="absolute top-3 right-3 bg-yellow-500 text-black text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full">
+                Recommandé ✨
+            </div>
+
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h3 class="font-black text-white text-base md:text-lg flex items-center gap-1.5">
+                        <span>Forfait Complet du Livre</span>
+                    </h3>
+                    <p class="text-xs text-white/60">Les 5 révisions intensives + la Grande Révision Finale de 100+ questions</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-xl font-black text-yellow-400">2 000 FCFA</span>
+                    <p class="text-[10px] text-white/40 line-through">2 500 FCFA</p>
+                </div>
+            </div>
+
+            <form method="POST" action="{% url 'tazawwud_initier_paiement' %}">
+                {% csrf_token %}
+                <input type="hidden" name="type_achat" value="COMPLET">
+                <button type="submit" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-black font-black text-xs md:text-sm transition-all active:scale-98 flex items-center justify-center gap-2 shadow-xl shadow-yellow-500/20">
+                    <i class="fas fa-crown"></i>
+                    <span>Débloquer le Forfait Complet via FedaPay (2 000 F)</span>
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Note de sécurité FedaPay -->
+    <div class="text-center mt-6 text-white/40 text-[11px] flex items-center justify-center gap-2">
+        <i class="fas fa-shield-alt text-amber-400"></i>
+        <span>Paiement sécurisé par FedaPay (Wave, Orange Money, Free Money, Carte)</span>
+    </div>
+
+</div>
+{% endblock %}

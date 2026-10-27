@@ -1,0 +1,49 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}Simulateur FedaPay (Bac à sable) - SDM{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 pb-24 pt-8 text-center" data-aos="fade-up">
+
+    <div class="glass rounded-3xl p-8 border border-amber-500/30 shadow-2xl">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-3xl mb-4 border border-amber-500/30">
+            <i class="fas fa-flask"></i>
+        </div>
+
+        <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+            FedaPay Sandbox Simulator
+        </span>
+        <h1 class="text-xl font-black text-white mt-3 mb-2">Simulation de Paiement Sécurisé</h1>
+        <p class="text-xs text-white/60 mb-6">
+            Vous testez le parcours de paiement FedaPay en environnement de développement / bac à sable.
+        </p>
+
+        <div class="p-4 rounded-2xl bg-black/40 border border-white/5 text-left mb-6 space-y-2 text-xs">
+            <div class="flex justify-between text-white/50">
+                <span>Article :</span>
+                <strong class="text-white">{{ achat.get_type_achat_display }}</strong>
+            </div>
+            <div class="flex justify-between text-white/50">
+                <span>Montant :</span>
+                <strong class="text-amber-400 text-sm font-bold">{{ achat.montant }} FCFA</strong>
+            </div>
+            <div class="flex justify-between text-white/50">
+                <span>Référence :</span>
+                <strong class="text-white font-mono">{{ achat.reference }}</strong>
+            </div>
+        </div>
+
+        <form method="POST" class="space-y-3">
+            {% csrf_token %}
+            <button type="submit" name="action" value="payer" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                <i class="fas fa-check-circle"></i> Simuler Paiement Réussi (Approved)
+            </button>
+            <button type="submit" name="action" value="annuler" class="w-full py-3 px-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white/60 font-medium text-xs border border-white/5 transition-all">
+                Simuler Annulation
+            </button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

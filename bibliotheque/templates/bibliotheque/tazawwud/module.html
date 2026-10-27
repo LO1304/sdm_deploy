@@ -1,67 +1,95 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}{{ module.titre }} - Tazawwud{% endblock %}
+{% block title %}{{ module.titre }} - Tazawwudu-ç-Çighâr{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto pb-12">
+<div class="max-w-2xl mx-auto pb-24 px-4 space-y-6">
 
     <!-- Header -->
-    <div class="text-center mb-10" data-aos="fade-down">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mb-4 border border-amber-500/30">
+    <div class="text-center pt-2" data-aos="fade-down">
+        <a href="{% url 'tazawwud_home' %}" class="inline-flex items-center gap-2 text-xs font-semibold text-white/50 hover:text-white mb-4">
+            <i class="fas fa-arrow-left"></i> Retour au Parcours
+        </a>
+
+        <div class="w-16 h-16 mx-auto rounded-3xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mb-3 border border-amber-500/30 shadow-xl shadow-amber-500/10">
             <i class="{{ module.icone }}"></i>
         </div>
-        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400/80 mb-2">Niveau {{ module.numero }}</p>
-        <h1 class="text-2xl md:text-3xl font-black text-white mb-3">{{ module.titre }}</h1>
-        <p class="text-white/50 text-sm max-w-md mx-auto">{{ module.description }}</p>
+        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400/90 mb-1">Grande Partie {{ module.numero }}</p>
+        <h1 class="text-2xl md:text-3xl font-black text-white mb-2">{{ module.titre }}</h1>
+        <p class="text-white/60 text-xs md:text-sm max-w-md mx-auto">{{ module.description }}</p>
     </div>
 
     <!-- Leçons List -->
-    <div class="space-y-4">
+    <div class="space-y-3" data-aos="fade-up">
         {% for lecon in lecons %}
         
         {% if lecon.est_revision_finale %}
-            <!-- REVISION INTENSE CARD -->
-            <a href="{% url 'tazawwud_lecon' lecon.id %}" class="block glass rounded-[24px] p-5 border border-red-500/30 bg-red-500/5 hover:bg-red-500/10 transition-all group relative overflow-hidden mt-8">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
+            <!-- REVISION INTENSE CARD (PAYANTE OU DÉBLOQUÉE) -->
+            <a href="{% url 'tazawwud_lecon' lecon.id %}" 
+               class="block glass rounded-[28px] p-5 border {% if a_acces_revision %}border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10{% else %}border-red-500/30 bg-red-500/5 hover:bg-red-500/10{% endif %} transition-all group relative overflow-hidden mt-6 shadow-xl">
+                <div class="absolute top-0 right-0 w-36 h-36 {% if a_acces_revision %}bg-emerald-500/10{% else %}bg-red-500/10{% endif %} rounded-full blur-2xl pointer-events-none"></div>
+
                 <div class="flex items-center gap-4 relative z-10">
-                    <div class="w-12 h-12 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center flex-shrink-0 border border-red-500/30">
-                        <i class="fa-solid fa-fire text-lg"></i>
+                    <div class="w-12 h-12 rounded-2xl {% if a_acces_revision %}bg-emerald-500/20 text-emerald-400 border-emerald-500/30{% else %}bg-red-500/20 text-red-400 border-red-500/30{% endif %} flex items-center justify-center flex-shrink-0 border text-lg">
+                        <i class="fas {% if a_acces_revision %}fa-fire{% else %}fa-lock{% endif %}"></i>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-red-400 mb-1">Étape Bloquante</p>
-                        <h3 class="font-bold text-white text-base">{{ lecon.titre }}</h3>
-                        <p class="text-xs text-white/50 mt-1">{{ lecon.description }}</p>
+
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] font-black uppercase tracking-wider {% if a_acces_revision %}text-emerald-400{% else %}text-red-400{% endif %}">
+                                Étape de Révision Intensive
+                            </span>
+                            {% if a_acces_revision %}
+                                <span class="text-[9px] font-bold uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">Débloqué ✨</span>
+                            {% else %}
+                                <span class="text-[9px] font-bold uppercase bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full border border-red-500/30">500 FCFA</span>
+                            {% endif %}
+                        </div>
+                        <h3 class="font-bold text-white text-sm md:text-base truncate">{{ lecon.titre }}</h3>
+                        <p class="text-xs text-white/50 mt-0.5 line-clamp-1">{{ lecon.description }}</p>
                     </div>
+
                     {% if lecon.id in terminees_ids %}
-                        <i class="fa-solid fa-check-circle text-2xl text-emerald-400"></i>
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm border border-emerald-500/30">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    {% elif a_acces_revision %}
+                        <div class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center text-xs">
+                            <i class="fas fa-play"></i>
+                        </div>
                     {% else %}
-                        <i class="fa-solid fa-lock text-white/20"></i>
+                        <div class="w-8 h-8 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center text-xs">
+                            <i class="fas fa-lock"></i>
+                        </div>
                     {% endif %}
                 </div>
             </a>
         {% else %}
-            <!-- STANDARD LESSON CARD -->
-            <a href="{% url 'tazawwud_lecon' lecon.id %}" class="block glass rounded-[24px] p-5 border border-white/5 hover:border-amber-500/30 transition-all group">
-                <div class="flex items-center gap-4">
+            <!-- STANDARD LESSON CARD (GRATUIT) -->
+            <a href="{% url 'tazawwud_lecon' lecon.id %}" class="block glass rounded-2xl p-4 border border-white/5 hover:border-amber-500/30 hover:bg-white/[0.04] transition-all group">
+                <div class="flex items-center gap-3.5">
                     
-                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-black transition-colors
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-black transition-colors
                         {% if lecon.id in terminees_ids %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
-                        {% else %}bg-white/5 text-white/40 group-hover:bg-amber-500/10 group-hover:text-amber-400{% endif %}
-                    ">
+                        {% else %}bg-white/5 text-white/40 group-hover:bg-amber-500/10 group-hover:text-amber-400{% endif %}">
                         {% if lecon.id in terminees_ids %}
-                            <i class="fa-solid fa-check"></i>
+                            <i class="fas fa-check"></i>
                         {% else %}
                             {{ lecon.numero }}
                         {% endif %}
                     </div>
                     
-                    <div class="flex-1">
-                        <h3 class="font-bold text-white text-base group-hover:text-amber-400 transition-colors">{{ lecon.titre }}</h3>
-                        <p class="text-[11px] text-white/40 mt-1 line-clamp-1">{{ lecon.description }}</p>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] font-bold text-white/30 uppercase tracking-wider">Leçon {{ lecon.numero }}</span>
+                            <span class="text-[9px] font-semibold text-emerald-400/80 bg-emerald-500/10 px-1.5 py-0.2 rounded">Gratuit</span>
+                        </div>
+                        <h3 class="font-bold text-white text-sm group-hover:text-amber-400 transition-colors truncate">{{ lecon.titre }}</h3>
+                        <p class="text-[11px] text-white/40 mt-0.5 line-clamp-1">{{ lecon.description }}</p>
                     </div>
                     
-                    <i class="fa-solid fa-chevron-right text-white/20 group-hover:text-amber-400 text-sm"></i>
+                    <i class="fas fa-chevron-right text-white/20 group-hover:text-amber-400 text-xs"></i>
                 </div>
             </a>
         {% endif %}
@@ -69,9 +97,10 @@
         {% endfor %}
     </div>
 
-    <div class="mt-8 text-center">
-        <a href="{% url 'tazawwud_home' %}" class="text-sm text-white/40 hover:text-white/70 transition-colors">
-            <i class="fa-solid fa-arrow-left mr-2"></i>Retour au Parcours
+    <div class="text-center pt-4">
+        <a href="{% url 'tazawwud_dashboard' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 text-xs text-white/60 hover:text-white border border-white/10 transition-colors">
+            <i class="fas fa-chart-pie"></i>
+            <span>Voir mon Tableau de Bord de l'Élève</span>
         </a>
     </div>
 </div>
