@@ -73,45 +73,61 @@
         
         {% if lecon.est_revision_finale %}
             <!-- CARTE DE RÉVISION INTENSIVE (AL-MURÂJA'AH) -->
-            <a href="{% url 'tazawwud_lecon' lecon.id %}" 
-               class="block glass mihrab-card islamic-geo-bg p-5 border {% if a_acces_revision %}border-emerald-500/40 bg-emerald-950/30 hover:border-emerald-400/60{% else %}border-amber-500/40 bg-amber-950/25 hover:border-amber-400/60{% endif %} transition-all group relative overflow-hidden mt-6 shadow-2xl">
+            <div class="glass mihrab-card islamic-geo-bg p-5 border {% if a_acces_revision %}border-emerald-500/40 bg-emerald-950/30 hover:border-emerald-400/60{% else %}border-amber-500/40 bg-amber-950/25 hover:border-amber-400/60{% endif %} transition-all group relative overflow-hidden mt-6 shadow-2xl">
                 <div class="absolute top-0 right-0 w-36 h-36 {% if a_acces_revision %}bg-emerald-500/10{% else %}bg-amber-500/10{% endif %} rounded-full blur-2xl pointer-events-none"></div>
 
-                <div class="flex items-center gap-4 relative z-10">
-                    <div class="rub-el-hizb-badge {% if a_acces_revision %}text-emerald-400 border-emerald-500/40{% else %}text-amber-400 border-amber-500/40{% endif %} text-base flex-shrink-0">
+                <div class="flex items-start gap-4 relative z-10">
+                    <div class="rub-el-hizb-badge {% if a_acces_revision %}text-emerald-400 border-emerald-500/40{% else %}text-amber-400 border-amber-500/40{% endif %} text-base flex-shrink-0 mt-0.5">
                         <i class="fas {% if a_acces_revision %}fa-award{% else %}fa-lock{% endif %}"></i>
                     </div>
 
                     <div class="flex-1 min-w-0">
                         <div class="flex flex-wrap items-center gap-2 mb-1">
                             <span class="text-[10px] font-black uppercase tracking-wider {% if a_acces_revision %}text-emerald-400{% else %}text-amber-400{% endif %}">
-                                ۞ Al-Murâja'ah · Révision Intensive
+                                ۞ Al-Murâja'ah · Dossier & Examen Intensif
                             </span>
                             {% if a_acces_revision %}
                                 <span class="text-[9px] font-bold uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">Accès Débloqué ✨</span>
                             {% else %}
-                                <span class="text-[9px] font-bold uppercase bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30">500 FCFA</span>
+                                <span class="text-[9px] font-bold uppercase bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30">500 FCFA · Inclus dans Forfait 2 000 F</span>
                             {% endif %}
                         </div>
-                        <h3 class="font-bold text-white text-sm md:text-base truncate group-hover:text-amber-300 transition-colors">{{ lecon.titre }}</h3>
-                        <p class="text-xs text-white/55 mt-0.5 line-clamp-1">{{ lecon.description }}</p>
-                    </div>
+                        <h3 class="font-bold text-white text-sm md:text-base group-hover:text-amber-300 transition-colors">{{ lecon.titre }}</h3>
+                        <p class="text-xs text-white/65 mt-1 leading-relaxed">{{ lecon.description }}</p>
 
-                    {% if lecon.id in terminees_ids %}
-                        <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm border border-emerald-500/30">
-                            <i class="fas fa-check"></i>
+                        <!-- Badges du contenu exclusif inclus -->
+                        <div class="flex flex-wrap gap-1.5 mt-2.5">
+                            <span class="text-[10px] font-semibold text-amber-200/90 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-lg">
+                                📜 Mushaf des Vers Clés
+                            </span>
+                            <span class="text-[10px] font-semibold text-emerald-200/90 bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded-lg">
+                                🧭 Tableaux & Cas Pratiques
+                            </span>
+                            <span class="text-[10px] font-semibold text-yellow-200/90 bg-yellow-500/10 border border-yellow-500/25 px-2 py-0.5 rounded-lg">
+                                🏆 Épreuve Certifiante (20 Questions)
+                            </span>
                         </div>
-                    {% elif a_acces_revision %}
-                        <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs border border-emerald-500/30">
-                            <i class="fas fa-play"></i>
+
+                        <div class="flex flex-wrap items-center gap-2 mt-3.5 pt-3 border-t border-white/10">
+                            {% if a_acces_revision %}
+                                <a href="{% url 'tazawwud_lecon' lecon.id %}" class="px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs flex items-center gap-1.5 transition-all">
+                                    <i class="fas fa-book-open"></i>
+                                    <span>Étudier le Dossier de Synthèse</span>
+                                </a>
+                                <a href="{% url 'tazawwud_revision' lecon.id %}" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-lg hover:scale-[1.02] transition-all">
+                                    <i class="fas fa-award"></i>
+                                    <span>Lancer l'Examen Intensif (20 Q)</span>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'tazawwud_revision' lecon.id %}" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-xs flex items-center gap-1.5 shadow-lg hover:scale-[1.02] transition-all">
+                                    <i class="fas fa-lock-open"></i>
+                                    <span>Découvrir le Contenu & Débloquer (500 F)</span>
+                                </a>
+                            {% endif %}
                         </div>
-                    {% else %}
-                        <div class="w-9 h-9 rounded-full bg-amber-500/15 text-amber-400 flex items-center justify-center text-xs border border-amber-500/30">
-                            <i class="fas fa-lock"></i>
-                        </div>
-                    {% endif %}
+                    </div>
                 </div>
-            </a>
+            </div>
         {% else %}
             <!-- CARTE DE LEÇON ORDINAIRE ENRICHIE (ACCÈS LIBRE & GRATUIT) -->
             <a href="{% url 'tazawwud_lecon' lecon.id %}" class="block glass mihrab-card p-4 md:p-5 border border-white/10 hover:border-amber-500/45 hover:bg-amber-500/[0.04] transition-all group">

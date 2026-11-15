@@ -22,6 +22,12 @@
         </a>
 
         <div class="flex items-center gap-2">
+            {% if lecon.est_revision_finale %}
+            <a href="{% url 'tazawwud_revision' lecon.id %}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-[11px] shadow-md hover:scale-105 transition-transform">
+                <i class="fas fa-award"></i>
+                <span>Passer l'Examen Intensif</span>
+            </a>
+            {% endif %}
             <!-- Cœurs de Persévérance -->
             <div class="flex items-center gap-1 bg-black/50 px-3 py-1 rounded-full border border-amber-500/20 text-xs">
                 {% if progression.vies_actuelles >= 3 %}
@@ -161,9 +167,9 @@
             <button id="btn-next" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-xs shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-2">
                 <span>Ouvrir le Manuscrit</span> <i class="fas fa-arrow-right"></i>
             </button>
-            <a id="btn-quiz" href="{% url 'tazawwud_quiz' lecon.id %}" class="hidden px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/25 transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-2">
-                <i class="fas fa-feather"></i>
-                <span>Évaluer mes Connaissances (Quiz)</span>
+            <a id="btn-quiz" href="{% if lecon.est_revision_finale %}{% url 'tazawwud_revision' lecon.id %}{% else %}{% url 'tazawwud_quiz' lecon.id %}{% endif %}" class="hidden px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/25 transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-2">
+                <i class="fas {% if lecon.est_revision_finale %}fa-award{% else %}fa-feather{% endif %}"></i>
+                <span>{% if lecon.est_revision_finale %}Lancer l'Examen Intensif Certifiant{% else %}Évaluer mes Connaissances (Quiz){% endif %}</span>
                 <i class="fas fa-arrow-right"></i>
             </a>
         </div>

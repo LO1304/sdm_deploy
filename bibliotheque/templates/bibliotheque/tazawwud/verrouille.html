@@ -1,110 +1,286 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Révision Intensive Verrouillée - Tazawwudu-ç-Çighâr{% endblock %}
+{% block title %}Débloquer {{ lecon.titre }} - Tazawwudu-ç-Çighâr{% endblock %}
 
 {% block content %}
-<div class="max-w-xl mx-auto px-4 pb-24 pt-6" data-aos="fade-up">
+<div class="max-w-2xl mx-auto px-4 pb-28 pt-5" data-aos="fade-up">
 
-    <div class="glass mihrab-card islamic-geo-bg p-6 text-center mb-6 border border-amber-500/25">
-        <a href="{% url 'tazawwud_module' module.id %}" class="inline-flex items-center gap-2 text-xs font-semibold text-white/50 hover:text-amber-300 mb-4">
-            <i class="fas fa-arrow-left"></i> Retour au Chapitre {{ module.numero }}
-        </a>
-        <div class="rub-el-hizb-badge text-amber-400 text-xl mx-auto mb-3 shadow-xl shadow-amber-500/15">
-            <i class="fas fa-lock"></i>
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- EN-TÊTE MIHRAB : PRÉSENTATION DE LA RÉVISION INTENSIVE             -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div class="glass mihrab-card aurora-shimmer-card islamic-geo-bg p-6 md:p-7 text-center mb-6 border border-amber-500/35 shadow-2xl relative overflow-hidden">
+        <div class="flex items-center justify-between mb-4">
+            {% if module and not is_finale_livre %}
+            <a href="{% url 'tazawwud_module' module.id %}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-xs font-semibold text-white/60 hover:text-amber-300 border border-white/10 transition-colors">
+                <i class="fas fa-arrow-left text-[10px]"></i> Chapitre {{ module.numero }}
+            </a>
+            {% else %}
+            <a href="{% url 'tazawwud_home' %}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-xs font-semibold text-white/60 hover:text-amber-300 border border-white/10 transition-colors">
+                <i class="fas fa-arrow-left text-[10px]"></i> Accueil Tazawwud
+            </a>
+            {% endif %}
+
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 bg-amber-500/15 border border-amber-500/30 px-3 py-1 rounded-full">
+                {% if is_finale_livre %}Tout l'Ouvrage · Vers 1 à 308{% else %}{{ meta.plage_vers|default:"Révision de Chapitre" }}{% endif %}
+            </span>
         </div>
-        <p class="arabic-calligraphy text-xl text-amber-400/90 mb-0.5" dir="rtl">المُرَاجَعَةُ المُكَثَّفَةُ</p>
-        <h1 class="text-2xl md:text-3xl font-black text-white">Étape de Révision Intensive</h1>
-        <p class="text-xs md:text-sm text-white/60 mt-1 max-w-md mx-auto">
-            {{ lecon.titre }} — Chapitre {{ module.numero }} : {{ module.titre }}
+
+        <div class="rub-el-hizb-badge text-amber-400 text-xl mx-auto mb-3 shadow-xl shadow-amber-500/20 float-medallion">
+            <i class="fas fa-crown"></i>
+        </div>
+
+        <p class="arabic-calligraphy text-2xl text-amber-400/95 mb-1" dir="rtl">
+            {% if is_finale_livre %}الإِجَازَةُ وَالمُرَاجَعَةُ الكُبْرَى{% else %}{{ meta.arabe|default:"المُرَاجَعَةُ المُكَثَّفَةُ" }}{% endif %}
         </p>
+
+        <h1 class="text-xl md:text-3xl font-black text-white leading-tight mb-2">
+            {{ lecon.titre }}
+        </h1>
+
+        <p class="text-xs md:text-sm text-white/70 max-w-lg mx-auto leading-relaxed">
+            {{ lecon.description }}
+        </p>
+
+        {% if meta.piliers_cles and not is_finale_livre %}
+        <div class="flex flex-wrap justify-center gap-1.5 mt-4">
+            {% for pilier in meta.piliers_cles %}
+            <span class="text-[10px] font-semibold text-amber-200/90 bg-amber-500/10 border border-amber-500/25 px-2.5 py-0.5 rounded-lg">
+                ۞ {{ pilier }}
+            </span>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 
-    <!-- CARTE EXPLICATIVE DU CONTENU INCLUS -->
-    <div class="glass rounded-3xl p-6 border border-white/10 mb-6 space-y-4">
-        <h2 class="text-xs font-bold uppercase tracking-widest text-amber-400">Contenu inclus dans cette révision</h2>
-        
-        <ul class="space-y-3 text-xs md:text-sm text-white/80">
-            <li class="flex items-start gap-2.5">
-                <i class="fas fa-check-circle text-emerald-400 mt-0.5"></i>
-                <span>Épreuve complète de validation des connaissances de ce chapitre.</span>
-            </li>
-            <li class="flex items-start gap-2.5">
-                <i class="fas fa-check-circle text-emerald-400 mt-0.5"></i>
-                <span>Correction détaillée et explications pédagogiques verset par verset.</span>
-            </li>
-            <li class="flex items-start gap-2.5">
-                <i class="fas fa-check-circle text-emerald-400 mt-0.5"></i>
-                <span>Accès définitif et illimité après paiement (aucune expiration).</span>
-            </li>
-            <li class="flex items-start gap-2.5">
-                <i class="fas fa-check-circle text-emerald-400 mt-0.5"></i>
-                <span>Validation du chapitre et déblocage de l'insigne d'excellence.</span>
-            </li>
-        </ul>
-    </div>
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- DÉTAIL DES 3 VOLETS PÉDAGOGIQUES INCLUS DANS CETTE RÉVISION        -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div class="glass mihrab-card p-5 md:p-6 border border-white/10 mb-6 space-y-5">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <div>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 block">Programme & Contenu Exclusif</span>
+                <h2 class="text-base md:text-lg font-extrabold text-white">Ce que vous débloquez immédiatement</h2>
+            </div>
+            <span class="text-[10px] font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+                Accès à vie ♾️
+            </span>
+        </div>
 
-    <!-- OPTIONS DE DÉBLOCAGE -->
-    <div class="space-y-4">
+        <!-- Volet 1 : Le Mushaf Récapitulatif des Vers Clés -->
+        <div class="p-4 rounded-2xl bg-black/40 border border-amber-500/20 space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-extrabold text-amber-300 flex items-center gap-2">
+                    <i class="fas fa-scroll text-amber-400"></i>
+                    <span>1. Le Mushaf Récapitulatif des Vers Clés</span>
+                </span>
+                <span class="text-[10px] font-semibold text-white/50">Mode Parchemin & Nuit</span>
+            </div>
+            <p class="text-xs text-white/65 leading-relaxed">
+                Tous les vers fondamentaux et citations arabes vocalisées de {% if is_finale_livre %}l'ouvrage entier{% else %}cette Grande Étape{% endif %} réunis en un seul manuscrit enluminé pour réviser rapidement avant l'examen.
+            </p>
+            {% if lecon.texte_source %}
+            <div class="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 text-[11px] text-amber-100/80 font-serif italic line-clamp-3">
+                {{ lecon.texte_source|truncatechars:240 }}
+            </div>
+            {% endif %}
+        </div>
 
-        <!-- Option 1 : Débloquer ce module seul (500 FCFA) -->
-        <div class="glass rounded-3xl p-5 border border-amber-500/30 hover:border-amber-500/60 transition-all">
-            <div class="flex items-center justify-between mb-3">
-                <div>
-                    <h3 class="font-bold text-white text-base">Révision de ce Chapitre seul</h3>
-                    <p class="text-xs text-white/50">Module {{ module.numero }} : {{ module.titre }}</p>
+        <!-- Volet 2 : La Fiche de Synthèse, Repères Chiffrés & Cartes Mémo -->
+        <div class="p-4 rounded-2xl bg-black/40 border border-emerald-500/20 space-y-2.5">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-extrabold text-emerald-300 flex items-center gap-2">
+                    <i class="fas fa-compass text-emerald-400"></i>
+                    <span>2. Fiche de Synthèse, Tableaux & Cartes Mémo</span>
+                </span>
+                <span class="text-[10px] font-semibold text-emerald-400/80">Al-Fahm & Al-Khulâsah</span>
+            </div>
+            {% if meta.chiffres_cles and not is_finale_livre %}
+            <p class="text-[11px] text-amber-300/90 font-semibold">
+                <i class="fas fa-key mr-1"></i> Repères synthétisés : {{ meta.chiffres_cles }}
+            </p>
+            {% endif %}
+            {% if apercu_points %}
+            <div class="space-y-1.5 pt-1">
+                <p class="text-[10px] uppercase tracking-wider font-bold text-white/50">Aperçu des Cartes Mémo d'Or incluses :</p>
+                {% for pt in apercu_points|slice:":3" %}
+                <div class="flex items-start gap-2 text-xs text-white/80 bg-white/[0.03] px-3 py-1.5 rounded-xl border border-white/5">
+                    <span class="text-amber-400 font-bold">۞</span>
+                    <span>{{ pt }}</span>
                 </div>
-                <div class="text-right">
-                    <span class="text-lg font-black text-amber-400">500 FCFA</span>
+                {% endfor %}
+                <div class="flex items-center justify-center gap-1.5 text-[11px] text-amber-400/80 pt-1 font-semibold">
+                    <i class="fas fa-lock text-[10px]"></i>
+                    <span>+ Toutes les autres Cartes Mémo et le tableau des pièges à éviter</span>
                 </div>
             </div>
+            {% endif %}
+        </div>
+
+        <!-- Volet 3 : L'Épreuve Intensive Multi-Formats (Cas Pratiques) -->
+        <div class="p-4 rounded-2xl bg-black/40 border border-yellow-500/25 space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-extrabold text-yellow-300 flex items-center gap-2">
+                    <i class="fas fa-award text-yellow-400"></i>
+                    <span>3. Épreuve Intensive Multi-Formats Certifiante</span>
+                </span>
+                <span class="text-[10px] font-extrabold text-black bg-amber-400 px-2.5 py-0.5 rounded-full">
+                    {% if is_finale_livre %}30 Questions / tirage (Banque de {{ total_questions_banque }} Q){% else %}20 Questions dont {{ nb_questions_exclusives }} Cas Pratiques exclusifs{% endif %}
+                </span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
+                <div class="p-2 rounded-xl bg-white/5 border border-white/10 text-center">
+                    <span class="text-[10px] font-extrabold text-amber-300 block">QCM Fiqh</span>
+                    <span class="text-[9px] text-white/50">Cas pratiques</span>
+                </div>
+                <div class="p-2 rounded-xl bg-white/5 border border-white/10 text-center">
+                    <span class="text-[10px] font-extrabold text-emerald-300 block">Associations</span>
+                    <span class="text-[9px] text-white/50">Paires & Statuts</span>
+                </div>
+                <div class="p-2 rounded-xl bg-white/5 border border-white/10 text-center">
+                    <span class="text-[10px] font-extrabold text-yellow-300 block">Vrai / Faux</span>
+                    <span class="text-[9px] text-white/50">Pièges subtils</span>
+                </div>
+                <div class="p-2 rounded-xl bg-white/5 border border-white/10 text-center">
+                    <span class="text-[10px] font-extrabold text-teal-300 block">Réponse Courte</span>
+                    <span class="text-[9px] text-white/50">Chiffres & Termes</span>
+                </div>
+            </div>
+
+            {% if exemple_question %}
+            <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 mt-2">
+                <span class="text-[9px] font-black uppercase tracking-wider text-amber-400 block mb-1">
+                    Exemple de question intensive incluse :
+                </span>
+                <p class="text-xs text-white/90 font-medium leading-relaxed">
+                    « {{ exemple_question.texte }} »
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- LES 2 FORMULES DE DÉBLOCAGE VIA DEXPAY AFRICA                      -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div class="space-y-4">
+
+        {% if not is_finale_livre and module %}
+        <!-- FORMULE 1 : Débloquer ce Chapitre seul (500 FCFA) -->
+        <div class="glass mihrab-card p-5 md:p-6 border border-amber-500/35 hover:border-amber-400/70 transition-all">
+            <div class="flex items-start justify-between gap-3 mb-3">
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-400">Formule Chapitre Unique</span>
+                    <h3 class="font-extrabold text-white text-base md:text-lg">Débloquer la Grande Étape {{ module.numero }} seule</h3>
+                    <p class="text-xs text-white/60 mt-0.5">{{ module.titre }}</p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                    <span class="text-xl font-black text-amber-400">500 FCFA</span>
+                    <span class="block text-[10px] text-emerald-400 font-semibold">Paiement unique</span>
+                </div>
+            </div>
+
+            <ul class="space-y-1.5 text-xs text-white/75 mb-4">
+                <li class="flex items-center gap-2">
+                    <i class="fas fa-check text-amber-400 text-[10px]"></i>
+                    <span>Dossier de Synthèse & Mushaf des Vers Clés du Chapitre {{ module.numero }}</span>
+                </li>
+                <li class="flex items-center gap-2">
+                    <i class="fas fa-check text-amber-400 text-[10px]"></i>
+                    <span>Épreuve Intensive de 20 questions ({{ nb_questions_exclusives }} cas pratiques exclusifs + synthèse)</span>
+                </li>
+            </ul>
 
             <form method="POST" action="{% url 'tazawwud_initier_paiement' %}">
                 {% csrf_token %}
                 <input type="hidden" name="type_achat" value="MODULE">
                 <input type="hidden" name="module_id" value="{{ module.id }}">
-                <button type="submit" class="w-full py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition-all active:scale-98 flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20">
-                    <i class="fas fa-lock-open"></i>
-                    <span>Débloquer ce Chapitre via DexPay (500 F)</span>
+                <button type="submit" class="w-full py-3.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs md:text-sm transition-all active:scale-98 flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20">
+                    <i class="fas fa-unlock-alt"></i>
+                    <span>Débloquer ce Chapitre via DexPay (500 FCFA)</span>
                 </button>
             </form>
         </div>
+        {% endif %}
 
-        <!-- Option 2 : Forfait Complet Tout le Livre (2000 FCFA) -->
-        <div class="glass rounded-3xl p-6 border-2 border-yellow-500/50 bg-gradient-to-br from-amber-950/40 via-yellow-950/30 to-black/60 relative overflow-hidden shadow-2xl">
-            <div class="absolute top-3 right-3 bg-yellow-500 text-black text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full">
-                Recommandé ✨
+        <!-- FORMULE 2 : Forfait Complet Intégral (2 000 FCFA) -->
+        <div class="glass mihrab-card p-6 border-2 border-yellow-500/60 bg-gradient-to-br from-amber-950/50 via-[#07160F] to-black/80 relative overflow-hidden shadow-2xl">
+            <div class="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-black text-[9px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow">
+                Recommandé · Économisez 500 F ✨
             </div>
 
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-start justify-between gap-3 mb-4 pt-2 sm:pt-0">
                 <div>
-                    <h3 class="font-black text-white text-base md:text-lg flex items-center gap-1.5">
-                        <span>Forfait Complet du Livre</span>
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-yellow-400">Pack Intégral Tazawwudu-ç-Çighâr</span>
+                    <h3 class="font-black text-white text-lg md:text-xl flex items-center gap-2">
+                        <span>Forfait Complet de Tout le Livre</span>
                     </h3>
-                    <p class="text-xs text-white/60">Les 5 révisions intensives + la Grande Révision Finale de 100+ questions</p>
+                    <p class="text-xs text-white/70 mt-0.5">
+                        Débloquez les <strong>5 Révisions Intensives de Chapitre</strong> + la <strong>Grande Révision Finale des 308 Vers</strong>
+                    </p>
                 </div>
-                <div class="text-right">
-                    <span class="text-xl font-black text-yellow-400">2 000 FCFA</span>
-                    <p class="text-[10px] text-white/40 line-through">2 500 FCFA</p>
+                <div class="text-right flex-shrink-0">
+                    <span class="text-2xl font-black text-yellow-400">2 000 FCFA</span>
+                    <p class="text-[11px] text-white/40 line-through">2 500 FCFA</p>
+                </div>
+            </div>
+
+            <!-- Liste détaillée des 6 modules inclus dans le Forfait Complet -->
+            <div class="p-3.5 rounded-2xl bg-black/50 border border-white/10 mb-4 space-y-2">
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 mb-1">
+                    Contenu intégral inclus dans le Forfait 2 000 FCFA :
+                </p>
+                {% for item in modules_inclus %}
+                <div class="flex items-center justify-between text-xs py-1 border-b border-white/5 last:border-0">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                            {{ item.module.numero }}
+                        </span>
+                        <span class="text-white/85 truncate">Révision Chap. {{ item.module.numero }} : {{ item.module.titre }}</span>
+                    </div>
+                    {% if item.debloque %}
+                    <span class="text-[9px] font-bold text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full flex-shrink-0">Déjà débloqué</span>
+                    {% else %}
+                    <span class="text-[9px] font-bold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full flex-shrink-0">{{ item.nb_q_rev }} Cas Pratiques + Dossier</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <div class="flex items-center justify-between text-xs pt-1">
+                    <div class="flex items-center gap-2">
+                        <span class="w-5 h-5 rounded-full bg-yellow-500 text-black text-[10px] font-black flex items-center justify-center flex-shrink-0">
+                            ★
+                        </span>
+                        <span class="text-yellow-300 font-bold">Grande Révision Finale de Tout le Livre (308 Vers)</span>
+                    </div>
+                    <span class="text-[9px] font-black text-black bg-yellow-400 px-2 py-0.5 rounded-full flex-shrink-0">Banque {{ total_questions_banque }} Q</span>
                 </div>
             </div>
 
             <form method="POST" action="{% url 'tazawwud_initier_paiement' %}">
                 {% csrf_token %}
                 <input type="hidden" name="type_achat" value="COMPLET">
-                <button type="submit" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-black font-black text-xs md:text-sm transition-all active:scale-98 flex items-center justify-center gap-2 shadow-xl shadow-yellow-500/20">
+                <button type="submit" class="w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-400 hover:from-yellow-400 hover:to-amber-400 text-black font-black text-xs md:text-sm transition-all active:scale-98 flex items-center justify-center gap-2 shadow-xl shadow-yellow-500/25">
                     <i class="fas fa-crown"></i>
-                    <span>Débloquer le Forfait Complet via DexPay (2 000 F)</span>
+                    <span>Débloquer Tout le Livre via DexPay (2 000 FCFA)</span>
                 </button>
             </form>
         </div>
 
     </div>
 
-    <!-- Note de sécurité DexPay -->
-    <div class="text-center mt-6 text-white/40 text-[11px] flex items-center justify-center gap-2">
-        <i class="fas fa-shield-alt text-amber-400"></i>
-        <span>Paiement sécurisé par DexPay Africa (Wave, Orange Money, Free Money, Carte)</span>
+    <!-- Moyens de paiement supportés & Garantie DexPay -->
+    <div class="glass rounded-2xl p-4 mt-5 border border-white/10 text-center space-y-2">
+        <div class="flex flex-wrap items-center justify-center gap-2 text-[10px] font-bold text-white/80">
+            <span class="px-2.5 py-1 rounded-lg bg-sky-500/15 border border-sky-500/30 text-sky-300">🌊 Wave</span>
+            <span class="px-2.5 py-1 rounded-lg bg-orange-500/15 border border-orange-500/30 text-orange-300">🍊 Orange Money</span>
+            <span class="px-2.5 py-1 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300">📱 Free Money</span>
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">💳 Carte Bancaire</span>
+        </div>
+        <p class="text-white/45 text-[11px] flex items-center justify-center gap-1.5">
+            <i class="fas fa-shield-alt text-amber-400"></i>
+            <span>Transaction vérifiée en temps réel par <strong>DexPay Africa</strong> · Activation immédiate sur votre compte</span>
+        </p>
     </div>
 
 </div>

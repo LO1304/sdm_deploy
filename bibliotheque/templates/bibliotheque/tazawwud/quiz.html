@@ -75,9 +75,16 @@
                     <i class="fas fa-shield-heart"></i> Entraînement
                 </span>
             {% elif is_revision %}
-                <span class="text-[10px] font-black uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-1 rounded-full flex items-center gap-1">
-                    <i class="fas fa-fire"></i> Révision
-                </span>
+                <div class="flex items-center gap-2">
+                    {% if lecon %}
+                    <a href="{% url 'tazawwud_lecon' lecon.id %}" class="text-[10px] font-bold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/35 px-2.5 py-1 rounded-full flex items-center gap-1 transition-all">
+                        <i class="fas fa-book-open"></i> Fiche de Synthèse
+                    </a>
+                    {% endif %}
+                    <span class="text-[10px] font-black uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-1 rounded-full flex items-center gap-1">
+                        <i class="fas fa-fire"></i> Révision Intensive
+                    </span>
+                </div>
             {% else %}
                 <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full">
                     Quiz

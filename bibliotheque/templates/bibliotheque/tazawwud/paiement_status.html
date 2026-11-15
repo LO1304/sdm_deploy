@@ -4,40 +4,71 @@
 {% block title %}Statut de votre Paiement - Tazawwudu-ç-Çighâr{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto px-4 pb-24 pt-10 text-center" data-aos="fade-up">
+<div class="max-w-lg mx-auto px-4 pb-28 pt-8 text-center" data-aos="fade-up">
 
-    <div class="glass rounded-3xl p-8 border border-white/10 shadow-2xl relative overflow-hidden">
+    <div class="glass mihrab-card islamic-geo-bg p-6 md:p-8 border border-amber-500/30 shadow-2xl relative overflow-hidden">
         
         {% if statut_visuel == 'succes' %}
-            <div class="w-20 h-20 mx-auto rounded-3xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-4xl shadow-xl shadow-emerald-500/10 mb-4 animate-bounce">
+            <div class="w-20 h-20 mx-auto rounded-3xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-4xl shadow-xl shadow-emerald-500/15 mb-4 animate-bounce">
                 <i class="fas fa-check"></i>
             </div>
-            <h1 class="text-2xl font-black text-white mb-2">Paiement Validé !</h1>
-            <p class="text-xs md:text-sm text-emerald-400 font-semibold mb-4">{{ message }}</p>
+            <p class="arabic-calligraphy text-xl text-amber-400/90 mb-0.5" dir="rtl">ٱلْحَمْدُ لِلَّٰهِ رَبِّ ٱلْعَالَمِينَ</p>
+            <h1 class="text-2xl font-black text-white mb-2">Paiement Validé & Accès Débloqué !</h1>
+            <p class="text-xs md:text-sm text-emerald-400 font-semibold mb-5">{{ message }}</p>
 
-            <div class="p-3.5 rounded-2xl bg-black/40 border border-white/5 text-left mb-6 space-y-1 text-xs">
-                <div class="flex justify-between text-white/50">
-                    <span>Référence :</span>
-                    <strong class="text-white">{{ achat.reference }}</strong>
+            <!-- Récapitulatif de la transaction -->
+            <div class="p-4 rounded-2xl bg-black/50 border border-white/10 text-left mb-6 space-y-1.5 text-xs">
+                <div class="flex justify-between text-white/60">
+                    <span>Référence DexPay :</span>
+                    <strong class="text-white font-mono">{{ achat.reference }}</strong>
                 </div>
-                <div class="flex justify-between text-white/50">
-                    <span>Montant :</span>
+                <div class="flex justify-between text-white/60">
+                    <span>Montant acquitté :</span>
                     <strong class="text-amber-400">{{ achat.montant }} FCFA</strong>
                 </div>
-                <div class="flex justify-between text-white/50">
-                    <span>Accès :</span>
+                <div class="flex justify-between text-white/60">
+                    <span>Formule débloquée :</span>
                     <strong class="text-emerald-400">{{ achat.get_type_achat_display }}</strong>
                 </div>
             </div>
 
+            <!-- Liste des Révisions Débloquées avec Accès Immédiat (Dossier + Examen) -->
+            {% if revisions_debloquees %}
+            <div class="text-left space-y-3 mb-6">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 block">
+                    ۞ Vos contenus débloqués (Accès immédiat & à vie) :
+                </span>
+                {% for rev in revisions_debloquees %}
+                <div class="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-2.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-extrabold text-white">{{ rev.titre }}</span>
+                        <span class="text-[9px] font-bold uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                            Débloqué ✨
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="{% url 'tazawwud_lecon' rev.id %}" class="py-2 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-[11px] flex items-center justify-center gap-1.5 transition-all">
+                            <i class="fas fa-book-open"></i>
+                            <span>Fiche de Synthèse</span>
+                        </a>
+                        <a href="{% url 'tazawwud_revision' rev.id %}" class="py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-[11px] flex items-center justify-center gap-1.5 shadow transition-all">
+                            <i class="fas fa-award"></i>
+                            <span>Examen Intensif</span>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <div class="space-y-2">
                 {% if achat.module %}
-                <a href="{% url 'tazawwud_module' achat.module.id %}" class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-95">
-                    <i class="fas fa-play"></i> Commencer la Révision du Chapitre
+                <a href="{% url 'tazawwud_module' achat.module.id %}" class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-95">
+                    <i class="fas fa-compass"></i> Retourner au Chapitre {{ achat.module.numero }}
                 </a>
                 {% endif %}
                 <a href="{% url 'tazawwud_dashboard' %}" class="w-full py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs flex items-center justify-center gap-2">
-                    <i class="fas fa-chart-pie"></i> Accéder au Tableau de Bord
+                    <i class="fas fa-chart-pie"></i> Accéder à mon Carnet de l'Élève
                 </a>
             </div>
 

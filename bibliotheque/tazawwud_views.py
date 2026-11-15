@@ -333,12 +333,17 @@ def tazawwud_lecon(request, lecon_id):
     lecon = get_object_or_404(TazawwudLecon, id=lecon_id)
     progression, _ = TazawwudProgression.objects.get_or_create(user=request.user)
 
+    is_finale_livre = (lecon.numero == 99 or 'finale' in lecon.titre.lower())
     if lecon.est_revision_finale:
-        return redirect('tazawwud_revision', lecon_id=lecon.id)
+        a_acces = TazawwudAchat.a_acces_revision(request.user, None if is_finale_livre else lecon.module)
+        if not a_acces:
+            return redirect('tazawwud_revision', lecon_id=lecon.id)
 
     context = {
         'lecon': lecon,
         'progression': progression,
+        'is_revision_dossier': lecon.est_revision_finale,
+        'is_finale_livre': is_finale_livre,
     }
     return render(request, 'bibliotheque/tazawwud/lecon.html', context)
 
@@ -396,28 +401,76 @@ def tazawwud_revision(request, lecon_id):
     lecon = get_object_or_404(TazawwudLecon, id=lecon_id)
     progression, _ = TazawwudProgression.objects.get_or_create(user=request.user)
 
-    # Vérification des droits d'accès
-    a_acces = TazawwudAchat.a_acces_revision(request.user, lecon.module)
+    is_finale_livre = (lecon.numero == 99 or 'finale' in lecon.titre.lower())
+    # Vérification des droits d'accès (la Révision Finale 99 requiert le forfait COMPLET)
+    a_acces = TazawwudAchat.a_acces_revision(request.user, None if is_finale_livre else lecon.module)
 
     if not a_acces:
-        # Afficher la page de présentation et de déblocage avec prix
+        meta = GRANDES_ETAPES_META.get(lecon.module.numero, {}) if lecon.module else {}
+        nb_questions_exclusives = lecon.questions.count()
+        nb_questions_chapitre = TazawwudQuestion.objects.filter(
+            lecon__module=lecon.module
+        ).exclude(lecon__numero=99).count() if lecon.module else 0
+        total_questions_banque = TazawwudQuestion.objects.count()
+        apercu_points = [
+            line.lstrip('-•* ').strip()
+            for line in (lecon.a_retenir or '').splitlines()
+            if line.strip()
+        ][:4]
+        exemple_question = lecon.questions.filter(type_question='qcm').first()
+
+        modules_payes_ids = set(TazawwudAchat.objects.filter(
+            user=request.user, type_achat='MODULE', statut='APPROVED'
+        ).values_list('module_id', flat=True))
+        a_forfait_complet = TazawwudAchat.a_acces_revision(request.user)
+
+        modules_inclus = []
+        for m in TazawwudModule.objects.all().order_by('numero'):
+            rev_lecon = m.lecons.filter(est_revision_finale=True).exclude(numero=99).first()
+            modules_inclus.append({
+                'module': m,
+                'meta': GRANDES_ETAPES_META.get(m.numero, {}),
+                'rev_lecon': rev_lecon,
+                'nb_q_rev': rev_lecon.questions.count() if rev_lecon else 15,
+                'debloque': a_forfait_complet or (m.id in modules_payes_ids),
+            })
+
         context = {
             'lecon': lecon,
             'module': lecon.module,
+            'meta': meta,
+            'is_finale_livre': is_finale_livre,
+            'nb_questions_exclusives': nb_questions_exclusives,
+            'nb_questions_chapitre': nb_questions_chapitre,
+            'total_questions_banque': total_questions_banque,
+            'apercu_points': apercu_points,
+            'exemple_question': exemple_question,
+            'modules_inclus': modules_inclus,
             'prix_module': 500,
             'prix_complet': 2000,
         }
         return render(request, 'bibliotheque/tazawwud/verrouille.html', context)
 
     # Si c'est la révision finale de tout le livre (lecon 99 ou titre 'Révision Finale')
-    if lecon.numero == 99 or 'finale' in lecon.titre.lower():
-        # Tirer 25 questions aléatoires de toute la banque du livre
+    if is_finale_livre:
+        # Tirer 30 questions variées couvrant tout le livre (en incluant les questions de synthèse)
         all_q_ids = list(TazawwudQuestion.objects.values_list('id', flat=True))
-        selected_ids = random.sample(all_q_ids, min(len(all_q_ids), 25))
-        questions = TazawwudQuestion.objects.filter(id__in=selected_ids).order_by('?')
+        selected_ids = random.sample(all_q_ids, min(len(all_q_ids), 30))
+        questions = list(TazawwudQuestion.objects.filter(id__in=selected_ids))
+        random.shuffle(questions)
     else:
-        # Révision du module : questions du module + questions de la révision
-        questions = TazawwudQuestion.objects.filter(lecon__module=lecon.module).order_by('?')[:15]
+        # Révision du module : les 15 questions exclusives de la révision + 5 questions du chapitre = 20 questions
+        rev_q_ids = list(lecon.questions.values_list('id', flat=True))
+        other_q_ids = list(
+            TazawwudQuestion.objects.filter(lecon__module=lecon.module)
+            .exclude(lecon_id=lecon.id)
+            .exclude(lecon__numero=99)
+            .values_list('id', flat=True)
+        )
+        sampled_other = random.sample(other_q_ids, min(len(other_q_ids), 5))
+        combined_ids = rev_q_ids + sampled_other
+        questions = list(TazawwudQuestion.objects.filter(id__in=combined_ids))
+        random.shuffle(questions)
 
     questions_data = formater_questions_pour_js(questions)
 
@@ -427,6 +480,7 @@ def tazawwud_revision(request, lecon_id):
         'progression': progression,
         'questions_json': json.dumps(questions_data),
         'is_revision': True,
+        'is_finale_livre': is_finale_livre,
         'mode_entrainement': False,
     }
     return render(request, 'bibliotheque/tazawwud/quiz.html', context)
@@ -661,10 +715,19 @@ def tazawwud_paiement_callback(request):
         status = tx_check.get('status', '').lower()
         if status == 'approved':
             valider_achat_confirme(achat, tx_check.get('data'))
+            if achat.type_achat == 'COMPLET':
+                revisions_debloquees = TazawwudLecon.objects.filter(
+                    est_revision_finale=True
+                ).select_related('module').order_by('module__numero', 'numero')
+            else:
+                revisions_debloquees = TazawwudLecon.objects.filter(
+                    module=achat.module, est_revision_finale=True
+                ).exclude(numero=99).select_related('module')
             return render(request, 'bibliotheque/tazawwud/paiement_status.html', {
                 'achat': achat,
+                'revisions_debloquees': revisions_debloquees,
                 'statut_visuel': 'succes',
-                'message': "Paiement confirmé par DexPay avec succès ! Votre révision est débloquée."
+                'message': "Paiement confirmé par DexPay avec succès ! Votre révision intensive et son dossier de synthèse sont débloqués."
             })
         elif status == 'pending':
             return render(request, 'bibliotheque/tazawwud/paiement_status.html', {

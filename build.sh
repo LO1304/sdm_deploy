@@ -18,6 +18,9 @@ echo "═══ Enrichissement pédagogique Tazawwudu-ç-Çighâr ═══"
 if [ -f "enrich_grandes_etapes.py" ]; then
     python enrich_grandes_etapes.py
 fi
+if [ -f "enrich_paid_revisions.py" ]; then
+    python enrich_paid_revisions.py
+fi
 
 echo "═══ Nettoyage des anciens fichiers statiques ═══"
 rm -rf staticfiles_build
