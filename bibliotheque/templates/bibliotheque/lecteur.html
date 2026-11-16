@@ -1,192 +1,412 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr" data-reader-model="parchemin">
 <head>
-    <!-- PWA -->
+    <!-- PWA & Android -->
     <link rel="manifest" href="/static/manifest.json">
     <meta name="theme-color" content="#040B08">
     <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Lecteur Premium - {{ document.titre }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=4.0, user-scalable=yes, viewport-fit=cover">
+    <title>Lecteur Sacré — {{ document.titre }}</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        (function() {
+            try {
+                var savedModel = localStorage.getItem('sdm_reader_model') || 'parchemin';
+                document.documentElement.setAttribute('data-reader-model', savedModel);
+            } catch (e) {}
+        })();
     </script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        /* ═══════════════ 6 MODÈLES DE LECTURE (AMBIANCE + FILTRE MANUSCRIT) ═══════════════ */
+        :root, [data-reader-model="parchemin"] {
+            --bg: #161008;
+            --surface: rgba(34, 24, 12, 0.88);
+            --surface-light: rgba(54, 38, 19, 0.92);
+            --text: #FDF6E7;
+            --dim: #C7B28B;
+            --accent: #F59E0B;
+            --accent-glow: rgba(245, 158, 11, 0.4);
+            --border: rgba(245, 158, 11, 0.25);
+            --border-focus: rgba(245, 158, 11, 0.6);
+            --canvas-filter: sepia(0.34) contrast(1.06) brightness(0.98);
+            --canvas-border: 2px solid #C89B2B;
+            --sh: 0 18px 45px rgba(0, 0, 0, 0.75);
+        }
+        [data-reader-model="original"] {
+            --bg: #0B1310;
+            --surface: rgba(14, 28, 22, 0.88);
+            --surface-light: rgba(24, 46, 36, 0.92);
+            --text: #F8FAFC;
+            --dim: #94A3B8;
+            --accent: #D4AF37;
+            --accent-glow: rgba(212, 175, 55, 0.35);
+            --border: rgba(255, 255, 255, 0.14);
+            --border-focus: rgba(212, 175, 55, 0.55);
+            --canvas-filter: contrast(1.06);
+            --canvas-border: 1px solid rgba(212, 175, 55, 0.35);
+            --sh: 0 18px 45px rgba(0, 0, 0, 0.7);
+        }
+        [data-reader-model="touba_nuit"] {
+            --bg: #030A07;
+            --surface: rgba(8, 26, 18, 0.9);
+            --surface-light: rgba(14, 42, 30, 0.95);
+            --text: #ECFDF5;
+            --dim: #6EE7B7;
+            --accent: #10B981;
+            --accent-glow: rgba(16, 185, 129, 0.4);
+            --border: rgba(16, 185, 129, 0.28);
+            --border-focus: rgba(16, 185, 129, 0.6);
+            --canvas-filter: invert(0.9) sepia(0.22) hue-rotate(115deg) contrast(1.1);
+            --canvas-border: 1px solid rgba(16, 185, 129, 0.45);
+            --sh: 0 18px 45px rgba(0, 0, 0, 0.85);
+        }
+        [data-reader-model="kaaba_amoled"] {
+            --bg: #000000;
+            --surface: rgba(14, 14, 14, 0.92);
+            --surface-light: rgba(26, 26, 26, 0.95);
+            --text: #FEF08A;
+            --dim: #A1A1AA;
+            --accent: #FACC15;
+            --accent-glow: rgba(250, 204, 21, 0.4);
+            --border: rgba(250, 204, 21, 0.25);
+            --border-focus: rgba(250, 204, 21, 0.65);
+            --canvas-filter: invert(0.93) sepia(0.28) hue-rotate(155deg) contrast(1.14);
+            --canvas-border: 1px solid rgba(250, 204, 21, 0.4);
+            --sh: 0 18px 50px rgba(0, 0, 0, 0.95);
+        }
+        [data-reader-model="medine_saphir"] {
+            --bg: #030919;
+            --surface: rgba(10, 22, 46, 0.9);
+            --surface-light: rgba(18, 36, 72, 0.94);
+            --text: #E0F2FE;
+            --dim: #7DD3FC;
+            --accent: #38BDF8;
+            --accent-glow: rgba(56, 189, 248, 0.4);
+            --border: rgba(56, 189, 248, 0.25);
+            --border-focus: rgba(56, 189, 248, 0.6);
+            --canvas-filter: sepia(0.15) contrast(1.08) brightness(0.96);
+            --canvas-border: 1px solid rgba(56, 189, 248, 0.4);
+            --sh: 0 18px 45px rgba(0, 0, 0, 0.8);
+        }
+        [data-reader-model="calligraphie_hd"] {
+            --bg: #111111;
+            --surface: rgba(25, 25, 25, 0.9);
+            --surface-light: rgba(40, 40, 40, 0.95);
+            --text: #FFFFFF;
+            --dim: #CCCCCC;
+            --accent: #F59E0B;
+            --accent-glow: rgba(245, 158, 11, 0.35);
+            --border: rgba(255, 255, 255, 0.18);
+            --border-focus: rgba(245, 158, 11, 0.6);
+            --canvas-filter: contrast(1.42) grayscale(0.25) brightness(1.02);
+            --canvas-border: 2px solid #D4AF37;
+            --sh: 0 18px 45px rgba(0, 0, 0, 0.85);
+        }
 
-        :root {
-            --bg: #030303; --surface: rgba(20,20,20,0.45); --surface-light: rgba(40,40,40,0.5);
-            --text: #f0f0f0; --dim: #999999; --accent: #d4af37; --accent-glow: rgba(212,175,55,0.4);
-            --border: rgba(255,255,255,0.08); --border-focus: rgba(212,175,55,0.35);
-            --sh: 0 16px 40px -8px rgba(0,0,0,0.7);
-        }
-        [data-theme="sepia"] {
-            --bg: #f4ecdf; --surface: rgba(240,230,210,0.6); --surface-light: rgba(245,235,215,0.8);
-            --text: #4a3b2c; --dim: #8b735b; --accent: #b06a2c; --accent-glow: rgba(176,106,44,0.3);
-            --border: rgba(139,69,19,0.15); --border-focus: rgba(176,106,44,0.4);
-            --sh: 0 16px 40px -8px rgba(139,69,19,0.25);
-        }
-        [data-theme="paper"] {
-            --bg: #fdfdfd; --surface: rgba(255,255,255,0.7); --surface-light: rgba(255,255,255,0.9);
-            --text: #111111; --dim: #666666; --accent: #222222; --accent-glow: rgba(0,0,0,0.15);
-            --border: rgba(0,0,0,0.1); --border-focus: rgba(0,0,0,0.3);
-            --sh: 0 16px 40px -8px rgba(0,0,0,0.15);
-        }
-
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif;
-            margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh;
-            transition: background-color 0.5s ease;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+            transition: background-color 0.35s ease;
         }
 
-        /* Glassmorphism utility */
         .glass-panel {
             background: var(--surface);
-            backdrop-filter: blur(32px);
-            -webkit-backdrop-filter: blur(32px);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
             border: 1px solid var(--border);
             box-shadow: var(--sh);
-            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+        .accent-text { color: var(--accent); }
+
+        /* Barre de progression supérieure */
+        #top-prog {
+            position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+            background: linear-gradient(90deg, var(--accent), #FEF08A);
+            box-shadow: 0 0 12px var(--accent-glow);
+            z-index: 2000; transition: width 0.25s ease;
         }
 
-        .accent-text { color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
-
-        /* Modals */
-        .modal-overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.3s; 
-        }
-        .modal-overlay.show { display: flex; opacity: 1; }
-        .modal-card { 
-            background: var(--surface-light); border: 1px solid var(--border); padding: 32px; border-radius: 24px; 
-            width: 90%; max-width: 340px; text-align: center; color: var(--text); box-shadow: 0 24px 64px rgba(0,0,0,0.8);
-            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-        }
-
-        /* Progress Bar */
-        #top-prog { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: var(--accent); box-shadow: 0 0 10px var(--accent-glow); z-index: 2000; transition: width 0.3s ease; }
-        .v-prog-container { display: none; }
-
-        /* Floating Header & Footer */
-        .reader-ui { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; }
+        /* Header & Footer flottants ergonomiques Android */
+        .reader-ui { transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; }
         .floating-header {
-            position: fixed; top: 16px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 700px;
-            border-radius: 20px; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px;
+            position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 20px); max-width: 740px;
+            border-radius: 20px; height: 56px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 10px;
         }
-        .floating-header.hide-up { transform: translate(-50%, -150%); opacity: 0; }
+        .floating-header.hide-up { transform: translate(-50%, -150%); opacity: 0; pointer-events: none; }
 
         .floating-footer {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 700px;
-            border-radius: 28px; padding: 16px; display: flex; flex-direction: column; gap: 16px;
+            position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 20px); max-width: 740px;
+            border-radius: 24px; padding: 12px 14px;
+            display: flex; flex-direction: column; gap: 10px;
         }
-        .floating-footer.hide-down { transform: translate(-50%, 150%); opacity: 0; }
+        .floating-footer.hide-down { transform: translate(-50%, 150%); opacity: 0; pointer-events: none; }
 
-        /* Buttons & Sliders */
         .btn-icon {
-            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            background: transparent; color: var(--text); border: none; transition: 0.2s; cursor: pointer;
+            width: 38px; height: 38px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            background: transparent; color: var(--text); border: none;
+            transition: 0.2s; cursor: pointer; flex-shrink: 0;
         }
-        .btn-icon:hover { background: var(--surface-light); color: var(--accent); }
-        .btn-icon.active, .theme-opt.active, #m-p.active, #m-s.active { 
-            background: rgba(128,128,128,0.15) !important; color: var(--accent) !important; box-shadow: inset 0 0 0 1px var(--border-focus); 
+        .btn-icon:hover, .btn-icon.active {
+            background: var(--surface-light); color: var(--accent);
+            box-shadow: inset 0 0 0 1px var(--border-focus);
         }
 
-        .btn-primary { background: var(--surface-light); border: 1px solid var(--border); border-radius: 16px; padding: 12px; display: flex; align-items: center; justify-content: center; transition: 0.2s; cursor: pointer; flex: 1; color: var(--text); font-size: 13px; font-weight: 500;}
+        .btn-primary {
+            background: var(--surface-light); border: 1px solid var(--border);
+            border-radius: 14px; padding: 10px 14px;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; cursor: pointer; flex: 1;
+            color: var(--text); font-size: 12px; font-weight: 700;
+        }
         .btn-primary:active { transform: scale(0.96); }
         .btn-primary:hover { border-color: var(--border-focus); color: var(--accent); }
 
-        .speed-slider { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: rgba(128,128,128,0.3); flex: 1; outline: none; }
-        .speed-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--accent); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); transition: transform 0.1s; }
-        .speed-slider::-webkit-slider-thumb:active { transform: scale(1.3); }
+        .speed-slider {
+            -webkit-appearance: none; appearance: none;
+            height: 5px; border-radius: 99px;
+            background: rgba(255,255,255,0.2); flex: 1; outline: none;
+        }
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 18px; height: 18px;
+            background: var(--accent); border-radius: 50%; cursor: pointer;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
 
-        /* VIEWPORT */
+        /* Zone de lecture principale */
         #viewport {
-            flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; align-items: center;
-            background-color: auto; padding: 90px 0; position: relative; scroll-behavior: auto; -webkit-overflow-scrolling: touch;
+            flex: 1; overflow-y: auto; overflow-x: auto;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 76px 0 190px; position: relative;
+            -webkit-overflow-scrolling: touch;
         }
         #viewport::-webkit-scrollbar { display: none; }
-        #viewport { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .canvas-wrapper { position: relative; margin-bottom: 24px; display: flex; justify-content: center; width: 100%; transition: opacity 0.3s; }
-        canvas { max-width: 95%; height: auto; box-shadow: var(--sh); border-radius: 8px; transition: opacity 0.4s; }
-        .page-enter { opacity: 0; transform: translateY(15px); }
+        .canvas-wrapper {
+            position: relative; margin-bottom: 18px;
+            display: flex; justify-content: center; width: 100%;
+        }
+        canvas.pdf-page-canvas {
+            max-width: 96%; height: auto;
+            box-shadow: var(--sh); border-radius: 10px;
+            border: var(--canvas-border);
+            filter: var(--canvas-filter) brightness(var(--user-brightness, 1));
+            transition: filter 0.3s ease, opacity 0.3s ease;
+            background: #fff;
+        }
 
-        .loader-ring { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 10; display: none; }
-        .loader-ring.show { display: block; }
+        /* Ruban horizontal de Miniatures des Pages (1re page & suivantes) */
+        #thumbs-strip {
+            display: none; align-items: center; gap: 8px;
+            overflow-x: auto; padding: 6px 4px;
+            border-top: 1px solid var(--border);
+            scrollbar-width: none; -webkit-overflow-scrolling: touch;
+        }
+        #thumbs-strip.open { display: flex; }
+        #thumbs-strip::-webkit-scrollbar { display: none; }
+        .page-thumb-item {
+            flex-shrink: 0; width: 54px; height: 74px;
+            border-radius: 8px; border: 2px solid var(--border);
+            background: #FAF0DC; position: relative; overflow: hidden;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .page-thumb-item.active {
+            border-color: var(--accent);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+        .page-thumb-item canvas {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .page-thumb-badge {
+            position: absolute; bottom: 2px; right: 2px;
+            background: rgba(0,0,0,0.75); color: #fff;
+            font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 4px;
+        }
 
-        /* SIDEBAR */
+        /* Tiroir des 6 Modèles de Lecture & Luminosité Android */
+        #models-drawer {
+            display: none; flex-direction: column; gap: 10px;
+            padding: 10px; border-radius: 18px;
+            background: rgba(0,0,0,0.45); border: 1px solid var(--border);
+        }
+        #models-drawer.open { display: flex; }
+        .reader-model-grid {
+            display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
+        }
+        @media (min-width: 500px) {
+            .reader-model-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        }
+        .reader-model-btn {
+            padding: 7px 6px; border-radius: 12px;
+            border: 1px solid var(--border); background: var(--surface-light);
+            color: var(--text); font-size: 10px; font-weight: 700;
+            cursor: pointer; text-align: center; transition: all 0.2s;
+        }
+        .reader-model-btn.active {
+            border-color: var(--accent);
+            background: var(--accent); color: #050806;
+            font-weight: 800;
+        }
+
+        /* Sidebar Table des matières */
         .sidebar {
-            position: fixed; left: -320px; top: 0; bottom: 0; width: 320px; z-index: 3000;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); padding: 32px 24px; overflow-y: auto; border-radius: 0 24px 24px 0;
+            position: fixed; left: -320px; top: 0; bottom: 0; width: 300px; z-index: 3000;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 24px 18px; overflow-y: auto; border-radius: 0 24px 24px 0;
         }
         .sidebar.open { transform: translateX(320px); }
-        .outline-item { 
-            padding: 14px; border-radius: 12px; margin-bottom: 8px; font-size: 13px; color: var(--dim); 
-            cursor: pointer; transition: 0.2s; border: 1px solid transparent; background: transparent;
+
+        .loader-ring {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+            z-index: 20; display: none;
         }
-        .outline-item:hover { border-color: var(--border-focus); color: var(--text); background: var(--surface-light); }
+        .loader-ring.show { display: block; }
+
+        /* Modal Reprise */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px); display: none;
+            align-items: center; justify-content: center; z-index: 9999;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-card {
+            background: var(--surface-light); border: 1px solid var(--border-focus);
+            padding: 26px; border-radius: 24px; width: 90%; max-width: 340px; text-align: center;
+        }
     </style>
 </head>
 <body class="page-mode">
 
     <div id="top-prog"></div>
-    <div class="v-prog-container" id="v-prog-wrap"><div class="v-prog-bar" id="v-prog-bar"></div></div>
 
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR SOMMAIRE -->
     <aside class="sidebar glass-panel" id="sidebar">
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="accent-text font-semibold tracking-[0.15em] text-xs uppercase">TABLE DES MATIÈRES</h2>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="accent-text font-extrabold tracking-widest text-xs uppercase">۞ Sommaire & Pages</h2>
             <button onclick="toggleSidebar()" class="btn-icon w-8 h-8"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div id="outline-list">
-            <p class="text-xs text-dim text-center mt-10">Aucun sommaire disponible</p>
+            <p class="text-xs opacity-60 text-center mt-10">Aucun sommaire intégré</p>
         </div>
     </aside>
 
-    <!-- FLOATING HEADER -->
+    <!-- HEADER FLOTTANT COMPACT ANDROID -->
     <header class="reader-ui floating-header glass-panel" id="header">
-        <a href="javascript:history.back()" class="btn-icon"><i class="fa-solid fa-arrow-left"></i></a>
-        
+        <a href="javascript:history.back()" class="btn-icon" title="Retour">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+
         <div class="flex flex-col items-center flex-1 overflow-hidden px-2">
-            <h1 class="text-xs font-semibold text-[var(--text)] uppercase tracking-wider truncate w-full text-center">{{ document.titre }}</h1>
-            <p class="text-[9px] text-dim font-medium tracking-widest mt-0.5"><span id="top-page-num" class="text-[var(--text)]">1</span> / <span id="max-page-num">1</span></p>
+            <h1 class="text-xs font-extrabold text-[var(--text)] truncate w-full text-center">{{ document.titre }}</h1>
+            <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-[10px] font-bold text-[var(--accent)]">
+                    Page <span id="top-page-num">1</span> / <span id="max-page-num">1</span>
+                </span>
+                <span id="wakelock-badge" class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hidden">
+                    🔆 Écran Actif
+                </span>
+            </div>
         </div>
 
         <div class="flex items-center gap-1">
-            <button onclick="downloadPdf()" class="btn-icon w-8 h-8" title="Télécharger"><i class="fa-solid fa-download text-sm"></i></button>
-            <button onclick="toggleSearch()" class="btn-icon w-8 h-8"><i class="fa-solid fa-magnifying-glass text-sm"></i></button>
-            <button onclick="toggleSidebar()" class="btn-icon w-8 h-8"><i class="fa-solid fa-list text-sm"></i></button>
+            <button onclick="toggleFullScreenReader()" class="btn-icon w-8 h-8" title="Plein Écran Android">
+                <i class="fa-solid fa-expand text-xs"></i>
+            </button>
+            <button onclick="downloadPdf()" class="btn-icon w-8 h-8" title="Télécharger le PDF">
+                <i class="fa-solid fa-download text-xs"></i>
+            </button>
+            <button onclick="toggleSearch()" class="btn-icon w-8 h-8" title="Rechercher">
+                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+            </button>
         </div>
-        
-        <!-- Search Dropdown -->
-        <div id="search-bar" class="hidden absolute top-[calc(100%+12px)] left-0 right-0 glass-panel rounded-2xl p-2 flex items-center gap-2 animate-in slide-in-from-top-2">
-            <input type="text" id="search-input" class="bg-transparent border-none outline-none flex-1 text-sm px-3 text-[var(--text)] placeholder-[var(--dim)]" placeholder="Rechercher dans le texte...">
-            <button onclick="performSearch()" class="p-2 w-10 h-10 rounded-xl bg-[var(--surface-light)] text-[var(--text)] hover:text-[var(--accent)] transition"><i class="fa-solid fa-arrow-right"></i></button>
+
+        <!-- Barre de recherche dans le PDF -->
+        <div id="search-bar" class="hidden absolute top-[calc(100%+8px)] left-0 right-0 glass-panel rounded-2xl p-2 flex items-center gap-2">
+            <input type="text" id="search-input" class="bg-transparent border-none outline-none flex-1 text-xs px-3 text-[var(--text)]" placeholder="Rechercher un mot dans le Khassida...">
+            <button onclick="performSearch()" class="px-3 py-2 rounded-xl bg-[var(--accent)] text-black font-bold text-xs">Chercher</button>
         </div>
     </header>
 
-    <!-- VIEWPORT -->
+    <!-- ZONE DE LECTURE DU MANUSCRIT (SWIPE GAUCHE/DROITE + DOUBLE TAP ZOOM) -->
     <main id="viewport" onclick="handleTap(event)">
-        <div class="loader-ring" id="loader"><i class="fa-solid fa-circle-notch fa-spin text-3xl accent-text opacity-80"></i></div>
-        <div id="main-container"></div>
+        <div class="loader-ring" id="loader">
+            <div class="glass-panel px-5 py-4 rounded-2xl flex items-center gap-3">
+                <i class="fa-solid fa-circle-notch fa-spin text-2xl accent-text"></i>
+                <span class="text-xs font-bold">Préparation du manuscrit...</span>
+            </div>
+        </div>
+        <div id="main-container" class="w-full flex flex-col items-center"></div>
     </main>
 
-    <!-- FLOATING FOOTER -->
+    <!-- DOCK INFÉRIEUR ANDROID (À PORTÉE DU POUCE) -->
     <footer class="reader-ui floating-footer glass-panel" id="footer">
-        
-        <!-- AUDIO PLAYER ROW -->
-        <div id="audio-bar" class="hidden flex items-center justify-between gap-3 bg-[var(--surface-light)] rounded-[16px] border border-[var(--border)] p-2 mb-2">
+
+        <!-- 1. TIROIR DES 6 MODÈLES DE LECTURE & LUMINOSITÉ -->
+        <div id="models-drawer">
+            <div class="flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-[var(--accent)]">
+                <span>🎨 Choisir un Modèle de Lecture (6 Styles)</span>
+                <span id="brightness-label">Luminosité : 100%</span>
+            </div>
+            <div class="reader-model-grid">
+                <button type="button" class="reader-model-btn" data-rmodel="parchemin" onclick="setReaderModel('parchemin')">
+                    📜 Parchemin
+                </button>
+                <button type="button" class="reader-model-btn" data-rmodel="original" onclick="setReaderModel('original')">
+                    ☀️ Original HD
+                </button>
+                <button type="button" class="reader-model-btn" data-rmodel="touba_nuit" onclick="setReaderModel('touba_nuit')">
+                    🕌 Nuit Touba
+                </button>
+                <button type="button" class="reader-model-btn" data-rmodel="kaaba_amoled" onclick="setReaderModel('kaaba_amoled')">
+                    🕋 AMOLED Or
+                </button>
+                <button type="button" class="reader-model-btn" data-rmodel="medine_saphir" onclick="setReaderModel('medine_saphir')">
+                    🌙 Saphir
+                </button>
+                <button type="button" class="reader-model-btn" data-rmodel="calligraphie_hd" onclick="setReaderModel('calligraphie_hd')">
+                    🖋️ Encre Forte
+                </button>
+            </div>
+            <div class="flex items-center gap-2 pt-1">
+                <i class="fa-solid fa-sun text-xs opacity-60"></i>
+                <input type="range" min="45" max="115" value="100" class="speed-slider" oninput="setReaderBrightness(this.value)">
+                <i class="fa-solid fa-sun text-sm text-[var(--accent)]"></i>
+            </div>
+        </div>
+
+        <!-- 2. CARROUSEL DE MINIATURES DES PAGES (1re PAGE & SUIVANTES) -->
+        <div id="thumbs-strip"></div>
+
+        <!-- 3. LECTEUR AUDIO D'ACCOMPAGNEMENT -->
+        <div id="audio-bar" class="hidden flex items-center justify-between gap-2 bg-[var(--surface-light)] rounded-2xl border border-[var(--border)] p-2">
             <div class="flex-1 flex items-center gap-2 overflow-hidden">
-                <i class="fa-solid fa-music text-[var(--accent)] text-xs ml-2"></i>
-                <select id="audio-select" class="bg-transparent border-none text-[10px] font-bold uppercase tracking-widest outline-none text-[var(--text)] w-full truncate cursor-pointer" onchange="loadReaderAudio(this.value)">
-                    <option value="" class="bg-[#111] text-gray-400">Choisir un fond sonore...</option>
+                <i class="fa-solid fa-music text-[var(--accent)] text-xs ml-1"></i>
+                <select id="audio-select" class="bg-transparent border-none text-[11px] font-bold outline-none text-[var(--text)] w-full truncate cursor-pointer" onchange="loadReaderAudio(this.value)">
+                    <option value="" class="bg-[#111] text-gray-400">Choisir une récitation audio...</option>
                     {% if document.fichier_audio %}
-                    <option value="{{ document.fichier_audio.url }}" class="bg-[#111] text-[#d4af37]">Audio Récitation (Coran)</option>
+                    <option value="{{ document.fichier_audio.url }}" class="bg-[#111] text-[#d4af37]">Récitation officielle</option>
                     {% endif %}
                     {% for s in sons %}
                         {% if s.fichier_audio %}
@@ -195,78 +415,95 @@
                     {% endfor %}
                 </select>
             </div>
-            <button onclick="toggleReaderPlay()" class="btn-icon w-8 h-8 rounded-full bg-[var(--accent)] text-black shadow-lg flex-shrink-0"><i id="reader-pp-icon" class="fa-solid fa-play text-xs pl-0.5"></i></button>
-        </div>
-        
-        <!-- Slider Area -->
-        <div class="flex flex-col gap-1 items-center px-1">
-            <input type="range" id="page-slider" class="speed-slider w-full" min="1" max="1" value="1" oninput="onSliderMove(this.value)" onchange="onSliderChange(this.value)">
+            <button onclick="toggleReaderPlay()" class="btn-icon w-8 h-8 rounded-full bg-[var(--accent)] text-black shadow-lg">
+                <i id="reader-pp-icon" class="fa-solid fa-play text-xs"></i>
+            </button>
         </div>
 
-        <!-- Controls Row -->
-        <div class="flex items-center justify-between mt-1">
-            
-            <!-- View Mode & Audio -->
-            <div class="flex gap-1 bg-[var(--surface-light)] p-1 rounded-[16px] border border-[var(--border)]">
-                <button onclick="setReadingMode('page')" id="m-p" class="w-10 h-10 rounded-[12px] flex items-center justify-center text-dim transition-all active:scale-95 active"><i class="fa-solid fa-book-open"></i></button>
-                <button onclick="setReadingMode('scroll')" id="m-s" class="w-10 h-10 rounded-[12px] flex items-center justify-center text-dim transition-all active:scale-95"><i class="fa-solid fa-scroll"></i></button>
-                <button onclick="toggleAudioBar()" id="btn-audio" class="w-10 h-10 rounded-[12px] flex items-center justify-center text-dim hover:text-[var(--accent)] transition-all active:scale-95"><i class="fa-solid fa-headphones"></i></button>
-            </div>
-
-            <!-- Auto Scroll -->
-            <div id="speed-ctrl" class="hidden flex items-center gap-2 flex-1 mx-4 bg-[var(--surface-light)] p-1.5 rounded-[16px] border border-[var(--border)]">
-                <button onclick="adjSpeed(-1)" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--surface)] text-dim hover:text-[var(--text)]"><i class="fa-solid fa-minus text-[10px]"></i></button>
-                <div class="flex flex-col items-center justify-center flex-1 gap-1">
-                    <input type="range" id="scroll-speed" class="speed-slider w-full" min="1" max="50" value="10" oninput="updateSpeedLabel()">
-                    <span id="speed-val" class="text-[8px] font-bold text-dim uppercase tracking-widest hidden">1.0x</span>
-                </div>
-                <button onclick="adjSpeed(1)" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--surface)] text-dim hover:text-[var(--text)]"><i class="fa-solid fa-plus text-[10px]"></i></button>
-            </div>
-            
-            <button onclick="toggleAutoScroll()" id="as-btn" class="w-12 h-12 rounded-full bg-[var(--surface-light)] border border-[var(--border)] flex items-center justify-center transition-all transform active:scale-95 hover:shadow-lg text-[var(--accent)]"><i class="fa-solid fa-play"></i></button>
-
-            <!-- Theme Switcher -->
-            <div class="flex gap-1 bg-[var(--surface-light)] p-1 rounded-[16px] border border-[var(--border)] relative">
-                <div class="theme-opt active w-10 h-10 rounded-[12px] flex items-center justify-center cursor-pointer text-dim hover:text-[var(--text)]" onclick="setTheme('dark', this)" title="Mode Sombre"><i class="fa-solid fa-moon"></i></div>
-                <div class="theme-opt w-10 h-10 rounded-[12px] flex items-center justify-center cursor-pointer text-dim hover:text-[var(--text)]" onclick="setTheme('sepia', this)" title="Mode Sépia"><i class="fa-solid fa-coffee"></i></div>
-                <div class="theme-opt w-10 h-10 rounded-[12px] flex items-center justify-center cursor-pointer text-dim hover:text-[var(--text)]" onclick="setTheme('paper', this)" title="Mode Papier"><i class="fa-solid fa-sun text-sm"></i></div>
-            </div>
+        <!-- 4. CURSEUR DE PROGRESSION DES PAGES -->
+        <div class="flex items-center gap-3 px-1">
+            <span class="text-[10px] font-bold opacity-70">P.1</span>
+            <input type="range" id="page-slider" class="speed-slider w-full" min="1" max="1" value="1"
+                   oninput="onSliderMove(this.value)" onchange="onSliderChange(this.value)">
+            <span class="text-[10px] font-bold opacity-70" id="slider-max-lbl">Fin</span>
         </div>
 
-        <!-- Pagination / Zoom Row -->
-        <div id="nav-btns" class="flex gap-3 h-12">
-            <button onclick="changePage(-1)" id="prev-btn" class="btn-primary flex-1"><i class="fa-solid fa-chevron-left mr-2"></i> Précédent</button>
-            
-            <div class="flex items-center justify-center w-28 gap-3 bg-[var(--surface-light)] rounded-[16px] border border-[var(--border)]">
-                <button onclick="changeZoom(-0.2)" class="text-dim hover:text-[var(--text)] p-2"><i class="fa-solid fa-minus text-xs"></i></button>
-                <span class="text-xs font-semibold text-center w-10" id="z-val">100%</span>
-                <button onclick="changeZoom(0.2)" class="text-dim hover:text-[var(--text)] p-2"><i class="fa-solid fa-plus text-xs"></i></button>
+        <!-- 5. BARRE D'OUTILS PRINCIPALE (MODES, MINIATURES, AUTO-SCROLL, MODÈLES) -->
+        <div class="flex items-center justify-between gap-1.5">
+            <!-- Livre Page par Page vs Défilement Continu -->
+            <div class="flex gap-1 bg-[var(--surface-light)] p-1 rounded-2xl border border-[var(--border)]">
+                <button onclick="setReadingMode('page')" id="m-p" class="btn-icon w-9 h-9 active" title="Mode Livre (Swipe Gauche/Droite)">
+                    <i class="fa-solid fa-book-open text-xs"></i>
+                </button>
+                <button onclick="setReadingMode('scroll')" id="m-s" class="btn-icon w-9 h-9" title="Mode Défilement Continu Vertical">
+                    <i class="fa-solid fa-scroll text-xs"></i>
+                </button>
+                <button onclick="toggleThumbsStrip()" id="btn-thumbs" class="btn-icon w-9 h-9" title="Miniatures des Pages">
+                    <i class="fa-solid fa-images text-xs"></i>
+                </button>
+                <button onclick="toggleAudioBar()" id="btn-audio" class="btn-icon w-9 h-9" title="Audio & Kourel">
+                    <i class="fa-solid fa-headphones text-xs"></i>
+                </button>
             </div>
 
-            <button onclick="changePage(1)" id="next-btn" class="btn-primary flex-1">Suivant <i class="fa-solid fa-chevron-right ml-2"></i></button>
+            <!-- Contrôle Vitesse Défilement Automatique -->
+            <div id="speed-ctrl" class="hidden flex items-center gap-1.5 flex-1 bg-[var(--surface-light)] p-1.5 rounded-2xl border border-[var(--border)]">
+                <button onclick="adjSpeed(-1)" class="w-7 h-7 rounded-lg flex items-center justify-center"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                <input type="range" id="scroll-speed" class="speed-slider w-full" min="1" max="50" value="10" oninput="updateSpeedLabel()">
+                <button onclick="adjSpeed(1)" class="w-7 h-7 rounded-lg flex items-center justify-center"><i class="fa-solid fa-plus text-[10px]"></i></button>
+            </div>
+
+            <button onclick="toggleAutoScroll()" id="as-btn" class="w-10 h-10 rounded-2xl bg-[var(--surface-light)] border border-[var(--border)] flex items-center justify-center text-[var(--accent)]" title="Défilement automatique">
+                <i class="fa-solid fa-play text-xs"></i>
+            </button>
+
+            <!-- Bouton Studio des 6 Modèles de Lecture -->
+            <button onclick="toggleModelsDrawer()" id="btn-models" class="px-3 h-10 rounded-2xl bg-[var(--surface-light)] border border-[var(--border-focus)] text-[var(--accent)] font-extrabold text-xs flex items-center gap-1.5">
+                <i class="fa-solid fa-palette"></i>
+                <span>Modèles</span>
+            </button>
+        </div>
+
+        <!-- 6. NAVIGATION PAGE PRÉCÉDENTE / ZOOM / PAGE SUIVANTE (AU POUCE) -->
+        <div id="nav-btns" class="flex gap-2 h-11">
+            <button onclick="changePage(-1)" id="prev-btn" class="btn-primary">
+                <i class="fa-solid fa-chevron-left mr-1.5"></i> Précédent
+            </button>
+
+            <div class="flex items-center justify-center px-2 gap-1.5 bg-[var(--surface-light)] rounded-2xl border border-[var(--border)]">
+                <button onclick="changeZoom(-0.2)" class="p-1.5 text-xs"><i class="fa-solid fa-minus"></i></button>
+                <span class="text-[11px] font-extrabold w-11 text-center" id="z-val">100%</span>
+                <button onclick="changeZoom(0.2)" class="p-1.5 text-xs"><i class="fa-solid fa-plus"></i></button>
+            </div>
+
+            <button onclick="changePage(1)" id="next-btn" class="btn-primary">
+                Suivant <i class="fa-solid fa-chevron-right ml-1.5"></i>
+            </button>
         </div>
     </footer>
 
-    <!-- RESUME MODAL -->
+    <!-- MODAL DE REPRISE DE LECTURE -->
     <div id="resume-modal" class="modal-overlay">
         <div class="modal-card">
-            <div class="w-16 h-16 bg-[var(--surface-light)] rounded-full flex items-center justify-center mx-auto mb-6 border border-[var(--border)] shadow-lg">
-                <i class="fa-solid fa-bookmark text-2xl accent-text"></i>
+            <div class="w-14 h-14 bg-[var(--surface)] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[var(--border-focus)]">
+                <i class="fa-solid fa-bookmark text-xl accent-text"></i>
             </div>
-            <h3 class="font-semibold text-xl mb-2 text-[var(--text)]">Reprise de lecture</h3>
-            <p class="text-xs text-dim mb-8">Voulez-vous reprendre à la page <span id="res-num" class="text-[var(--text)] font-bold">...</span> ?</p>
-            <div class="flex flex-col gap-3">
-                <button onclick="doResume(true)" class="py-3.5 bg-[var(--accent)] text-black font-semibold rounded-[16px] shadow-lg hover:opacity-90 transition">Continuer la lecture</button>
-                <button onclick="doResume(false)" class="py-3.5 bg-[var(--surface-light)] border border-[var(--border)] rounded-[16px] text-dim text-sm font-medium hover:text-[var(--text)] hover:bg-[var(--surface)] transition">Recommencer au début</button>
+            <h3 class="font-extrabold text-lg mb-1">Reprendre votre lecture</h3>
+            <p class="text-xs opacity-75 mb-6">Vous étiez arrivé à la page <strong id="res-num" class="accent-text">1</strong>.</p>
+            <div class="flex flex-col gap-2.5">
+                <button onclick="doResume(true)" class="py-3 bg-[var(--accent)] text-black font-extrabold rounded-xl text-xs">
+                    Continuer à la page <span id="res-num-btn">1</span>
+                </button>
+                <button onclick="doResume(false)" class="py-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-xs font-semibold">
+                    Revenir à la 1re Page
+                </button>
             </div>
         </div>
     </div>
-    
+
     <audio id="reader-aud" preload="metadata" loop></audio>
 
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
         const PROXY_URL = "/proxy-pdf/{{ categorie }}/{{ document.id }}/";
         const DIRECT_URL = "{{ direct_pdf_url|default:'' }}";
         const DOC_ID = "{{ document.id }}";
@@ -281,7 +518,55 @@
         let retryCount = 0;
         const MAX_RETRIES = 2;
 
-        // Charger un PDF depuis une URL donnée
+        // ── 1. WAKE LOCK ANDROID (GARDE L'ÉCRAN ALLUMÉ PENDANT LA RÉCITATION) ──
+        let wakeLockSentinel = null;
+        async function requestAndroidWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLockSentinel = await navigator.wakeLock.request('screen');
+                    document.getElementById('wakelock-badge')?.classList.remove('hidden');
+                } catch (e) {}
+            }
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') requestAndroidWakeLock();
+        });
+        requestAndroidWakeLock();
+
+        // ── 2. MODÈLES DE LECTURE & LUMINOSITÉ ──
+        function setReaderModel(modelName) {
+            document.documentElement.setAttribute('data-reader-model', modelName);
+            try { localStorage.setItem('sdm_reader_model', modelName); } catch (e) {}
+            document.querySelectorAll('[data-rmodel]').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-rmodel') === modelName);
+            });
+            if (navigator.vibrate) navigator.vibrate(8);
+        }
+        (function initReaderModel() {
+            const m = localStorage.getItem('sdm_reader_model') || 'parchemin';
+            setReaderModel(m);
+        })();
+
+        function toggleModelsDrawer() {
+            document.getElementById('models-drawer')?.classList.toggle('open');
+        }
+
+        function setReaderBrightness(val) {
+            const ratio = (parseInt(val) / 100).toFixed(2);
+            document.documentElement.style.setProperty('--user-brightness', ratio);
+            const lbl = document.getElementById('brightness-label');
+            if (lbl) lbl.textContent = `Luminosité : ${val}%`;
+        }
+
+        function toggleFullScreenReader() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen?.().catch(() => {});
+            } else {
+                document.exitFullscreen?.().catch(() => {});
+            }
+        }
+
+        // ── 3. CHARGEMENT DU PDF & RENDU HD ANDROID (DEVICE PIXEL RATIO) ──
         async function loadPdfFromUrl(url) {
             const loadingTask = pdfjsLib.getDocument({
                 url: url,
@@ -292,93 +577,200 @@
                 disableRange: true,
                 disableStream: true,
             });
-            
             loadingTask.onProgress = function(data) {
                 if (data.total > 0) {
                     const pct = Math.round((data.loaded / data.total) * 100);
                     document.getElementById('top-prog').style.width = pct + '%';
                 }
             };
-            
             return loadingTask.promise;
         }
 
-        // INIT avec double système de chargement
         async function init() {
             document.getElementById('loader').classList.add('show');
-            
-            // Étape 1 : Essayer via le proxy (contourne les CORS)
             try {
-                console.log('[PDF] Chargement via proxy...', PROXY_URL);
                 pdfDoc = await loadPdfFromUrl(PROXY_URL);
-                console.log('[PDF] ✅ Chargé via proxy');
                 onPdfLoaded();
                 return;
-            } catch (proxyErr) {
-                console.warn('[PDF] ⚠ Proxy échoué:', proxyErr.message);
-            }
-            
-            // Étape 2 : Fallback sur l'URL directe Cloudinary
+            } catch (proxyErr) {}
+
             if (DIRECT_URL) {
                 try {
-                    console.log('[PDF] Fallback URL directe...', DIRECT_URL);
                     pdfDoc = await loadPdfFromUrl(DIRECT_URL);
-                    console.log('[PDF] ✅ Chargé via URL directe');
                     onPdfLoaded();
                     return;
-                } catch (directErr) {
-                    console.warn('[PDF] ⚠ URL directe échouée:', directErr.message);
-                }
+                } catch (directErr) {}
             }
-            
-            // Étape 3 : Retry automatique
+
             if (retryCount < MAX_RETRIES) {
                 retryCount++;
-                console.log(`[PDF] 🔄 Tentative ${retryCount}/${MAX_RETRIES}...`);
-                document.getElementById('loader').classList.remove('show');
-                setTimeout(init, 2000 * retryCount);
+                setTimeout(init, 1500 * retryCount);
                 return;
             }
-            
-            // Échec total : afficher l'erreur
             document.getElementById('loader').classList.remove('show');
             showPdfError();
         }
-        
+
         function onPdfLoaded() {
             document.getElementById('max-page-num').innerText = pdfDoc.numPages;
+            document.getElementById('slider-max-lbl').innerText = 'P.' + pdfDoc.numPages;
             document.getElementById('page-slider').max = pdfDoc.numPages;
             document.getElementById('loader').classList.remove('show');
-            
-            renderOutlines();
 
-            if (RESUME_PAGE > 1) {
+            renderOutlines();
+            buildThumbsStrip();
+
+            if (RESUME_PAGE > 1 && RESUME_PAGE <= pdfDoc.numPages) {
                 document.getElementById('res-num').innerText = RESUME_PAGE;
+                document.getElementById('res-num-btn').innerText = RESUME_PAGE;
                 document.getElementById('resume-modal').classList.add('show');
-            } else { render(); }
+            } else {
+                render();
+            }
         }
-        
-        function showPdfError() {
-            const downloadUrl = DIRECT_URL || PROXY_URL;
-            document.getElementById('viewport').innerHTML = `
-                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center;min-height:300px;">
-                    <div style="width:80px;height:80px;border-radius:50%;background:rgba(220,53,69,0.1);border:1px solid rgba(220,53,69,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
-                        <i class="fa-solid fa-file-pdf" style="font-size:32px;color:#dc3545;"></i>
-                    </div>
-                    <h2 style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;">Impossible de charger le document</h2>
-                    <p style="font-size:13px;color:var(--dim);margin-bottom:28px;max-width:300px;line-height:1.6;">
-                        Le fichier PDF n'a pas pu être chargé. Vérifiez votre connexion internet ou essayez une autre méthode.
-                    </p>
-                    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-                        <button onclick="retryCount=0;init();" style="padding:14px 28px;background:var(--accent);color:#000;border:none;border-radius:16px;font-size:12px;font-weight:700;letter-spacing:0.05em;cursor:pointer;box-shadow:0 8px 24px rgba(212,175,55,0.3);">
-                            <i class="fa-solid fa-rotate-right" style="margin-right:8px;"></i>Réessayer
-                        </button>
-                        <a href="${downloadUrl}" target="_blank" style="padding:14px 28px;border:1px solid var(--border);color:var(--dim);border-radius:16px;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:8px;">
-                            <i class="fa-solid fa-external-link-alt"></i>Ouvrir le fichier
-                        </a>
-                    </div>
-                </div>
-            `;
+
+        // ── 4. RUBAN DE MINIATURES DES PAGES (AVEC 1re PAGE EN VEDETTE) ──
+        function toggleThumbsStrip() {
+            const strip = document.getElementById('thumbs-strip');
+            const btn = document.getElementById('btn-thumbs');
+            if (!strip) return;
+            strip.classList.toggle('open');
+            btn?.classList.toggle('active', strip.classList.contains('open'));
+            if (strip.classList.contains('open')) {
+                renderVisibleThumbs();
+            }
+        }
+
+        function buildThumbsStrip() {
+            const strip = document.getElementById('thumbs-strip');
+            if (!strip || !pdfDoc) return;
+            strip.innerHTML = '';
+            const maxThumbs = Math.min(pdfDoc.numPages, 40);
+            for (let i = 1; i <= maxThumbs; i++) {
+                const item = document.createElement('div');
+                item.className = 'page-thumb-item' + (i === 1 ? ' active' : '');
+                item.dataset.page = i;
+                item.innerHTML = `<canvas></canvas><span class="page-thumb-badge">${i === 1 ? '1re Page' : 'P.' + i}</span>`;
+                item.onclick = () => {
+                    if (mode === 'page') renderSingle(i);
+                    else document.getElementById(`p-${i}`)?.scrollIntoView({ behavior: 'smooth' });
+                };
+                strip.appendChild(item);
+            }
+            // Toujours pré-rendre la miniature de la 1re page !
+            renderThumbPage(1);
+        }
+
+        async function renderThumbPage(pageNo) {
+            if (!pdfDoc) return;
+            const item = document.querySelector(`#thumbs-strip .page-thumb-item[data-page="${pageNo}"]`);
+            if (!item || item.dataset.rendered) return;
+            item.dataset.rendered = '1';
+            try {
+                const page = await pdfDoc.getPage(pageNo);
+                const canvas = item.querySelector('canvas');
+                const bVp = page.getViewport({ scale: 1 });
+                const vp = page.getViewport({ scale: 110 / bVp.width });
+                canvas.width = vp.width;
+                canvas.height = vp.height;
+                await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+            } catch (e) {}
+        }
+
+        async function renderVisibleThumbs() {
+            if (!pdfDoc) return;
+            const limit = Math.min(pdfDoc.numPages, 12);
+            for (let i = 1; i <= limit; i++) {
+                await renderThumbPage(i);
+            }
+        }
+
+        // ── 5. RENDU HAUTE DÉFINITION DES PAGES ──
+        async function renderSingle(num) {
+            if (busy || !pdfDoc) return;
+            busy = true;
+            document.getElementById('loader').classList.add('show');
+
+            try {
+                const page = await pdfDoc.getPage(num);
+                const canvas = document.createElement('canvas');
+                canvas.className = 'pdf-page-canvas';
+                const ctx = canvas.getContext('2d');
+
+                const dpr = Math.min(window.devicePixelRatio || 1, 2.25);
+                const bVp = page.getViewport({ scale: 1 });
+                const cssWidth = Math.min(vport.clientWidth * 0.96, 760) * zoom;
+                const scale = (cssWidth * dpr) / bVp.width;
+                const vp = page.getViewport({ scale: scale });
+
+                canvas.width = vp.width;
+                canvas.height = vp.height;
+                canvas.style.width = `${cssWidth}px`;
+                canvas.style.height = `${(vp.height / dpr)}px`;
+
+                await page.render({ canvasContext: ctx, viewport: vp }).promise;
+
+                container.innerHTML = '';
+                const wrap = document.createElement('div');
+                wrap.className = 'canvas-wrapper';
+                wrap.appendChild(canvas);
+                container.appendChild(wrap);
+
+                updateUI(num);
+            } finally {
+                document.getElementById('loader').classList.remove('show');
+                busy = false;
+            }
+        }
+
+        async function renderScroll() {
+            container.innerHTML = '';
+            observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const p = parseInt(entry.target.dataset.p);
+                    if (entry.isIntersecting) {
+                        loadPage(entry.target);
+                        if (entry.intersectionRatio > 0.4) updateUI(p);
+                    }
+                });
+            }, { root: vport, rootMargin: '900px 0px', threshold: [0, 0.4, 1] });
+
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                const wrap = document.createElement('div');
+                wrap.className = 'canvas-wrapper';
+                wrap.id = `p-${i}`;
+                wrap.dataset.p = i;
+                wrap.style.minHeight = '220px';
+                wrap.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin opacity-20 py-20 text-[var(--accent)]"></i>';
+                container.appendChild(wrap);
+                observer.observe(wrap);
+            }
+        }
+
+        async function loadPage(w) {
+            if (w.querySelector('canvas') || w.dataset.loading) return;
+            w.dataset.loading = "true";
+            const p = await pdfDoc.getPage(parseInt(w.dataset.p));
+            const canvas = document.createElement('canvas');
+            canvas.className = 'pdf-page-canvas';
+            const ctx = canvas.getContext('2d');
+
+            const dpr = Math.min(window.devicePixelRatio || 1, 2.0);
+            const bVp = p.getViewport({ scale: 1 });
+            const cssWidth = Math.min(vport.clientWidth * 0.96, 760) * zoom;
+            const scale = (cssWidth * dpr) / bVp.width;
+            const vp = p.getViewport({ scale: scale });
+
+            w.style.minHeight = (vp.height / dpr) + 'px';
+            canvas.width = vp.width;
+            canvas.height = vp.height;
+            canvas.style.width = `${cssWidth}px`;
+            canvas.style.height = `${(vp.height / dpr)}px`;
+
+            await p.render({ canvasContext: ctx, viewport: vp }).promise;
+            w.innerHTML = '';
+            w.appendChild(canvas);
+            delete w.dataset.loading;
         }
 
         function setReadingMode(m) {
@@ -388,198 +780,121 @@
             document.getElementById('m-s').classList.toggle('active', m === 'scroll');
             document.getElementById('nav-btns').style.display = (m === 'page' ? 'flex' : 'none');
             document.getElementById('speed-ctrl').classList.toggle('hidden', m !== 'scroll');
-            if(m === 'page') stopAutoScroll();
+            if (m === 'page') stopAutoScroll();
             render();
         }
 
         async function render() {
+            if (!pdfDoc) return;
             container.innerHTML = '';
             if (observer) observer.disconnect();
-            
             if (mode === 'page') renderSingle(pNum);
             else renderScroll();
         }
 
-        async function renderSingle(num) {
-            if (busy) return; busy = true;
-            document.getElementById('loader').classList.add('show');
-            
-            const page = await pdfDoc.getPage(num);
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.classList.add('page-enter');
-            
-            const bVp = page.getViewport({ scale: 1 });
-            const s = (zoom * vport.clientWidth) / bVp.width;
-            const vp = page.getViewport({ scale: s });
-            canvas.height = vp.height; canvas.width = vp.width;
-
-            await page.render({ canvasContext: ctx, viewport: vp }).promise;
-            
-            container.innerHTML = '';
-            const wrap = document.createElement('div'); wrap.className = 'canvas-wrapper';
-            wrap.appendChild(canvas);
-            container.appendChild(wrap);
-
-            setTimeout(() => canvas.classList.remove('page-enter'), 50);
-            updateUI(num);
-            document.getElementById('loader').classList.remove('show');
-            busy = false;
-        }
-
-        async function renderScroll() {
-            container.innerHTML = '';
-            
-            observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    const p = parseInt(entry.target.dataset.p);
-                    if (entry.isIntersecting) {
-                        loadPage(entry.target);
-                        if (entry.intersectionRatio > 0.5) updateUI(p);
-                    }
-                });
-            }, { 
-                root: vport,
-                rootMargin: '1000px 0px', 
-                threshold: [0, 0.5, 1] 
-            });
-
-            for (let i = 1; i <= pdfDoc.numPages; i++) {
-                const wrap = document.createElement('div');
-                wrap.className = 'canvas-wrapper';
-                wrap.id = `p-${i}`; wrap.dataset.p = i;
-                wrap.style.minHeight = '100px'; 
-                wrap.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin opacity-10 py-20 text-[var(--accent)]"></i>';
-                container.appendChild(wrap);
-                observer.observe(wrap);
-            }
-        }
-
-        async function loadPage(w) {
-            if (w.querySelector('canvas') || w.dataset.loading) return;
-            w.dataset.loading = "true";
-            
-            const p = await pdfDoc.getPage(parseInt(w.dataset.p));
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const bVp = p.getViewport({ scale: 1 });
-            const s = (zoom * vport.clientWidth) / bVp.width;
-            const vp = p.getViewport({ scale: s });
-            
-            w.style.minHeight = vp.height + 'px';
-            canvas.height = vp.height; canvas.width = vp.width;
-            
-            await p.render({ canvasContext: ctx, viewport: vp }).promise;
-            w.innerHTML = ''; w.appendChild(canvas);
-            delete w.dataset.loading;
-        }
-
         function updateUI(n) {
-            if (pNum === n) return;
             pNum = n;
             document.getElementById('top-page-num').innerText = n;
             document.getElementById('page-slider').value = n;
-            
             document.getElementById('top-prog').style.width = `${(n / pdfDoc.numPages) * 100}%`;
-            
+
+            document.querySelectorAll('#thumbs-strip .page-thumb-item').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.page) === n);
+            });
+
             if (saveTimeout) clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => save(n), 2000);
+            saveTimeout = setTimeout(() => save(n), 1500);
         }
 
         function changePage(d) {
+            if (!pdfDoc) return;
             const n = pNum + d;
-            if (n >= 1 && n <= pdfDoc.numPages) renderSingle(n);
+            if (n >= 1 && n <= pdfDoc.numPages) {
+                if (navigator.vibrate) navigator.vibrate(10);
+                renderSingle(n);
+            }
         }
 
-        function onSliderChange(v) { 
+        function onSliderChange(v) {
             const n = parseInt(v);
             if (mode === 'page') renderSingle(n);
-            else { document.getElementById(`p-${n}`).scrollIntoView({ behavior: 'smooth' }); }
+            else document.getElementById(`p-${n}`)?.scrollIntoView({ behavior: 'smooth' });
         }
-
         function onSliderMove(v) { document.getElementById('top-page-num').innerText = v; }
 
-        function setTheme(t, e) {
-            document.documentElement.setAttribute('data-theme', t);
-            document.querySelectorAll('.theme-opt').forEach(o => o.classList.remove('active'));
-            e.classList.add('active');
-        }
-
         function changeZoom(d) {
-            zoom = Math.max(0.6, Math.min(3, zoom + d));
+            zoom = Math.max(0.8, Math.min(2.6, +(zoom + d).toFixed(2)));
             document.getElementById('z-val').innerText = `${Math.round(zoom * 100)}%`;
             render();
         }
 
-        // AUTO SCROLL
+        // ── 6. GESTES TACTILES ANDROID : SWIPE GAUCHE/DROITE & DOUBLE-TAP ZOOM ──
+        let touchStartX = 0, touchStartY = 0, lastTapTime = 0;
+        vport.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        vport.addEventListener('touchend', (e) => {
+            if (e.changedTouches.length !== 1) return;
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            const dy = e.changedTouches[0].clientY - touchStartY;
+
+            // Double-tap pour zoomer/dézoomer rapidement sur Android
+            const now = Date.now();
+            if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
+                if (now - lastTapTime < 280) {
+                    zoom = (zoom > 1.15) ? 1.0 : 1.55;
+                    document.getElementById('z-val').innerText = `${Math.round(zoom * 100)}%`;
+                    render();
+                    lastTapTime = 0;
+                    return;
+                }
+                lastTapTime = now;
+            }
+
+            // Swipe horizontal en mode Page (si zoom == 1)
+            if (mode === 'page' && zoom <= 1.05 && Math.abs(dx) > 62 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+                if (dx < 0) changePage(1);   // Swipe vers la gauche -> Page suivante
+                else changePage(-1);         // Swipe vers la droite -> Page précédente
+            }
+        }, { passive: true });
+
+        function handleTap(e) {
+            if (e.target.tagName !== 'CANVAS') return;
+        }
+
+        // Auto-Scroll
+        let lastTime = 0;
         function toggleAutoScroll() {
             asActive = !asActive;
             const btn = document.getElementById('as-btn');
             const ctrl = document.getElementById('speed-ctrl');
-            
-            btn.innerHTML = asActive ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play ml-1"></i>';
+            btn.innerHTML = asActive ? '<i class="fa-solid fa-pause text-xs"></i>' : '<i class="fa-solid fa-play text-xs"></i>';
             btn.classList.toggle('active', asActive);
             ctrl.classList.toggle('hidden', !asActive);
-            
             if (asActive) {
                 if (mode !== 'scroll') setReadingMode('scroll');
                 lastTime = performance.now();
                 runAutoScroll(lastTime);
             } else stopAutoScroll();
         }
-
-        let lastTime = 0;
         function runAutoScroll(time) {
             if (!asActive) return;
             const delta = time - lastTime;
             lastTime = time;
-            
             const speed = parseFloat(document.getElementById('scroll-speed').value) / 10;
-            vport.scrollTop += (speed * (delta / 16.6)); 
+            vport.scrollTop += (speed * (delta / 16.6));
             asRaf = requestAnimationFrame(runAutoScroll);
         }
-
         function stopAutoScroll() { asActive = false; cancelAnimationFrame(asRaf); }
-
         function adjSpeed(d) {
             const el = document.getElementById('scroll-speed');
-            let val = parseInt(el.value) + (d * 5);
-            val = Math.max(1, Math.min(50, val));
-            el.value = val;
-            updateSpeedLabel();
+            el.value = Math.max(1, Math.min(50, parseInt(el.value) + d * 5));
         }
-
-        function updateSpeedLabel() {
-            const val = document.getElementById('scroll-speed').value;
-            const v = document.getElementById('speed-val');
-            v.innerText = `Vitesse: ${(val / 10).toFixed(1)}x`;
-        }
-
-        let hideTimeout;
-        function resetHideTimer() {
-            clearTimeout(hideTimeout);
-            if (uiVisible) {
-                hideTimeout = setTimeout(() => {
-                    if (uiVisible) {
-                        uiVisible = false;
-                        document.getElementById('header').classList.add('hide-up');
-                        document.getElementById('footer').classList.add('hide-down');
-                    }
-                }, 4000); // 4 seconds of inactivity hides UI
-            }
-        }
-
-        // On scroll/touch, reset timer if UI is visible
-        document.getElementById('viewport').addEventListener('scroll', () => { if (uiVisible) resetHideTimer(); }, {passive: true});
-
-        function handleTap(e) {
-            if (e.target.tagName !== 'CANVAS') return;
-            uiVisible = !uiVisible;
-            document.getElementById('header').classList.toggle('hide-up', !uiVisible);
-            document.getElementById('footer').classList.toggle('hide-down', !uiVisible);
-            resetHideTimer();
-        }
+        function updateSpeedLabel() {}
 
         function doResume(r) {
             document.getElementById('resume-modal').classList.remove('show');
@@ -596,7 +911,6 @@
         }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-
         async function renderOutlines() {
             const list = document.getElementById('outline-list');
             try {
@@ -605,21 +919,19 @@
                     list.innerHTML = '';
                     outlines.forEach(obj => {
                         const div = document.createElement('div');
-                        div.className = 'outline-item';
+                        div.className = 'p-3 rounded-xl mb-1 text-xs cursor-pointer hover:bg-white/10';
                         div.innerText = obj.title;
                         div.onclick = async () => {
                             const dest = await pdfDoc.getDestination(obj.dest);
                             const idx = await pdfDoc.getPageIndex(dest[0]);
                             toggleSidebar();
                             if (mode === 'page') renderSingle(idx + 1);
-                            else document.getElementById(`p-${idx + 1}`).scrollIntoView();
+                            else document.getElementById(`p-${idx + 1}`)?.scrollIntoView();
                         };
                         list.appendChild(div);
                     });
                 }
-            } catch (e) {
-                list.innerHTML = '<p class="text-xs text-dim text-center mt-10">Sommaire non disponible</p>';
-            }
+            } catch (e) {}
         }
 
         function toggleSearch() {
@@ -630,37 +942,27 @@
 
         async function performSearch() {
             const query = document.getElementById('search-input').value.toLowerCase().trim();
-            if (!query) return;
-
+            if (!query || !pdfDoc) return;
             document.getElementById('loader').classList.add('show');
             for (let i = 1; i <= pdfDoc.numPages; i++) {
                 const page = await pdfDoc.getPage(i);
                 const content = await page.getTextContent();
                 const text = content.items.map(item => item.str).join(' ').toLowerCase();
-
                 if (text.includes(query)) {
                     if (mode === 'page') renderSingle(i);
-                    else document.getElementById(`p-${i}`).scrollIntoView({ behavior: 'smooth' });
+                    else document.getElementById(`p-${i}`)?.scrollIntoView({ behavior: 'smooth' });
                     toggleSearch();
                     document.getElementById('loader').classList.remove('show');
                     return;
                 }
             }
-            alert("Aucun résultat trouvé.");
+            alert("Aucune occurrence trouvée.");
             document.getElementById('loader').classList.remove('show');
         }
 
-        // Téléchargement hors ligne du PDF
         async function downloadPdf() {
-            const btn = document.querySelector('[onclick="downloadPdf()"]');
-            const origIcon = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sm"></i>';
-            btn.disabled = true;
-            
             try {
                 const response = await fetch(PROXY_URL);
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -670,134 +972,48 @@
                 a.click();
                 window.URL.revokeObjectURL(url);
                 a.remove();
-            } catch (e) {
-                console.error('[Download] Erreur:', e);
-                alert('Erreur lors du téléchargement. Vérifiez votre connexion.');
-            } finally {
-                btn.innerHTML = origIcon;
-                btn.disabled = false;
-            }
+            } catch (e) {}
         }
 
-        init();
+        function showPdfError() {
+            const downloadUrl = DIRECT_URL || PROXY_URL;
+            document.getElementById('viewport').innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full p-6 text-center">
+                    <i class="fa-solid fa-file-pdf text-4xl text-amber-400 mb-4"></i>
+                    <h2 class="text-base font-bold mb-2">Chargement du manuscrit</h2>
+                    <p class="text-xs opacity-70 mb-5 max-w-xs">Vérifiez votre connexion ou ouvrez directement le PDF.</p>
+                    <div class="flex gap-3">
+                        <button onclick="retryCount=0;init();" class="px-5 py-2.5 rounded-xl bg-amber-500 text-black font-bold text-xs">Réessayer</button>
+                        <a href="${downloadUrl}" target="_blank" class="px-5 py-2.5 rounded-xl border border-white/20 text-xs font-bold">Ouvrir PDF</a>
+                    </div>
+                </div>
+            `;
+        }
 
-        // LECTEUR AUDIO INTEGRE — Amélioré
+        // Audio
         const rAud = document.getElementById('reader-aud');
         const rIcon = document.getElementById('reader-pp-icon');
         let rAudioLoaded = false;
-        let rAudioRetries = 0;
-        const R_MAX_RETRIES = 2;
-
         function toggleAudioBar() {
-            const bar = document.getElementById('audio-bar');
-            bar.classList.toggle('hidden');
+            document.getElementById('audio-bar').classList.toggle('hidden');
             document.getElementById('btn-audio').classList.toggle('active');
         }
-
         function loadReaderAudio(url) {
-            if(!url) {
-                rAud.pause();
-                rAud.src = "";
-                rIcon.className = "fa-solid fa-play text-xs pl-0.5";
-                rAudioLoaded = false;
-                rAudioRetries = 0;
-                return;
-            }
-            rAudioRetries = 0;
+            if (!url) { rAud.pause(); rAud.src = ""; rIcon.className = "fa-solid fa-play text-xs"; return; }
             rAud.src = url;
-            rAud.play().then(() => {
-                rAudioLoaded = true;
-                rIcon.className = "fa-solid fa-pause text-xs";
-                updateReaderMediaSession();
-            }).catch(e => {
-                console.error("[Audio] Lecture impossible:", e);
-                // Retry automatique
-                if (rAudioRetries < R_MAX_RETRIES) {
-                    rAudioRetries++;
-                    console.log(`[Audio] 🔄 Retry ${rAudioRetries}/${R_MAX_RETRIES}...`);
-                    setTimeout(() => {
-                        rAud.src = url;
-                        rAud.play().then(() => {
-                            rAudioLoaded = true;
-                            rIcon.className = "fa-solid fa-pause text-xs";
-                        }).catch(() => {});
-                    }, 1000 * rAudioRetries);
-                }
-            });
+            rAud.play().then(() => { rAudioLoaded = true; rIcon.className = "fa-solid fa-pause text-xs"; }).catch(() => {});
         }
-
         function toggleReaderPlay() {
-            if(!rAud.src || !rAudioLoaded) {
+            if (!rAud.src || !rAudioLoaded) {
                 const sel = document.getElementById('audio-select');
-                if(sel.value) loadReaderAudio(sel.value);
+                if (sel.value) loadReaderAudio(sel.value);
                 return;
             }
-            if(rAud.paused) {
-                rAud.play();
-                rIcon.className = "fa-solid fa-pause text-xs";
-            } else {
-                rAud.pause();
-                rIcon.className = "fa-solid fa-play text-xs pl-0.5";
-            }
+            if (rAud.paused) { rAud.play(); rIcon.className = "fa-solid fa-pause text-xs"; }
+            else { rAud.pause(); rIcon.className = "fa-solid fa-play text-xs"; }
         }
 
-        // Passage automatique au son suivant
-        rAud.addEventListener('ended', function() {
-            const sel = document.getElementById('audio-select');
-            const opts = [...sel.options].filter(o => o.value);
-            const curIdx = opts.findIndex(o => o.value === sel.value);
-            if (curIdx >= 0 && curIdx < opts.length - 1) {
-                // Passer au suivant
-                sel.value = opts[curIdx + 1].value;
-                loadReaderAudio(sel.value);
-            } else {
-                // Fin de la liste — remettre en pause
-                rIcon.className = "fa-solid fa-play text-xs pl-0.5";
-                rAudioLoaded = false;
-            }
-        });
-
-        // Gestion des erreurs réseau audio
-        rAud.addEventListener('error', function() {
-            console.error("[Audio] Erreur de chargement");
-            if (rAudioRetries < R_MAX_RETRIES && rAud.src) {
-                rAudioRetries++;
-                console.log(`[Audio] 🔄 Retry après erreur ${rAudioRetries}/${R_MAX_RETRIES}`);
-                setTimeout(() => {
-                    const currentSrc = rAud.src;
-                    rAud.src = '';
-                    rAud.src = currentSrc;
-                    rAud.play().catch(() => {});
-                }, 1500 * rAudioRetries);
-            }
-        });
-
-        // MediaSession API pour la lecture en arrière-plan sur mobile
-        function updateReaderMediaSession() {
-            if (!('mediaSession' in navigator)) return;
-            const sel = document.getElementById('audio-select');
-            const selectedText = sel.options[sel.selectedIndex]?.text || 'Audio';
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: selectedText,
-                artist: 'SDM Mouride',
-                album: '{{ document.titre }}',
-            });
-            navigator.mediaSession.setActionHandler('play', toggleReaderPlay);
-            navigator.mediaSession.setActionHandler('pause', toggleReaderPlay);
-        }
+        init();
     </script>
-
-<!-- Service Worker Registration -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js').then(function(registration) {
-        console.log('ServiceWorker registration successful');
-      }, function(err) {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-    });
-  }
-</script>
 </body>
 </html>

@@ -1,510 +1,1075 @@
+{% load static %}
+{% load bibliotheque_tags %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="touba">
 <head>
-    <!-- PWA -->
+    <!-- PWA & Android Meta -->
     <link rel="manifest" href="/static/manifest.json">
-    <meta name="theme-color" content="#03040a">
+    <meta name="theme-color" content="#040B08">
     <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDM — {{ categorie|title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SDM — Bibliothèque {{ categorie|title }}</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <style>
-        /* ═══════════════ TOKENS ═══════════════ */
-        :root {
-            --gold:     #d4af37;
-            --gold-lt:  #f5dc6e;
-            --gold-dk:  #9a7520;
-            --bg:       #03040a;
-            --s1:       rgba(255,255,255,0.04);
-            --s2:       rgba(255,255,255,0.07);
-            --border:   rgba(255,255,255,0.07);
-            --border-g: rgba(212,175,55,0.18);
-            --text:     #f0f0f0;
-            --dim:      rgba(255,255,255,0.4);
-            --nav-h:    72px;
+    <!-- PDF.js pour le rendu automatique des miniatures de la 1re page des Khassidas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('sdm_theme') || 'touba';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } catch (e) {}
+        })();
+    </script>
+
+    <style>
+        /* ═══════════════ SYSTÈME DE 8 MODÈLES VISUELS ═══════════════ */
+        :root, [data-theme="touba"] {
+            --bg: #040B08;
+            --bg-2: #081711;
+            --surface: rgba(12, 34, 25, 0.65);
+            --surface-2: rgba(20, 52, 38, 0.75);
+            --gold: #D4AF37;
+            --gold-lt: #FDE047;
+            --accent-2: #10B981;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-g: rgba(212, 175, 55, 0.32);
+            --text: #F8FAFC;
+            --dim: rgba(255, 255, 255, 0.55);
+            --nav-h: 70px;
+        }
+        [data-theme="parchemin"] {
+            --bg: #150E06;
+            --bg-2: #24180B;
+            --surface: rgba(45, 30, 14, 0.72);
+            --surface-2: rgba(65, 43, 18, 0.8);
+            --gold: #F59E0B;
+            --gold-lt: #FDE68A;
+            --accent-2: #D97706;
+            --border-g: rgba(245, 158, 11, 0.38);
+        }
+        [data-theme="kaaba"] {
+            --bg: #020202;
+            --bg-2: #0B0B0B;
+            --surface: rgba(18, 16, 12, 0.85);
+            --surface-2: rgba(28, 25, 18, 0.9);
+            --gold: #F59E0B;
+            --gold-lt: #FEF08A;
+            --accent-2: #EAB308;
+            --border-g: rgba(245, 158, 11, 0.42);
+        }
+        [data-theme="medine"], [data-theme="bleu"] {
+            --bg: #030919;
+            --bg-2: #0B162C;
+            --surface: rgba(12, 25, 48, 0.72);
+            --surface-2: rgba(20, 38, 70, 0.82);
+            --gold: #38BDF8;
+            --gold-lt: #BAE6FD;
+            --accent-2: #FDE047;
+            --border-g: rgba(56, 189, 248, 0.38);
+        }
+        [data-theme="vert"] {
+            --bg: #01140A;
+            --bg-2: #032815;
+            --surface: rgba(4, 42, 22, 0.7);
+            --surface-2: rgba(8, 60, 32, 0.8);
+            --gold: #10B981;
+            --gold-lt: #6EE7B7;
+            --accent-2: #D4AF37;
+            --border-g: rgba(16, 185, 129, 0.38);
+        }
+        [data-theme="andalou"] {
+            --bg: #140409;
+            --bg-2: #260812;
+            --surface: rgba(44, 10, 22, 0.72);
+            --surface-2: rgba(64, 16, 32, 0.82);
+            --gold: #FBBF24;
+            --gold-lt: #FDE68A;
+            --accent-2: #FB7185;
+            --border-g: rgba(251, 191, 36, 0.35);
+        }
+        [data-theme="soufi"] {
+            --bg: #0B0516;
+            --bg-2: #170B2C;
+            --surface: rgba(28, 14, 52, 0.72);
+            --surface-2: rgba(42, 20, 76, 0.82);
+            --gold: #C084FC;
+            --gold-lt: #E9D5FF;
+            --accent-2: #FDE047;
+            --border-g: rgba(192, 132, 252, 0.38);
+        }
+        [data-theme="ivoire"] {
+            --bg: #0B1D16;
+            --bg-2: #133024;
+            --surface: rgba(22, 55, 42, 0.78);
+            --surface-2: rgba(30, 72, 55, 0.88);
+            --gold: #FACC15;
+            --gold-lt: #FEF08A;
+            --accent-2: #34D399;
+            --border-g: rgba(250, 204, 21, 0.4);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
-            min-height: 100vh;
-            padding-bottom: calc(var(--nav-h) + 30px);
+            min-height: 100dvh;
+            padding-bottom: calc(var(--nav-h) + 36px);
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
+            transition: background-color 0.35s ease;
         }
-        ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 9px; }
-
-        /* ═══════════════ FOND ANIMÉ ═══════════════ */
         body::before {
             content: '';
             position: fixed; inset: 0; z-index: 0; pointer-events: none;
             background:
-                radial-gradient(ellipse at 0% 0%, rgba(212,175,55,0.05) 0%, transparent 50%),
-                radial-gradient(ellipse at 100% 100%, rgba(90,50,200,0.04) 0%, transparent 50%);
+                radial-gradient(ellipse at 10% 0%, rgba(212,175,55,0.08) 0%, transparent 55%),
+                radial-gradient(ellipse at 90% 100%, rgba(16,185,129,0.06) 0%, transparent 55%);
         }
 
-        /* ═══════════════ TOPBAR ═══════════════ */
+        /* ═══════════════ TOPBAR ANDROID ULTRA-ERGONOMIQUE ═══════════════ */
         .topbar {
-            position: sticky; top: 0; z-index: 50;
-            padding: 0 16px;
-            height: 64px;
-            display: flex; align-items: center; gap: 14px;
-            background: rgba(3,4,10,0.85);
+            position: sticky; top: 0; z-index: 60;
+            padding: 10px 14px;
+            background: rgba(4, 11, 8, 0.88);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid var(--border);
-            max-width: 680px; margin: 0 auto;
+            border-bottom: 1px solid var(--border-g);
         }
-        .back-btn {
-            width: 40px; height: 40px; border-radius: 50%;
+        .topbar-inner {
+            max-width: 920px; margin: 0 auto;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .back-btn, .icon-action-btn {
+            width: 40px; height: 40px; border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            background: var(--s1); border: 1px solid var(--border);
-            color: var(--dim); text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-            flex-shrink: 0;
+            background: var(--surface); border: 1px solid var(--border);
+            color: var(--text); text-decoration: none; cursor: pointer;
+            transition: all 0.25s ease; flex-shrink: 0;
         }
-        .back-btn:hover {
-            background: rgba(212,175,55,0.1);
-            color: var(--gold); border-color: var(--border-g);
-            transform: translateX(-3px);
+        .back-btn:hover, .icon-action-btn:hover, .icon-action-btn.active {
+            border-color: var(--gold); color: var(--gold);
+            background: var(--surface-2);
         }
         .topbar-title {
-            flex: 1;
-            font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
+            flex: 1; min-width: 0;
         }
-        .topbar-title span {
+        .topbar-title h1 {
+            font-size: 16px; font-weight: 800; letter-spacing: -0.01em;
             background: linear-gradient(130deg, var(--gold-lt), var(--gold));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .item-count {
-            font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
-            text-transform: uppercase; color: var(--dim);
-            background: var(--s2); border: 1px solid var(--border);
-            border-radius: 99px; padding: 5px 12px;
+        .topbar-title p {
+            font-size: 10px; color: var(--dim); font-weight: 600;
         }
 
-        /* ═══════════════ CONTENU ═══════════════ */
-        .content { max-width: 680px; margin: 0 auto; padding: 24px 16px 16px; }
+        /* ═══════════════ CONTENEUR PRINCIPAL ═══════════════ */
+        .content {
+            position: relative; z-index: 1;
+            max-width: 920px; margin: 0 auto; padding: 14px 14px 24px;
+        }
 
-        /* ═══════════════ BARRE DE RECHERCHE ═══════════════ */
-        .search-wrap { position: relative; margin-bottom: 28px; }
+        /* ═══════════════ SÉLECTEUR DE MODÈLES (DISPOSITION + THÈME) ═══════════════ */
+        .models-toolbar {
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+            gap: 8px; margin-bottom: 14px; padding: 10px 12px;
+            background: var(--surface); border: 1px solid var(--border-g);
+            border-radius: 20px; backdrop-filter: blur(18px);
+        }
+        .layout-switch-group {
+            display: flex; align-items: center; gap: 6px;
+        }
+        .layout-btn {
+            padding: 7px 11px; border-radius: 12px; border: 1px solid var(--border);
+            background: rgba(0,0,0,0.25); color: var(--dim);
+            font-size: 11px; font-weight: 700; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .layout-btn.active {
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+            color: #060907; border-color: transparent;
+            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+        }
+        .theme-pills-scroll {
+            display: flex; align-items: center; gap: 6px;
+            overflow-x: auto; max-width: 100%; padding-bottom: 2px;
+            scrollbar-width: none;
+        }
+        .theme-pills-scroll::-webkit-scrollbar { display: none; }
+        .theme-pill {
+            padding: 6px 10px; border-radius: 99px; border: 1px solid var(--border);
+            background: rgba(0,0,0,0.3); color: var(--text);
+            font-size: 10px; font-weight: 700; white-space: nowrap;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+            transition: all 0.2s ease;
+        }
+        .theme-pill.active {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.18);
+            color: var(--gold-lt);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+        }
+        .theme-dot {
+            width: 10px; height: 10px; border-radius: 50%; display: inline-block;
+        }
+
+        /* ═══════════════ RECHERCHE & FILTRE ALPHABÉTIQUE ANDROID ═══════════════ */
+        .search-wrap { position: relative; margin-bottom: 10px; }
         .search-icon {
-            position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
-            color: var(--dim); font-size: 13px;
-            transition: color 0.3s; pointer-events: none;
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+            color: var(--gold); font-size: 14px; pointer-events: none;
         }
         .search-input {
-            width: 100%;
-            background: var(--s1);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 14px 18px 14px 46px;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px; color: var(--text);
-            outline: none;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+            width: 100%; background: var(--surface);
+            border: 1px solid var(--border-g); border-radius: 18px;
+            padding: 13px 90px 13px 44px; font-family: 'Inter', sans-serif;
+            font-size: 13px; color: var(--text); outline: none;
+            transition: all 0.25s;
         }
-        .search-input::placeholder { color: rgba(255,255,255,0.25); }
+        .search-input::placeholder { color: rgba(255,255,255,0.38); }
         .search-input:focus {
-            background: rgba(212,175,55,0.04);
-            border-color: var(--border-g);
-            box-shadow: 0 0 0 4px rgba(212,175,55,0.06),
-                        0 8px 28px rgba(0,0,0,0.3);
+            border-color: var(--gold-lt);
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.15);
         }
-        .search-wrap:focus-within .search-icon { color: var(--gold); }
-
         .search-btn {
-            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
             background: linear-gradient(135deg, var(--gold-lt), var(--gold));
-            border: none; border-radius: 10px;
-            padding: 8px 16px;
-            font-size: 10px; font-weight: 700; color: #080600;
-            letter-spacing: 0.1em; text-transform: uppercase;
+            border: none; border-radius: 13px; padding: 8px 14px;
+            font-size: 11px; font-weight: 800; color: #050806;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        .search-btn:hover { transform: translateY(-50%) scale(1.05); }
-
-        /* ═══════════════ GRILLE D'ITEMS ═══════════════ */
-        .items-list { display: flex; flex-direction: column; gap: 10px; }
-
-        .item-card {
-            display: flex; align-items: center; gap: 16px;
-            padding: 16px 18px;
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-            position: relative; overflow: hidden;
-            /* Animation d'entrée */
-            opacity: 0;
-            transform: translateY(24px);
-            animation: itemReveal 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
-            box-shadow: 0 8px 32px -8px rgba(0,0,0,0.6);
-        }
-        @keyframes itemReveal {
-            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Bordure lumineuse au hover */
-        .item-card::before {
+        /* Barre Alphabétique glissante au pouce */
+        .alpha-bar {
+            display: flex; align-items: center; gap: 5px;
+            overflow-x: auto; padding: 4px 2px 12px;
+            scrollbar-width: none; -webkit-overflow-scrolling: touch;
+        }
+        .alpha-bar::-webkit-scrollbar { display: none; }
+        .alpha-chip {
+            min-width: 32px; height: 32px; padding: 0 10px;
+            border-radius: 10px; background: var(--surface);
+            border: 1px solid var(--border); color: var(--dim);
+            font-size: 11px; font-weight: 800; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all 0.2s;
+        }
+        .alpha-chip.active, .alpha-chip:hover {
+            background: var(--gold); color: #050806; border-color: var(--gold-lt);
+        }
+
+        /* ═══════════════ MINIATURE DE 1re PAGE DE KHASSIDA (MANUSCRIT + PDF) ═══════════════ */
+        .first-page-miniature {
+            position: relative;
+            overflow: hidden;
+            border-radius: 14px;
+            /* Parchemin enluminé authentique par défaut */
+            background: linear-gradient(160deg, #FFFDF7 0%, #F6E9CE 52%, #EAD2A2 100%);
+            border: 2px solid #C89B2B;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(175, 125, 25, 0.22);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 6px;
+            text-align: center;
+            color: #2B1D0A;
+            flex-shrink: 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        /* Variantes de reliure/enluminure pour diversifier visuellement les manuscrits */
+        .first-page-miniature[data-manuscript-style="1"] {
+            background: linear-gradient(160deg, #FBF8EE 0%, #DFEFE6 55%, #C2DFD0 100%);
+            border-color: #10B981;
+            color: #082F1E;
+        }
+        .first-page-miniature[data-manuscript-style="2"] {
+            background: linear-gradient(160deg, #FFF9EB 0%, #F5DEB3 55%, #DEB887 100%);
+            border-color: #D97706;
+            color: #3B1E04;
+        }
+        .first-page-miniature[data-manuscript-style="3"] {
+            background: linear-gradient(160deg, #F4F8FF 0%, #DCE8FA 55%, #BFD4F2 100%);
+            border-color: #38BDF8;
+            color: #0B2545;
+        }
+        .first-page-miniature::before {
             content: '';
-            position: absolute; inset: 0; border-radius: 20px;
-            opacity: 0; transition: opacity 0.35s;
-            pointer-events: none;
-            background: linear-gradient(135deg,
-                rgba(212,175,55,0.04) 0%,
-                rgba(212,175,55,0.01) 100%);
+            position: absolute; inset: 3px;
+            border: 1px dashed rgba(145, 100, 18, 0.45);
+            border-radius: 10px; pointer-events: none; z-index: 2;
         }
-        .item-card:hover::before { opacity: 1; }
+        .miniature-bismillah {
+            font-family: 'Amiri', serif;
+            font-size: 10px; font-weight: 700;
+            color: #8C5A08; line-height: 1.1; z-index: 1;
+        }
+        .miniature-title-box {
+            z-index: 1; padding: 3px 4px;
+            border-top: 1px solid rgba(140,90,8,0.25);
+            border-bottom: 1px solid rgba(140,90,8,0.25);
+            width: 92%;
+        }
+        .miniature-title-text {
+            font-family: 'Amiri', serif;
+            font-size: 11px; font-weight: 700; line-height: 1.2;
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+            overflow: hidden; word-break: break-word;
+        }
+        .miniature-lines-deco {
+            width: 80%; display: flex; flex-direction: column; gap: 2px; opacity: 0.35; z-index: 1;
+        }
+        .miniature-lines-deco span {
+            display: block; height: 1.5px; background: currentColor; border-radius: 2px;
+        }
+        .miniature-footer-badge {
+            font-size: 8px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.06em; background: rgba(200, 155, 43, 0.22);
+            color: #5A3804; padding: 1px 6px; border-radius: 99px; z-index: 1;
+        }
+
+        /* Canvas ou Image de la vraie 1re page PDF par-dessus l'enluminure */
+        .first-page-miniature canvas.pdf-page1-canvas,
+        .first-page-miniature img.cover-img-real {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: top center;
+            z-index: 4; opacity: 0;
+            transition: opacity 0.35s ease;
+            background: #fff;
+        }
+        .first-page-miniature.rendered canvas.pdf-page1-canvas,
+        .first-page-miniature.rendered img.cover-img-real {
+            opacity: 1;
+        }
+        .page1-zoom-badge {
+            position: absolute; bottom: 5px; right: 5px; z-index: 6;
+            width: 24px; height: 24px; border-radius: 8px;
+            background: rgba(4, 11, 8, 0.82); color: var(--gold-lt);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* ═══════════════ 3 MODÈLES DE DISPOSITION DES CARTES ═══════════════ */
+
+        /* A. MODÈLE GALERIE MANUSCRITS (GRILLE 2 COLONNES ANDROID / 3-4 DESKTOP) */
+        .items-container.layout-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+        @media (min-width: 640px) {
+            .items-container.layout-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 16px;
+            }
+        }
+        @media (min-width: 860px) {
+            .items-container.layout-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+        .items-container.layout-grid .item-card {
+            display: flex; flex-direction: column;
+            padding: 10px; border-radius: 20px;
+            background: var(--surface); border: 1px solid var(--border-g);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+            transition: all 0.25s ease; position: relative;
+        }
+        .items-container.layout-grid .first-page-miniature {
+            width: 100%; aspect-ratio: 3 / 4.1;
+            margin-bottom: 9px; padding: 12px 8px;
+        }
+        .items-container.layout-grid .miniature-title-text {
+            font-size: 13px; -webkit-line-clamp: 4;
+        }
+        .items-container.layout-grid .item-title {
+            font-size: 13px; font-weight: 700; color: var(--text);
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden; line-height: 1.3; min-height: 33px;
+        }
+        .items-container.layout-grid .item-actions-row {
+            margin-top: 8px; padding-top: 8px;
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; gap: 6px;
+        }
+
+        /* B. MODÈLE CARTES MIHRAB DÉTAILLÉES (LISTE RICHE AVEC MINIATURE 1re PAGE) */
+        .items-container.layout-mihrab {
+            display: flex; flex-direction: column; gap: 11px;
+        }
+        .items-container.layout-mihrab .item-card {
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px 14px; border-radius: 22px;
+            background: var(--surface); border: 1px solid var(--border-g);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.45);
+            transition: all 0.25s ease; position: relative;
+        }
+        .items-container.layout-mihrab .first-page-miniature {
+            width: 68px; height: 92px;
+        }
+        .items-container.layout-mihrab .item-body {
+            flex: 1; min-width: 0;
+        }
+        .items-container.layout-mihrab .item-title {
+            font-size: 14px; font-weight: 700; color: var(--text);
+            margin-bottom: 4px; line-height: 1.3;
+        }
+
+        /* C. MODÈLE COMPACT ANDROID RAPIDE */
+        .items-container.layout-compact {
+            display: flex; flex-direction: column; gap: 7px;
+        }
+        .items-container.layout-compact .item-card {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 16px;
+            background: var(--surface); border: 1px solid var(--border);
+        }
+        .items-container.layout-compact .first-page-miniature {
+            width: 44px; height: 58px; padding: 4px; border-radius: 10px;
+        }
+        .items-container.layout-compact .miniature-bismillah,
+        .items-container.layout-compact .miniature-lines-deco,
+        .items-container.layout-compact .miniature-footer-badge {
+            display: none;
+        }
+        .items-container.layout-compact .item-body { flex: 1; min-width: 0; }
+        .items-container.layout-compact .item-title {
+            font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
         .item-card:hover {
-            background: rgba(212,175,55,0.06);
-            border-color: var(--border-g);
+            border-color: var(--gold);
             transform: translateY(-2px);
-            box-shadow: 0 12px 36px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,175,55,0.1);
         }
-        .item-card:active { transform: translateY(0) scale(0.99); }
-
-        /* Icône de l'item */
-        .item-icon {
-            width: 50px; height: 50px; border-radius: 16px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px; color: var(--gold);
-            background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.03));
-            border: 1px solid rgba(212,175,55,0.18);
-            box-shadow: 0 4px 16px rgba(212,175,55,0.08);
-            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-        }
-        .item-card:hover .item-icon {
-            box-shadow: 0 6px 24px rgba(212,175,55,0.2);
-            transform: scale(1.05) rotate(-2deg);
-        }
-        .item-icon.red { color: #ff6060; background: linear-gradient(135deg, rgba(220,53,69,0.12), rgba(220,53,69,0.03)); border-color: rgba(220,53,69,0.18); }
-        .item-icon.green { color: #10B981; background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.03)); border-color: rgba(16,185,129,0.18); }
-        .item-icon.white { color: rgba(255,255,255,0.8); }
-
-        /* Texte de l'item */
-        .item-body { flex: 1; min-width: 0; }
-        .item-title {
-            font-size: 14px; font-weight: 500;
-            color: rgba(255,255,255,0.9);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            margin-bottom: 4px;
-            transition: color 0.3s;
-        }
-        .item-card:hover .item-title { color: #fff; }
         .item-subtitle {
-            font-size: 10px; font-weight: 500;
-            letter-spacing: 0.1em; text-transform: uppercase;
-            color: var(--dim);
+            font-size: 10px; font-weight: 600; color: var(--dim);
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
         }
-
-        /* Bouton favori */
         .fav-btn {
-            position: relative; z-index: 5;
-            width: 36px; height: 36px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%;
-            background: var(--s2);
-            border: 1px solid var(--border);
-            color: var(--dim);
-            text-decoration: none; flex-shrink: 0;
-            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+            width: 34px; height: 34px; border-radius: 11px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+            color: var(--dim); text-decoration: none; cursor: pointer;
+            transition: all 0.2s; flex-shrink: 0;
         }
         .fav-btn:hover {
-            background: rgba(212,175,55,0.12);
-            border-color: var(--border-g);
-            color: var(--gold);
-            transform: scale(1.12);
+            border-color: var(--gold); color: var(--gold-lt);
+            background: rgba(212,175,55,0.15);
         }
-        .fav-btn i { font-size: 13px; }
-
-        /* Flèche de navigation */
-        .item-arrow {
-            color: rgba(255,255,255,0.15); font-size: 10px;
-            flex-shrink: 0;
-            transition: color 0.3s, transform 0.3s;
-        }
-        .item-card:hover .item-arrow {
-            color: var(--gold); transform: translateX(4px);
+        .read-pill-btn {
+            padding: 7px 12px; border-radius: 11px;
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+            color: #050806; font-size: 11px; font-weight: 800;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+            flex-shrink: 0; box-shadow: 0 4px 12px rgba(212,175,55,0.25);
         }
 
-        /* ═══════════════ ÉTAT VIDE ═══════════════ */
-        .empty-state {
-            text-align: center; padding: 80px 20px;
-            color: var(--dim);
-            animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both;
+        /* ═══════════════ MODAL D'APERÇU GRANDE 1re PAGE (QUICK-LOOK) ═══════════════ */
+        .preview-modal-backdrop {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.82); backdrop-filter: blur(12px);
+            display: none; align-items: center; justify-content: center; padding: 16px;
         }
-        .empty-icon {
-            font-size: 52px; margin-bottom: 20px; opacity: 0.3;
-            animation: iconFloat 3s ease-in-out infinite;
+        .preview-modal-backdrop.open { display: flex; }
+        .preview-modal-card {
+            width: 100%; max-width: 430px; background: var(--bg-2);
+            border: 1px solid var(--gold); border-radius: 26px;
+            padding: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.85);
+            display: flex; flex-direction: column; gap: 12px; max-height: 90vh;
         }
-        @keyframes iconFloat {
-            0%,100% { transform: translateY(0); }
-            50%      { transform: translateY(-8px); }
+        .preview-canvas-stage {
+            width: 100%; aspect-ratio: 3 / 4.1; background: #FAF3E3;
+            border-radius: 16px; border: 2px solid var(--gold);
+            overflow: hidden; position: relative;
+            display: flex; align-items: center; justify-content: center;
         }
-        .empty-title { font-size: 15px; font-weight: 500; margin-bottom: 8px; opacity: 0.5; }
-        .empty-sub { font-size: 12px; opacity: 0.3; }
+        .preview-canvas-stage canvas {
+            width: 100%; height: 100%; object-fit: contain; background: #fff;
+        }
 
-        /* ═══════════════ NAVIGATION BAS ═══════════════ */
+        /* ═══════════════ NAVIGATION BAS ANDROID ═══════════════ */
         .nav-island {
-            position: fixed; bottom: 16px; left: 50%;
+            position: fixed; bottom: 14px; left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 32px); max-width: 420px;
-            height: var(--nav-h);
-            border-radius: 99px;
-            background: rgba(8,10,20,0.9);
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+            width: calc(100% - 24px); max-width: 430px;
+            height: var(--nav-h); border-radius: 99px;
+            background: rgba(6, 14, 10, 0.94);
+            backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+            border: 1px solid var(--border-g);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.75);
             display: flex; align-items: center; justify-content: space-around;
-            padding: 0 12px; z-index: 100;
+            padding: 0 10px; z-index: 100;
         }
         .nav-item {
             flex: 1; display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            gap: 4px; text-decoration: none;
-            color: rgba(255,255,255,0.3);
-            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-            position: relative; height: 100%;
+            gap: 3px; text-decoration: none;
+            color: rgba(255,255,255,0.42); height: 100%; position: relative;
+            font-size: 9px; font-weight: 700;
         }
-        .nav-item i { font-size: 20px; transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
-        .nav-item.active { color: var(--gold); }
-        .nav-item.active i { transform: translateY(-8px); filter: drop-shadow(0 4px 8px rgba(212,175,55,0.4)); }
-        .nav-item .nav-dot {
-            position: absolute; bottom: 12px;
-            width: 4px; height: 4px; border-radius: 50%;
-            background: var(--gold); opacity: 0; transform: scale(0);
-            transition: all 0.3s;
-        }
-        .nav-item.active .nav-dot { opacity: 1; transform: scale(1); }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
+        .nav-item i { font-size: 19px; transition: transform 0.3s; }
+        .nav-item.active { color: var(--gold-lt); }
+        .nav-item.active i { transform: translateY(-3px); filter: drop-shadow(0 3px 8px rgba(212,175,55,0.45)); }
     </style>
 </head>
 <body>
-    {% load bibliotheque_tags %}
 
     <!-- TOPBAR -->
-    <div class="topbar">
-        <a href="{% url 'home' %}" class="back-btn">
-            <i class="fa-solid fa-chevron-left"></i>
-        </a>
-        <h1 class="topbar-title">
-            <span>{{ categorie|title }}</span>
-        </h1>
-        <div class="item-count">{{ items|length }} éléments</div>
-    </div>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a href="{% url 'home' %}" class="back-btn" title="Retour à l'accueil">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+            <div class="topbar-title">
+                <h1>{{ categorie|title }} · Manuscrits & Lecture</h1>
+                <p><span id="visible-count">{{ items|length }}</span> sur {{ items|length }} œuvres disponibles · Miniatures 1re Page</p>
+            </div>
+            <!-- Bouton d'ouverture rapide des 8 Modèles -->
+            <button type="button" onclick="toggleThemeBar()" class="icon-action-btn active" title="Changer de Modèle Visuel">
+                <i class="fa-solid fa-palette"></i>
+            </button>
+        </div>
+    </header>
 
     <div class="content">
-        <!-- RECHERCHE -->
-        <form method="GET" action="">
+
+        <!-- BARRE DE CHOIX DES MODÈLES (3 DISPOSITIONS + 8 THÈMES VISUELS) -->
+        <div class="models-toolbar" id="models-toolbar">
+            <div class="layout-switch-group" role="group" aria-label="Modèle de disposition">
+                <button type="button" class="layout-btn active" id="btn-layout-grid" onclick="setListLayout('grid')">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                    <span>Galerie 1re Page</span>
+                </button>
+                <button type="button" class="layout-btn" id="btn-layout-mihrab" onclick="setListLayout('mihrab')">
+                    <i class="fa-solid fa-list-ul"></i>
+                    <span>Mihrab Détaillé</span>
+                </button>
+                <button type="button" class="layout-btn" id="btn-layout-compact" onclick="setListLayout('compact')">
+                    <i class="fa-solid fa-bars"></i>
+                    <span>Compact</span>
+                </button>
+            </div>
+
+            <!-- 8 Modèles de Couleurs / Thèmes Islamiques -->
+            <div class="theme-pills-scroll">
+                <button type="button" class="theme-pill" data-theme-pill="touba" onclick="setAppTheme('touba')">
+                    <span class="theme-dot" style="background:#D4AF37;"></span> Émeraude Touba
+                </button>
+                <button type="button" class="theme-pill" data-theme-pill="parchemin" onclick="setAppTheme('parchemin')">
+                    <span class="theme-dot" style="background:#F59E0B;"></span> Parchemin Royal
+                </button>
+                <button type="button" class="theme-pill" data-theme-pill="kaaba" onclick="setAppTheme('kaaba')">
+                    <span class="theme-dot" style="background:#FDE047;"></span> Kaaba AMOLED
+                </button>
+                <button type="button" class="theme-pill" data-theme-pill="medine" onclick="setAppTheme('medine')">
+                    <span class="theme-dot" style="background:#38BDF8;"></span> Nuit de Médine
+                </button>
+                <button type="button" class="theme-pill" data-theme-pill="vert" onclick="setAppTheme('vert')">
+                    <span class="theme-dot" style="background:#10B981;"></span> Jardin Firdaws
+                </button>
+                <button type="button" class="theme-pill" data-theme-pill="andalou" onclick="setAppTheme('andalou')">
+                    <span class="theme-dot" style="background:#FB7185;"></span> Rubis Andalou
+                </button>
+                <button type="button" class="theme-pill" data-theme-pill="soufi" onclick="setAppTheme('soufi')">
+                    <span class="theme-dot" style="background:#C084FC;"></span> Nuit Soufie
+                </button>
+                <button type="button" class="theme-pill" data-theme-pill="ivoire" onclick="setAppTheme('ivoire')">
+                    <span class="theme-dot" style="background:#FACC15;"></span> Oasis Lumière
+                </button>
+            </div>
+        </div>
+
+        <!-- BARRE DE RECHERCHE INSTANTANÉE + SERVEUR -->
+        <form method="GET" action="" onsubmit="return true;">
             <div class="search-wrap">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" name="search" value="{{ query|default:'' }}"
-                       placeholder="Rechercher dans {{ categorie }}..."
+                <input type="text" id="live-search-input" name="search" value="{{ query|default:'' }}"
+                       oninput="filterItemsInstant()"
+                       placeholder="Rechercher un {{ categorie }} (ex: Mawahibul, Matlabul, Jazaou...)"
                        class="search-input" autocomplete="off">
-                <button type="submit" class="search-btn">Go</button>
+                <button type="submit" class="search-btn">Chercher</button>
             </div>
         </form>
 
-        <!-- LISTE DES ITEMS -->
-        <div class="items-list">
+        <!-- BARRE ALPHABÉTIQUE ANDROID (ACCÈS À UNE MAIN) -->
+        <div class="alpha-bar" id="alpha-bar">
+            <button type="button" class="alpha-chip active" onclick="filterByLetter('ALL', this)">Tous</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('A', this)">A</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('B', this)">B</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('C', this)">C</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('D', this)">D</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('F', this)">F</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('H', this)">H</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('I', this)">I</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('J', this)">J</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('K', this)">K</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('L', this)">L</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('M', this)">M</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('N', this)">N</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('Q', this)">Q</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('R', this)">R</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('S', this)">S</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('T', this)">T</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('W', this)">W</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('Y', this)">Y</button>
+            <button type="button" class="alpha-chip" onclick="filterByLetter('Z', this)">Z</button>
+        </div>
+
+        <!-- CONTENEUR DES ITEMS (AVEC MINIATURES DE LA 1re PAGE) -->
+        <div class="items-container layout-grid" id="items-container">
             {% for item in items %}
 
             {% if 'zikr' in categorie|lower %}
-                {% with target_url=item.id|stringformat:"s" %}
-                <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
-                    <a href="{% url 'zikr_compteur' item.id %}" class="item-icon" style="text-decoration:none">
-                        <i class="fa-solid fa-fingerprint"></i>
+                <div class="item-card" data-title="{{ item.titre|lower }}">
+                    <a href="{% url 'zikr_compteur' item.id %}" class="first-page-miniature" data-manuscript-style="1" style="text-decoration:none;">
+                        <span class="miniature-bismillah">۞ ذِكْرُ اللَّهِ ۞</span>
+                        <div class="miniature-title-box">
+                            <div class="miniature-title-text">{{ item.titre }}</div>
+                        </div>
+                        <span class="miniature-footer-badge">{{ item.objectif_par_defaut }}x</span>
                     </a>
                     <div class="item-body">
-                        <a href="{% url 'zikr_compteur' item.id %}" style="text-decoration:none">
-                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
+                        <a href="{% url 'zikr_compteur' item.id %}" style="text-decoration:none;">
+                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} 👑{% endif %}</div>
                             <div class="item-subtitle">Objectif : {{ item.objectif_par_defaut }} fois</div>
                         </a>
                     </div>
-                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" onclick="toggleFavoriAjax(event, this)">
-                        <i class="fa-solid fa-star"></i>
-                    </a>
-                    <a href="{% url 'zikr_compteur' item.id %}" style="text-decoration:none">
-                        <i class="fa-solid fa-chevron-right item-arrow"></i>
-                    </a>
-                </div>
-                {% endwith %}
-
-            {% elif 'wird' in categorie|lower %}
-                <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
-                    <a href="{% url 'lire_wird' item.slug %}" class="item-icon white" style="text-decoration:none">
-                        <i class="fa-solid fa-scroll"></i>
-                    </a>
-                    <div class="item-body">
-                        <a href="{% url 'lire_wird' item.slug %}" style="text-decoration:none">
-                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
-                            <div class="item-subtitle">Consulter le Wird</div>
+                    <div class="item-actions-row">
+                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" title="Favori">
+                            <i class="fa-solid fa-star"></i>
+                        </a>
+                        <a href="{% url 'zikr_compteur' item.id %}" class="read-pill-btn">
+                            <i class="fa-solid fa-fingerprint"></i> Zikr
                         </a>
                     </div>
-                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" onclick="toggleFavoriAjax(event, this)">
-                        <i class="fa-solid fa-star"></i>
+                </div>
+
+            {% elif 'wird' in categorie|lower %}
+                <div class="item-card" data-title="{{ item.titre|lower }}">
+                    <a href="{% url 'lire_wird' item.slug %}" class="first-page-miniature" data-manuscript-style="2" style="text-decoration:none;">
+                        <span class="miniature-bismillah">۞ وِرْدٌ مُبَارَكٌ ۞</span>
+                        <div class="miniature-title-box">
+                            <div class="miniature-title-text">{{ item.titre }}</div>
+                        </div>
+                        <span class="miniature-footer-badge">Wird</span>
                     </a>
-                    <a href="{% url 'lire_wird' item.slug %}" style="text-decoration:none">
-                        <i class="fa-solid fa-chevron-right item-arrow"></i>
-                    </a>
+                    <div class="item-body">
+                        <a href="{% url 'lire_wird' item.slug %}" style="text-decoration:none;">
+                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} 👑{% endif %}</div>
+                            <div class="item-subtitle">Pratique spirituelle</div>
+                        </a>
+                    </div>
+                    <div class="item-actions-row">
+                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
+                            <i class="fa-solid fa-star"></i>
+                        </a>
+                        <a href="{% url 'lire_wird' item.slug %}" class="read-pill-btn">
+                            <i class="fa-solid fa-book-open"></i> Ouvrir
+                        </a>
+                    </div>
                 </div>
 
             {% elif 'son' in categorie|lower %}
-                <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
-                    <a href="{% url 'lire_pdf' categorie item.id %}" class="item-icon green" style="text-decoration:none">
-                        <i class="fa-solid fa-headphones"></i>
+                <div class="item-card" data-title="{{ item.titre|lower }}">
+                    <a href="{% url 'lire_pdf' categorie item.id %}" class="first-page-miniature" data-manuscript-style="3" style="text-decoration:none;">
+                        <span class="miniature-bismillah">۞ سَمَاعٌ ۞</span>
+                        <div class="miniature-title-box">
+                            <div class="miniature-title-text">{{ item.titre }}</div>
+                        </div>
+                        <span class="miniature-footer-badge">Audio</span>
                     </a>
                     <div class="item-body">
-                        <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
-                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
-                            <div class="item-subtitle">{{ item.auteur_voix|default:item.get_categorie_display|default:"Audio" }}</div>
+                        <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none;">
+                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} 👑{% endif %}</div>
+                            <div class="item-subtitle">{{ item.auteur_voix|default:"Audio Sacré" }}</div>
                         </a>
                     </div>
-                    <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" onclick="toggleFavoriAjax(event, this)">
-                        <i class="fa-solid fa-star"></i>
-                    </a>
-                    <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
-                        <i class="fa-solid fa-chevron-right item-arrow"></i>
-                    </a>
-                </div>
-
-            {% elif 'coran' in categorie|lower %}
-                <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
-                    <a href="{% url 'lire_pdf' categorie item.id %}" class="item-icon white" style="text-decoration:none; overflow:hidden; padding:0;">
-                        {% if item.fichier_pdf %}
-                            <img src="{{ item.fichier_pdf.url|slice:':-4' }}.jpg" alt="{{ item.titre }}" style="width:100%; height:100%; object-fit:cover;">
-                        {% else %}
-                            <i class="fa-solid fa-quran"></i>
-                        {% endif %}
-                    </a>
-                    <div class="item-body">
-                        <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
-                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
-                            <div class="item-subtitle">{{ item.auteur|default:"Saint Coran" }}</div>
-                        </a>
-                    </div>
-                    <div style="display:flex; gap:6px; flex-shrink:0;">
-                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" onclick="toggleFavoriAjax(event, this)">
+                    <div class="item-actions-row">
+                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn">
                             <i class="fa-solid fa-star"></i>
                         </a>
-                        <a href="{% url 'proxy_pdf' categorie item.id %}" download class="fav-btn" onclick="registerDownload(event, '{{ categorie }}', {{ item.id }})">
-                            <i class="fa-solid fa-download"></i>
+                        <a href="{% url 'lire_pdf' categorie item.id %}" class="read-pill-btn">
+                            <i class="fa-solid fa-headphones"></i> Écouter
                         </a>
                     </div>
-                    <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
-                        <i class="fa-solid fa-chevron-right item-arrow"></i>
-                    </a>
                 </div>
 
             {% else %}
-                <div class="item-card" style="animation-delay: calc({{ forloop.counter0 }} * 60ms)">
-                    <a href="{% url 'lire_pdf' categorie item.id %}" class="item-icon" style="text-decoration:none; overflow:hidden; padding:0;">
+                <!-- KHASSIDA & CORAN : MINIATURE DE LA 1re PAGE DU MANUSCRIT + RENDU PDF PAGE 1 -->
+                <div class="item-card" data-title="{{ item.titre|lower }}">
+                    <div class="first-page-miniature"
+                         data-manuscript-style="{% widthratio forloop.counter0 1 1 %}"
+                         data-pdf-url="{% url 'proxy_pdf' categorie item.id %}"
+                         data-doc-key="{{ categorie }}_{{ item.id }}"
+                         data-doc-title="{{ item.titre|escape }}"
+                         data-read-url="{% url 'lire_pdf' categorie item.id %}"
+                         onclick="window.location.href='{% url 'lire_pdf' categorie item.id %}'"
+                         style="cursor:pointer;">
+                        <span class="miniature-bismillah">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</span>
+                        <div class="miniature-title-box">
+                            <div class="miniature-title-text">{{ item.titre }}</div>
+                        </div>
+                        <div class="miniature-lines-deco">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <span class="miniature-footer-badge">1re Page · N°{{ forloop.counter }}</span>
+
                         {% if item.image_couverture %}
-                            <img src="{{ item.image_couverture.url }}" alt="{{ item.titre }}" style="width:100%; height:100%; object-fit:cover;">
-                        {% elif item.fichier_pdf %}
-                            <img src="{{ item.fichier_pdf.url|slice:':-4' }}.jpg" alt="{{ item.titre }}" style="width:100%; height:100%; object-fit:cover;">
-                        {% else %}
-                            <i class="fa-solid fa-book-open"></i>
+                            <img src="{{ item.image_couverture.url }}" alt="{{ item.titre }}" class="cover-img-real" onload="this.parentElement.classList.add('rendered')" onerror="this.remove()">
                         {% endif %}
-                    </a>
+                        <canvas class="pdf-page1-canvas"></canvas>
+
+                        <!-- Bouton Loupe : Aperçu rapide de la 1re page en grand -->
+                        <button type="button" class="page1-zoom-badge"
+                                onclick="event.stopPropagation(); openFirstPageQuickLook(this.closest('.first-page-miniature'))"
+                                title="Aperçu de la 1re page">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                        </button>
+                    </div>
+
                     <div class="item-body">
-                        <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
-                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</div>
-                            <div class="item-subtitle">{{ item.auteur|default:"Consulter" }}</div>
+                        <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none;">
+                            <div class="item-title">{{ item.titre }}{% if item.est_premium %} <span style="color:#d4af37;" title="Contenu Premium">👑</span>{% endif %}</div>
+                            <div class="item-subtitle">
+                                <span><i class="fa-solid fa-feather-pointed" style="color:var(--gold);"></i> {{ item.auteur|default:"Cheikh Ahmadou Bamba" }}</span>
+                            </div>
                         </a>
                     </div>
-                    <div style="display:flex; gap:6px; flex-shrink:0;">
-                        <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" onclick="toggleFavoriAjax(event, this)">
-                            <i class="fa-solid fa-star"></i>
-                        </a>
-                        <a href="{% url 'proxy_pdf' categorie item.id %}" download class="fav-btn" onclick="registerDownload(event, '{{ categorie }}', {{ item.id }})">
-                            <i class="fa-solid fa-download"></i>
+
+                    <div class="item-actions-row">
+                        <div style="display:flex; gap:5px;">
+                            <button type="button" class="fav-btn"
+                                    onclick="openFirstPageQuickLook(this.closest('.item-card').querySelector('.first-page-miniature'))"
+                                    title="Voir la 1re page">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                            <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" title="Ajouter aux favoris">
+                                <i class="fa-solid fa-star"></i>
+                            </a>
+                            <a href="{% url 'proxy_pdf' categorie item.id %}" download class="fav-btn"
+                               onclick="registerDownload(event, '{{ categorie }}', {{ item.id }})" title="Télécharger le PDF">
+                                <i class="fa-solid fa-download"></i>
+                            </a>
+                        </div>
+                        <a href="{% url 'lire_pdf' categorie item.id %}" class="read-pill-btn">
+                            <i class="fa-solid fa-book-open"></i>
+                            <span>Lire</span>
                         </a>
                     </div>
-                    <a href="{% url 'lire_pdf' categorie item.id %}" style="text-decoration:none">
-                        <i class="fa-solid fa-chevron-right item-arrow"></i>
-                    </a>
                 </div>
             {% endif %}
 
             {% empty %}
-            <div class="empty-state">
-                <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
-                <div class="empty-title">Aucun élément trouvé</div>
-                <div class="empty-sub">dans la catégorie {{ categorie }}</div>
+            <div style="grid-column: 1 / -1; text-align:center; padding: 60px 20px; color: var(--dim);">
+                <i class="fa-solid fa-book-open" style="font-size:44px; opacity:0.35; margin-bottom:14px;"></i>
+                <p style="font-size:15px; font-weight:700;">Aucun document trouvé</p>
+                <p style="font-size:12px; opacity:0.6;">Essayez un autre mot-clé dans {{ categorie }}</p>
             </div>
             {% endfor %}
         </div>
     </div>
 
-    <!-- NAVIGATION BAS -->
+    <!-- MODAL D'APERÇU DE LA 1re PAGE EN GRAND FORMAT (QUICK-LOOK ANDROID) -->
+    <div class="preview-modal-backdrop" id="page1-preview-modal" onclick="if(event.target===this) closeFirstPageQuickLook()">
+        <div class="preview-modal-card">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                <div style="min-width:0;">
+                    <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--gold); display:block;">
+                        ۞ Aperçu de la Première Page
+                    </span>
+                    <h3 id="preview-modal-title" style="font-size:15px; font-weight:800; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        Khassida
+                    </h3>
+                </div>
+                <button type="button" onclick="closeFirstPageQuickLook()" class="back-btn" style="width:34px; height:34px;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="preview-canvas-stage" id="preview-stage">
+                <div id="preview-loader" style="color:#5A3804; font-size:12px; font-weight:700; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size:26px; color:#C89B2B;"></i>
+                    <span>Chargement de la 1re page du manuscrit...</span>
+                </div>
+                <canvas id="preview-modal-canvas" style="display:none;"></canvas>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button type="button" onclick="closeFirstPageQuickLook()"
+                        style="flex:1; padding:12px; border-radius:14px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:12px; font-weight:700; cursor:pointer;">
+                    Fermer
+                </button>
+                <a id="preview-modal-read-link" href="#"
+                   style="flex:2; padding:12px; border-radius:14px; background:linear-gradient(135deg, var(--gold-lt), var(--gold)); color:#050806; font-size:12px; font-weight:800; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Ouvrir la Lecture Complète</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION BAS ANDROID -->
     <nav class="nav-island">
         <a href="{% url 'home' %}" class="nav-item">
             <i class="fa-solid fa-house-chimney"></i>
-            <div class="nav-dot"></div>
+            <span>Accueil</span>
         </a>
         <a href="{% url 'liste' 'khassida' %}" class="nav-item {% if 'khassida' in categorie|lower %}active{% endif %}">
             <i class="fa-solid fa-book-open"></i>
-            <div class="nav-dot"></div>
+            <span>Khassidas</span>
         </a>
-        <a href="{% url 'dashboard' %}" class="nav-item">
-            <i class="fa-solid fa-chart-line"></i>
-            <div class="nav-dot"></div>
+        <a href="{% url 'tazawwud_home' %}" class="nav-item">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Tazawwud</span>
         </a>
         <a href="{% url 'favoris' %}" class="nav-item">
             <i class="fa-solid fa-heart"></i>
-            <div class="nav-dot"></div>
+            <span>Favoris</span>
         </a>
         <a href="{% url 'profile' %}" class="nav-item">
             <i class="fa-solid fa-user"></i>
-            <div class="nav-dot"></div>
+            <span>Profil</span>
         </a>
     </nav>
 
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js'); });
+        // ── 1. GESTION DES 8 THÈMES VISUELS & DES 3 MODÈLES DE DISPOSITION ──
+        function setAppTheme(themeName) {
+            try {
+                localStorage.setItem('sdm_theme', themeName);
+                document.documentElement.setAttribute('data-theme', themeName);
+                document.querySelectorAll('[data-theme-pill]').forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('data-theme-pill') === themeName);
+                });
+                if (navigator.vibrate) navigator.vibrate(8);
+            } catch (e) {}
         }
 
-        // Fonction pour enregistrer silencieusement le téléchargement
+        function setListLayout(mode) {
+            const container = document.getElementById('items-container');
+            if (!container) return;
+            container.className = 'items-container layout-' + mode;
+            ['grid', 'mihrab', 'compact'].forEach(m => {
+                const b = document.getElementById('btn-layout-' + m);
+                if (b) b.classList.toggle('active', m === mode);
+            });
+            try { localStorage.setItem('sdm_list_layout', mode); } catch (e) {}
+        }
+
+        function toggleThemeBar() {
+            const bar = document.getElementById('models-toolbar');
+            if (bar) {
+                bar.style.display = (bar.style.display === 'none') ? 'flex' : 'flex';
+                bar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // Initialisation des préférences sauvegardées + styles de manuscrits variés
+        (function initPreferences() {
+            const savedTheme = localStorage.getItem('sdm_theme') || 'touba';
+            setAppTheme(savedTheme);
+            const savedLayout = localStorage.getItem('sdm_list_layout') || 'grid';
+            setListLayout(savedLayout);
+
+            document.querySelectorAll('.first-page-miniature[data-manuscript-style]').forEach((el, idx) => {
+                el.setAttribute('data-manuscript-style', String(idx % 4));
+            });
+        })();
+
+        // ── 2. FILTRAGE INSTANTANÉ & BARRE ALPHABÉTIQUE ANDROID ──
+        let currentLetter = 'ALL';
+        function filterByLetter(letter, btnEl) {
+            currentLetter = letter;
+            document.querySelectorAll('.alpha-chip').forEach(c => c.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            filterItemsInstant();
+        }
+
+        function filterItemsInstant() {
+            const q = (document.getElementById('live-search-input')?.value || '').trim().toLowerCase();
+            let visible = 0;
+            document.querySelectorAll('#items-container .item-card').forEach(card => {
+                const title = (card.getAttribute('data-title') || '').trim();
+                const matchQuery = !q || title.includes(q);
+                const matchLetter = (currentLetter === 'ALL') || title.startsWith(currentLetter.toLowerCase());
+                const show = matchQuery && matchLetter;
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            const cntEl = document.getElementById('visible-count');
+            if (cntEl) cntEl.textContent = String(visible);
+        }
+
+        // ── 3. MOTEUR DE RENDU AUTOMATIQUE DES MINIATURES DE LA 1re PAGE (PDF.JS + CACHE) ──
+        const thumbQueue = [];
+        let activeThumbWorkers = 0;
+        const MAX_CONCURRENT_THUMBS = 2;
+
+        async function processThumbQueue() {
+            if (activeThumbWorkers >= MAX_CONCURRENT_THUMBS || thumbQueue.length === 0) return;
+            if (!window.pdfjsLib) return;
+
+            const miniatureEl = thumbQueue.shift();
+            if (!miniatureEl || miniatureEl.classList.contains('rendered')) {
+                processThumbQueue();
+                return;
+            }
+
+            const docKey = miniatureEl.getAttribute('data-doc-key');
+            const pdfUrl = miniatureEl.getAttribute('data-pdf-url');
+            const canvas = miniatureEl.querySelector('canvas.pdf-page1-canvas');
+            if (!pdfUrl || !canvas) {
+                processThumbQueue();
+                return;
+            }
+
+            // Vérifier le cache local (sessionStorage / localStorage) pour affichage 0ms
+            try {
+                const cachedDataUrl = sessionStorage.getItem('sdm_p1_' + docKey);
+                if (cachedDataUrl) {
+                    const img = new Image();
+                    img.className = 'cover-img-real';
+                    img.onload = () => {
+                        miniatureEl.appendChild(img);
+                        miniatureEl.classList.add('rendered');
+                    };
+                    img.src = cachedDataUrl;
+                    processThumbQueue();
+                    return;
+                }
+            } catch (e) {}
+
+            activeThumbWorkers++;
+            try {
+                const loadingTask = pdfjsLib.getDocument({
+                    url: pdfUrl,
+                    cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+                    cMapPacked: true,
+                    disableRange: true,
+                    disableStream: true,
+                });
+                const pdf = await loadingTask.promise;
+                const page = await pdf.getPage(1);
+                const baseVp = page.getViewport({ scale: 1 });
+                const targetWidth = 220;
+                const scale = targetWidth / baseVp.width;
+                const vp = page.getViewport({ scale: scale });
+
+                canvas.width = vp.width;
+                canvas.height = vp.height;
+                const ctx = canvas.getContext('2d');
+                await page.render({ canvasContext: ctx, viewport: vp }).promise;
+                miniatureEl.classList.add('rendered');
+
+                try {
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+                    sessionStorage.setItem('sdm_p1_' + docKey, dataUrl);
+                } catch (e) {}
+                pdf.destroy();
+            } catch (err) {
+                // Conserver la miniature enluminée islamique si le PDF distant tarde
+            } finally {
+                activeThumbWorkers--;
+                processThumbQueue();
+            }
+        }
+
+        if ('IntersectionObserver' in window) {
+            const thumbObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        thumbObserver.unobserve(el);
+                        if (!el.classList.contains('rendered')) {
+                            thumbQueue.push(el);
+                            processThumbQueue();
+                        }
+                    }
+                });
+            }, { rootMargin: '180px 0px' });
+
+            document.querySelectorAll('.first-page-miniature[data-pdf-url]').forEach(el => {
+                thumbObserver.observe(el);
+            });
+        }
+
+        // ── 4. APERÇU GRAND FORMAT DE LA 1re PAGE (QUICK-LOOK MODAL) ──
+        async function openFirstPageQuickLook(miniatureEl) {
+            if (!miniatureEl) return;
+            const modal = document.getElementById('page1-preview-modal');
+            const titleEl = document.getElementById('preview-modal-title');
+            const linkEl = document.getElementById('preview-modal-read-link');
+            const loaderEl = document.getElementById('preview-loader');
+            const canvas = document.getElementById('preview-modal-canvas');
+
+            const title = miniatureEl.getAttribute('data-doc-title') || 'Khassida';
+            const readUrl = miniatureEl.getAttribute('data-read-url') || '#';
+            const pdfUrl = miniatureEl.getAttribute('data-pdf-url');
+
+            titleEl.textContent = title;
+            linkEl.href = readUrl;
+            modal.classList.add('open');
+
+            // Si la miniature a déjà rendu son canvas, l'afficher immédiatement pendant le rendu HD
+            const thumbCanvas = miniatureEl.querySelector('canvas.pdf-page1-canvas');
+            if (miniatureEl.classList.contains('rendered') && thumbCanvas && thumbCanvas.width > 0) {
+                canvas.width = thumbCanvas.width;
+                canvas.height = thumbCanvas.height;
+                canvas.getContext('2d').drawImage(thumbCanvas, 0, 0);
+                canvas.style.display = 'block';
+                loaderEl.style.display = 'none';
+            } else {
+                canvas.style.display = 'none';
+                loaderEl.style.display = 'flex';
+            }
+
+            if (pdfUrl && window.pdfjsLib) {
+                try {
+                    const pdf = await pdfjsLib.getDocument({
+                        url: pdfUrl,
+                        disableRange: true,
+                        disableStream: true,
+                    }).promise;
+                    const page = await pdf.getPage(1);
+                    const bVp = page.getViewport({ scale: 1 });
+                    const scale = 600 / bVp.width;
+                    const vp = page.getViewport({ scale: scale });
+                    canvas.width = vp.width;
+                    canvas.height = vp.height;
+                    await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+                    canvas.style.display = 'block';
+                    loaderEl.style.display = 'none';
+                    pdf.destroy();
+                } catch (e) {
+                    loaderEl.innerHTML = '<span>Cliquez sur « Ouvrir la Lecture Complète » pour consulter le manuscrit.</span>';
+                }
+            }
+        }
+
+        function closeFirstPageQuickLook() {
+            document.getElementById('page1-preview-modal')?.classList.remove('open');
+        }
+
         function registerDownload(event, categorie, id) {
-            // Empêcher d'interférer avec le comportement de téléchargement natif du navigateur
             event.stopPropagation();
-            
-            // Appel API pour marquer le fichier comme téléchargé
             fetch(`/telechargements/ajouter/${categorie}/${id}/`, {
                 method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    console.log('Téléchargement enregistré !');
-                }
-            })
-            .catch(error => console.error('Erreur telechargement:', error));
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            }).catch(() => {});
         }
     </script>
 </body>

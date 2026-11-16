@@ -66,18 +66,154 @@
     <!-- FOND ÉTOILÉ (Global) -->
     <canvas id="sdm-cosmos"></canvas>
 
-    <!-- NOTIFICATION BELL (Global) -->
-    {% if request.user.is_authenticated %}
-    <a href="{% url 'notifications' %}" class="fixed top-4 right-4 z-50 glass w-11 h-11 rounded-full flex items-center justify-center border border-white/10 hover:border-gold-500/50 transition-all shadow-glass group">
-        <i class="fa-regular fa-bell text-white/80 group-hover:text-gold-400 text-xl transition-colors"></i>
-        {% if unread_notifications_count > 0 %}
-        <span class="absolute top-1 right-1 flex h-3 w-3">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-        </span>
+    <!-- BARRE D'ACTIONS RAPIDES HAUT DROITE : SÉLECTEUR DE MODÈLES & NOTIFICATIONS -->
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <button type="button" onclick="openSdmModelPicker()"
+                class="glass px-3.5 h-11 rounded-full flex items-center gap-2 border border-gold-500/35 hover:border-gold-400 transition-all shadow-glass group active:scale-95"
+                title="Choisir un Modèle Visuel">
+            <i class="fa-solid fa-palette text-gold-400 text-sm group-hover:rotate-12 transition-transform"></i>
+            <span class="text-[11px] font-extrabold text-white/90 hidden sm:inline">Modèles</span>
+        </button>
+
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'notifications' %}" class="glass w-11 h-11 rounded-full flex items-center justify-center border border-white/10 hover:border-gold-500/50 transition-all shadow-glass group relative">
+            <i class="fa-regular fa-bell text-white/80 group-hover:text-gold-400 text-xl transition-colors"></i>
+            {% if unread_notifications_count > 0 %}
+            <span class="absolute top-1 right-1 flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+            {% endif %}
+        </a>
         {% endif %}
-    </a>
-    {% endif %}
+    </div>
+
+    <!-- STUDIO DE SÉLECTION DES 8 MODÈLES VISUELS (ANDROID BOTTOM-SHEET & MODAL) -->
+    <div id="sdm-model-modal" class="fixed inset-0 z-[1200] hidden items-end sm:items-center justify-center bg-black/75 backdrop-blur-md p-0 sm:p-4" onclick="if(event.target===this) closeSdmModelPicker()">
+        <div class="w-full max-w-lg rounded-t-3xl sm:rounded-3xl glass mihrab-card border border-gold-500/35 p-5 md:p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+            <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-3 sm:hidden"></div>
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-gold-400 block">Personnalisation Android & Web</span>
+                    <h3 class="text-base md:text-lg font-black text-white">Choisissez votre Modèle Visuel (8 Thèmes)</h3>
+                </div>
+                <button type="button" onclick="closeSdmModelPicker()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+                <!-- 1. Émeraude de Touba -->
+                <button type="button" onclick="applySdmModel('touba')" data-model-btn="touba" class="p-3 rounded-2xl border border-white/15 hover:border-amber-400 text-left transition-all flex items-center gap-3 bg-[#040B08]">
+                    <span class="w-9 h-9 rounded-xl flex-shrink-0 border border-amber-400/60" style="background:linear-gradient(135deg,#081711,#D4AF37);"></span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-extrabold text-white truncate">Émeraude Touba</p>
+                        <p class="text-[10px] text-amber-400/80 truncate">Vert Sacré & Or</p>
+                    </div>
+                </button>
+
+                <!-- 2. Parchemin Royal -->
+                <button type="button" onclick="applySdmModel('parchemin')" data-model-btn="parchemin" class="p-3 rounded-2xl border border-white/15 hover:border-amber-400 text-left transition-all flex items-center gap-3 bg-[#150E06]">
+                    <span class="w-9 h-9 rounded-xl flex-shrink-0 border border-amber-300/60" style="background:linear-gradient(135deg,#24180B,#F59E0B);"></span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-extrabold text-amber-100 truncate">Parchemin Royal</p>
+                        <p class="text-[10px] text-amber-400/80 truncate">Manuscrit Ambré</p>
+                    </div>
+                </button>
+
+                <!-- 3. Kaaba Prestige AMOLED -->
+                <button type="button" onclick="applySdmModel('kaaba')" data-model-btn="kaaba" class="p-3 rounded-2xl border border-white/15 hover:border-yellow-400 text-left transition-all flex items-center gap-3 bg-[#020202]">
+                    <span class="w-9 h-9 rounded-xl flex-shrink-0 border border-yellow-400/70" style="background:linear-gradient(135deg,#050505,#F59E0B);"></span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-extrabold text-white truncate">Kaaba Prestige</p>
+                        <p class="text-[10px] text-yellow-400/80 truncate">Noir AMOLED & Or 24K</p>
+                    </div>
+                </button>
+
+                <!-- 4. Nuit de Médine -->
+                <button type="button" onclick="applySdmModel('medine')" data-model-btn="medine" class="p-3 rounded-2xl border border-white/15 hover:border-sky-400 text-left transition-all flex items-center gap-3 bg-[#030919]">
+                    <span class="w-9 h-9 rounded-xl flex-shrink-0 border border-sky-400/60" style="background:linear-gradient(135deg,#0B162C,#38BDF8);"></span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-extrabold text-white truncate">Nuit de Médine</p>
+                        <p class="text-[10px] text-sky-300/80 truncate">Bleu Saphir & Étoiles</p>
+                    </div>
+                </button>
+
+                <!-- 5. Jardin de Firdaws -->
+                <button type="button" onclick="applySdmModel('vert')" data-model-btn="vert" class="p-3 rounded-2xl border border-white/15 hover:border-emerald-400 text-left transition-all flex items-center gap-3 bg-[#01140A]">
+                    <span class="w-9 h-9 rounded-xl flex-shrink-0 border border-emerald-400/60" style="background:linear-gradient(135deg,#03361C,#10B981);"></span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-extrabold text-white truncate">Jardin Firdaws</p>
+                        <p class="text-[10px] text-emerald-300/80 truncate">Jade & Lumière</p>
+                    </div>
+                </button>
+
+                <!-- 6. Rubis Andalou -->
+                <button type="button" onclick="applySdmModel('andalou')" data-model-btn="andalou" class="p-3 rounded-2xl border border-white/15 hover:border-rose-400 text-left transition-all flex items-center gap-3 bg-[#140409]">
+                    <span class="w-9 h-9 rounded-xl flex-shrink-0 border border-rose-400/60" style="background:linear-gradient(135deg,#380D1B,#FBBF24);"></span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-extrabold text-white truncate">Rubis Andalou</p>
+                        <p class="text-[10px] text-rose-300/80 truncate">Bordeaux & Cuivre</p>
+                    </div>
+                </button>
+
+                <!-- 7. Nuit Soufie -->
+                <button type="button" onclick="applySdmModel('soufi')" data-model-btn="soufi" class="p-3 rounded-2xl border border-white/15 hover:border-purple-400 text-left transition-all flex items-center gap-3 bg-[#0B0516]">
+                    <span class="w-9 h-9 rounded-xl flex-shrink-0 border border-purple-400/60" style="background:linear-gradient(135deg,#231242,#C084FC);"></span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-extrabold text-white truncate">Nuit Soufie</p>
+                        <p class="text-[10px] text-purple-300/80 truncate">Améthyste & Or</p>
+                    </div>
+                </button>
+
+                <!-- 8. Oasis Médine Clair -->
+                <button type="button" onclick="applySdmModel('ivoire')" data-model-btn="ivoire" class="p-3 rounded-2xl border border-white/15 hover:border-yellow-300 text-left transition-all flex items-center gap-3 bg-[#0B1D16]">
+                    <span class="w-9 h-9 rounded-xl flex-shrink-0 border border-yellow-300/60" style="background:linear-gradient(135deg,#1C4434,#FEF08A);"></span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-extrabold text-white truncate">Oasis Lumière</p>
+                        <p class="text-[10px] text-yellow-200/80 truncate">Haute Lisibilité</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openSdmModelPicker() {
+            const modal = document.getElementById('sdm-model-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                highlightCurrentSdmModel();
+            }
+        }
+        function closeSdmModelPicker() {
+            const modal = document.getElementById('sdm-model-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+        function applySdmModel(themeName) {
+            try {
+                localStorage.setItem('sdm_theme', themeName);
+                document.documentElement.setAttribute('data-theme', themeName);
+                highlightCurrentSdmModel();
+                if (navigator.vibrate) navigator.vibrate(10);
+            } catch (e) {}
+            setTimeout(closeSdmModelPicker, 180);
+        }
+        function highlightCurrentSdmModel() {
+            const current = localStorage.getItem('sdm_theme') || 'touba';
+            document.querySelectorAll('[data-model-btn]').forEach(btn => {
+                if (btn.getAttribute('data-model-btn') === current) {
+                    btn.classList.add('ring-2', 'ring-amber-400', 'scale-[1.02]');
+                } else {
+                    btn.classList.remove('ring-2', 'ring-amber-400', 'scale-[1.02]');
+                }
+            });
+        }
+    </script>
 
     <!-- TOAST MESSAGES (Global) -->
     {% if messages %}
