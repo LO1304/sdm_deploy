@@ -346,19 +346,39 @@
 
 {% block content %}
 <div id="toast">Message</div>
-<audio id="aud" preload="metadata"></audio>
 
 <div class="wrapper">
 
-    <!-- HEADER -->
-    <header class="page-header">
+    <!-- HEADER COMPACT AVEC BOUTON D'AJOUT TELEGRAM / FICHIER -->
+    <header class="page-header" style="padding: 18px 0 16px;">
         <a href="{% url 'home' %}" class="back-btn"><i class="fa-solid fa-arrow-left" style="font-size:14px"></i></a>
         <div class="header-center">
             <span class="header-tag">Audiothèque</span>
-            <span class="header-count">{{ sons|length }} titre{{ sons|length|pluralize }}</span>
+            <span class="header-count" id="totalTracksCount">{{ sons|length }} titre{{ sons|length|pluralize }}</span>
         </div>
-        <div style="width:44px"></div>
+        <button type="button" onclick="openTelegramAudioModal()"
+                style="height:40px; padding:0 13px; border-radius:14px; background:linear-gradient(135deg, #38BDF8, #0284C7); color:#fff; border:none; font-size:11px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 16px rgba(2,132,199,0.35);">
+            <i class="fa-brands fa-telegram" style="font-size:14px;"></i>
+            <span>+ Ajouter Son</span>
+        </button>
     </header>
+
+    <!-- BANDEAU D'ACTION RAPIDE : AJOUTER UN SON DEPUIS TELEGRAM OU SUPPRIMER LES SONS INCONNUS -->
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(2,132,199,0.12); border:1px solid rgba(56,189,248,0.35); border-radius:16px; padding:10px 14px; margin-bottom:14px;">
+        <div style="min-width:0;">
+            <div style="font-size:11px; font-weight:800; color:#7DD3FC; display:flex; align-items:center; gap:6px;">
+                <i class="fa-brands fa-telegram"></i>
+                <span>Import Telegram & Gestion</span>
+            </div>
+            <div style="font-size:10px; color:rgba(255,255,255,0.65); margin-top:2px;">
+                Ajoutez vos audios trouvés sur Telegram ou supprimez (🗑️) les sons que vous ne connaissez pas.
+            </div>
+        </div>
+        <button type="button" onclick="openTelegramAudioModal()"
+                style="flex-shrink:0; padding:8px 12px; border-radius:11px; background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.5); color:#E0F2FE; font-size:10px; font-weight:800; cursor:pointer;">
+            Importer
+        </button>
+    </div>
 
     <!-- SEARCH -->
     <div class="search-wrap">
@@ -432,13 +452,24 @@
                 <span class="track-dur"></span>
                 <button class="track-btn {% if s.id in favoris_ids %}liked{% endif %}"
                         onclick="toggleFavori(event,'son',{{ s.id }},this)"
-                        data-liked="{% if s.id in favoris_ids %}true{% else %}false{% endif %}">
+                        data-liked="{% if s.id in favoris_ids %}true{% else %}false{% endif %}"
+                        title="Favori">
                     <i class="fa-{% if s.id in favoris_ids %}solid{% else %}regular{% endif %} fa-heart"></i>
                 </button>
                 <button type="button" class="track-btn"
                         onclick="saveAudioOffline(event, {{ s.id }}, '{{ s.titre|escapejs }}', '{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}', '{% if s.lien_audio_externe %}{{ s.lien_audio_externe|escapejs }}{% else %}{{ s.fichier_audio.url|escapejs }}{% endif %}', this)"
                         title="Enregistrer hors-ligne dans l'application">
                     <i class="fa-solid fa-cloud-arrow-down"></i>
+                </button>
+                <button type="button" class="track-btn"
+                        onclick="openEditSonModal(event, {{ s.id }}, '{{ s.titre|escapejs }}', '{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}', '{{ s.categorie|escapejs }}')"
+                        title="Renommer ce son">
+                    <i class="fa-solid fa-pen" style="font-size:11px;"></i>
+                </button>
+                <button type="button" class="track-btn"
+                        onclick="deleteSonTrack(event, {{ s.id }}, '{{ s.titre|escapejs }}', this)"
+                        title="Supprimer ce son" style="color:rgba(248,113,113,0.75);">
+                    <i class="fa-solid fa-trash-can" style="font-size:11px;"></i>
                 </button>
             </div>
         </div>
@@ -452,6 +483,120 @@
     </div>
 
 </div><!-- /wrapper -->
+
+<!-- MODAL 1 : AJOUTER DES SONS DEPUIS TELEGRAM (FICHIERS AUDIO OU LIEN TELEGRAM) -->
+<div id="telegramAudioModal" style="display:none; position:fixed; inset:0; z-index:10050; background:rgba(0,0,0,0.82); backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;" onclick="if(event.target===this) closeTelegramAudioModal()">
+    <div style="width:100%; max-width:480px; background:#07150F; border:1px solid rgba(56,189,248,0.45); border-radius:24px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,0.85); max-height:90vh; overflow-y:auto;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.08);">
+            <div>
+                <span style="font-size:10px; font-weight:800; text-transform:uppercase; color:#38BDF8; letter-spacing:0.12em; display:block;">
+                    <i class="fa-brands fa-telegram"></i> Telegram & Fichiers Audio
+                </span>
+                <h3 style="font-size:16px; font-weight:800; color:#fff; margin-top:2px;">Ajouter des Sons à l'Audiothèque</h3>
+            </div>
+            <button type="button" onclick="closeTelegramAudioModal()" style="width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#fff; cursor:pointer;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="formAddTelegramSon" onsubmit="submitTelegramAudio(event)">
+            <!-- Option 1 : Choisir un ou plusieurs fichiers audio téléchargés depuis Telegram -->
+            <div style="background:rgba(56,189,248,0.08); border:1px dashed rgba(56,189,248,0.45); border-radius:16px; padding:14px; margin-bottom:12px;">
+                <label style="display:block; font-size:11px; font-weight:800; color:#7DD3FC; margin-bottom:6px; cursor:pointer;">
+                    <i class="fa-solid fa-file-audio"></i> 1. Sélectionner un ou plusieurs fichiers audio Telegram (.mp3, .m4a, .ogg, .wav)
+                </label>
+                <input type="file" id="tgFilesInput" name="fichiers_audio" accept="audio/*,.mp3,.m4a,.ogg,.opus,.wav,.aac" multiple
+                       onchange="onTelegramFileSelected(this)"
+                       style="width:100%; font-size:11px; color:#E2E8F0;">
+                <p style="font-size:10px; color:rgba(255,255,255,0.55); margin-top:6px;">
+                    Astuce : Dans Telegram, appuyez sur les 3 points d'un son → « Enregistrer dans la musique / Téléchargements », puis choisissez-le ici.
+                </p>
+            </div>
+
+            <!-- Option 2 : Lien Telegram public ou lien MP3 direct -->
+            <div style="margin-bottom:12px;">
+                <label style="display:block; font-size:10px; font-weight:800; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:5px;">
+                    2. Ou coller un lien Telegram public (https://t.me/...) / Lien Audio direct
+                </label>
+                <input type="url" id="tgLinkInput" name="lien_audio" placeholder="Ex: https://t.me/canal_khassida/124 ou https://.../audio.mp3"
+                       style="width:100%; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:10px 12px; color:#fff; font-size:12px; outline:none;">
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div>
+                    <label style="display:block; font-size:10px; font-weight:800; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:5px;">
+                        Titre du Son (Optionnel si fichier)
+                    </label>
+                    <input type="text" id="tgTitleInput" name="titre" placeholder="Ex: Jazbul Qulub — Kourel..."
+                           style="width:100%; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:10px 12px; color:#fff; font-size:12px; outline:none;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:10px; font-weight:800; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:5px;">
+                        Auteur / Kourel
+                    </label>
+                    <input type="text" id="tgAuthorInput" name="auteur_voix" placeholder="Ex: Kourel Hizbut Tarqiyyah"
+                           style="width:100%; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:10px 12px; color:#fff; font-size:12px; outline:none;">
+                </div>
+            </div>
+
+            <div style="margin-bottom:16px;">
+                <label style="display:block; font-size:10px; font-weight:800; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:5px;">
+                    Catégorie
+                </label>
+                <select id="tgCatInput" name="categorie"
+                        style="width:100%; background:#040B08; border:1px solid rgba(212,175,55,0.35); border-radius:12px; padding:10px 12px; color:#fff; font-size:12px; outline:none;">
+                    {% for code, label in categories %}
+                    <option value="{{ code }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div id="tgUploadStatus" style="display:none; font-size:11px; font-weight:700; color:#7DD3FC; text-align:center; padding:8px; margin-bottom:10px; background:rgba(2,132,199,0.15); border-radius:10px;">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Envoi et hébergement permanent en cours...
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button type="button" onclick="closeTelegramAudioModal()"
+                        style="flex:1; padding:12px; border-radius:13px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#fff; font-size:12px; font-weight:700; cursor:pointer;">
+                    Annuler
+                </button>
+                <button type="submit" id="btnSubmitTgSon"
+                        style="flex:2; padding:12px; border-radius:13px; background:linear-gradient(135deg, #38BDF8, #0284C7); color:#fff; font-size:12px; font-weight:800; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Enregistrer dans l'Audiothèque</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL 2 : RENOMMER UN SON INCONNU -->
+<div id="editSonModal" style="display:none; position:fixed; inset:0; z-index:10050; background:rgba(0,0,0,0.82); backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;" onclick="if(event.target===this) closeEditSonModal()">
+    <div style="width:100%; max-width:420px; background:#07150F; border:1px solid rgba(212,175,55,0.45); border-radius:24px; padding:20px;">
+        <h3 style="font-size:15px; font-weight:800; color:#FDE047; margin-bottom:12px;">Renommer ou Classer ce Son</h3>
+        <input type="hidden" id="editSonId">
+        <div style="margin-bottom:10px;">
+            <label style="display:block; font-size:10px; font-weight:800; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:4px;">Titre</label>
+            <input type="text" id="editSonTitre" style="width:100%; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:10px 12px; color:#fff; font-size:12px;">
+        </div>
+        <div style="margin-bottom:10px;">
+            <label style="display:block; font-size:10px; font-weight:800; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:4px;">Auteur / Kourel</label>
+            <input type="text" id="editSonAuteur" style="width:100%; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:10px 12px; color:#fff; font-size:12px;">
+        </div>
+        <div style="margin-bottom:14px;">
+            <label style="display:block; font-size:10px; font-weight:800; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:4px;">Catégorie</label>
+            <select id="editSonCat" style="width:100%; background:#040B08; border:1px solid rgba(212,175,55,0.35); border-radius:12px; padding:10px 12px; color:#fff; font-size:12px;">
+                {% for code, label in categories %}
+                <option value="{{ code }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button type="button" onclick="closeEditSonModal()" style="flex:1; padding:11px; border-radius:12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#fff; font-size:12px; font-weight:700; cursor:pointer;">Annuler</button>
+            <button type="button" onclick="saveEditSon()" style="flex:2; padding:11px; border-radius:12px; background:linear-gradient(135deg,#FDE047,#D4AF37); color:#040B08; font-size:12px; font-weight:800; border:none; cursor:pointer;">Enregistrer</button>
+        </div>
+    </div>
+</div>
 
 <!-- PLAYER IMMERSIF -->
 <div id="audio-player">
@@ -518,8 +663,8 @@
 
 {% block extra_js %}
 <script>
-/* ══ PLAYER STATE ══ */
-const aud      = document.getElementById('aud');
+/* ══ PLAYER STATE (RELIÉ AU MOTEUR AUDIO GLOBAL PERSISTANT) ══ */
+const aud      = window.SDMAudioEngine ? window.SDMAudioEngine.getAudioElement() : document.getElementById('sdm-global-audio');
 const player   = document.getElementById('audio-player');
 const seekEl   = document.getElementById('seek');
 const ppIcon   = document.getElementById('pp-icon');
@@ -527,8 +672,18 @@ const vinyl    = document.getElementById('vinyl');
 const vinylIcon = document.getElementById('vinyl-icon');
 const playerImg = document.getElementById('player-img');
 let curIdx = -1, isLoop = false, isSeeking = false;
-const items = [...document.querySelectorAll('.track-item')];
-items.forEach(it => it.addEventListener('click', ()=> playTrack(it)));
+let items = [...document.querySelectorAll('.track-item')];
+function bindTrackClicks() {
+    items = [...document.querySelectorAll('.track-item')];
+    items.forEach((it, idx) => {
+        it.dataset.index = idx;
+        if (!it.dataset.clickBound) {
+            it.dataset.clickBound = '1';
+            it.addEventListener('click', () => playTrack(it));
+        }
+    });
+}
+bindTrackClicks();
 
 /* Format temps */
 function fmt(s){ if(!isFinite(s)||isNaN(s))return '0:00'; const m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+String(sec).padStart(2,'0'); }
@@ -640,6 +795,7 @@ function updateActive(idx){
 }
 
 function playTrack(el){
+    bindTrackClicks();
     curIdx = parseInt(el.dataset.index);
     document.getElementById('p-title').textContent = el.dataset.titre;
     document.getElementById('p-author').textContent = el.dataset.auteur || '—';
@@ -658,6 +814,16 @@ function playTrack(el){
 
     seekEl.value=0; seekEl.style.setProperty('--value','0%');
 
+    // Synchroniser immédiatement le moteur global et le micro-widget à côté du nom
+    if (window.SDMAudioEngine) {
+        window.SDMAudioEngine.syncFromPageTrack({
+            id: el.dataset.id,
+            titre: el.dataset.titre,
+            auteur: el.dataset.auteur || '—',
+            url: el.dataset.url
+        }, true);
+    }
+
     // Vérifier d'abord si l'audio est disponible hors-ligne dans l'application (IndexedDB)
     (async function startAudioSource() {
         let playUrl = el.dataset.url;
@@ -675,10 +841,16 @@ function playTrack(el){
             ppIcon.className='fa-solid fa-pause';
             vinyl.classList.add('spin'); vinyl.classList.remove('spin-paused');
             document.getElementById('play-btn').style.boxShadow='0 12px 36px rgba(212,175,55,0.5)';
-            setMediaSession(el);
+            if (window.SDMAudioEngine) {
+                window.SDMAudioEngine.syncFromPageTrack({
+                    id: el.dataset.id,
+                    titre: el.dataset.titre,
+                    auteur: el.dataset.auteur || '—',
+                    url: el.dataset.url
+                }, true);
+            }
         }).catch(e=>{
             console.error(e);
-            // Masquer automatiquement une piste si elle ne peut pas être lue
             el.style.display = 'none';
             showToast('Piste indisponible — passage au suivant');
             setTimeout(() => playNext(), 600);
@@ -689,12 +861,14 @@ function playTrack(el){
 window.togglePlay=function(){
     if(!aud.src) return;
     if(aud.paused){
-        aud.play();
+        if (window.SDMAudioEngine) window.SDMAudioEngine.play();
+        else aud.play();
         ppIcon.className='fa-solid fa-pause'; ppIcon.style.marginLeft='0';
         vinyl.classList.remove('spin-paused');
         items[curIdx]?.classList.remove('paused');
     } else {
-        aud.pause();
+        if (window.SDMAudioEngine) window.SDMAudioEngine.pause();
+        else aud.pause();
         ppIcon.className='fa-solid fa-play'; ppIcon.style.marginLeft='3px';
         vinyl.classList.add('spin-paused');
         items[curIdx]?.classList.add('paused');
@@ -702,19 +876,23 @@ window.togglePlay=function(){
 };
 
 window.playNext=function(){
+    bindTrackClicks();
     const vis=items.filter(i=>i.style.display!=='none');
     if(!vis.length) return;
     const ci=vis.findIndex(i=>parseInt(i.dataset.index)===curIdx);
     playTrack(vis[(ci+1)%vis.length]);
 };
+window._sdmPagePlayNext = window.playNext;
 
 window.playPrev=function(){
     if(aud.currentTime>4){aud.currentTime=0;return;}
+    bindTrackClicks();
     const vis=items.filter(i=>i.style.display!=='none');
     if(!vis.length) return;
     const ci=vis.findIndex(i=>parseInt(i.dataset.index)===curIdx);
     playTrack(vis[(ci-1+vis.length)%vis.length]);
 };
+window._sdmPagePlayPrev = window.playPrev;
 
 window.toggleLoop=function(){
     isLoop=!isLoop; aud.loop=isLoop;
@@ -722,10 +900,9 @@ window.toggleLoop=function(){
     showToast(isLoop ? 'Boucle activée' : 'Boucle désactivée');
 };
 
+// Minimiser le tiroir du lecteur SANS arrêter la musique (le micro-widget à côté du nom reste actif)
 window.closePlayer=function(){
     player.classList.remove('active');
-    setTimeout(()=>{ aud.pause(); ppIcon.className='fa-solid fa-play'; ppIcon.style.marginLeft='3px'; vinyl.classList.add('spin-paused'); }, 450);
-    items.forEach(it=>{ it.classList.remove('playing','paused'); });
 };
 
 /* ══ SEEKBAR ══ */
@@ -741,9 +918,24 @@ seekEl.addEventListener('change', e=>{
     isSeeking=false;
 });
 
-// L'ancien timeupdate a été remplacé par celui gérant la reprise automatique (localStorage) plus bas.
 aud.addEventListener('loadedmetadata',()=> document.getElementById('p-dur').textContent=fmt(aud.duration));
-aud.addEventListener('ended',()=>{ if(!isLoop) playNext(); });
+
+// Synchroniser l'icône Play/Pause de la page si l'utilisateur clique sur le micro-widget à côté de son nom
+window.addEventListener('sdm-audio-state', (e) => {
+    const isPlaying = e.detail?.isPlaying;
+    if (isPlaying) {
+        ppIcon.className = 'fa-solid fa-pause';
+        ppIcon.style.marginLeft = '0';
+        vinyl.classList.add('spin');
+        vinyl.classList.remove('spin-paused');
+        items[curIdx]?.classList.remove('paused');
+    } else {
+        ppIcon.className = 'fa-solid fa-play';
+        ppIcon.style.marginLeft = '3px';
+        vinyl.classList.add('spin-paused');
+        items[curIdx]?.classList.add('paused');
+    }
+});
 
 /* ══ AUDIO ERROR HANDLING ══ */
 let audioRetries = 0;
@@ -753,7 +945,6 @@ aud.addEventListener('error', function() {
     console.error('[Audio] Erreur de chargement');
     if (audioRetries < AUDIO_MAX_RETRIES && aud.src) {
         audioRetries++;
-        console.log(`[Audio] 🔄 Retry ${audioRetries}/${AUDIO_MAX_RETRIES}...`);
         showToast(`Reconnexion... (${audioRetries}/${AUDIO_MAX_RETRIES})`);
         setTimeout(() => {
             const src = items[curIdx]?.dataset.url;
@@ -765,7 +956,6 @@ aud.addEventListener('error', function() {
                     showToast('Lecture reprise');
                 }).catch(() => {
                     showToast('Impossible de lire ce fichier');
-                    // Passer au suivant automatiquement
                     setTimeout(() => playNext(), 1500);
                 });
             }
@@ -777,7 +967,6 @@ aud.addEventListener('error', function() {
     }
 });
 
-// Reset retry count on successful play
 aud.addEventListener('playing', () => { audioRetries = 0; });
 
 /* Volume */
@@ -787,7 +976,7 @@ document.getElementById('vol').addEventListener('input',e=>aud.volume=e.target.v
 function showToast(msg){
     const t=document.getElementById('toast');
     t.textContent=msg; t.classList.add('show');
-    clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2200);
+    clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2600);
 }
 
 /* ══ FAVORIS AJAX ══ */
@@ -808,18 +997,10 @@ window.toggleFavori=function(e,model,id,btn){
     }).catch(()=>{});
 };
 
-/* ══ ENREGISTRER TELECHARGEMENT AJAX ══ */
-window.registerDownload=function(e,model,id){
-    e.stopPropagation();
-    fetch(`/telechargements/ajouter/${model}/${id}/`,{
-        method:'POST',
-        headers:{'X-Requested-With':'XMLHttpRequest','X-CSRFToken':'{{ csrf_token }}','Content-Type':'application/json'}
-    }).catch(()=>{});
-};
-
 /* ══ RECHERCHE ══ */
 document.getElementById('searchInput').addEventListener('input',function(){
     const q=this.value.trim().toLowerCase(); let n=0;
+    bindTrackClicks();
     items.forEach(it=>{
         const ok=!q||it.dataset.titre.toLowerCase().includes(q)||it.dataset.auteur.toLowerCase().includes(q);
         it.style.display=ok?'':'none'; if(ok) n++;
@@ -846,9 +1027,8 @@ window.togglePlayerFav = function() {
     const listBtn = el.querySelector('.track-btn');
     if(listBtn) window.toggleFavori(new Event('click'), 'son', id, listBtn);
     
-    // Sync the player button icon instantly
     const pFavBtn = document.getElementById('btn-fav-player');
-    const isNowLiked = listBtn.dataset.liked === 'true'; // after toggle it might flip, but we want the optimistic update
+    const isNowLiked = listBtn.dataset.liked === 'true';
     if (isNowLiked) {
         pFavBtn.innerHTML = '<i class="fa-solid fa-heart" style="color:var(--gold)"></i>';
     } else {
@@ -856,20 +1036,7 @@ window.togglePlayerFav = function() {
     }
 };
 
-/* ══ MEDIA SESSION ══ */
-function setMediaSession(el){
-    if(!('mediaSession' in navigator)) return;
-    navigator.mediaSession.metadata=new MediaMetadata({
-        title:el.dataset.titre, artist:el.dataset.auteur,
-        artwork:[{src:playerImg.src||'', sizes:'512x512', type:'image/png'}]
-    });
-    navigator.mediaSession.setActionHandler('play', window.togglePlay);
-    navigator.mediaSession.setActionHandler('pause', window.togglePlay);
-    navigator.mediaSession.setActionHandler('previoustrack', window.playPrev);
-    navigator.mediaSession.setActionHandler('nexttrack', window.playNext);
-}
-
-/* ══ REPRISE AUTOMATIQUE (LOCALSTORAGE) ══ */
+/* ══ SYNCHRONISATION DE LA BARRE DE PROGRESSION & REPRISE SANS COUPURE ══ */
 const LS_KEY = 'sdm_last_audio';
 aud.addEventListener('timeupdate', () => {
     if(!aud.duration || isSeeking || curIdx === -1) return;
@@ -879,53 +1046,203 @@ aud.addEventListener('timeupdate', () => {
     document.getElementById('p-cur').textContent = fmt(aud.currentTime);
     document.getElementById('p-dur').textContent = fmt(aud.duration);
     drawWaveform(pct);
-    
-    // Save to localStorage every 3 seconds approx to save battery
-    if(Math.floor(aud.currentTime) % 3 === 0) {
-        localStorage.setItem(LS_KEY, JSON.stringify({
-            id: items[curIdx].dataset.id,
-            time: aud.currentTime,
-            duration: aud.duration
-        }));
-    }
 });
 
 window.addEventListener('DOMContentLoaded', () => {
     try {
-        const last = JSON.parse(localStorage.getItem(LS_KEY));
-        if (last && last.id && last.time) {
-            const idx = items.findIndex(i => i.dataset.id === last.id);
+        const activeTrack = window.SDMAudioEngine ? window.SDMAudioEngine.getCurrentTrack() : null;
+        const last = activeTrack || JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+        if (last && last.id) {
+            const idx = items.findIndex(i => String(i.dataset.id) === String(last.id));
             if (idx !== -1) {
-                // Initialize player silently
                 curIdx = idx;
                 const el = items[idx];
                 document.getElementById('p-title').textContent = el.dataset.titre;
                 document.getElementById('p-author').textContent = el.dataset.auteur || '—';
                 applyCover(el.dataset.url);
-                updateActive(curIdx);
-                
-                aud.src = el.dataset.url;
-                aud.currentTime = last.time;
-                
-                // Show player but don't play
+                items.forEach((it, i) => {
+                    it.classList.toggle('playing', i === idx);
+                    it.classList.toggle('paused', aud.paused);
+                });
+                const seed = parseInt(el.dataset.id || '0');
+                wvData = generateWaveData(seed, 80);
+
                 player.classList.add('active');
-                ppIcon.className = 'fa-solid fa-play';
-                vinyl.classList.add('spin-paused');
-                document.getElementById('p-cur').textContent = fmt(last.time);
-                
-                // Update download link and fav
-                document.getElementById('btn-dl-player').href = el.dataset.url;
-                const listBtn = el.querySelector('.track-btn');
-                const pFavBtn = document.getElementById('btn-fav-player');
-                if (listBtn && listBtn.dataset.liked === 'true') {
-                    pFavBtn.innerHTML = '<i class="fa-solid fa-heart" style="color:var(--gold)"></i>';
+                if (!aud.paused) {
+                    ppIcon.className = 'fa-solid fa-pause';
+                    ppIcon.style.marginLeft = '0';
+                    vinyl.classList.add('spin');
+                    vinyl.classList.remove('spin-paused');
                 } else {
-                    pFavBtn.innerHTML = '<i class="fa-regular fa-heart"></i>';
+                    ppIcon.className = 'fa-solid fa-play';
+                    ppIcon.style.marginLeft = '3px';
+                    vinyl.classList.add('spin-paused');
                 }
+                document.getElementById('p-cur').textContent = fmt(aud.currentTime || last.currentTime || last.time || 0);
+                document.getElementById('btn-dl-player').href = el.dataset.url;
             }
         }
     } catch(e) {}
 });
+
+/* ══ AJOUT DE SONS DEPUIS TELEGRAM / FICHIERS & GESTION DES SONS INCONNUS ══ */
+window.openTelegramAudioModal = function() {
+    document.getElementById('telegramAudioModal').style.display = 'flex';
+};
+window.closeTelegramAudioModal = function() {
+    document.getElementById('telegramAudioModal').style.display = 'none';
+};
+
+window.onTelegramFileSelected = function(input) {
+    if (input.files && input.files.length === 1) {
+        const titleField = document.getElementById('tgTitleInput');
+        if (titleField && !titleField.value.trim()) {
+            const raw = input.files[0].name.replace(/\.[^/.]+$/, '');
+            titleField.value = raw.replace(/[_\-]+/g, ' ').trim();
+        }
+    }
+};
+
+window.submitTelegramAudio = async function(e) {
+    e.preventDefault();
+    const form = document.getElementById('formAddTelegramSon');
+    const filesInput = document.getElementById('tgFilesInput');
+    const linkInput = document.getElementById('tgLinkInput');
+    const btn = document.getElementById('btnSubmitTgSon');
+    const statusBox = document.getElementById('tgUploadStatus');
+
+    const hasFiles = filesInput.files && filesInput.files.length > 0;
+    const hasLink = linkInput.value && linkInput.value.trim().length > 0;
+    if (!hasFiles && !hasLink) {
+        showToast('Choisissez un fichier audio Telegram ou collez un lien');
+        return;
+    }
+
+    const fd = new FormData(form);
+    btn.disabled = true;
+    statusBox.style.display = 'block';
+
+    try {
+        const res = await fetch('/api/sons/ajouter/', {
+            method: 'POST',
+            body: fd
+        });
+        const data = await res.json();
+        if (res.ok && data.status === 'success' && Array.isArray(data.sons)) {
+            const listEl = document.getElementById('sonList');
+            data.sons.forEach(s => {
+                const row = document.createElement('div');
+                row.className = 'track-item';
+                row.dataset.id = s.id;
+                row.dataset.url = s.url;
+                row.dataset.titre = s.titre;
+                row.dataset.auteur = s.auteur;
+                row.innerHTML = `
+                    <div class="track-num">★</div>
+                    <div class="eq-bars">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                    <div class="track-art"><i class="fa-solid fa-music"></i></div>
+                    <div class="track-info">
+                        <div class="track-title">${s.titre}</div>
+                        <div class="track-author">${s.auteur}</div>
+                    </div>
+                    <div class="track-actions">
+                        <button type="button" class="track-btn" onclick="openEditSonModal(event, ${s.id}, '${s.titre.replace(/'/g, "\\'")}', '${s.auteur.replace(/'/g, "\\'")}', '${s.categorie}')" title="Renommer">
+                            <i class="fa-solid fa-pen" style="font-size:11px;"></i>
+                        </button>
+                        <button type="button" class="track-btn" onclick="deleteSonTrack(event, ${s.id}, '${s.titre.replace(/'/g, "\\'")}', this)" title="Supprimer" style="color:rgba(248,113,113,0.75);">
+                            <i class="fa-solid fa-trash-can" style="font-size:11px;"></i>
+                        </button>
+                    </div>
+                `;
+                listEl.prepend(row);
+            });
+            bindTrackClicks();
+            const countEl = document.getElementById('totalTracksCount');
+            if (countEl) countEl.textContent = `${items.length} titres`;
+            form.reset();
+            closeTelegramAudioModal();
+            showToast(data.message || 'Son ajouté avec succès ✓');
+            // Lancer la lecture du nouveau son ajouté
+            if (items.length > 0) playTrack(items[0]);
+        } else {
+            showToast(data.message || 'Erreur lors de l\'import');
+        }
+    } catch (err) {
+        showToast('Erreur réseau lors de l\'envoi du fichier');
+    } finally {
+        btn.disabled = false;
+        statusBox.style.display = 'none';
+    }
+};
+
+window.deleteSonTrack = async function(e, sonId, titre, btnEl) {
+    e.stopPropagation();
+    if (!confirm(`Voulez-vous supprimer définitivement le son « ${titre} » de l'application ?`)) {
+        return;
+    }
+    const row = btnEl.closest('.track-item');
+    try {
+        const res = await fetch(`/api/sons/supprimer/${sonId}/`, { method: 'POST' });
+        const data = await res.json();
+        if (res.ok && data.status === 'success') {
+            if (row) row.remove();
+            bindTrackClicks();
+            const countEl = document.getElementById('totalTracksCount');
+            if (countEl) countEl.textContent = `${items.length} titres`;
+            showToast('Son supprimé de l\'audiothèque ✓');
+        }
+    } catch (err) {
+        showToast('Erreur lors de la suppression');
+    }
+};
+
+window.openEditSonModal = function(e, sonId, titre, auteur, cat) {
+    e.stopPropagation();
+    document.getElementById('editSonId').value = sonId;
+    document.getElementById('editSonTitre').value = titre;
+    document.getElementById('editSonAuteur').value = auteur;
+    const catSel = document.getElementById('editSonCat');
+    if (catSel && cat) catSel.value = cat;
+    document.getElementById('editSonModal').style.display = 'flex';
+};
+
+window.closeEditSonModal = function() {
+    document.getElementById('editSonModal').style.display = 'none';
+};
+
+window.saveEditSon = async function() {
+    const sonId = document.getElementById('editSonId').value;
+    const titre = document.getElementById('editSonTitre').value.trim();
+    const auteur = document.getElementById('editSonAuteur').value.trim();
+    const categorie = document.getElementById('editSonCat').value;
+    if (!titre) return;
+
+    try {
+        const res = await fetch(`/api/sons/modifier/${sonId}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ titre, auteur_voix: auteur, categorie })
+        });
+        const data = await res.json();
+        if (res.ok && data.status === 'success') {
+            const row = document.querySelector(`.track-item[data-id="${sonId}"]`);
+            if (row) {
+                row.dataset.titre = data.son.titre;
+                row.dataset.auteur = data.son.auteur;
+                const tEl = row.querySelector('.track-title');
+                const aEl = row.querySelector('.track-author');
+                if (tEl) tEl.textContent = data.son.titre;
+                if (aEl) aEl.textContent = data.son.auteur;
+            }
+            closeEditSonModal();
+            showToast('Son renommé avec succès ✓');
+        }
+    } catch (err) {
+        showToast('Erreur lors de la modification');
+    }
+};
 
 /* Init waveform size */
 window.addEventListener('resize', ()=> drawWaveform(parseFloat(seekEl.value)/1000));

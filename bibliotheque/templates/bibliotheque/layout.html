@@ -67,35 +67,41 @@
     <canvas id="sdm-cosmos"></canvas>
 
     <!-- BARRE SUPÉRIEURE MOBILE PROPRE (ACCÈS DIRECT SANS SCROLL) -->
-    <div class="sticky top-0 z-50 w-full bg-[#040B08]/95 backdrop-blur-md border-b border-white/10 px-3.5 py-2">
-        <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
-            <a href="/" class="flex items-center gap-2 min-w-0" style="text-decoration:none;">
-                <div class="w-8 h-8 rounded-xl bg-gold-500/15 border border-gold-500/35 flex items-center justify-center text-gold-400 font-black text-xs flex-shrink-0">
-                    ۞
-                </div>
-                <span class="text-xs font-black tracking-wider text-gradient-gold block truncate">SDM MOURIDE</span>
-            </a>
+    <div class="sticky top-0 z-50 w-full bg-[#040B08]/95 backdrop-blur-md border-b border-white/10 px-3 py-2">
+        <div class="max-w-6xl mx-auto flex items-center justify-between gap-1.5">
+            <div class="flex items-center gap-1.5 min-w-0">
+                <a href="/" class="flex items-center gap-1.5 min-w-0" style="text-decoration:none;">
+                    <div class="w-7 h-7 rounded-xl bg-gold-500/15 border border-gold-500/35 flex items-center justify-center text-gold-400 font-black text-xs flex-shrink-0">
+                        ۞
+                    </div>
+                    <span class="text-[11px] font-black tracking-wider text-gradient-gold block truncate">
+                        {% if user.is_authenticated %}{{ user.username }}{% else %}SDM MOURIDE{% endif %}
+                    </span>
+                </a>
+                <!-- Micro-widget très petit à côté du nom (présent sur toutes les pages) -->
+                <span class="sdm-name-audio-widget"></span>
+            </div>
 
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-                <a href="{% url 'liste_sons' %}" class="glass px-2.5 h-8 rounded-xl flex items-center gap-1.5 border border-white/15 text-white/90 text-[11px] font-bold" style="text-decoration:none;" title="Audiothèque">
-                    <i class="fa-solid fa-headphones text-gold-400 text-xs"></i>
-                    <span>Audios</span>
+            <div class="flex items-center gap-1 flex-shrink-0">
+                <a href="{% url 'liste_sons' %}" class="glass px-2 h-7 rounded-xl flex items-center gap-1 border border-white/15 text-white/90 text-[10px] font-bold" style="text-decoration:none;" title="Audiothèque">
+                    <i class="fa-solid fa-headphones text-gold-400 text-[11px]"></i>
+                    <span class="hidden sm:inline">Audios</span>
                 </a>
 
-                <a href="{% url 'telechargements' %}" class="glass px-2.5 h-8 rounded-xl flex items-center gap-1.5 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold" style="text-decoration:none;" title="Bibliothèque Hors-Ligne">
-                    <i class="fa-solid fa-cloud-arrow-down text-xs"></i>
-                    <span>Hors-Ligne</span>
+                <a href="{% url 'telechargements' %}" class="glass px-2 h-7 rounded-xl flex items-center gap-1 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold" style="text-decoration:none;" title="Bibliothèque Hors-Ligne">
+                    <i class="fa-solid fa-cloud-arrow-down text-[11px]"></i>
+                    <span class="hidden sm:inline">Hors-Ligne</span>
                 </a>
 
                 <button type="button" onclick="openSdmModelPicker()"
-                        class="glass px-2.5 h-8 rounded-xl flex items-center gap-1.5 border border-gold-500/40 hover:border-gold-400 transition-all active:scale-95"
+                        class="glass px-2 h-7 rounded-xl flex items-center gap-1 border border-gold-500/40 hover:border-gold-400 transition-all active:scale-95"
                         title="Choisir un Modèle Visuel">
-                    <i class="fa-solid fa-palette text-gold-400 text-xs"></i>
-                    <span class="text-[11px] font-extrabold text-white/95">Modèles</span>
+                    <i class="fa-solid fa-palette text-gold-400 text-[11px]"></i>
+                    <span class="text-[10px] font-extrabold text-white/95 hidden sm:inline">Modèles</span>
                 </button>
 
-                <a href="{% url 'profile' %}" class="glass w-8 h-8 rounded-xl flex items-center justify-center border border-gold-500/35 text-gold-400" style="text-decoration:none;" title="Mon Profil">
-                    <i class="fa-solid fa-user text-xs"></i>
+                <a href="{% url 'profile' %}" class="glass w-7 h-7 rounded-xl flex items-center justify-center border border-gold-500/35 text-gold-400" style="text-decoration:none;" title="Mon Profil">
+                    <i class="fa-solid fa-user text-[11px]"></i>
                 </a>
             </div>
         </div>
@@ -277,9 +283,13 @@
     </nav>
     {% endblock %}
 
+    <!-- Lecteur Audio Global Persistant (Ne s'arrête pas entre les pages ni en arrière-plan) -->
+    <audio id="sdm-global-audio" preload="auto" playsinline webkit-playsinline></audio>
+
     <!-- Scripts Globaux -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script src="{% static 'js/sdm_offline_vault.js' %}"></script>
+    <script src="{% static 'js/sdm_audio_engine.js' %}"></script>
     <script src="{% static 'js/sdm_main.js' %}"></script>
     
     <!-- FAILSAFE: Prevent Black Screen if AOS fails to load -->

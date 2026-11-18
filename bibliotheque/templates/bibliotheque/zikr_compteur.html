@@ -420,7 +420,10 @@
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div class="topbar-center">
-                <span class="topbar-tag">۞ Chapelet Digital & Objectifs</span>
+                <div style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;">
+                    <span class="topbar-tag">۞ {% if user.is_authenticated %}{{ user.username }}{% else %}Chapelet Digital{% endif %}</span>
+                    <span class="sdm-name-audio-widget"></span>
+                </div>
                 <div class="topbar-title" id="mainTitle">{{ zikr.titre }}</div>
             </div>
             <button type="button" onclick="openCreateZikrModal()" class="icon-btn gold" title="Créer un Zikr & Objectif">
@@ -1275,5 +1278,7 @@
         createBeads();
         switchSalat(activeIdx);
     </script>
+    <script src="{% static 'js/sdm_offline_vault.js' %}"></script>
+    <script src="{% static 'js/sdm_audio_engine.js' %}"></script>
 </body>
 </html>

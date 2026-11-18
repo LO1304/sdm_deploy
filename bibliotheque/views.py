@@ -815,6 +815,244 @@ def run_import_xamxam(request):
     thread.start()
     return HttpResponse("Import XamXam démarré en arrière-plan. Vérifiez les sons dans quelques minutes.")
 
+
+def _extract_telegram_audio_info(tg_url):
+    """
+    Extrait le flux audio (MP3/OGG/M4A) et le titre depuis un lien Telegram public (https://t.me/<canal>/<id>).
+    Retourne (audio_url, extracted_title, extracted_author) ou (None, None, None).
+    """
+    import re
+    import html as html_lib
+    try:
+        m = re.search(r't\.me/(?:s/)?([A-Za-z0-9_]+)/(\d+)', tg_url)
+        if not m:
+            return None, None, None
+        channel, post_id = m.group(1), m.group(2)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
+        }
+        for candidate_url in [
+            f"https://t.me/{channel}/{post_id}?embed=1&mode=tme",
+            f"https://t.me/s/{channel}/{post_id}",
+        ]:
+            resp = requests.get(candidate_url, headers=headers, timeout=15)
+            if resp.status_code != 200:
+                continue
+            page = resp.text
+
+            # Chercher une source audio ou voice/video directe dans l'embed Telegram
+            media_match = (
+                re.search(r'<audio[^>]+src=["\']([^"\']+)["\']', page)
+                or re.search(r'data-audio=["\']([^"\']+)["\']', page)
+                or re.search(r'<source[^>]+src=["\'](https://[^"\']+\.(?:mp3|m4a|ogg|opus|wav|aac)[^"\']*)["\']', page, re.I)
+                or re.search(r'(https://cdn\d*\.telesco\.pe/file/[^"\'\s<>]+)', page)
+                or re.search(r'(https://[^"\'\s<>]+telesco\.pe/file/[^"\'\s<>]+)', page)
+                or re.search(r'<video[^>]+src=["\'](https://[^"\']+)["\']', page)
+            )
+            if media_match:
+                media_url = html_lib.unescape(media_match.group(1))
+                title_match = re.search(r'class=["\']tgme_widget_message_audio_title["\'][^>]*>([^<]+)<', page)
+                perf_match = re.search(r'class=["\']tgme_widget_message_audio_performer["\'][^>]*>([^<]+)<', page)
+                text_match = re.search(r'class=["\']tgme_widget_message_text[^"\']*["\'][^>]*>(.*?)</div>', page, re.S)
+                ext_title = html_lib.unescape(title_match.group(1)).strip() if title_match else ''
+                ext_author = html_lib.unescape(perf_match.group(1)).strip() if perf_match else f"Telegram @{channel}"
+                if not ext_title and text_match:
+                    clean_txt = re.sub(r'<[^>]+>', ' ', text_match.group(1))
+                    ext_title = html_lib.unescape(clean_txt).strip()[:90]
+                return media_url, (ext_title or f"Audio Telegram {channel} #{post_id}"), ext_author
+    except Exception:
+        pass
+    return None, None, None
+
+
+@csrf_exempt
+def api_ajouter_son(request):
+    """
+    Ajoute un ou plusieurs sons (depuis fichiers téléchargés sur Telegram/Téléphone ou lien Telegram/URL direct).
+    Héberge chaque fichier en streaming permanent sur Cloudinary (resource_type='video').
+    """
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
+
+    try:
+        import cloudinary.uploader
+        import re
+
+        titre_saisi = (request.POST.get('titre') or '').strip()
+        auteur_saisi = (request.POST.get('auteur_voix') or '').strip() or 'Kourel / Telegram'
+        categorie = (request.POST.get('categorie') or 'KHASSIDA').strip().upper()
+        valid_cats = {c[0] for c in Son.CATEGORIES}
+        if categorie not in valid_cats:
+            categorie = 'KHASSIDA'
+
+        lien = (request.POST.get('lien_audio') or '').strip()
+        fichiers = request.FILES.getlist('fichiers_audio') or request.FILES.getlist('fichier_audio')
+
+        created_sons = []
+
+        # Cas 1 : Fichiers audio envoyés depuis le téléphone / PC (ex: audios téléchargés depuis Telegram)
+        if fichiers:
+            for idx, f in enumerate(fichiers):
+                raw_name = os.path.splitext(f.name)[0]
+                clean_name = re.sub(r'[_\-]+', ' ', raw_name).strip()
+                track_title = titre_saisi if (titre_saisi and len(fichiers) == 1) else (
+                    f"{titre_saisi} ({idx + 1})" if titre_saisi else (clean_name or "Son Telegram")
+                )
+
+                upload_res = cloudinary.uploader.upload(
+                    f,
+                    resource_type='video',
+                    folder='media/audios/telegram',
+                    use_filename=True,
+                    unique_filename=True,
+                )
+                secure_url = upload_res.get('secure_url')
+                if not secure_url:
+                    continue
+
+                son = Son.objects.create(
+                    titre=track_title[:200],
+                    auteur_voix=auteur_saisi[:150],
+                    categorie=categorie,
+                    lien_audio_externe=secure_url,
+                )
+                created_sons.append({
+                    'id': son.id,
+                    'titre': son.titre,
+                    'auteur': son.auteur_voix or son.get_categorie_display(),
+                    'categorie': son.categorie,
+                    'url': son.lien_audio_externe,
+                })
+
+        # Cas 2 : Lien Telegram (https://t.me/...) ou lien audio direct (.mp3, .m4a, .ogg...)
+        elif lien:
+            target_media_url = lien
+            auto_title = ''
+            auto_author = ''
+
+            if 't.me/' in lien or 'telegram.me/' in lien:
+                extracted_url, ext_title, ext_author = _extract_telegram_audio_info(lien)
+                if not extracted_url:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': (
+                            "Ce post Telegram ne contient pas de flux audio web public direct (fichier > 20 Mo ou canal privé). "
+                            "Téléchargez l'audio dans Telegram puis sélectionnez-le via « Choisir un fichier Audio Telegram » ci-dessus."
+                        )
+                    }, status=400)
+                target_media_url = extracted_url
+                auto_title = ext_title or ''
+                auto_author = ext_author or ''
+
+            # Envoyer le flux distant sur Cloudinary (video/upload) pour une persistance éternelle
+            try:
+                upload_res = cloudinary.uploader.upload(
+                    target_media_url,
+                    resource_type='video',
+                    folder='media/audios/telegram',
+                )
+                final_url = upload_res.get('secure_url') or target_media_url
+            except Exception:
+                final_url = target_media_url
+
+            final_title = titre_saisi or auto_title or "Audio Telegram"
+            final_author = (request.POST.get('auteur_voix') or '').strip() or auto_author or "Kourel / Telegram"
+
+            son = Son.objects.create(
+                titre=final_title[:200],
+                auteur_voix=final_author[:150],
+                categorie=categorie,
+                lien_audio_externe=final_url,
+            )
+            created_sons.append({
+                'id': son.id,
+                'titre': son.titre,
+                'auteur': son.auteur_voix or son.get_categorie_display(),
+                'categorie': son.categorie,
+                'url': son.lien_audio_externe,
+            })
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Veuillez sélectionner un fichier audio Telegram ou coller un lien audio.'
+            }, status=400)
+
+        return JsonResponse({
+            'status': 'success',
+            'count': len(created_sons),
+            'sons': created_sons,
+            'message': f"{len(created_sons)} son(s) ajouté(s) avec succès !"
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f"Erreur lors de l'ajout : {str(e)}"}, status=400)
+
+
+@csrf_exempt
+def api_supprimer_son(request, son_id):
+    """Supprime définitivement un son de l'audiothèque."""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
+    try:
+        deleted, _ = Son.objects.filter(id=son_id).delete()
+        return JsonResponse({'status': 'success', 'deleted': deleted > 0, 'id': son_id})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@csrf_exempt
+def api_modifier_son(request, son_id):
+    """Permet de renommer un son inconnu ou de modifier son auteur / sa catégorie."""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
+    try:
+        data = json.loads(request.body or '{}')
+        son = Son.objects.filter(id=son_id).first()
+        if not son:
+            return JsonResponse({'status': 'error', 'message': 'Son introuvable'}, status=404)
+
+        nouveau_titre = (data.get('titre') or '').strip()
+        nouvel_auteur = (data.get('auteur_voix') or '').strip()
+        nouvelle_cat = (data.get('categorie') or '').strip().upper()
+
+        if nouveau_titre:
+            son.titre = nouveau_titre[:200]
+        if nouvel_auteur:
+            son.auteur_voix = nouvel_auteur[:150]
+        valid_cats = {c[0] for c in Son.CATEGORIES}
+        if nouvelle_cat in valid_cats:
+            son.categorie = nouvelle_cat
+        son.save()
+
+        return JsonResponse({
+            'status': 'success',
+            'son': {
+                'id': son.id,
+                'titre': son.titre,
+                'auteur': son.auteur_voix or son.get_categorie_display(),
+                'categorie': son.categorie,
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+def api_liste_sons_json(request):
+    """Retourne la playlist JSON complète pour le lecteur global persistant."""
+    sons = Son.objects.all().order_by('-date_ajout')
+    playlist = []
+    for s in sons:
+        url = s.lien_audio_externe or (s.fichier_audio.url if s.fichier_audio else '')
+        if not url:
+            continue
+        playlist.append({
+            'id': s.id,
+            'titre': s.titre,
+            'auteur': s.auteur_voix or s.get_categorie_display(),
+            'categorie': s.categorie,
+            'url': url,
+        })
+    return JsonResponse({'status': 'success', 'playlist': playlist})
+
 # --- AUTHENTIFICATION & PROFIL ---
 
 def login_view(request):

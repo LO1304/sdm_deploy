@@ -60,13 +60,20 @@
          1. EN-TÊTE COMPACT + RECHERCHE INSTANTANÉE (SANS PERTE D'ESPACE)
     ══════════════════════════════════════════════════════════════════ -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-2">
             <div class="min-w-0">
                 {% if user.is_authenticated %}
                 <p class="text-[9px] font-extrabold tracking-widest text-gold-500 uppercase">Assalamou Alaykoum · Niveau {{ niveau_spirituel }}</p>
-                <h1 class="text-lg md:text-2xl font-black text-white capitalize truncate">{{ user.username }}</h1>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="text-lg md:text-2xl font-black text-white capitalize truncate">{{ user.username }}</h1>
+                    <!-- Micro-widget très petit à côté du nom affichant le son en cours d'écoute -->
+                    <span class="sdm-name-audio-widget"></span>
+                </div>
                 {% else %}
-                <h1 class="text-lg md:text-2xl font-black text-gradient-gold truncate">SDM Mouride</h1>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="text-lg md:text-2xl font-black text-gradient-gold truncate">SDM Mouride</h1>
+                    <span class="sdm-name-audio-widget"></span>
+                </div>
                 <p class="text-[9px] font-bold tracking-widest text-white/55 uppercase">Sopey Dialibatoul Marakhib</p>
                 {% endif %}
             </div>
