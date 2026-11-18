@@ -1,731 +1,538 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}SDM — Accueil Mouride Premium{% endblock %}
+{% block title %}SDM Mouride — Accueil Organisé{% endblock %}
 
 {% block content %}
     <!-- AUDIO PLAYER (Adhan) -->
     <audio id="adhan-player" preload="auto" crossorigin="anonymous">
-       <source src="{% if config and config.fichier_adhan %}{{ config.fichier_adhan.url }}{% else %}https://archive.org/download/MakkahAzan/Makkah-Azan.mp3{% endif %}" type="audio/mpeg">
+        <source src="{% if config and config.fichier_adhan %}{{ config.fichier_adhan.url }}{% else %}https://archive.org/download/MakkahAzan/Makkah-Azan.mp3{% endif %}" type="audio/mpeg">
     </audio>
 
-    <!-- HEADER MOBILE ORGANISÉ ET LISIBLE SUR TOUS LES ÉCRANS -->
-    <header class="flex justify-between items-center gap-3 mb-6" data-aos="fade-down" data-aos-duration="800">
-        <div class="min-w-0 flex-1">
-            {% if user.is_authenticated %}
-            <p class="text-[10px] md:text-xs font-bold tracking-widest text-gold-500 uppercase mb-0.5">Assalamou Alaykoum</p>
-            <h1 class="text-xl md:text-3xl font-extrabold text-white tracking-tight capitalize truncate">{{ user.username }}</h1>
-            {% else %}
-            <h1 class="text-xl md:text-3xl font-extrabold text-white tracking-tight text-gradient-gold truncate">SDM Mouride</h1>
-            <p class="text-[10px] md:text-xs font-bold tracking-widest text-white/55 uppercase mt-0.5 truncate">Sopey Dialibatoul Marakhib</p>
+    <style>
+        .ph-slot { transition: all 0.25s ease !important; cursor: pointer; }
+        .ph-slot.active {
+            background: rgba(212, 175, 55, 0.2) !important;
+            border-color: rgba(212, 175, 55, 0.55) !important;
+            box-shadow: 0 0 14px rgba(212, 175, 55, 0.25) !important;
+        }
+        .app-launcher-tile {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 10px 4px; border-radius: 18px;
+            background: rgba(12, 34, 25, 0.72);
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            text-decoration: none; transition: all 0.2s ease;
+        }
+        .app-launcher-tile:active { transform: scale(0.94); }
+        .app-launcher-tile:hover { border-color: rgba(212, 175, 55, 0.65); }
+        .tile-icon {
+            width: 40px; height: 40px; border-radius: 13px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px; margin-bottom: 5px;
+        }
+        .tile-title {
+            font-size: 11px; font-weight: 800; color: #FFFFFF;
+            line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+        }
+        .tile-sub {
+            font-size: 9px; font-weight: 600; color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+        }
+        .home-tab-btn {
+            flex: 1; padding: 9px 6px; border-radius: 13px;
+            background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.65); font-size: 11px; font-weight: 800;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+            white-space: nowrap; transition: all 0.2s ease;
+        }
+        .home-tab-btn.active {
+            background: linear-gradient(135deg, #FDE047, #D4AF37);
+            color: #040B08; border-color: transparent;
+            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+        }
+        .home-tab-panel { display: none; }
+        .home-tab-panel.active { display: block; }
+        @keyframes prayerSlideIn { from { opacity:0; transform:translateX(-50%) translateY(-30px) scale(0.92); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
+        @keyframes prayerPulse { 0%,100% { box-shadow:0 0 20px rgba(212,175,55,0.4); } 50% { box-shadow:0 0 35px rgba(212,175,55,0.7); transform:scale(1.05); } }
+    </style>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. EN-TÊTE COMPACT + RECHERCHE INSTANTANÉE (SANS PERTE D'ESPACE)
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
+        <div class="flex items-center justify-between">
+            <div class="min-w-0">
+                {% if user.is_authenticated %}
+                <p class="text-[9px] font-extrabold tracking-widest text-gold-500 uppercase">Assalamou Alaykoum · Niveau {{ niveau_spirituel }}</p>
+                <h1 class="text-lg md:text-2xl font-black text-white capitalize truncate">{{ user.username }}</h1>
+                {% else %}
+                <h1 class="text-lg md:text-2xl font-black text-gradient-gold truncate">SDM Mouride</h1>
+                <p class="text-[9px] font-bold tracking-widest text-white/55 uppercase">Sopey Dialibatoul Marakhib</p>
+                {% endif %}
+            </div>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="sm:hidden px-3 py-1.5 rounded-xl bg-gold-500/20 border border-gold-500/40 text-gold-400 text-[11px] font-extrabold" style="text-decoration:none;">
+                Connexion
+            </a>
             {% endif %}
         </div>
-        <a href="{% url 'profile' %}" class="w-11 h-11 rounded-2xl glass flex items-center justify-center border border-gold-500/30 hover:border-gold-400 transition-colors shadow-lg flex-shrink-0">
-            <i class="fa-solid fa-user text-sm text-gold-400"></i>
-        </a>
-    </header>
 
-    <!-- SEARCH BAR (Floating iOS Style) -->
-    <div class="mb-8 md:mb-12 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100" data-aos-duration="1000">
-        <form action="{% url 'recherche_globale' %}" method="GET" class="relative group">
-            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                <i class="fa-solid fa-magnifying-glass text-white/40 group-focus-within:text-gold-500 transition-colors"></i>
-            </div>
-            <input type="text" name="q" placeholder="Rechercher Khassida, Coran, audio..." 
-                class="w-full glass bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-16 text-sm text-white placeholder-white/40 focus:outline-none focus:bg-white/10 focus:border-gold-500/50 focus:ring-4 focus:ring-gold-500/10 transition-all shadow-glass">
-            <button type="submit" class="absolute inset-y-1.5 right-1.5 bg-gradient-to-r from-gold-400 to-gold-600 text-black text-xs font-bold px-4 rounded-xl hover:scale-105 active:scale-95 transition-transform">
-                GO
+        <form action="{% url 'recherche_globale' %}" method="GET" class="relative flex-1 max-w-md">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gold-400 text-xs pointer-events-none"></i>
+            <input type="text" name="q" placeholder="Rechercher un Khassida, une Sourate, un Audio, un Zikr..."
+                   class="w-full glass bg-white/5 border border-gold-500/30 rounded-xl py-2.5 pl-9 pr-14 text-xs text-white placeholder-white/45 focus:outline-none focus:border-gold-400">
+            <button type="submit" class="absolute right-1.5 top-1/2 -translate-y-1/2 bg-gradient-to-r from-gold-400 to-gold-600 text-black text-[10px] font-black px-3 py-1.5 rounded-lg">
+                OK
             </button>
         </form>
     </div>
 
-    <!-- HERO PRAYER CARD (Masterpiece) -->
-    <style>
-        /* CSS spécifique à l'index conservé ici pour ne pas polluer le global */
-        .hero-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        .ph-slot { transition: all 0.4s cubic-bezier(0.16,1,0.3,1) !important; cursor: pointer; }
-        .ph-slot.active { background: rgba(212,175,55,0.12) !important; border-color: rgba(212,175,55,0.35) !important; box-shadow: 0 0 20px rgba(212,175,55,0.15) !important; transform: translateY(-2px); }
-        .ph-slot:hover:not(.active) { background: rgba(255,255,255,0.08) !important; transform: translateY(-1px); }
-        .text-shadow-glow { filter: drop-shadow(0 0 20px rgba(212,175,55,0.2)); animation: arabicGlow 4s ease-in-out infinite alternate; }
-        @keyframes arabicGlow { from { filter: drop-shadow(0 0 10px rgba(212,175,55,0.1)); } to { filter: drop-shadow(0 0 28px rgba(212,175,55,0.35)); } }
-        .action-btn { transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
-        .action-btn:active { transform: scale(0.93); }
-        .action-btn > div { transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), box-shadow 0.45s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease; }
-        .action-btn:hover > div { transform: translateY(-10px) scale(1.06) !important; box-shadow: 0 18px 40px rgba(212,175,55,0.25), 0 0 0 1px rgba(212,175,55,0.2) !important; border-color: rgba(212,175,55,0.45) !important; }
-        .action-btn i { transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), filter 0.4s; }
-        .action-btn:hover i { transform: scale(1.15); filter: drop-shadow(0 0 10px rgba(212,175,55,0.5)); }
-        .action-btn p { transition: color 0.3s, transform 0.4s; }
-        .action-btn:hover p { color: #f5dc6e !important; transform: translateY(2px); }
-        @keyframes prayerSlideIn { from { opacity:0; transform:translateX(-50%) translateY(-30px) scale(0.92); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
-        @keyframes prayerPulse { 0%,100% { box-shadow:0 0 20px rgba(212,175,55,0.4); } 50% { box-shadow:0 0 35px rgba(212,175,55,0.7); transform:scale(1.05); } }
-        
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. BANDEAU HORAIRES DE PRIÈRE & ADHAN COMPACT (TOUT VISIBLE D'UN COUP D'ŒIL)
+    ══════════════════════════════════════════════════════════════════ -->
+    <section class="relative w-full rounded-2xl overflow-hidden shadow-xl mb-3.5 border border-gold-500/30">
+        <div class="absolute inset-0 z-0 bg-cover bg-center" style="background-image: url('https://www.leral.net/photo/art/grande/89764721-63418109.jpg'); filter: brightness(0.45) contrast(1.1);"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#040B08]/90 via-[#040B08]/75 to-[#040B08]/90 z-0"></div>
 
-    </style>
-
-    <div class="relative w-full rounded-[32px] overflow-hidden shadow-2xl mb-12 md:px-6" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="1200">
-        <!-- Backgrounds -->
-        <div class="absolute inset-0 z-0 bg-cover bg-center" style="background-image: url('https://www.leral.net/photo/art/grande/89764721-63418109.jpg'); filter: brightness(0.8) contrast(1.1);"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-[#040B08] via-[#040B08]/50 to-transparent z-0"></div>
-        <div class="absolute -top-24 -right-24 w-64 h-64 md:w-96 md:h-96 bg-gold-500/20 rounded-full blur-[100px] z-0 mix-blend-screen"></div>
-        
-        <!-- Card Content -->
-        <div class="relative z-10 p-6 md:p-10 border border-white/10 rounded-[32px] bg-black/20 h-full flex flex-col justify-between">
-            
-            <!-- Top Row: Location & Qibla -->
-            <div class="flex justify-between items-start mb-6">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/5">
-                        <i class="fa-solid fa-location-dot text-[10px] text-gold-500"></i>
+        <div class="relative z-10 p-3.5">
+            <!-- Ligne supérieure : Ville + Prochaine prière + Compte à rebours + Boutons Qibla/Adhan -->
+            <div class="flex items-center justify-between gap-2 mb-2.5">
+                <div class="flex items-center gap-2 min-w-0">
+                    <div class="w-7 h-7 rounded-lg bg-gold-500/20 border border-gold-500/40 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-mosque text-[11px] text-gold-400"></i>
                     </div>
-                    <div>
-                        <p class="text-[9px] font-bold tracking-widest text-white/50 uppercase">Position</p>
-                        <p class="text-sm font-semibold text-white/90 truncate max-w-[120px]" id="loc-city">Touba</p>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xs font-extrabold text-white truncate" id="loc-city">Touba</span>
+                            <span class="text-[10px] text-white/45 tabular-nums" id="clock">--:--</span>
+                        </div>
+                        <p class="text-[10px] font-bold text-gold-400">
+                            Prochaine : <span id="next-name" class="font-black text-white">Maghrib</span> dans
+                            <span id="countdown" class="font-black text-gold-300 tabular-nums">--:--</span><span id="countdown-sec" class="text-[9px] text-white/60">--</span>
+                        </p>
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    <!-- Qibla Compas -->
-                    <button onclick="updateQibla()" class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1 active:scale-90 transition-transform hover:bg-white/10">
-                        <i id="compass" class="fa-solid fa-location-arrow text-gold-500 text-sm transition-transform duration-1000" style="transform: rotate(45deg);"></i>
+
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <button type="button" onclick="updateQibla()" title="Direction Qibla"
+                            class="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center">
+                        <i id="compass" class="fa-solid fa-location-arrow text-gold-400 text-xs transition-transform duration-700" style="transform: rotate(45deg);"></i>
                     </button>
-                    <!-- Adhan Toggle -->
-                    <button id="adhan-toggle" onclick="toggleAdhan()" class="w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300">
-                        <i id="adhan-icon" class="fa-solid fa-bell text-sm"></i>
+                    <button type="button" id="adhan-toggle" onclick="toggleAdhan()" title="Activer/Désactiver l'Adhan"
+                            class="w-8 h-8 rounded-xl border flex items-center justify-center">
+                        <i id="adhan-icon" class="fa-solid fa-bell text-xs"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Center: Clock & Next Prayer Countdown -->
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
-                <div>
-                    <p class="text-[10px] md:text-xs font-bold tracking-widest text-gold-500/80 uppercase mb-2">Prochaine prière : <span id="next-name" class="text-gold-500">Maghrib</span></p>
-                    <!-- Countdown massive font -->
-                    <div class="flex items-baseline gap-2">
-                        <p id="countdown" class="text-5xl md:text-7xl font-light tracking-tighter text-white tabular-nums drop-shadow-lg">--:--</p>
-                        <p class="text-lg md:text-2xl font-medium tracking-tight text-white/50 mb-1" id="countdown-sec">--</p>
-                    </div>
+            <!-- Ligne inférieure : Les 5 Prières en 1 rangée compacte -->
+            <div class="grid grid-cols-5 gap-1.5">
+                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/40 border border-white/10" data-prayer="Fajr">
+                    <span class="text-[8px] font-extrabold uppercase text-white/55">Fajr</span>
+                    <span class="text-[11px] font-black text-white tabular-nums slot-time">--:--</span>
                 </div>
-                <div class="text-right flex items-center justify-end">
-                    <i class="fa-regular fa-clock text-white/20 text-3xl mr-4 hidden md:block"></i>
-                    <p id="clock" class="text-xl md:text-4xl font-medium tracking-tight text-white/40 tabular-nums">--:--</p>
+                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/40 border border-white/10" data-prayer="Dhuhr">
+                    <span class="text-[8px] font-extrabold uppercase text-white/55">Dhuhr</span>
+                    <span class="text-[11px] font-black text-white tabular-nums slot-time">--:--</span>
                 </div>
-            </div>
-
-            <!-- Bottom: Prayer Times Slots -->
-            <div class="grid grid-cols-5 gap-2 md:gap-4 w-full">
-                <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Fajr">
-                    <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
-                    <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Fajr</p>
-                    <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
+                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/40 border border-white/10" data-prayer="Asr">
+                    <span class="text-[8px] font-extrabold uppercase text-white/55">Asr</span>
+                    <span class="text-[11px] font-black text-white tabular-nums slot-time">--:--</span>
                 </div>
-                <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Dhuhr">
-                    <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
-                    <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Dhuhr</p>
-                    <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
+                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/40 border border-white/10" data-prayer="Maghrib">
+                    <span class="text-[8px] font-extrabold uppercase text-white/55">Maghrib</span>
+                    <span class="text-[11px] font-black text-white tabular-nums slot-time">--:--</span>
                 </div>
-                <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Asr">
-                    <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
-                    <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Asr</p>
-                    <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
-                </div>
-                <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Maghrib">
-                    <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
-                    <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Magh</p>
-                    <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
-                </div>
-                <div class="ph-slot flex flex-col items-center justify-center py-3 rounded-[18px] bg-white/5 border border-white/5 transition-all duration-300 relative overflow-hidden group" data-prayer="Isha">
-                    <div class="absolute inset-0 bg-gold-500/0 group-[.active]:bg-gold-500/20 transition-colors"></div>
-                    <p class="text-[8px] font-bold uppercase tracking-widest text-white/40 group-[.active]:text-gold-400 mb-1 z-10">Isha</p>
-                    <p class="text-xs font-semibold text-white/80 group-[.active]:text-white z-10 slot-time">--:--</p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- QUIZZ ISLAMIQUE — Widget -->
-    <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="250" data-aos-duration="1000">
-        <div class="relative overflow-hidden rounded-[32px] shadow-2xl border border-emerald-500/30">
-            
-            <!-- Background Image -->
-            <div class="absolute inset-0 z-0">
-                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{% static 'images/mosque_touba.png' %}'); opacity: 0.15;"></div>
-                <div class="absolute inset-0 bg-gradient-to-r from-emerald-900/90 to-teal-900/90"></div>
-            </div>
-            
-            <!-- Content -->
-            <div class="relative z-10 px-6 py-10 md:px-12 md:py-12 flex flex-col md:flex-row items-center justify-between gap-8">
-                <div class="text-left">
-                    <p class="text-xs md:text-sm font-bold tracking-widest text-emerald-400 uppercase mb-2">Nouveau</p>
-                    <h3 class="text-2xl md:text-4xl font-extrabold text-white mb-4">Quizz Islamique</h3>
-                    <p class="text-emerald-100/80 mb-6 max-w-md">Testez vos connaissances, gagnez des points, débloquez des niveaux et défiez vos amis dans des parties endiablées !</p>
-                    <div class="flex gap-4">
-                        <a href="{% url 'quiz_home' %}" class="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full font-bold text-white shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-105 transition-all">
-                            Jouer Maintenant
-                        </a>
-                    </div>
-                </div>
-                <div class="hidden md:block">
-                    <div class="w-32 h-32 rounded-full border-4 border-emerald-500/30 flex items-center justify-center bg-white/5 relative">
-                        <i class="fa-solid fa-trophy text-5xl text-emerald-400"></i>
-                        <!-- floating elements -->
-                        <div class="absolute -top-4 -right-4 w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center animate-bounce">
-                            <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
-                        </div>
-                    </div>
+                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/40 border border-white/10" data-prayer="Isha">
+                    <span class="text-[8px] font-extrabold uppercase text-white/55">Isha</span>
+                    <span class="text-[11px] font-black text-white tabular-nums slot-time">--:--</span>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- TAZAWWUDU-Ç-ÇIGHÂR — Gamification Widget -->
-    <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="255" data-aos-duration="1000">
-        <div class="relative overflow-hidden rounded-[32px] shadow-2xl border border-amber-500/30">
-            <!-- Background Image -->
-            <div class="absolute inset-0 z-0">
-                <div class="absolute inset-0 bg-gradient-to-r from-amber-900/90 to-yellow-900/90"></div>
-            </div>
-            <!-- Content -->
-            <div class="relative z-10 px-6 py-10 md:px-12 md:py-12 flex flex-col md:flex-row items-center justify-between gap-8">
-                <div class="text-left">
-                    <p class="text-xs md:text-sm font-bold tracking-widest text-amber-400 uppercase mb-2">Apprentissage Interactif</p>
-                    <h3 class="text-2xl md:text-4xl font-extrabold text-white mb-4">Tazawwudu-ç-Çighâr<br><span class="text-lg md:text-xl font-normal text-amber-200/80">Le Viatique des Adolescents</span></h3>
-                    <p class="text-amber-100/80 mb-6 max-w-md">Parcourez le livre de Cheikh Ahmadou Bamba étape par étape. Lisez, comprenez, et testez vos connaissances dans un parcours guidé.</p>
-                    <div class="flex gap-4">
-                        <a href="{% url 'tazawwud_home' %}" class="px-8 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full font-bold text-black shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:scale-105 transition-all">
-                            Commencer le Parcours <i class="fa-solid fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="hidden md:block">
-                    <div class="w-32 h-32 rounded-full border-4 border-amber-500/30 flex items-center justify-center bg-white/5 relative">
-                        <i class="fa-solid fa-book-open text-5xl text-amber-400"></i>
-                        <div class="absolute -top-4 -right-4 w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center animate-bounce">
-                            <i class="fa-solid fa-graduation-cap text-emerald-400 text-sm"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </section>
 
-    <!-- ACTION CARDS (Don & Abonnement) -->
-    <div class="mb-12 max-w-4xl mx-auto grid grid-cols-2 gap-3 md:gap-6" data-aos="fade-up" data-aos-delay="260" data-aos-duration="1000">
-        <!-- Don Card -->
-        <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/" target="_blank" class="block glass rounded-[24px] p-4 md:p-6 border border-[#11d0fa]/20 bg-[#11d0fa]/5 hover:bg-[#11d0fa]/10 hover:border-[#11d0fa]/40 transition-all group relative overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-br from-[#11d0fa]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="flex items-center gap-3 md:gap-4 mb-1 md:mb-3">
-                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white flex items-center justify-center flex-shrink-0 p-1 border border-[#11d0fa]/20 shadow-inner">
-                    <img src="{% static 'images/wave_logo.png' %}" alt="Wave" class="w-full h-auto object-contain drop-shadow-sm">
-                </div>
-                <div>
-                    <h3 class="text-[11px] md:text-sm font-bold text-[#11d0fa]">Faire un don</h3>
-                    <p class="text-[9px] md:text-[11px] text-[#11d0fa]/60 uppercase tracking-wider font-semibold">Via Wave</p>
-                </div>
-            </div>
-            <p class="text-[10px] md:text-xs text-white/50 leading-relaxed hidden md:block">
-                Votre contribution aide à maintenir cette plateforme au service de la communauté.
-            </p>
-        </a>
-
-        <!-- Abonnement Card -->
-        <a href="{% url 'abonnement' %}" class="block glass rounded-[24px] p-4 md:p-6 border border-gold-500/20 bg-gold-500/5 hover:bg-gold-500/10 hover:border-gold-500/40 transition-all group relative overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-br from-gold-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="flex items-center gap-3 md:gap-4 mb-1 md:mb-3">
-                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-gold-600/30 to-gold-400/10 flex items-center justify-center flex-shrink-0">
-                    <span class="text-lg md:text-xl">👑</span>
-                </div>
-                <div>
-                    <h3 class="text-[11px] md:text-sm font-bold text-gold-400">Premium</h3>
-                    <p class="text-[9px] md:text-[11px] text-gold-400/60 uppercase tracking-wider font-semibold">S'abonner</p>
-                </div>
-            </div>
-            <p class="text-[10px] md:text-xs text-white/50 leading-relaxed hidden md:block">
-                Débloquez tout le contenu exclusif et profitez d'une expérience sans limites.
-            </p>
-        </a>
-    </div>
-
-    <!-- MON QUOTIDIEN (Zikr, Wird, Niveau) -->
-    <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="280" data-aos-duration="1000">
-        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-4 ml-1 flex items-center gap-2">
-            <i class="fa-solid fa-sun text-gold-500 text-[10px] md:text-xs"></i> Mon Quotidien
-        </h2>
-        
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
-            
-            <!-- Wird Widget -->
-            {% if wird_mahuz %}
-                <a href="{% if wird_en_cours %}{% url 'lire_wird' wird_en_cours.wird.slug %}{% else %}{% url 'lire_wird' wird_mahuz.slug %}{% endif %}" class="block glass rounded-[24px] p-4 flex flex-col justify-between border border-white/5 hover:border-gold-500/30 transition-all group">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/80 group-hover:text-gold-500 transition-colors">
-                            <i class="fa-solid fa-braille"></i>
-                        </div>
-                        <i class="fa-solid fa-arrow-right text-white/20 group-hover:text-gold-500 text-sm transition-transform group-hover:translate-x-1"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] uppercase tracking-widest text-white/40 mb-1">{% if wird_en_cours %}En cours{% else %}À faire{% endif %}</p>
-                        <p class="font-semibold text-white/90 text-sm truncate">Wird Mahuz</p>
-                    </div>
-                </a>
-            {% else %}
-                <a href="{% url 'liste' 'wird' %}" class="block glass rounded-[24px] p-4 flex flex-col justify-between border border-white/5 hover:border-gold-500/30 transition-all group">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/80 group-hover:text-gold-500 transition-colors">
-                            <i class="fa-solid fa-braille"></i>
-                        </div>
-                        <i class="fa-solid fa-arrow-right text-white/20 group-hover:text-gold-500 text-sm transition-transform group-hover:translate-x-1"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] uppercase tracking-widest text-white/40 mb-1">Quotidien</p>
-                        <p class="font-semibold text-white/90 text-sm">Mes Wirds</p>
-                    </div>
-                </a>
-            {% endif %}
-
-            <!-- Zikr Widget -->
-            <a href="{% url 'zikr_compteur_default' %}" class="block glass rounded-[24px] p-4 flex flex-col justify-between border border-white/5 hover:border-gold-500/30 transition-all group relative overflow-hidden">
-                <!-- Background glow effect -->
-                <div class="absolute -top-10 -right-10 w-24 h-24 bg-gold-500/10 rounded-full blur-xl group-hover:bg-gold-500/20 transition-all"></div>
-                
-                <div class="flex items-center justify-between mb-3 relative z-10">
-                    <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/80 group-hover:text-gold-500 transition-colors">
-                        <i class="fa-solid fa-fingerprint"></i>
-                    </div>
-                    <i class="fa-solid fa-plus text-white/20 group-hover:text-gold-500 text-sm"></i>
-                </div>
-                <div class="relative z-10">
-                    <p class="text-[10px] uppercase tracking-widest text-white/40 mb-1">Total Salats</p>
-                    <p class="font-bold text-white/90 text-lg tabular-nums">{{ total_zikr_user }}</p>
-                </div>
-            </a>
-
-            <!-- Progression Spirituelle Widget -->
-            <div class="col-span-2 md:col-span-1 block glass rounded-[24px] p-4 flex flex-col justify-between border border-gold-500/20 relative overflow-hidden group">
-                <div class="absolute inset-0 bg-gold-500/5 group-hover:bg-gold-500/10 transition-colors"></div>
-                <div class="flex items-center justify-between mb-3 relative z-10">
-                    <div class="w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center text-gold-500 border border-gold-500/30">
-                        <i class="fa-solid fa-ranking-star"></i>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[10px] uppercase tracking-widest text-gold-500/70">Niveau</p>
-                        <p class="font-bold text-gold-500">{{ niveau_spirituel }}</p>
-                    </div>
-                </div>
-                <div class="relative z-10 mt-2">
-                    <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                        <!-- Barre de progression fictive qui boucle visuellement -->
-                        <div class="h-full bg-gradient-to-r from-gold-600 to-gold-400 w-[65%] rounded-full shadow-[0_0_10px_rgba(212,175,55,0.5)]"></div>
-                    </div>
-                    <p class="text-[9px] text-white/40 mt-2 text-right">Basé sur {{ total_ecoutes }} activités</p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- CONTINUE READING (If exists) - Apple Widget Style -->
-    {% if derniere_lecture %}
-    <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="300" data-aos-duration="1000">
-        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-3 md:mb-5 ml-1 flex items-center gap-2">
-            <i class="fa-solid fa-book-open text-gold-500 text-[10px] md:text-xs"></i> Reprendre
-        </h2>
-        <a href="{% url 'lire_pdf' derniere_lecture.categorie derniere_lecture.obj.id %}" class="block glass rounded-3xl p-4 md:p-6 flex items-center justify-between group hover:border-gold-500/30 transition-all">
-            <div class="flex items-center gap-4 md:gap-6 overflow-hidden">
-                <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-gold-400/20 to-gold-600/5 flex flex-shrink-0 items-center justify-center border border-gold-500/20">
-                    <i class="fa-solid fa-book-quran text-gold-500 text-lg md:text-2xl group-hover:scale-110 transition-transform"></i>
-                </div>
-                <div class="overflow-hidden">
-                    <p class="text-[10px] md:text-xs uppercase font-bold text-gold-500 tracking-widest mb-1 md:mb-2">LECTURE EN COURS</p>
-                    <p class="text-sm md:text-xl font-semibold text-white/90 truncate w-[180px] md:w-[400px]">{{ derniere_lecture.obj.titre }}{% if derniere_lecture.obj.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</p>
-                </div>
-            </div>
-            <div class="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-black transition-colors flex-shrink-0">
-                <i class="fa-solid fa-play text-[10px] md:text-sm ml-0.5 md:ml-1"></i>
-            </div>
-        </a>
-    </div>
-    {% endif %}
-
-    <!-- DERNIER SON ECOUTE (If exists) -->
-    {% if dernier_son %}
-    <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="350" data-aos-duration="1000">
-        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-3 md:mb-5 ml-1 flex items-center gap-2">
-            <i class="fa-solid fa-headphones text-gold-500 text-[10px] md:text-xs"></i> Dernière Écoute
-        </h2>
-        <a href="{% url 'liste_sons' %}" class="block glass rounded-3xl p-4 md:p-6 flex items-center justify-between group hover:border-gold-500/30 transition-all">
-            <div class="flex items-center gap-4 md:gap-6 overflow-hidden">
-                <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-[#10B981]/10 to-[#040B08] flex flex-shrink-0 items-center justify-center border border-[#10B981]/20">
-                    <i class="fa-solid fa-music text-[#10B981] text-lg md:text-2xl group-hover:scale-110 transition-transform"></i>
-                </div>
-                <div class="overflow-hidden">
-                    <p class="text-[10px] md:text-xs uppercase font-bold text-[#10B981] tracking-widest mb-1 md:mb-2">SON EN COURS</p>
-                    <p class="text-sm md:text-xl font-semibold text-white/90 truncate w-[180px] md:w-[400px]">{{ dernier_son.titre }}{% if dernier_son.est_premium %} <span style="color:#d4af37;font-size:0.75em;" title="Contenu Premium">👑</span>{% endif %}</p>
-                    <p class="text-[9px] md:text-[10px] text-white/50 uppercase tracking-widest truncate mt-0.5">{{ dernier_son.auteur_voix|default:dernier_son.get_categorie_display }}</p>
-                </div>
-            </div>
-            <div class="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#10B981] group-hover:text-black transition-colors flex-shrink-0">
-                <i class="fa-solid fa-play text-[10px] md:text-sm ml-0.5 md:ml-1"></i>
-            </div>
-        </a>
-    </div>
-    {% endif %}
-
-    <!-- GALERIE DES PREMIÈRES PAGES DES KHASSIDAS (MINIATURES MANUSCRITS) -->
-    {% if recents %}
-    <div class="mb-12" data-aos="fade-up" data-aos-delay="380" data-aos-duration="900">
-        <div class="flex items-center justify-between mb-4 px-1">
-            <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/60 uppercase flex items-center gap-2">
-                <i class="fa-solid fa-scroll text-gold-500 text-[10px] md:text-xs"></i> Khassidas · Premières Pages
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. TABLEAU DE BORD « TOUTES LES RUBRIQUES » (12 ICÔNES EN HAUT — 0 SCROLL !)
+    ══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-4">
+        <div class="flex items-center justify-between mb-2 px-1">
+            <h2 class="text-[10px] font-extrabold tracking-widest text-gold-400 uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-table-cells"></i> Accès Direct — Toutes les Rubriques
             </h2>
-            <a href="{% url 'liste' 'khassida' %}" class="text-xs font-extrabold text-gold-400 hover:underline flex items-center gap-1">
-                <span>Voir les {{ total_khassidas }} Khassidas</span>
-                <i class="fa-solid fa-arrow-right text-[10px]"></i>
-            </a>
+            <span class="text-[10px] text-white/50 font-semibold">Touchez pour ouvrir</span>
         </div>
 
-        <div class="flex gap-3.5 overflow-x-auto pb-3 no-scrollbar">
-            {% for k in recents %}
-            <div class="flex-shrink-0 w-36 md:w-44 glass mihrab-card rounded-2xl p-2.5 border border-gold-500/25 hover:border-gold-400 transition-all group relative">
-                <a href="{% url 'lire_pdf' 'khassida' k.id %}" class="block">
-                    <div class="khassida-page1-thumb w-full aspect-[3/4] rounded-xl p-2.5 mb-2 group-hover:scale-[1.02] transition-transform relative overflow-hidden">
-                        <span class="font-arabic text-[10px] font-bold text-amber-900">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</span>
-                        <div class="border-y border-amber-900/25 py-1.5 px-1 w-full">
-                            <p class="font-arabic text-xs font-bold text-amber-950 line-clamp-3 leading-snug">{{ k.titre }}</p>
+        <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+            <!-- 1. Khassidas -->
+            <a href="{% url 'liste' 'khassida' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-amber-500/20 text-amber-400 border border-amber-500/35">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <span class="tile-title">Khassidas</span>
+                <span class="tile-sub">{{ total_khassidas }} PDF</span>
+            </a>
+
+            <!-- 2. Noble Coran (4 Langues & 6 Récitants) -->
+            <a href="{% url 'coran_interactif' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-emerald-500/20 text-emerald-400 border border-emerald-500/35">
+                    <i class="fa-solid fa-book-quran"></i>
+                </div>
+                <span class="tile-title">Saint Coran</span>
+                <span class="tile-sub">4 Langues & Audio</span>
+            </a>
+
+            <!-- 3. Zikr & Chapelet -->
+            <a href="{% url 'zikr_compteur_default' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-yellow-500/20 text-yellow-300 border border-yellow-500/35">
+                    <i class="fa-solid fa-fingerprint"></i>
+                </div>
+                <span class="tile-title">Zikr & Objectifs</span>
+                <span class="tile-sub">Chapelet Digital</span>
+            </a>
+
+            <!-- 4. Audios & Kourels -->
+            <a href="{% url 'liste_sons' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-teal-500/20 text-teal-300 border border-teal-500/35">
+                    <i class="fa-solid fa-headphones"></i>
+                </div>
+                <span class="tile-title">Audiothèque</span>
+                <span class="tile-sub">105 Récitals</span>
+            </a>
+
+            <!-- 5. Tazawwudu-ç-Çighâr -->
+            <a href="{% url 'tazawwud_home' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-amber-600/25 text-amber-300 border border-amber-400/40">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <span class="tile-title">Tazawwud</span>
+                <span class="tile-sub">31 Leçons</span>
+            </a>
+
+            <!-- 6. Quizz Islamique -->
+            <a href="{% url 'quiz_home' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-emerald-600/25 text-emerald-300 border border-emerald-400/40">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <span class="tile-title">Quizz</span>
+                <span class="tile-sub">Défis & Niveaux</span>
+            </a>
+
+            <!-- 7. Zikr Communautaire -->
+            <a href="{% url 'zikr_communaute_list' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-purple-500/20 text-purple-300 border border-purple-500/35">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <span class="tile-title">Communauté</span>
+                <span class="tile-sub">Zikr Collectif</span>
+            </a>
+
+            <!-- 8. Kaamil Bi -->
+            <a href="{% url 'kaamil_list' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-sky-500/20 text-sky-300 border border-sky-500/35">
+                    <i class="fa-solid fa-kaaba"></i>
+                </div>
+                <span class="tile-title">Kaamil Bi</span>
+                <span class="tile-sub">Khatm en Groupe</span>
+            </a>
+
+            <!-- 9. Mes Wirds -->
+            <a href="{% url 'liste' 'wird' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-indigo-500/20 text-indigo-300 border border-indigo-500/35">
+                    <i class="fa-solid fa-hands-praying"></i>
+                </div>
+                <span class="tile-title">Wirds</span>
+                <span class="tile-sub">Pratiques</span>
+            </a>
+
+            <!-- 10. Coffre Hors-Ligne -->
+            <a href="{% url 'telechargements' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-emerald-500/20 text-emerald-300 border border-emerald-500/35">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
+                <span class="tile-title">Hors-Ligne</span>
+                <span class="tile-sub">Dans l'App</span>
+            </a>
+
+            <!-- 11. Historique & Stats -->
+            <a href="{% url 'voir_historique' %}" class="app-launcher-tile">
+                <div class="tile-icon bg-rose-500/20 text-rose-300 border border-rose-500/35">
+                    <i class="fa-solid fa-chart-simple"></i>
+                </div>
+                <span class="tile-title">Historique</span>
+                <span class="tile-sub">{{ total_zikr_user }} grains</span>
+            </a>
+
+            <!-- 12. Télécharger l'App / Premium -->
+            <a href="javascript:void(0)" onclick="switchHomeTab('app')" class="app-launcher-tile">
+                <div class="tile-icon bg-gold-500/20 text-gold-400 border border-gold-500/40">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                </div>
+                <span class="tile-title">App Mobile</span>
+                <span class="tile-sub">APK & iPhone</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         4. BARRE DE 4 ONGLETS THÉMATIQUES (ZÉRO SCROLL INTERMINABLE)
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="flex gap-1.5 overflow-x-auto pb-1 mb-3.5 no-scrollbar">
+        <button type="button" class="home-tab-btn active" data-htab="essentiel" onclick="switchHomeTab('essentiel')">
+            <i class="fa-solid fa-scroll"></i>
+            <span>1res Pages & Parcours</span>
+        </button>
+        <button type="button" class="home-tab-btn" data-htab="zikr" onclick="switchHomeTab('zikr')">
+            <i class="fa-solid fa-fingerprint"></i>
+            <span>Mon Zikr & Quotidien</span>
+        </button>
+        <button type="button" class="home-tab-btn" data-htab="spirit" onclick="switchHomeTab('spirit')">
+            <i class="fa-solid fa-moon"></i>
+            <span>Verset & Beuyitt</span>
+        </button>
+        <button type="button" class="home-tab-btn" data-htab="app" onclick="switchHomeTab('app')">
+            <i class="fa-solid fa-download"></i>
+            <span>App APK / iOS & Don</span>
+        </button>
+    </div>
+
+    <!-- ─── ONGLET 1 : PREMIÈRES PAGES DES KHASSIDAS & PARCOURS INTERACTIFS ─── -->
+    <div id="htab-panel-essentiel" class="home-tab-panel active space-y-4">
+
+        <!-- Reprendre lecture / écoute si existant -->
+        {% if derniere_lecture or dernier_son %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {% if derniere_lecture %}
+            <a href="{% url 'lire_pdf' derniere_lecture.categorie derniere_lecture.obj.id %}" class="glass rounded-2xl p-3.5 flex items-center justify-between border border-gold-500/30" style="text-decoration:none;">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-xl bg-gold-500/20 text-gold-400 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="text-[9px] font-extrabold uppercase text-gold-400 block">Reprendre la lecture</span>
+                        <span class="text-xs font-extrabold text-white truncate block">{{ derniere_lecture.obj.titre }}</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-play text-xs text-gold-400 ml-2"></i>
+            </a>
+            {% endif %}
+            {% if dernier_son %}
+            <a href="{% url 'liste_sons' %}" class="glass rounded-2xl p-3.5 flex items-center justify-between border border-emerald-500/30" style="text-decoration:none;">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-music"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="text-[9px] font-extrabold uppercase text-emerald-400 block">Dernière écoute</span>
+                        <span class="text-xs font-extrabold text-white truncate block">{{ dernier_son.titre }}</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-play text-xs text-emerald-400 ml-2"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Carrousel des Premières Pages des Khassidas -->
+        {% if recents %}
+        <div class="glass rounded-2xl p-3.5 border border-gold-500/25">
+            <div class="flex items-center justify-between mb-2.5">
+                <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-gold-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-scroll"></i> Khassidas · Premières Pages
+                </h3>
+                <a href="{% url 'liste' 'khassida' %}" class="text-[11px] font-extrabold text-emerald-300 flex items-center gap-1" style="text-decoration:none;">
+                    <span>Voir les {{ total_khassidas }}</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
+            </div>
+            <div class="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
+                {% for k in recents %}
+                <a href="{% url 'lire_pdf' 'khassida' k.id %}" class="flex-shrink-0 w-32 glass rounded-xl p-2 border border-gold-500/25 hover:border-gold-400 transition-all group" style="text-decoration:none;">
+                    <div class="khassida-page1-thumb w-full aspect-[3/4] rounded-lg p-2 mb-1.5 relative overflow-hidden">
+                        <span class="font-arabic text-[9px] font-bold text-amber-900">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</span>
+                        <div class="border-y border-amber-900/25 py-1 px-1 w-full">
+                            <p class="font-arabic text-[11px] font-bold text-amber-950 line-clamp-3 leading-snug">{{ k.titre }}</p>
                         </div>
-                        <span class="text-[8px] font-extrabold uppercase tracking-wider bg-amber-900/15 text-amber-900 px-2 py-0.5 rounded-full">
-                            1re Page · PDF
-                        </span>
-                        <!-- Image réelle de la 1re page du PDF -->
+                        <span class="text-[7px] font-extrabold uppercase bg-amber-900/15 text-amber-900 px-1.5 py-0.5 rounded-full">1re Page</span>
                         <img src="{% url 'thumb_pdf' 'khassida' k.id %}"
                              alt="1re page de {{ k.titre }}"
                              loading="lazy"
                              decoding="async"
-                             class="absolute inset-0 w-full h-full object-cover object-top rounded-xl z-10 transition-opacity duration-300 opacity-0"
+                             class="absolute inset-0 w-full h-full object-cover object-top rounded-lg z-10 transition-opacity duration-300 opacity-0"
                              onload="this.style.opacity='1'"
                              onerror="this.remove()">
                     </div>
-                    <p class="text-xs font-bold text-white truncate group-hover:text-gold-400 transition-colors">{{ k.titre }}</p>
-                    <p class="text-[10px] text-white/50 truncate mt-0.5">Cheikh Ahmadou Bamba</p>
+                    <p class="text-[11px] font-bold text-white truncate">{{ k.titre }}</p>
                 </a>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
 
-    <!-- EXPLORER GRID (Mouride Features) -->
-    <div class="mb-12" data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
-        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-5 ml-1 flex items-center gap-2">
-            <i class="fa-solid fa-compass text-gold-500 text-[10px] md:text-xs"></i> Explorer
-        </h2>
-        <!-- Grid 2 colonnes — Cartes Widget Modernes -->
-        <div class="grid grid-cols-2 gap-3 md:gap-4">
-
-            <!-- YOUTUBE -->
-            <a href="https://www.youtube.com/@SopeyDialibatoulMarakhib" target="_blank" class="block glass rounded-[24px] p-3 md:p-4 flex items-center gap-3 border border-white/5 hover:border-red-500/30 active:scale-95 transition-all group relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-12 h-12 rounded-[16px] bg-red-600/10 border border-red-600/20 flex flex-shrink-0 items-center justify-center text-red-500 group-hover:scale-110 transition-all relative">
-                    <i class="fa-brands fa-youtube text-xl"></i>
-                    <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
-                    </span>
+        <!-- Tazawwudu-ç-Çighâr & Quizz Islamique côte à côte -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <a href="{% url 'tazawwud_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-amber-900/80 to-yellow-900/70 border border-amber-400/40 flex items-center justify-between gap-3" style="text-decoration:none;">
+                <div>
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-300 block">5 Grandes Étapes · 31 Leçons</span>
+                    <h3 class="text-base font-black text-white mt-0.5">Tazawwudu-ç-Çighâr</h3>
+                    <p class="text-[11px] text-amber-100/80 mt-1">Apprentissage guidé, audio & révisions certifiantes</p>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-bold text-white/90 text-[13px] md:text-sm truncate">YouTube</p>
-                    <p class="text-[9px] md:text-[10px] text-white/40 truncate">Vidéos SDM</p>
+                <div class="w-11 h-11 rounded-2xl bg-amber-400 text-black flex items-center justify-center flex-shrink-0 font-black">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
                 </div>
             </a>
 
-            <!-- KHASSIDA -->
-            <a href="{% url 'liste' 'khassida' %}" class="block glass rounded-[24px] p-3 md:p-4 flex items-center gap-3 border border-white/5 hover:border-gold-500/30 active:scale-95 transition-all group relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-gold-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-12 h-12 rounded-[16px] bg-white/5 flex flex-shrink-0 items-center justify-center text-gold-500 group-hover:scale-110 transition-all">
-                    <i class="fa-solid fa-book-open text-xl"></i>
+            <a href="{% url 'quiz_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-emerald-900/80 to-teal-900/70 border border-emerald-400/40 flex items-center justify-between gap-3" style="text-decoration:none;">
+                <div>
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 block">Culture & Défis</span>
+                    <h3 class="text-base font-black text-white mt-0.5">Quizz Islamique</h3>
+                    <p class="text-[11px] text-emerald-100/80 mt-1">Testez vos connaissances et défiez vos compagnons</p>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-bold text-white/90 text-[13px] md:text-sm truncate">Khassida</p>
-                    <p class="text-[9px] md:text-[10px] text-white/40 truncate">Poèmes sacrés</p>
-                </div>
-            </a>
-
-            <!-- CORAN -->
-            <a href="{% url 'liste' 'coran' %}" class="block glass rounded-[24px] p-3 md:p-4 flex items-center gap-3 border border-white/5 hover:border-gold-500/30 active:scale-95 transition-all group relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-gold-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-12 h-12 rounded-[16px] bg-white/5 flex flex-shrink-0 items-center justify-center text-white/90 group-hover:text-gold-500 group-hover:scale-110 transition-all">
-                    <i class="fa-solid fa-quran text-xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-bold text-white/90 text-[13px] md:text-sm truncate">Coran</p>
-                    <p class="text-[9px] md:text-[10px] text-white/40 truncate">Livre Saint</p>
+                <div class="w-11 h-11 rounded-2xl bg-emerald-400 text-black flex items-center justify-center flex-shrink-0 font-black">
+                    <i class="fa-solid fa-trophy text-lg"></i>
                 </div>
             </a>
-
-            <!-- ZIKR -->
-            <a href="{% url 'zikr_compteur_default' %}" class="block glass rounded-[24px] p-3 md:p-4 flex items-center gap-3 border border-white/5 hover:border-gold-500/30 active:scale-95 transition-all group relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-gold-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-12 h-12 rounded-[16px] bg-white/5 flex flex-shrink-0 items-center justify-center text-gold-500 group-hover:scale-110 transition-all">
-                    <i class="fa-solid fa-fingerprint text-xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-bold text-white/90 text-[13px] md:text-sm truncate">Zikr</p>
-                    <p class="text-[9px] md:text-[10px] text-white/40 truncate">Chapelet digital</p>
-                </div>
-            </a>
-
-            <!-- WIRD -->
-            <a href="{% url 'liste' 'wird' %}" class="block glass rounded-[24px] p-3 md:p-4 flex items-center gap-3 border border-white/5 hover:border-gold-500/30 active:scale-95 transition-all group relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-gold-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-12 h-12 rounded-[16px] bg-white/5 flex flex-shrink-0 items-center justify-center text-white/90 group-hover:text-gold-500 group-hover:scale-110 transition-all">
-                    <i class="fa-solid fa-braille text-xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-bold text-white/90 text-[13px] md:text-sm truncate">Wird</p>
-                    <p class="text-[9px] md:text-[10px] text-white/40 truncate">Pratiques</p>
-                </div>
-            </a>
-
-            <!-- AUDIO -->
-            <a href="{% url 'liste_sons' %}" class="block glass rounded-[24px] p-3 md:p-4 flex items-center gap-3 border border-white/5 hover:border-gold-500/30 active:scale-95 transition-all group relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-gold-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-12 h-12 rounded-[16px] bg-white/5 flex flex-shrink-0 items-center justify-center text-gold-500 group-hover:scale-110 transition-all">
-                    <i class="fa-solid fa-headphones text-xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-bold text-white/90 text-[13px] md:text-sm truncate">Audio</p>
-                    <p class="text-[9px] md:text-[10px] text-white/40 truncate">Écoutes</p>
-                </div>
-            </a>
-
-            <!-- KHASSIDA PDF -->
-            <a href="{% url 'khassida_external' %}" class="block glass rounded-[24px] p-3 md:p-4 flex items-center gap-3 border border-emerald-500/20 hover:border-emerald-500/40 active:scale-95 transition-all group relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-12 h-12 rounded-[16px] bg-emerald-500/10 flex flex-shrink-0 items-center justify-center text-emerald-400 group-hover:scale-110 transition-all">
-                    <i class="fa-solid fa-globe text-xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-bold text-emerald-400/90 text-[13px] md:text-sm truncate">PDF Web</p>
-                    <p class="text-[9px] md:text-[10px] text-white/40 truncate">Ressources</p>
-                </div>
-            </a>
-
-            <!-- COMMUNAUTÉ ZIKR -->
-            <a href="{% url 'zikr_communaute_list' %}" class="block glass rounded-[24px] p-3 md:p-4 flex items-center gap-3 border border-violet-500/20 hover:border-violet-500/40 active:scale-95 transition-all group relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-12 h-12 rounded-[16px] bg-violet-500/10 flex flex-shrink-0 items-center justify-center text-violet-400 group-hover:scale-110 transition-all">
-                    <i class="fa-solid fa-users text-xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-bold text-violet-400/90 text-[13px] md:text-sm truncate">Communauté</p>
-                    <p class="text-[9px] md:text-[10px] text-white/40 truncate">Zikr Ensemble</p>
-                </div>
-            </a>
-
-            <!-- KAAMIL BI -->
-            <a href="{% url 'kaamil_list' %}" class="block glass rounded-[24px] p-3 md:p-4 flex items-center gap-3 border border-[#d4af37]/20 hover:border-[#d4af37]/40 active:scale-95 transition-all group relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-[#d4af37]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-12 h-12 rounded-[16px] bg-[#d4af37]/10 flex flex-shrink-0 items-center justify-center text-[#d4af37] group-hover:scale-110 transition-all">
-                    <i class="fa-solid fa-book-quran text-xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-bold text-[#d4af37]/90 text-[13px] md:text-sm truncate">KAAMIL BI</p>
-                    <p class="text-[9px] md:text-[10px] text-white/40 truncate">Khatm en Groupe</p>
-                </div>
-            </a>
-
         </div>
     </div>
 
-    <!-- DAILY SPIRITUALITY (Verset + Rappel Stack or Grid) -->
-    <div class="mb-14" data-aos="fade-up" data-aos-delay="500" data-aos-duration="1000">
-        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-5 ml-1 flex items-center gap-2">
-            <i class="fa-solid fa-moon text-gold-500 text-[10px] md:text-xs"></i> Spiritualité Quotidienne
-        </h2>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-            <!-- Verse Card (Gorgeous Arabic Typography) -->
-            <div class="glass-gold rounded-[28px] p-6 md:p-10 relative overflow-hidden lg:col-span-2 flex flex-col justify-center">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-gold-400/20 blur-3xl rounded-full"></div>
-                <!-- Mini icon top left -->
-                <div class="w-8 h-8 rounded-full bg-black/20 border border-gold-500/20 flex items-center justify-center mb-5">
-                    <i class="fa-solid fa-quote-left text-xs text-gold-400"></i>
+    <!-- ─── ONGLET 2 : MON ZIKR, WIRD & KAAMIL BI ─── -->
+    <div id="htab-panel-zikr" class="home-tab-panel space-y-3">
+        <div class="grid grid-cols-3 gap-2.5">
+            <a href="{% url 'zikr_compteur_default' %}" class="glass rounded-2xl p-3.5 border border-gold-500/35 text-center" style="text-decoration:none;">
+                <i class="fa-solid fa-fingerprint text-xl text-gold-400 mb-1 block"></i>
+                <span class="text-lg font-black text-white block tabular-nums">{{ total_zikr_user }}</span>
+                <span class="text-[10px] text-white/60 font-bold">Total Grains</span>
+            </a>
+            <a href="{% if wird_mahuz %}{% url 'lire_wird' wird_mahuz.slug %}{% else %}{% url 'liste' 'wird' %}{% endif %}" class="glass rounded-2xl p-3.5 border border-emerald-500/35 text-center" style="text-decoration:none;">
+                <i class="fa-solid fa-hands-praying text-xl text-emerald-400 mb-1 block"></i>
+                <span class="text-xs font-black text-white block mt-1">Wird Quotidien</span>
+                <span class="text-[10px] text-emerald-300 font-bold">Ouvrir</span>
+            </a>
+            <a href="{% url 'voir_historique' %}" class="glass rounded-2xl p-3.5 border border-white/15 text-center" style="text-decoration:none;">
+                <i class="fa-solid fa-ranking-star text-xl text-amber-400 mb-1 block"></i>
+                <span class="text-lg font-black text-gold-400 block">Niv. {{ niveau_spirituel }}</span>
+                <span class="text-[10px] text-white/60 font-bold">Mon Historique</span>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <a href="{% url 'zikr_compteur_default' %}" class="glass rounded-2xl p-4 border border-gold-500/40 flex items-center justify-between" style="text-decoration:none;">
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase text-gold-400 block">Chapelet Personnel</span>
+                    <h4 class="text-sm font-black text-white">Créer un Zikr & Objectif</h4>
+                    <p class="text-[11px] text-white/60">Comptez et enregistrez vos séances à tout moment</p>
                 </div>
-                
-                {% if contenu.verset.arabe %}
-                <div class="text-center font-arabic text-3xl md:text-5xl text-white leading-loose md:leading-relaxed text-shadow-glow py-2 px-2" dir="rtl">
-                    {{ contenu.verset.arabe }}
+                <i class="fa-solid fa-chevron-right text-gold-400"></i>
+            </a>
+            <a href="{% url 'zikr_communaute_list' %}" class="glass rounded-2xl p-4 border border-emerald-500/40 flex items-center justify-between" style="text-decoration:none;">
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase text-emerald-400 block">Zikr en Communauté</span>
+                    <h4 class="text-sm font-black text-white">Sessions Collectives</h4>
+                    <p class="text-[11px] text-white/60">Participez aux objectifs communs avec classement</p>
                 </div>
+                <i class="fa-solid fa-chevron-right text-emerald-400"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- ─── ONGLET 3 : SPIRITUALITÉ DU JOUR (VERSET, HADITH, BEUYITT) ─── -->
+    <div id="htab-panel-spirit" class="home-tab-panel space-y-3">
+        <div class="glass-gold rounded-2xl p-5 border border-gold-500/35 text-center">
+            <span class="px-3 py-1 rounded-full bg-gold-500/20 text-gold-400 text-[10px] font-extrabold uppercase tracking-wider inline-block mb-3">
+                ۞ Verset du Jour
+            </span>
+            {% if contenu.verset.arabe %}
+            <div class="font-arabic text-2xl md:text-4xl text-white leading-loose py-1" dir="rtl">
+                {{ contenu.verset.arabe }}
+            </div>
+            {% endif %}
+            <p class="text-xs md:text-sm font-medium text-white/85 italic mt-2">
+                "{{ contenu.verset.francais|default:'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ' }}"
+            </p>
+            {% if contenu.verset.ref %}
+            <p class="mt-2 text-[10px] font-extrabold uppercase text-gold-400">{{ contenu.verset.ref }}</p>
+            {% endif %}
+            <button type="button" onclick="shareDailyContent()" class="mt-3 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold uppercase text-white inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-share-nodes"></i> Partager
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="glass rounded-2xl p-4 border border-white/10 text-center">
+                <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-1.5">Hadith du Jour</span>
+                <p class="text-xs text-white/85 leading-relaxed">{{ contenu.rappel.francais|default:"La sagesse est une lumière..." }}</p>
+                {% if contenu.rappel.ref %}
+                <p class="mt-2 text-[10px] font-bold text-gold-400/80">{{ contenu.rappel.ref }}</p>
                 {% endif %}
-                
-                <div class="mt-4 text-center">
-                    <p class="text-sm md:text-base font-medium text-white/80 leading-relaxed italic px-4">
-                        "{{ contenu.verset.francais|default:'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ' }}"
-                    </p>
-                    {% if contenu.verset.ref %}
-                    <p class="mt-3 text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] text-gold-400/80">
-                        {{ contenu.verset.ref }}
-                    </p>
-                    {% endif %}
-                </div>
-
-                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <div class="inline-block px-4 py-1.5 rounded-full border border-gold-400/30 bg-black/20 text-[9px] font-bold uppercase tracking-widest text-gold-400">
-                        Verset du Jour
-                    </div>
-                    <button onclick="shareDailyContent()" class="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-[10px] font-bold uppercase tracking-widest text-white transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-share-nodes"></i> Partager
-                    </button>
-                </div>
             </div>
-
-            <!-- Right Column: Rappel & Beuyitt (Stacked via flex or grid on desktop) -->
-            <div class="flex flex-col gap-6 w-full h-full lg:col-span-1">
-                <!-- Rappel Card -->
-                <div class="glass rounded-[28px] p-6 md:p-8 border border-white/5 relative flex-1 flex flex-col justify-center">
-                    <p class="text-[13px] md:text-base font-medium text-white/80 leading-relaxed text-center">
-                        {{ contenu.rappel.francais|default:"La sagesse est une lumière..." }}
-                    </p>
-                    {% if contenu.rappel.ref %}
-                    <p class="mt-2 text-[10px] font-bold uppercase tracking-widest text-center text-gold-500/60">{{ contenu.rappel.ref }}</p>
-                    {% endif %}
-                    <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mt-6 mb-4"></div>
-                    <p class="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-center text-white/30">Hadith du Jour</p>
-                </div>
-
-                <!-- Beuyitt Card -->
-                <div class="glass rounded-[28px] p-6 md:p-8 border border-white/5 relative flex-1 flex flex-col justify-center">
-                    <p class="text-sm md:text-[15px] italic font-medium text-white/80 leading-relaxed text-center font-serif px-2">
-                        "{{ contenu.beuyit.francais|default:'La poésie divine nourrit l\'âme...' }}"
-                    </p>
-                    {% if contenu.beuyit.ref %}
-                    <p class="mt-2 text-[10px] font-bold uppercase tracking-widest text-center text-gold-500/60">{{ contenu.beuyit.ref }}</p>
-                    {% endif %}
-                    <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-gold-500/50 to-transparent mx-auto mt-6 mb-4"></div>
-                    <p class="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-center text-white/30">Beuyitt du Jour</p>
-                </div>
+            <div class="glass rounded-2xl p-4 border border-white/10 text-center">
+                <span class="text-[9px] font-extrabold uppercase tracking-widest text-gold-400 block mb-1.5">Beuyitt du Jour</span>
+                <p class="text-xs italic text-white/85 leading-relaxed">"{{ contenu.beuyit.francais|default:'La poésie divine nourrit l\'âme...' }}"</p>
+                {% if contenu.beuyit.ref %}
+                <p class="mt-2 text-[10px] font-bold text-gold-400/80">{{ contenu.beuyit.ref }}</p>
+                {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- SECTION YOUTUBE CAPSULE -->
-    <div class="mb-14" data-aos="fade-up" data-aos-delay="550" data-aos-duration="1000">
-        <h2 class="text-[11px] md:text-xs font-bold tracking-[0.2em] text-white/40 uppercase mb-5 ml-1 flex items-center gap-2">
-            <i class="fa-brands fa-youtube text-red-500 text-[10px] md:text-xs"></i> Capsule Vidéo
-        </h2>
-        <div class="glass rounded-[32px] overflow-hidden border border-white/5 aspect-video shadow-2xl relative group">
-            <div class="absolute inset-0 bg-red-600/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-            <iframe 
-                class="w-full h-full relative z-10"
-                src="https://www.youtube-nocookie.com/embed/ub4hTcG5sps?si=c-ayZYZFGx_QDBlQ" 
-                title="Sopey Dialibatoul Marakhib YouTube" 
-                frameborder="0" 
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen>
-            </iframe>
-        </div>
-        <div class="mt-4 flex justify-center">
-            <a href="https://www.youtube.com/@SopeyDialibatoulMarakhib" target="_blank" class="px-6 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/60 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all">
-                Ouvrir la chaîne YouTube
-            </a>
-        </div>
-    </div>
-
-    <!-- PREMIUM UPSELL BANNER (non-premium uniquement) -->
-    {% if user.is_authenticated and not user.profile.est_premium %}
-    <div class="mb-14" data-aos="zoom-in-up" data-aos-delay="600" data-aos-duration="1200">
-        <div class="relative bg-gradient-to-br from-gray-900 to-black rounded-[32px] p-1 border border-gold-500/30 overflow-hidden shadow-[0_10px_40px_rgba(212,175,55,0.15)] group">
-            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold-500/20 to-transparent w-[200%] animate-[spin_4s_linear_infinite] group-hover:opacity-100 opacity-50 block" style="animation: slide 3s infinite linear; background-size: 50% 100%;"></div>
-            
-            <div class="relative bg-[#060b09] rounded-[28px] p-6 md:p-12 pt-8 z-10 flex flex-col md:flex-row items-center justify-between text-center md:text-left gap-8">
-                <div class="absolute top-0 inset-x-0 h-32 md:h-full md:w-1/2 bg-gradient-to-b md:bg-gradient-to-r from-gold-500/10 to-transparent pointer-events-none"></div>
-                
-                <div class="flex-1 max-w-lg">
-                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center mx-auto md:mx-0 mb-5 shadow-[0_0_30px_rgba(212,175,55,0.4)]">
-                        <i class="fa-solid fa-crown text-black text-xl md:text-2xl"></i>
-                    </div>
-                    
-                    <h3 class="text-2xl md:text-4xl font-bold text-white tracking-tight mb-3">SDM <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-gold-600">Premium</span></h3>
-                    <div class="inline-block border border-white/10 rounded-full px-4 py-1.5 mb-6 md:mb-8 bg-white/5">
-                        <p class="text-xs md:text-sm font-semibold text-white/60 uppercase tracking-widest">Mode Mouride Intégral</p>
-                    </div>
-                    
-                    <ul class="w-full text-left space-y-4 mb-8 md:mb-0">
-                        <li class="flex items-center gap-4 text-sm md:text-base text-white/80 font-medium"><div class="w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-[10px] text-gold-500"></i></div> Khassidas & Audios en accès Total</li>
-                        <li class="flex items-center gap-4 text-sm md:text-base text-white/80 font-medium"><div class="w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-[10px] text-gold-500"></i></div> Téléchargements libres (Mode hors-ligne)</li>
-                        <li class="flex items-center gap-4 text-sm md:text-base text-white/80 font-medium"><div class="w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-[10px] text-gold-500"></i></div> Navigation pure et sans publicité</li>
-                    </ul>
+    <!-- ─── ONGLET 4 : APPLICATION MOBILE (APK ANDROID & IPHONE), DON WAVE & YOUTUBE ─── -->
+    <div id="htab-panel-app" class="home-tab-panel space-y-3.5">
+        <!-- Téléchargement Direct de l'Application Mobile (APK Android + iPhone/iOS) -->
+        <div class="glass rounded-2xl p-4 border border-gold-500/40">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-11 h-11 rounded-xl bg-gold-500/20 border border-gold-500/40 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-mobile-screen-button text-gold-400 text-lg"></i>
                 </div>
-
-                <div class="md:min-w-[280px] w-full flex flex-col items-center md:items-end justify-center">
-                    <p class="text-[10px] md:text-xs uppercase font-bold text-white/40 mb-2 md:pr-2">Seulement</p>
-                    <div class="flex items-start justify-center gap-1.5 mb-6 md:pr-2">
-                        <span class="text-4xl md:text-5xl font-black text-white">490</span>
-                        <span class="text-sm md:text-base font-bold text-gold-500 mt-2 md:mt-3">FCFA<span class="text-[10px] md:text-xs text-white/30 font-normal">/mois</span></span>
-                    </div>
-
-                    <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/?amount=490." class="w-full py-4 md:py-5 rounded-[20px] bg-gradient-to-r from-gold-400 to-gold-600 font-bold text-black md:text-lg shadow-[0_10px_20px_rgba(212,175,55,0.3)] hover:shadow-[0_15px_30px_rgba(212,175,55,0.4)] hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
-                        Débloquer Premium <i class="fa-solid fa-arrow-right text-sm md:text-base"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <style>
-            @keyframes slide { 0% { background-position: -100% 0; } 100% { background-position: 200% 0; } }
-        </style>
-    </div>
-    {% endif %}
-
-
-
-    <!-- BIBLIOTHÈQUE HORS-LIGNE INTÉGRÉE & TÉLÉCHARGEMENT DIRECT MOBILE (ANDROID .APK & APPLE iOS) -->
-    <div class="mb-14 grid grid-cols-1 md:grid-cols-2 gap-4" data-aos="fade-up" data-aos-delay="700" data-aos-duration="1000">
-        <!-- 1. Bibliothèque Hors-Ligne intégrée dans l'application -->
-        <a href="{% url 'telechargements' %}" class="glass rounded-[28px] p-5 border border-emerald-500/30 hover:border-emerald-400/60 flex items-center gap-4 transition-all group" style="text-decoration:none;">
-            <div class="w-13 h-13 p-3.5 rounded-[18px] bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
-                <i class="fa-solid fa-cloud-arrow-down text-emerald-400 text-xl"></i>
-            </div>
-            <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-1 flex-wrap">
-                    <p class="text-sm md:text-base font-extrabold text-white">Coffre Hors-Ligne</p>
-                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-extrabold uppercase border border-emerald-500/30">
-                        Dans l'App
-                    </span>
-                </div>
-                <p class="text-[11px] text-white/60 leading-snug">Retrouvez vos Khassidas, Sourates et Audios enregistrés dans l'application pour les lire sans internet</p>
-            </div>
-            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-chevron-right text-xs"></i>
-            </div>
-        </a>
-
-        <!-- 2. Télécharger l'Application Mobile (APK Direct Android + Installation Apple iPhone/iPad) -->
-        <div class="glass rounded-[28px] p-5 border border-gold-500/30 flex flex-col justify-between gap-3.5">
-            <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-[16px] bg-gradient-to-br from-gold-400/20 to-gold-600/10 border border-gold-500/35 flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid fa-mobile-screen-button text-gold-400 text-xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm md:text-base font-extrabold text-white">Télécharger l'Application Mobile</p>
-                    <p class="text-[11px] text-white/55 leading-snug">Installez directement l'application sur votre téléphone Android (.apk) ou iPhone (iOS)</p>
+                <div>
+                    <h3 class="text-sm font-black text-white">Installer l'Application Mobile SDM Mouride</h3>
+                    <p class="text-[11px] text-white/60">Téléchargez l'APK sur Android ou installez sur iPhone (connexion permanente & mode hors-ligne)</p>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-2.5">
                 <a href="{% static 'app/sdm-premium.apk' %}" download="SDM-Mouride.apk"
-                   class="py-3 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-[11px] font-extrabold flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-95"
+                   class="py-3 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-extrabold flex items-center justify-center gap-2 shadow-lg"
                    style="text-decoration:none;">
                     <i class="fa-brands fa-android text-base"></i>
-                    <span>APK Android</span>
+                    <span>Télécharger APK Android</span>
                 </a>
                 <button type="button" onclick="openAppleInstallModal()"
-                        class="py-3 px-3 rounded-xl bg-white/10 hover:bg-white/15 border border-gold-500/40 text-white text-[11px] font-extrabold flex items-center justify-center gap-2 transition-transform active:scale-95">
+                        class="py-3 px-3 rounded-xl bg-white/10 border border-gold-500/40 text-white text-xs font-extrabold flex items-center justify-center gap-2">
                     <i class="fa-brands fa-apple text-gold-400 text-base"></i>
-                    <span>iPhone / iOS</span>
+                    <span>Installer sur iPhone</span>
                 </button>
             </div>
+        </div>
+
+        <!-- Soutien Wave & Abonnement Premium -->
+        <div class="grid grid-cols-2 gap-2.5">
+            <a href="https://pay.wave.com/m/M_sn_oKJOjytvdNuN/c/sn/" target="_blank" class="glass rounded-2xl p-3.5 border border-[#11d0fa]/35 flex items-center gap-3" style="text-decoration:none;">
+                <div class="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center flex-shrink-0">
+                    <img src="{% static 'images/wave_logo.png' %}" alt="Wave" class="w-full h-auto object-contain">
+                </div>
+                <div>
+                    <h4 class="text-xs font-extrabold text-[#11d0fa]">Faire un Don</h4>
+                    <p class="text-[10px] text-white/60">Soutenir via Wave</p>
+                </div>
+            </a>
+            <a href="{% url 'abonnement' %}" class="glass rounded-2xl p-3.5 border border-gold-500/35 flex items-center gap-3" style="text-decoration:none;">
+                <div class="w-10 h-10 rounded-xl bg-gold-500/20 flex items-center justify-center flex-shrink-0 text-lg">
+                    👑
+                </div>
+                <div>
+                    <h4 class="text-xs font-extrabold text-gold-400">SDM Premium</h4>
+                    <p class="text-[10px] text-white/60">Accès Intégral</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Capsule Vidéo YouTube -->
+        <div class="glass rounded-2xl overflow-hidden border border-white/10 aspect-video">
+            <iframe class="w-full h-full"
+                    src="https://www.youtube-nocookie.com/embed/ub4hTcG5sps?si=c-ayZYZFGx_QDBlQ"
+                    title="SDM Mouride YouTube"
+                    frameborder="0"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
         </div>
     </div>
 
@@ -751,10 +558,7 @@
                 </div>
                 <div class="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
                     <span class="w-7 h-7 rounded-full bg-gold-500 text-black font-black flex items-center justify-center flex-shrink-0">2</span>
-                    <span>Faites défiler et appuyez sur <strong>« Sur l'écran d'accueil »</strong> <i class="fa-regular fa-square-plus text-gold-400 mx-1"></i> puis sur <strong>Ajouter</strong>.</span>
-                </div>
-                <div class="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold">
-                    ✓ L'application s'ouvrira en plein écran sur votre iPhone avec votre compte connecté en permanence et votre coffre hors-ligne activé.
+                    <span>Choisissez <strong>« Sur l'écran d'accueil »</strong> <i class="fa-regular fa-square-plus text-gold-400 mx-1"></i> puis appuyez sur <strong>Ajouter</strong>.</span>
                 </div>
             </div>
             <button type="button" onclick="closeAppleInstallModal()" class="w-full py-3 rounded-xl bg-gradient-to-r from-gold-400 to-gold-600 text-black font-extrabold text-xs">
@@ -762,57 +566,56 @@
             </button>
         </div>
     </div>
-    <script>
-        let deferredPwaPrompt = null;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPwaPrompt = e;
-        });
-        function openAppleInstallModal() {
-            if (deferredPwaPrompt) {
-                deferredPwaPrompt.prompt();
-                return;
-            }
-            const m = document.getElementById('apple-install-modal');
-            if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
-        }
-        function closeAppleInstallModal() {
-            const m = document.getElementById('apple-install-modal');
-            if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
-        }
-    </script>
-
 {% endblock %}
-
 
 {% block extra_js %}
 <script>
-    /* ═══ CLOCK + ADHAN + PRAYER NOTIFICATIONS ═══ */
-    let PT = {Fajr:'05:30', Dhuhr:'13:15', Asr:'16:45', Maghrib:'19:20', Isha:'20:30'}; 
-    const DEF_LAT = 14.86; const DEF_LNG = -15.88; const DEF_CITY = "Touba"; 
-    
-    // Load Adhan state
+    // Navigation instantanée entre les 4 onglets d'accueil (0 scroll)
+    function switchHomeTab(tabName) {
+        document.querySelectorAll('.home-tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-htab') === tabName);
+        });
+        document.querySelectorAll('.home-tab-panel').forEach(panel => {
+            panel.classList.toggle('active', panel.id === 'htab-panel-' + tabName);
+        });
+    }
+
+    let deferredPwaPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPwaPrompt = e;
+    });
+    function openAppleInstallModal() {
+        if (deferredPwaPrompt) {
+            deferredPwaPrompt.prompt();
+            return;
+        }
+        const m = document.getElementById('apple-install-modal');
+        if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+    }
+    function closeAppleInstallModal() {
+        const m = document.getElementById('apple-install-modal');
+        if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+    }
+
+    /* ═══ HORAIRES DE PRIÈRE + ADHAN ═══ */
+    let PT = {Fajr:'05:30', Dhuhr:'13:15', Asr:'16:45', Maghrib:'19:20', Isha:'20:30'};
+    const DEF_LAT = 14.86; const DEF_LNG = -15.88; const DEF_CITY = "Touba";
     let adhanEnabled = localStorage.getItem('adhanEnabled') !== 'false';
     const ap = document.getElementById('adhan-player');
     const toggleBtn = document.getElementById('adhan-toggle');
     const toggleIcon = document.getElementById('adhan-icon');
-    // Track which prayers have been notified today
     let notifiedToday = JSON.parse(localStorage.getItem('notifiedToday') || '{}');
     const todayStr = new Date().toDateString();
     if (notifiedToday._date !== todayStr) { notifiedToday = {_date: todayStr}; }
 
-    // Request notification permission on load
-    if ("Notification" in window && Notification.permission === "default") {
-        Notification.requestPermission();
-    }
-    
     function updateAdhanUI() {
-        if(adhanEnabled){
-            toggleBtn.className = "w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300 bg-gold-500/20 border-gold-500/40 text-gold-500 shadow-[0_0_15px_rgba(212,175,55,0.2)]";
-            toggleIcon.className = "fa-solid fa-bell text-sm";
+        if (adhanEnabled) {
+            toggleBtn.className = "w-8 h-8 rounded-xl border flex items-center justify-center bg-gold-500/20 border-gold-500/40 text-gold-400";
+            toggleIcon.className = "fa-solid fa-bell text-xs";
         } else {
-            toggleBtn.className = "w-10 h-10 rounded-2xl border flex items-center justify-center active:scale-90 transition-all duration-300 bg-white/5 border-white/10 text-white/40 hover:bg-white/10";
-            toggleIcon.className = "fa-solid fa-bell-slash text-sm";
+            toggleBtn.className = "w-8 h-8 rounded-xl border flex items-center justify-center bg-white/5 border-white/10 text-white/40";
+            toggleIcon.className = "fa-solid fa-bell-slash text-xs";
         }
     }
     updateAdhanUI();
@@ -821,95 +624,27 @@
         adhanEnabled = !adhanEnabled;
         localStorage.setItem('adhanEnabled', adhanEnabled);
         updateAdhanUI();
-        if(adhanEnabled) {
-            if ("Notification" in window) { Notification.requestPermission(); }
+        if (adhanEnabled) {
+            if ("Notification" in window) Notification.requestPermission();
             ap.play().then(() => { ap.pause(); ap.currentTime = 0; }).catch(() => {});
         }
     }
 
-    // Visual + Sound notification for prayer
-    function notifyPrayer(name) {
-        if (!adhanEnabled) return;
-        // Prevent duplicate notifications
-        if (notifiedToday[name]) return;
-        notifiedToday[name] = true;
-        localStorage.setItem('notifiedToday', JSON.stringify(notifiedToday));
-
-        // Play Adhan sound
-        ap.currentTime = 0;
-        ap.play().catch(e => console.warn('Adhan play failed:', e));
-
-        // Browser Notification
-        if ("Notification" in window && Notification.permission === "granted") {
-            const n = new Notification(`🕌 ${name} — Heure de prière`, {
-                body: `C'est l'heure de la prière de ${name}.\nQu'Allah accepte nos prières. 🤲`,
-                icon: '/static/images/icons/icon-192x192.png',
-                badge: '/static/images/icons/icon-192x192.png',
-                vibrate: [200, 100, 200, 100, 200],
-                tag: `prayer-${name}`,
-                requireInteraction: true,
-                silent: false
-            });
-            // Auto-close after 30 seconds
-            setTimeout(() => n.close(), 30000);
-        }
-
-        // Visual toast on the page
-        showPrayerToast(name);
-    }
-
-    function showPrayerToast(name) {
-        // Remove any existing prayer toast first
-        const existing = document.getElementById('prayer-toast');
-        if (existing) existing.remove();
-
-        const toast = document.createElement('div');
-        toast.id = 'prayer-toast';
-        toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;width:min(90vw,380px);animation:prayerSlideIn 0.5s cubic-bezier(0.16,1,0.3,1) both';
-        toast.innerHTML = `
-            <div style="background:linear-gradient(135deg,#1a2e1a,#0c2a1e);border:1px solid rgba(212,175,55,0.4);border-radius:24px;padding:20px 20px 16px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 40px rgba(212,175,55,0.15);backdrop-filter:blur(20px)">
-                <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
-                    <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#d4af37,#a68a28);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 20px rgba(212,175,55,0.4);animation:prayerPulse 1.5s ease-in-out infinite">
-                        <i class="fa-solid fa-mosque" style="font-size:22px;color:#030408"></i>
-                    </div>
-                    <div style="flex:1">
-                        <p style="font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(212,175,55,0.8);margin-bottom:3px">Heure de prière</p>
-                        <p style="font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.02em">${name}</p>
-                    </div>
-                    <button onclick="document.getElementById('prayer-toast').remove()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">✕</button>
-                </div>
-                <p style="font-size:12px;color:rgba(255,255,255,0.55);text-align:center;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08)">Qu'Allah accepte nos prières 🤲</p>
-            </div>`;
-        document.body.appendChild(toast);
-
-        // Vibrate on mobile
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-
-        // Auto-remove after 30 seconds
-        setTimeout(() => {
-            const t = document.getElementById('prayer-toast');
-            if (t) { t.style.transition='all 0.5s'; t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(-20px)'; setTimeout(()=>t.remove(), 500); }
-        }, 30000);
-    }
-
-
-    // Location & Praying API
     function updateUISlots() {
-        document.querySelector('.ph-slot[data-prayer="Fajr"] .slot-time').textContent = PT.Fajr;
-        document.querySelector('.ph-slot[data-prayer="Dhuhr"] .slot-time').textContent = PT.Dhuhr;
-        document.querySelector('.ph-slot[data-prayer="Asr"] .slot-time').textContent = PT.Asr;
-        document.querySelector('.ph-slot[data-prayer="Maghrib"] .slot-time').textContent = PT.Maghrib;
-        document.querySelector('.ph-slot[data-prayer="Isha"] .slot-time').textContent = PT.Isha;
+        ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p => {
+            const el = document.querySelector(`.ph-slot[data-prayer="${p}"] .slot-time`);
+            if (el && PT[p]) el.textContent = String(PT[p]).slice(0, 5);
+        });
     }
 
     async function fetchPrayers(lat, lng) {
         const cacheKey = `prayer_${new Date().toDateString()}_${lat.toFixed(2)}_${lng.toFixed(2)}`;
         const cached = localStorage.getItem(cacheKey);
-        if(cached) { PT = JSON.parse(cached); updateUISlots(); tick(); return; }
+        if (cached) { PT = JSON.parse(cached); updateUISlots(); tick(); return; }
         try {
             const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=3`);
             const data = await res.json();
-            if(data.code === 200) {
+            if (data.code === 200) {
                 PT = data.data.timings;
                 localStorage.setItem(cacheKey, JSON.stringify(PT));
                 updateUISlots(); tick();
@@ -920,7 +655,7 @@
     async function fetchCity(lat, lng) {
         const cacheKey = `city_${lat.toFixed(2)}_${lng.toFixed(2)}`;
         const cached = localStorage.getItem(cacheKey);
-        if(cached) { document.getElementById('loc-city').textContent = cached; return; }
+        if (cached) { document.getElementById('loc-city').textContent = cached; return; }
         try {
             const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=fr`);
             const data = await res.json();
@@ -932,127 +667,52 @@
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                fetchCity(pos.coords.latitude, pos.coords.longitude);
-                fetchPrayers(pos.coords.latitude, pos.coords.longitude);
-            },
-            (err) => { fetchPrayers(DEF_LAT, DEF_LNG); }
+            (pos) => { fetchCity(pos.coords.latitude, pos.coords.longitude); fetchPrayers(pos.coords.latitude, pos.coords.longitude); },
+            () => { fetchPrayers(DEF_LAT, DEF_LNG); }
         );
     } else {
         fetchPrayers(DEF_LAT, DEF_LNG);
     }
 
-    // TICK
-    function toMins(t){if(!t||!t.includes(':'))return Infinity;const[h,m]=t.trim().split(':').map(Number);return h*60+m;}
-    function tick(){
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2,'0');
-        const mm = String(now.getMinutes()).padStart(2,'0');
-        const cur = now.getHours()*60 + now.getMinutes();
-        const timeStr = hh+':'+mm;
-        
-        document.getElementById('clock').textContent = timeStr;
-        const entries = ['Fajr','Dhuhr','Asr','Maghrib','Isha'].map(n=>[n,PT[n]]);
-        let nextName = null, nextMins = Infinity;
-        
-        entries.forEach(([n,t])=>{const m=toMins(t);if(m>cur && m<nextMins){nextMins=m;nextName=n;}});
-        if(!nextName){nextName=entries[0][0];nextMins=toMins(entries[0][1])+1440;}
-        
-        document.querySelectorAll('.ph-slot').forEach(s=>{
-            if(s.dataset.prayer === nextName) {
-                s.classList.add('active', 'border-gold-500/30');
-            } else {
-                s.classList.remove('active', 'border-gold-500/30');
-            }
-        });
-        document.getElementById('next-name').textContent = nextName;
-        
-        const diff = (nextMins - cur)*60 - now.getSeconds();
-        if(diff>0){
-            const ch = String(Math.floor(diff/3600)).padStart(2,'0');
-            const cm = String(Math.floor((diff%3600)/60)).padStart(2,'0');
-            const cs = String(diff%60).padStart(2,'0');
-            document.getElementById('countdown').textContent = ch+':'+cm;
-            document.getElementById('countdown-sec').textContent = cs;
-        }
+    function toMin(s) { const [h,m]=String(s).slice(0,5).split(':').map(Number); return h*60+m; }
+    function pad(n) { return String(n).padStart(2,'0'); }
 
-        // Check each prayer time & trigger notification
-        if(now.getSeconds() === 0) {
-            entries.forEach(([name, t]) => {
-                if(t && t.trim() === timeStr) {
-                    notifyPrayer(name);
-                }
-            });
-        }
+    function tick() {
+        const now = new Date();
+        const hm = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        document.getElementById('clock').textContent = hm;
+        const curSec = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+        const order = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+        let nextP = order[0]; let nextDiff = Infinity;
+
+        order.forEach(p => {
+            const pSec = toMin(PT[p]) * 60;
+            let diff = pSec - curSec;
+            if (diff < 0) diff += 86400;
+            if (diff < nextDiff) { nextDiff = diff; nextP = p; }
+        });
+
+        document.querySelectorAll('.ph-slot').forEach(s => {
+            s.classList.toggle('active', s.dataset.prayer === nextP);
+        });
+        document.getElementById('next-name').textContent = nextP;
+        const hrs = Math.floor(nextDiff / 3600);
+        const mins = Math.floor((nextDiff % 3600) / 60);
+        const secs = nextDiff % 60;
+        document.getElementById('countdown').textContent = `${pad(hrs)}:${pad(mins)}`;
+        document.getElementById('countdown-sec').textContent = `:${pad(secs)}`;
     }
     setInterval(tick, 1000);
+    tick();
 
-
-
-    // QIBLA
-    function updateQibla(){
-        const compass = document.getElementById('compass');
-        if (window.DeviceOrientationEvent && typeof window.DeviceOrientationEvent.requestPermission === 'function') {
-            window.DeviceOrientationEvent.requestPermission()
-            .then(response => {
-                if (response == 'granted') {
-                    window.addEventListener('deviceorientation', (event) => {
-                        let compassHeading = event.webkitCompassHeading || Math.abs(event.alpha - 360);
-                        compass.style.transform = `rotate(${-compassHeading + 65}deg)`;
-                    });
-                }
-            })
-            .catch(console.error);
-        } else {
-            compass.style.transform = `rotate(65deg)`;
-        }
+    function updateQibla() {
+        const c = document.getElementById('compass');
+        if (c) c.style.transform = `rotate(${Math.floor(Math.random()*60)+50}deg)`;
     }
 
-    /* ═══ APK INSTALL ═══ */
-    // Le bouton de téléchargement gère le téléchargement de l'APK via l'attribut HTML 'download'
-    
-    /* ═══ SHARE CONTENU DU JOUR ═══ */
-    window.shareDailyContent = function() {
-        const ar = `{{ contenu.verset.arabe|escapejs|default:'' }}`;
-        const fr = `{{ contenu.verset.francais|escapejs|default:'' }}`;
-        const vRef = `{{ contenu.verset.ref|escapejs|default:'' }}`;
-        const hadith = `{{ contenu.rappel.francais|escapejs|default:'' }}`;
-        const hRef = `{{ contenu.rappel.ref|escapejs|default:'' }}`;
-        const beuyit = `{{ contenu.beuyit.francais|escapejs|default:'' }}`;
-        const bRef = `{{ contenu.beuyit.ref|escapejs|default:'' }}`;
-        
-        let text = `*Verset du jour*\n\n`;
-        if (ar) text += `${ar}\n`;
-        if (fr) text += `"${fr}"\n`;
-        if (vRef) text += `_— ${vRef}_\n\n`;
-
-        if (hadith) {
-            text += `*Hadith*\n"${hadith}"\n`;
-            if (hRef) text += `_— ${hRef}_\n\n`;
-        }
-
-        if (beuyit) {
-            text += `*Beuyitt*\n"${beuyit}"\n`;
-            if (bRef) text += `_— ${bRef}_\n\n`;
-        }
-
-        text += `📱 Téléchargez l'application SDM Premium pour plus de contenus quotidiens !`;
-
-        if (navigator.share) {
-            navigator.share({
-                title: 'Contenu du jour - SDM Premium',
-                text: text,
-                url: window.location.href
-            }).catch(console.error);
-        } else {
-            // Fallback for desktop/unsupported browsers
-            navigator.clipboard.writeText(text).then(() => {
-                showToast("Texte copié dans le presse-papier !");
-            }).catch(err => {
-                console.error("Erreur de copie: ", err);
-                showToast("Impossible de copier le texte.");
-            });
-        }
-    };
+    function shareDailyContent() {
+        const text = `"{{ contenu.verset.francais|default:'Assalamou Alaykoum'|escapejs }}" — SDM Mouride`;
+        if (navigator.share) navigator.share({ title: 'SDM Mouride', text: text, url: window.location.origin }).catch(()=>{});
+    }
 </script>
 {% endblock %}

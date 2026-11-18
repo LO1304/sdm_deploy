@@ -66,47 +66,37 @@
     <!-- FOND ÉTOILÉ (Global) -->
     <canvas id="sdm-cosmos"></canvas>
 
-    <!-- BARRE SUPÉRIEURE MOBILE PROPRE (SANS CHEVAUCHEMENT SUR TÉLÉPHONE) -->
-    <div class="sticky top-0 z-50 w-full bg-[#040B08]/90 backdrop-blur-md border-b border-white/10 px-4 py-2.5">
+    <!-- BARRE SUPÉRIEURE MOBILE PROPRE (ACCÈS DIRECT SANS SCROLL) -->
+    <div class="sticky top-0 z-50 w-full bg-[#040B08]/95 backdrop-blur-md border-b border-white/10 px-3.5 py-2">
         <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
-            <a href="/" class="flex items-center gap-2.5 min-w-0" style="text-decoration:none;">
+            <a href="/" class="flex items-center gap-2 min-w-0" style="text-decoration:none;">
                 <div class="w-8 h-8 rounded-xl bg-gold-500/15 border border-gold-500/35 flex items-center justify-center text-gold-400 font-black text-xs flex-shrink-0">
                     ۞
                 </div>
-                <div class="min-w-0">
-                    <span class="text-xs font-black tracking-wider text-gradient-gold block truncate">SDM MOURIDE</span>
-                </div>
+                <span class="text-xs font-black tracking-wider text-gradient-gold block truncate">SDM MOURIDE</span>
             </a>
 
-            <div class="flex items-center gap-2 flex-shrink-0">
-                <a href="{% url 'coran_interactif' %}" class="glass px-2.5 h-9 rounded-xl flex items-center gap-1.5 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold" style="text-decoration:none;" title="Le Noble Coran">
-                    <i class="fa-solid fa-book-quran text-xs"></i>
-                    <span>Coran</span>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+                <a href="{% url 'liste_sons' %}" class="glass px-2.5 h-8 rounded-xl flex items-center gap-1.5 border border-white/15 text-white/90 text-[11px] font-bold" style="text-decoration:none;" title="Audiothèque">
+                    <i class="fa-solid fa-headphones text-gold-400 text-xs"></i>
+                    <span>Audios</span>
                 </a>
 
-                <a href="{% url 'telechargements' %}" class="glass px-2.5 h-9 rounded-xl flex items-center gap-1.5 border border-white/15 text-white/90 text-[11px] font-bold" style="text-decoration:none;" title="Bibliothèque Hors-Ligne">
-                    <i class="fa-solid fa-cloud-arrow-down text-emerald-400 text-xs"></i>
-                    <span class="hidden xs:inline">Hors-Ligne</span>
+                <a href="{% url 'telechargements' %}" class="glass px-2.5 h-8 rounded-xl flex items-center gap-1.5 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold" style="text-decoration:none;" title="Bibliothèque Hors-Ligne">
+                    <i class="fa-solid fa-cloud-arrow-down text-xs"></i>
+                    <span>Hors-Ligne</span>
                 </a>
 
                 <button type="button" onclick="openSdmModelPicker()"
-                        class="glass px-3 h-9 rounded-xl flex items-center gap-1.5 border border-gold-500/40 hover:border-gold-400 transition-all active:scale-95"
+                        class="glass px-2.5 h-8 rounded-xl flex items-center gap-1.5 border border-gold-500/40 hover:border-gold-400 transition-all active:scale-95"
                         title="Choisir un Modèle Visuel">
                     <i class="fa-solid fa-palette text-gold-400 text-xs"></i>
                     <span class="text-[11px] font-extrabold text-white/95">Modèles</span>
                 </button>
 
-                {% if request.user.is_authenticated %}
-                <a href="{% url 'notifications' %}" class="glass w-9 h-9 rounded-xl flex items-center justify-center border border-white/15 relative" style="text-decoration:none;">
-                    <i class="fa-regular fa-bell text-white/85 text-sm"></i>
-                    {% if unread_notifications_count > 0 %}
-                    <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-                    </span>
-                    {% endif %}
+                <a href="{% url 'profile' %}" class="glass w-8 h-8 rounded-xl flex items-center justify-center border border-gold-500/35 text-gold-400" style="text-decoration:none;" title="Mon Profil">
+                    <i class="fa-solid fa-user text-xs"></i>
                 </a>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -257,29 +247,32 @@
     {% endif %}
 
     <!-- Contenu Principal -->
-    <div class="site-wrapper pb-32 {% block wrapper_classes %}max-w-6xl mx-auto pt-6 px-5 md:px-8 lg:px-12{% endblock %}">
+    <div class="site-wrapper pb-28 {% block wrapper_classes %}max-w-5xl mx-auto pt-3 px-3.5 md:px-8{% endblock %}">
         {% block content %}{% endblock %}
     </div>
 
-    <!-- BOTTOM FLOATING NAVIGATION (ISLAND) -->
+    <!-- BOTTOM FLOATING NAVIGATION (5 RUBRIQUES PRINCIPALES AVEC LIBELLÉS) -->
     {% block bottom_nav %}
     <nav class="nav-island">
-        <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}">
-            <i class="fa-solid fa-house-chimney"></i><div class="nav-item-indicator"></div>
+        <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}" style="text-decoration:none;">
+            <i class="fa-solid fa-house-chimney text-base"></i>
+            <span class="text-[9px] font-bold mt-0.5">Accueil</span>
         </a>
-        <a href="{% url 'liste' 'khassida' %}" class="nav-item {% if 'khassida' in request.path %}active{% endif %}">
-            <i class="fa-solid fa-book-open"></i><div class="nav-item-indicator"></div>
+        <a href="{% url 'liste' 'khassida' %}" class="nav-item {% if 'khassida' in request.path %}active{% endif %}" style="text-decoration:none;">
+            <i class="fa-solid fa-book-open text-base"></i>
+            <span class="text-[9px] font-bold mt-0.5">Khassidas</span>
         </a>
-        <a href="{% url 'dashboard' %}" class="nav-item relative">
-            <div class="absolute -top-6 w-14 h-14 bg-gradient-to-tr from-[#10B981] to-emerald-400 rounded-full flex items-center justify-center shadow-[0_10px_20px_rgba(16,185,129,0.3)] border-4 border-[#081711] text-white">
-                <i class="fa-solid fa-chart-line text-[22px]" style="transform:none; background:none; -webkit-text-fill-color:white; filter:none;"></i>
-            </div>
+        <a href="{% url 'coran_interactif' %}" class="nav-item {% if 'coran' in request.path %}active{% endif %}" style="text-decoration:none;">
+            <i class="fa-solid fa-book-quran text-base"></i>
+            <span class="text-[9px] font-bold mt-0.5">Coran</span>
         </a>
-        <a href="{% url 'zikr_communaute_list' %}" class="nav-item {% if 'communaute/zikr' in request.path %}active{% endif %}">
-            <i class="fa-solid fa-users"></i><div class="nav-item-indicator"></div>
+        <a href="{% url 'zikr_compteur_default' %}" class="nav-item {% if 'zikr' in request.path or 'historique' in request.path %}active{% endif %}" style="text-decoration:none;">
+            <i class="fa-solid fa-fingerprint text-base"></i>
+            <span class="text-[9px] font-bold mt-0.5">Zikr</span>
         </a>
-        <a href="{% url 'profile' %}" class="nav-item {% if 'profile' in request.path %}active{% endif %}">
-            <i class="fa-solid fa-user"></i><div class="nav-item-indicator"></div>
+        <a href="{% url 'tazawwud_home' %}" class="nav-item {% if 'tazawwud' in request.path %}active{% endif %}" style="text-decoration:none;">
+            <i class="fa-solid fa-graduation-cap text-base"></i>
+            <span class="text-[9px] font-bold mt-0.5">Tazawwud</span>
         </a>
     </nav>
     {% endblock %}

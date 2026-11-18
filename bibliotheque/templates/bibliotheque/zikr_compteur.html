@@ -451,51 +451,67 @@
             </a>
         </nav>
 
-        <!-- 1. SÉLECTEUR DE ZIKR + FORMULAIRE INTÉGRÉ « CRÉER ZIKR & OBJECTIF » -->
+        <!-- 1. SÉLECTEUR DE ZIKR + OBJECTIF DIRECT + CRÉATION SIMULTANÉE (TOUT EN HAUT SANS SCROLL) -->
         <section class="zikr-selector-card">
             <div class="card-header-row">
-                <span class="card-label"><i class="fa-solid fa-list-check"></i> Mes Zikrs & Objectifs</span>
+                <span class="card-label"><i class="fa-solid fa-list-check"></i> 1. Choisir ou Créer un Zikr</span>
                 <button type="button" class="btn-create-zikr" onclick="toggleInlineCreator()">
                     <i class="fa-solid fa-plus-circle"></i>
-                    <span>Nouveau Zikr & Objectif</span>
+                    <span>Créer Zikr & Objectif</span>
                 </button>
             </div>
             <div class="salat-tabs" id="salatTabs"></div>
 
             <!-- Formulaire Direct Intégré sur la page (Créer Zikr + Objectif + Bouton Enregistrer) -->
-            <div id="inlineZikrCreator" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border-g);">
+            <div id="inlineZikrCreator" style="display:none; margin-top:10px; padding:10px; border-radius:14px; background:rgba(0,0,0,0.35); border:1px solid var(--gold);">
                 <div style="font-size:11px; font-weight:800; color:var(--gold-lt); margin-bottom:8px;">
-                    ✨ Créer un Nouveau Zikr et son Objectif simultanément :
+                    ✨ Nouveau Zikr et Objectif :
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 110px; gap:8px; margin-bottom:8px;">
+                <div style="display:grid; grid-template-columns: 1fr 95px; gap:6px; margin-bottom:6px;">
                     <input type="text" id="inlineName" placeholder="Nom du Zikr (ex: Yâ Latîf, Salâtoul Fâtihi...)"
-                           style="background:rgba(0,0,0,0.45); border:1px solid var(--border-g); border-radius:12px; padding:10px 12px; color:#fff; font-size:12px; font-weight:700; outline:none;">
+                           style="background:rgba(0,0,0,0.55); border:1px solid var(--border-g); border-radius:10px; padding:9px 10px; color:#fff; font-size:12px; font-weight:700; outline:none;">
                     <input type="number" id="inlineGoal" value="100" min="1" placeholder="Objectif"
-                           style="background:rgba(0,0,0,0.45); border:1px solid var(--border-g); border-radius:12px; padding:10px; color:var(--gold-lt); font-size:13px; font-weight:800; text-align:center; outline:none;">
+                           style="background:rgba(0,0,0,0.55); border:1px solid var(--border-g); border-radius:10px; padding:9px 6px; color:var(--gold-lt); font-size:13px; font-weight:800; text-align:center; outline:none;">
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:8px;">
                     <input type="text" id="inlineAr" placeholder="Texte Arabe (optionnel)" dir="rtl"
-                           style="background:rgba(0,0,0,0.45); border:1px solid var(--border); border-radius:12px; padding:9px 12px; color:#fff; font-family:'Amiri',serif; font-size:15px; outline:none;">
-                    <input type="text" id="inlineTx" placeholder="Phonétique / Sens (optionnel)"
-                           style="background:rgba(0,0,0,0.45); border:1px solid var(--border); border-radius:12px; padding:9px 12px; color:#fff; font-size:12px; outline:none;">
+                           style="background:rgba(0,0,0,0.55); border:1px solid var(--border); border-radius:10px; padding:8px 10px; color:#fff; font-family:'Amiri',serif; font-size:14px; outline:none;">
+                    <input type="text" id="inlineTx" placeholder="Phonétique (optionnel)"
+                           style="background:rgba(0,0,0,0.55); border:1px solid var(--border); border-radius:10px; padding:8px 10px; color:#fff; font-size:11px; outline:none;">
                 </div>
                 <button type="button" onclick="saveInlineZikrAndGoal()"
-                        style="width:100%; padding:11px; border-radius:13px; background:linear-gradient(135deg, var(--gold-lt), var(--gold)); color:#040B08; font-size:12px; font-weight:800; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(212,175,55,0.3);">
+                        style="width:100%; padding:10px; border-radius:11px; background:linear-gradient(135deg, var(--gold-lt), var(--gold)); color:#040B08; font-size:12px; font-weight:800; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
                     <i class="fa-solid fa-floppy-disk"></i>
                     <span>Enregistrer ce Zikr & son Objectif</span>
                 </button>
             </div>
+
+            <!-- BARRE D'OBJECTIF INTÉGRÉE EN HAUT (VISIBLE IMMÉDIATEMENT SANS SCROLLER) -->
+            <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08);">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:6px;">
+                    <span class="card-label"><i class="fa-solid fa-bullseye"></i> 2. Objectif (<strong id="goalCardLbl">{{ zikr.objectif_par_defaut|default:33 }}</strong>)</span>
+                    <div class="chips-row" id="chipsRow" style="margin-bottom:0;"></div>
+                </div>
+                <div class="goal-input-row">
+                    <input type="number" id="customGoalInput" class="goal-input" style="height:36px; font-size:12px;" min="1" max="1000000"
+                           placeholder="Autre objectif (ex: 313, 500)...">
+                    <button type="button" class="btn-save-goal" style="height:36px; padding:0 12px; font-size:11px;" onclick="saveCustomGoalFromInput()">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Enregistrer Objectif</span>
+                    </button>
+                </div>
+            </div>
         </section>
 
-        <!-- 2. FORMULE DU ZIKR ACTIF -->
-        <section class="formula-card" id="zpill">
-            <div class="zp-ar" id="zpAr">{{ zikr.texte_arabe }}</div>
+        <!-- 2. FORMULE DU ZIKR ACTIF (COMPACTE) -->
+        <section class="formula-card" id="zpill" style="padding:10px 14px;">
+            <div class="zp-ar" id="zpAr" style="font-size:clamp(20px,5vw,26px);">{{ zikr.texte_arabe }}</div>
             <div class="zp-tx" id="zpTx">{{ zikr.transcription }}</div>
         </section>
 
         <!-- 3. CHAPELET INTERACTIF & BOUTON D'ENREGISTREMENT DIRECT -->
-        <section class="counter-stage">
-            <div class="chapelet-tap-zone" id="cArea" title="Touchez pour compter">
+        <section class="counter-stage" style="padding:14px 12px;">
+            <div class="chapelet-tap-zone" id="cArea" title="Touchez pour compter" style="margin:0 auto 8px;">
                 <svg class="progress-ring" viewBox="0 0 256 256">
                     <circle class="progress-ring-bg" cx="128" cy="128" r="118"></circle>
                     <circle class="progress-ring-fill" id="progressFill" cx="128" cy="128" r="118"
@@ -510,7 +526,7 @@
                 </div>
             </div>
 
-            <div class="tap-hint-lbl" id="tapHint">
+            <div class="tap-hint-lbl" id="tapHint" style="margin-bottom:8px;">
                 <i class="fa-solid fa-hand-pointer"></i> Touchez le cercle pour compter chaque grain
             </div>
 
@@ -528,27 +544,6 @@
 
                 <button type="button" class="btn-minor-ctrl" onclick="resetSession()" title="Remettre à zéro">
                     <i class="fa-solid fa-rotate-right"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- 4. DÉFINIR OU MODIFIER L'OBJECTIF AVEC BOUTON « ENREGISTRER L'OBJECTIF » -->
-        <section class="goal-card">
-            <div class="card-header-row">
-                <span class="card-label"><i class="fa-solid fa-bullseye"></i> Objectif du Zikr Actif</span>
-                <span style="font-size:11px; color:var(--dim); font-weight:700;">Cible : <strong id="goalCardLbl" style="color:var(--gold-lt);">{{ zikr.objectif_par_defaut|default:33 }}</strong></span>
-            </div>
-
-            <!-- Raccourcis d'objectifs fréquents -->
-            <div class="chips-row" id="chipsRow"></div>
-
-            <!-- Saisie directe d'un objectif personnalisé + Bouton Enregistrer l'Objectif -->
-            <div class="goal-input-row">
-                <input type="number" id="customGoalInput" class="goal-input" min="1" max="1000000"
-                       placeholder="Saisir un objectif (ex: 313, 500, 1000)...">
-                <button type="button" class="btn-save-goal" onclick="saveCustomGoalFromInput()">
-                    <i class="fa-solid fa-floppy-disk"></i>
-                    <span>Enregistrer l'Objectif</span>
                 </button>
             </div>
         </section>
