@@ -182,7 +182,7 @@ def liste_dynamique(request, categorie):
     if categorie == 'khassida':
         items = Khassida.objects.all()
     elif categorie == 'zikr':
-        items = Zikr.objects.all()
+        return redirect('zikr_compteur_default')
     elif categorie == 'wird':
         items = Wird.objects.all()
     elif categorie == 'coran':
@@ -552,18 +552,31 @@ DEFAULT_ZIKRS_SEED = [
 
 def _ensure_default_zikrs():
     try:
-        if Zikr.objects.count() <= 2:
-            for item in DEFAULT_ZIKRS_SEED:
-                Zikr.objects.get_or_create(
+        # Supprimer ou corriger les anciens Zikrs de test incomplets ('salatou', 'salaat')
+        Zikr.objects.filter(titre__in=['salatou', 'salaat'], texte_arabe='').delete()
+        existing_titles = set(Zikr.objects.values_list('titre', flat=True))
+        for item in DEFAULT_ZIKRS_SEED:
+            if item["titre"] not in existing_titles:
+                Zikr.objects.create(
                     titre=item["titre"],
-                    defaults={
-                        "texte_arabe": item["texte_arabe"],
-                        "transcription": item["transcription"],
-                        "objectif_par_defaut": item["objectif_par_defaut"],
-                    },
+                    texte_arabe=item["texte_arabe"],
+                    transcription=item["transcription"],
+                    objectif_par_defaut=item["objectif_par_defaut"],
                 )
     except Exception:
         pass
+
+
+@csrf_exempt
+def api_supprimer_zikr(request, zikr_id):
+    """Supprime un Zikr personnalisé de la base de données."""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error'}, status=405)
+    try:
+        Zikr.objects.filter(id=zikr_id).delete()
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 
 def zikr_compteur(request, id=None):
@@ -1024,20 +1037,31 @@ def enregistrer_ecoute_son(request, id):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error'}, status=405)
 
-@login_required
 def voir_historique(request):
-    """Historique global du Zikr avec total des grains."""
-    historique = HistoriqueZikr.objects.filter(user=request.user).order_by('-date_seance')
-    total_grains = historique.aggregate(Sum('nombre_total'))['nombre_total__sum'] or 0
+    """Historique complet et organisé du Zikr avec total des grains et répartition."""
+    historique = []
+    total_grains = 0
+    total_seances = 0
+    par_zikr = []
+    if request.user.is_authenticated:
+        historique = HistoriqueZikr.objects.filter(user=request.user).select_related('zikr').order_by('-date_seance')
+        total_grains = historique.aggregate(Sum('nombre_total'))['nombre_total__sum'] or 0
+        total_seances = historique.count()
+        par_zikr = list(
+            HistoriqueZikr.objects.filter(user=request.user)
+            .values('zikr__titre')
+            .annotate(total=Sum('nombre_total'), seances=Count('id'))
+            .order_by('-total')
+        )
     return render(request, 'bibliotheque/historique.html', {
         'historique': historique,
         'total_grains': total_grains,
+        'total_seances': total_seances,
+        'par_zikr': par_zikr,
     })
 
-@login_required
 def voir_historique_zikr(request):
-    historique = HistoriqueZikr.objects.filter(user=request.user).order_by('-date_seance')
-    return render(request, 'bibliotheque/historique_zikr.html', {'historique': historique})
+    return voir_historique(request)
 
 @login_required
 def voir_historique_general(request):

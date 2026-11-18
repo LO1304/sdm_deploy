@@ -1,183 +1,212 @@
 {% extends 'bibliotheque/layout.html' %}
 
-{% block title %}Session: {{ session.titre }}{% endblock %}
+{% block title %}Session Zikr — {{ session.titre }}{% endblock %}
 
 {% block content %}
-<div class="content-header" style="text-align: center; margin-bottom: 2rem;">
-    <a href="{% url 'zikr_communaute_list' %}" style="color: var(--dim); text-decoration: none; display: block; margin-bottom: 15px;">
-        <i class="fas fa-arrow-left"></i> Retour aux sessions
-    </a>
-    <h1 style="color: var(--gold); font-size: 28px; margin-bottom: 5px;">{{ session.titre }}</h1>
-    
-    <!-- Calligraphie Arabe ou Formule Personnalisée -->
-    {% if session.zikr_personnalise %}
-    <div style="margin: 10px auto; padding: 10px 15px; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.2); border-radius: 15px; max-width: 500px; position: relative; overflow: hidden;">
-        <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(212,175,55,0.06), transparent 70%);"></div>
-        <p style="font-family: 'Amiri', serif; font-size: 24px; font-weight: 700; color: #ffd700; text-align: center; line-height: 1.5; text-shadow: 0 0 30px rgba(212,175,55,0.3); margin: 0; position: relative; z-index: 1;">
-            {{ session.zikr_personnalise|linebreaksbr }}
-        </p>
-    </div>
-    {% elif session.zikr and session.zikr.texte_arabe %}
-    <div style="margin: 10px auto; padding: 10px 15px; background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.2); border-radius: 15px; max-width: 400px; position: relative; overflow: hidden;">
-        <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(212,175,55,0.06), transparent 70%);"></div>
-        <p style="font-family: 'Amiri', serif; font-size: 28px; font-weight: 700; color: #ffd700; direction: rtl; text-align: center; line-height: 1.5; text-shadow: 0 0 30px rgba(212,175,55,0.3); margin: 0; position: relative; z-index: 1;">
-            {{ session.zikr.texte_arabe }}
-        </p>
-        {% if session.zikr.transcription %}
-        <p style="color: rgba(255,255,255,0.5); font-size: 12px; font-style: italic; margin-top: 5px; position: relative; z-index: 1;">{{ session.zikr.transcription }}</p>
-        {% endif %}
-    </div>
-    {% elif session.zikr %}
-    <p style="color: var(--dim);">{{ session.zikr.titre }}</p>
-    {% endif %}
+<div class="max-w-xl mx-auto pb-28 space-y-4">
 
-    <!-- ACTIONS DE L'UTILISATEUR -->
-    {% if user.is_authenticated %}
-    <div style="text-align: center; margin-top: 5px; margin-bottom: 20px;">
-        <div style="font-size: 20px; color: white; margin-bottom: 10px;">
-            Votre contribution : <span id="personal-counter" style="color: var(--gold); font-weight: bold;">{{ ma_participation.contribution|default:0 }}</span>
+    <!-- 1. BARRE D'ORGANISATION UNIFIÉE DE L'ESPACE ZIKR -->
+    <nav class="grid grid-cols-4 gap-1.5 glass rounded-2xl p-1.5 border border-gold-500/35">
+        <a href="{% url 'zikr_compteur_default' %}" class="py-2 px-2 rounded-xl bg-black/30 text-white/85 text-[11px] font-bold text-center flex flex-col items-center gap-1" style="text-decoration:none;">
+            <i class="fa-solid fa-fingerprint text-gold-400"></i>
+            <span>Chapelet</span>
+        </a>
+        <a href="{% url 'zikr_communaute_create' %}" class="py-2 px-2 rounded-xl bg-black/30 text-emerald-300 text-[11px] font-bold text-center flex flex-col items-center gap-1" style="text-decoration:none;">
+            <i class="fa-solid fa-plus-circle"></i>
+            <span>Créer</span>
+        </a>
+        <a href="{% url 'zikr_communaute_list' %}" class="py-2 px-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-600 text-black text-[11px] font-extrabold text-center flex flex-col items-center gap-1" style="text-decoration:none;">
+            <i class="fa-solid fa-users"></i>
+            <span>Communauté</span>
+        </a>
+        <a href="{% url 'voir_historique' %}" class="py-2 px-2 rounded-xl bg-black/30 text-white/85 text-[11px] font-bold text-center flex flex-col items-center gap-1" style="text-decoration:none;">
+            <i class="fa-solid fa-chart-simple text-gold-400"></i>
+            <span>Historique</span>
+        </a>
+    </nav>
+
+    <!-- 2. EN-TÊTE DE LA SESSION & FORMULE DU ZIKR -->
+    <div class="glass mihrab-card rounded-3xl p-5 border border-gold-500/40 text-center">
+        <div class="flex items-center justify-between mb-2">
+            <a href="{% url 'zikr_communaute_list' %}" class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/15 text-xs font-bold text-white/80 flex items-center gap-1.5" style="text-decoration:none;">
+                <i class="fa-solid fa-arrow-left text-[10px]"></i> Sessions
+            </a>
+            <button type="button" onclick="shareSession()" class="px-3 py-1.5 rounded-xl bg-gold-500/15 border border-gold-500/40 text-xs font-extrabold text-gold-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-share-nodes"></i> Inviter
+            </button>
         </div>
-        
-        {% if session.est_actif %}
-        <button id="btn-zikr" style="width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, var(--gold) 0%, #b8860b 100%); border: none; color: var(--bg-dark); font-size: 28px; cursor: pointer; box-shadow: 0 10px 30px rgba(212,175,55,0.4); margin-bottom: 10px; transition: transform 0.1s;">
-            <i class="fas fa-hand-holding-heart"></i>
-        </button>
-        <p style="color: var(--dim); font-size: 12px; margin-bottom: 0;">Appuyez pour compter</p>
-        {% else %}
-        <div style="background: rgba(212,175,55,0.1); border: 1px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 15px; margin: 20px auto; max-width: 350px; font-weight: bold;">
-            <i class="fas fa-mosque" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-            Alhamdoulillah ! Objectif Atteint
-            <p style="font-size: 13px; color: var(--text-light); margin-top: 8px; font-weight: normal; line-height: 1.4;">
-                Jërejëf Serigne Touba.<br>
-                Qu'Allah accepte notre Zikr et répande Ses grâces sur la communauté.
+
+        <h1 class="text-lg md:text-2xl font-black text-white mb-2">{{ session.titre }}</h1>
+
+        <div class="p-3.5 rounded-2xl bg-black/40 border border-gold-500/30 mb-3">
+            {% if session.zikr and session.zikr.texte_arabe %}
+            <p class="font-arabic text-2xl md:text-3xl font-bold text-gold-400 leading-relaxed mb-1" dir="rtl">{{ session.zikr.texte_arabe }}</p>
+            {% endif %}
+            <p class="text-sm font-extrabold text-white">
+                {% if session.zikr_personnalise %}{{ session.zikr_personnalise }}{% elif session.zikr %}{{ session.zikr.titre }}{% endif %}
             </p>
+            {% if session.zikr and session.zikr.transcription %}
+            <p class="text-xs text-white/60 italic mt-0.5">{{ session.zikr.transcription }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Progression Globale -->
+        {% widthratio session.compteur_actuel session.objectif_global 100 as percentage %}
+        <div class="bg-black/35 rounded-2xl p-3.5 border border-white/10">
+            <div class="flex items-baseline justify-between mb-1.5">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-white/60">Progression Globale</span>
+                <span class="text-xs font-extrabold text-gold-400">Objectif : {{ session.objectif_global }}</span>
+            </div>
+            <div class="text-3xl font-black text-gold-400 tabular-nums mb-2" id="global-counter">{{ session.compteur_actuel }}</div>
+            <div class="w-full h-3 bg-black/60 rounded-full overflow-hidden border border-white/10">
+                <div id="global-progress" class="h-full bg-gradient-to-r from-emerald-500 via-gold-400 to-amber-300 rounded-full transition-all duration-300"
+                     style="width: {% if percentage|add:'0' > 100 %}100{% else %}{{ percentage }}{% endif %}%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. ZONE DE COMPTAGE & BOUTON ENREGISTRER -->
+    {% if user.is_authenticated %}
+    <div class="glass rounded-3xl p-5 border border-emerald-500/35 text-center space-y-4">
+        <div class="flex items-center justify-between px-2">
+            <span class="text-xs font-bold text-white/70">Votre contribution totale :</span>
+            <span class="px-3 py-1 rounded-full bg-gold-500/20 border border-gold-500/40 text-gold-400 font-black text-sm tabular-nums" id="personal-counter">
+                {{ ma_participation.contribution|default:0 }}
+            </span>
+        </div>
+
+        {% if session.est_actif %}
+        <!-- Grand Bouton Chapelet Tactile -->
+        <div class="py-2">
+            <button type="button" id="btn-zikr" onclick="addCommunityCount(1)"
+                    class="w-36 h-36 rounded-full mx-auto bg-gradient-to-br from-amber-300 via-gold-500 to-amber-700 text-black shadow-[0_0_35px_rgba(212,175,55,0.45)] border-4 border-white/40 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform cursor-pointer">
+                <i class="fa-solid fa-fingerprint text-4xl"></i>
+                <span class="text-xs font-black uppercase tracking-wider">+1 Grain</span>
+            </button>
+        </div>
+
+        <!-- Ajout rapide par lots (+10, +33, +100) + Enregistrement immédiat -->
+        <div class="space-y-2">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-white/55 block">Ajout rapide (si récité sur votre chapelet) :</span>
+            <div class="grid grid-cols-3 gap-2">
+                <button type="button" onclick="addCommunityCount(10)" class="py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-gold-500/30 text-gold-400 font-extrabold text-xs">+10</button>
+                <button type="button" onclick="addCommunityCount(33)" class="py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-gold-500/30 text-gold-400 font-extrabold text-xs">+33</button>
+                <button type="button" onclick="addCommunityCount(100)" class="py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-gold-500/30 text-gold-400 font-extrabold text-xs">+100</button>
+            </div>
+        </div>
+
+        <button type="button" id="btn-sync-now" onclick="syncWithServer(true)"
+                class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span id="sync-status-lbl">Enregistrer ma contribution</span>
+        </button>
+        {% else %}
+        <div class="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold text-sm">
+            <i class="fa-solid fa-circle-check text-xl mb-1 block"></i>
+            Alhamdoulillah ! Objectif collectif atteint. Qu'Allah accepte notre Zikr.
         </div>
         {% endif %}
     </div>
     {% else %}
-    <div style="text-align: center; margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
-        <p style="color: var(--text-light); margin-bottom: 15px;">Connectez-vous pour participer à cette session et entrer dans le classement.</p>
-        <a href="{% url 'login' %}?next={{ request.path }}" class="btn-primary" style="background: var(--gold); color: var(--bg-dark); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold;">Se connecter</a>
+    <div class="glass rounded-3xl p-5 border border-gold-500/35 text-center">
+        <p class="text-xs text-white/80 mb-3">Connectez-vous pour enregistrer vos grains dans cette session communautaire.</p>
+        <a href="{% url 'login' %}?next={{ request.path }}" class="inline-block py-3 px-6 rounded-xl bg-gradient-to-r from-gold-400 to-gold-600 text-black font-extrabold text-xs" style="text-decoration:none;">
+            Se connecter
+        </a>
     </div>
     {% endif %}
+
+    <!-- 4. CLASSEMENT DES CONTRIBUTEURS -->
+    <div class="glass rounded-3xl p-5 border border-white/10">
+        <h2 class="text-xs font-extrabold uppercase tracking-widest text-gold-400 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-trophy"></i> Classement des Participants
+        </h2>
+        <div class="divide-y divide-white/10">
+            {% for part in classement %}
+            <div class="py-2.5 px-2 flex items-center justify-between {% if part.utilisateur == request.user %}bg-gold-500/10 rounded-xl{% endif %}">
+                <div class="flex items-center gap-3">
+                    <span class="w-7 text-xs font-black {% if forloop.counter == 1 %}text-yellow-400{% elif forloop.counter == 2 %}text-gray-300{% elif forloop.counter == 3 %}text-amber-500{% else %}text-white/40{% endif %}">
+                        #{{ forloop.counter }}
+                    </span>
+                    <span class="text-xs font-bold text-white">
+                        {{ part.utilisateur.username }}
+                        {% if part.utilisateur == request.user %}
+                        <span class="ml-1.5 px-2 py-0.5 rounded bg-gold-500 text-black text-[9px] font-black">VOUS</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <span class="text-xs font-black text-gold-400 tabular-nums">{{ part.contribution }} grains</span>
+            </div>
+            {% empty %}
+            <p class="text-xs text-white/50 text-center py-4">Aucun participant pour le moment. Soyez le premier !</p>
+            {% endfor %}
+        </div>
+    </div>
+
 </div>
 
-    <!-- LE COMPTEUR GLOBAL -->
-    <div class="global-counter-card" style="background: var(--card-bg); border: 2px solid var(--gold); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 0 20px rgba(212,175,55,0.2);">
-        <h3 style="color: var(--text-light); margin-top: 0; font-size: 16px;">Objectif de la Communauté</h3>
-        <div style="font-size: 32px; font-weight: bold; color: var(--gold); font-family: monospace; margin: 5px 0;" id="global-counter">
-            {{ session.compteur_actuel }}
-        </div>
-        <div style="color: var(--dim); font-size: 12px;">Sur {{ session.objectif_global }} Zikrs</div>
-        
-        <div class="progress-container" style="background: rgba(255,255,255,0.05); border-radius: 10px; height: 10px; margin-top: 10px; overflow: hidden;">
-            {% widthratio session.compteur_actuel session.objectif_global 100 as percentage %}
-            <div class="progress-bar" id="global-progress" style="background: linear-gradient(90deg, #b8860b, #ffd700); height: 100%; width: {% if percentage|add:"0" > 100 %}100{% else %}{{ percentage }}{% endif %}%; transition: width 0.5s;"></div>
-        </div>
-
-        <!-- BOUTON DE PARTAGE -->
-        <button onclick="shareSession()" style="margin-top: 10px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.5); color: var(--gold); padding: 8px 16px; border-radius: 15px; cursor: pointer; transition: all 0.3s; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-            <i class="fas fa-share-nodes"></i> Inviter à participer
-        </button>
-        <script>
-            function shareSession() {
-                let shareUrl = window.location.href.split('?')[0]; // Enlever les paramètres existants
-                {% if session.est_prive %}
-                shareUrl += '?code={{ session.code_partage }}';
-                {% endif %}
-                
-                const shareData = {
-                    title: '{{ session.titre|escapejs }}',
-                    text: "Rejoignez-moi pour cette session de Zikr communautaire et atteignons ensemble l'objectif de {{ session.objectif_global }} !",
-                    url: shareUrl
-                }
-                if (navigator.share) {
-                    navigator.share(shareData).catch(err => console.error('Erreur de partage:', err));
-                } else {
-                    navigator.clipboard.writeText(shareData.url).then(() => {
-                        alert('Lien copié dans le presse-papier !');
-                    });
-                }
-            }
-        </script>
-    </div>
-
-    <!-- LE CLASSEMENT (LEADERBOARD) -->
-    <h2 style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 10px; margin-bottom: 20px;">
-        <i class="fas fa-trophy"></i> Top Contributeurs
-    </h2>
-
-    <div class="leaderboard" style="background: var(--card-bg); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 100px;">
-        {% for part in classement %}
-        <div style="display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.02); {% if part.utilisateur == request.user %}background: rgba(212,175,55,0.1);{% endif %}">
-            <div style="width: 40px; font-weight: bold; font-size: 18px; color: {% if forloop.counter == 1 %}#ffd700{% elif forloop.counter == 2 %}#c0c0c0{% elif forloop.counter == 3 %}#cd7f32{% else %}var(--dim){% endif %};">
-                #{{ forloop.counter }}
-            </div>
-            <div style="flex-grow: 1; color: white;">
-                {{ part.utilisateur.username }}
-                {% if part.utilisateur == request.user %}
-                    <span style="font-size: 10px; background: var(--gold); color: black; padding: 2px 6px; border-radius: 4px; margin-left: 10px;">VOUS</span>
-                {% endif %}
-            </div>
-            <div style="font-weight: bold; color: var(--gold);">
-                {{ part.contribution }}
-            </div>
-        </div>
-        {% empty %}
-        <div style="padding: 20px; text-align: center; color: var(--dim);">Aucun participant pour le moment. Soyez le premier !</div>
-        {% endfor %}
-    </div>
-
-{% if user.is_authenticated %}
 <script>
-    const btnZikr = document.getElementById('btn-zikr');
+    function shareSession() {
+        let shareUrl = window.location.href.split('?')[0];
+        {% if session.est_prive %}
+        shareUrl += '?code={{ session.code_partage }}';
+        {% endif %}
+        const shareData = {
+            title: '{{ session.titre|escapejs }}',
+            text: "Rejoignez la session de Zikr « {{ session.titre|escapejs }} » (Objectif : {{ session.objectif_global }}) :",
+            url: shareUrl
+        };
+        if (navigator.share) {
+            navigator.share(shareData).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(shareUrl).then(() => alert('Lien de la session copié !'));
+        }
+    }
+
+    {% if user.is_authenticated and session.est_actif %}
     const globalCounterEl = document.getElementById('global-counter');
     const personalCounterEl = document.getElementById('personal-counter');
     const globalProgressEl = document.getElementById('global-progress');
+    const syncLbl = document.getElementById('sync-status-lbl');
     const objectifGlobal = {{ session.objectif_global }};
     const sessionId = {{ session.id }};
-    
-    // Variables pour envoyer par paquets (batching) pour ne pas spammer le serveur
     let pendingCount = 0;
     let syncTimeout = null;
 
-    btnZikr.addEventListener('click', () => {
-        let currentGlobal = parseInt(globalCounterEl.textContent);
-        if (currentGlobal >= objectifGlobal) {
-            return;
-        }
+    function addCommunityCount(amount) {
+        let currentGlobal = parseInt(globalCounterEl.textContent) || 0;
+        if (currentGlobal >= objectifGlobal) return;
 
-        // Animation du bouton
-        btnZikr.style.transform = 'scale(0.9)';
-        setTimeout(() => btnZikr.style.transform = 'scale(1)', 100);
-        
-        // Mise à jour de l'UI immédiate (optimiste)
-        pendingCount++;
-        personalCounterEl.textContent = parseInt(personalCounterEl.textContent) + 1;
-        
-        currentGlobal += 1;
+        if (navigator.vibrate) navigator.vibrate(25);
+        pendingCount += amount;
+        personalCounterEl.textContent = (parseInt(personalCounterEl.textContent) || 0) + amount;
+        currentGlobal = Math.min(objectifGlobal, currentGlobal + amount);
         globalCounterEl.textContent = currentGlobal;
-        
-        // Mise à jour de la barre
-        const percentage = Math.min(100, (currentGlobal / objectifGlobal) * 100);
-        globalProgressEl.style.width = percentage + '%';
-        
-        // Debounce de la synchronisation (envoie au serveur après 1 seconde sans clic)
-        clearTimeout(syncTimeout);
-        syncTimeout = setTimeout(syncWithServer, 1000);
 
+        const pct = Math.min(100, (currentGlobal / objectifGlobal) * 100);
+        globalProgressEl.style.width = pct + '%';
+        if (syncLbl) syncLbl.textContent = `Enregistrer maintenant (+${pendingCount} en attente)`;
+
+        clearTimeout(syncTimeout);
+        syncTimeout = setTimeout(() => syncWithServer(false), 900);
         if (currentGlobal >= objectifGlobal) {
             clearTimeout(syncTimeout);
-            syncWithServer(); // Force immediate sync if goal reached
+            syncWithServer(true);
         }
-    });
+    }
 
-    function syncWithServer() {
-        if (pendingCount === 0) return;
-        
+    function syncWithServer(manualClick) {
+        if (pendingCount === 0) {
+            if (manualClick && syncLbl) {
+                syncLbl.textContent = 'Contribution enregistrée ✓';
+                setTimeout(() => { syncLbl.textContent = 'Enregistrer ma contribution'; }, 2000);
+            }
+            return;
+        }
         const countToSend = pendingCount;
-        pendingCount = 0; // Reset
-        
+        pendingCount = 0;
+        if (syncLbl) syncLbl.textContent = 'Enregistrement en cours...';
+
         fetch("{% url 'api_zikr_communaute_add' %}", {
             method: 'POST',
             headers: {
@@ -189,53 +218,22 @@
                 count: countToSend
             })
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
             if (data.status === 'success') {
-                // On met à jour avec les vraies valeurs du serveur au cas où d'autres ont cliqué
                 globalCounterEl.textContent = data.global_count;
-                const percentage = Math.min(100, (data.global_count / objectifGlobal) * 100);
-                globalProgressEl.style.width = percentage + '%';
-                
-                if (data.is_completed) {
-                    location.reload();
+                personalCounterEl.textContent = data.personal_count;
+                const pct = Math.min(100, (data.global_count / objectifGlobal) * 100);
+                globalProgressEl.style.width = pct + '%';
+                if (syncLbl) {
+                    syncLbl.textContent = 'Contribution enregistrée ✓';
+                    setTimeout(() => { syncLbl.textContent = 'Enregistrer ma contribution'; }, 2200);
                 }
-            } else if (data.status === 'error' && data.message === 'Session terminée') {
-                location.reload();
+                if (data.is_completed) location.reload();
             }
         })
-        .catch(err => console.error("Erreur de synchronisation", err));
+        .catch(() => {});
     }
-    
-    // Polling toutes les 10 secondes pour voir les clics des autres
-    setInterval(() => {
-        // On pourrait ajouter un endpoint GET ou utiliser le même POST avec count=0
-        fetch("{% url 'api_zikr_communaute_add' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                session_id: sessionId,
-                count: 0
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                globalCounterEl.textContent = data.global_count;
-                const percentage = Math.min(100, (data.global_count / objectifGlobal) * 100);
-                globalProgressEl.style.width = percentage + '%';
-                
-                if (data.is_completed) {
-                    location.reload();
-                }
-            } else if (data.status === 'error' && data.message === 'Session terminée') {
-                location.reload();
-            }
-        });
-    }, 10000);
+    {% endif %}
 </script>
-{% endif %}
 {% endblock %}

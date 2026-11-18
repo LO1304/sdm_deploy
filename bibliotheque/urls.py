@@ -34,6 +34,7 @@ urlpatterns = [
     path('zikr-compteur/<int:id>/', views.zikr_compteur, name='zikr_compteur'),
     path('api/zikr/creer/', views.api_creer_zikr, name='api_creer_zikr'),
     path('api/zikr/objectif/', views.api_modifier_objectif_zikr, name='api_modifier_objectif_zikr'),
+    path('api/zikr/supprimer/<int:zikr_id>/', views.api_supprimer_zikr, name='api_supprimer_zikr'),
     path('voir-historique/', views.voir_historique, name='voir_historique'),
     path('historique/zikr/', views.voir_historique_zikr, name='voir_historique_zikr'),
     path('historique/general/', views.voir_historique_general, name='voir_historique_general'),
