@@ -349,36 +349,24 @@
 
 <div class="wrapper">
 
-    <!-- HEADER COMPACT AVEC BOUTON D'AJOUT TELEGRAM / FICHIER -->
+    <!-- HEADER COMPACT -->
     <header class="page-header" style="padding: 18px 0 16px;">
         <a href="{% url 'home' %}" class="back-btn"><i class="fa-solid fa-arrow-left" style="font-size:14px"></i></a>
         <div class="header-center">
             <span class="header-tag">Audiothèque</span>
             <span class="header-count" id="totalTracksCount">{{ sons|length }} titre{{ sons|length|pluralize }}</span>
         </div>
+        {% if user.is_staff or user.is_superuser %}
         <button type="button" onclick="openTelegramAudioModal()"
-                style="height:40px; padding:0 13px; border-radius:14px; background:linear-gradient(135deg, #38BDF8, #0284C7); color:#fff; border:none; font-size:11px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 16px rgba(2,132,199,0.35);">
-            <i class="fa-brands fa-telegram" style="font-size:14px;"></i>
-            <span>+ Ajouter Son</span>
+                style="height:38px; padding:0 11px; border-radius:12px; background:rgba(212,175,55,0.16); color:#FDE047; border:1px solid rgba(212,175,55,0.45); font-size:10px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px;"
+                title="Administration : Ajouter un audio">
+            <i class="fa-solid fa-shield-halved" style="font-size:11px;"></i>
+            <span>+ Admin</span>
         </button>
+        {% else %}
+        <div style="width:44px"></div>
+        {% endif %}
     </header>
-
-    <!-- BANDEAU D'ACTION RAPIDE : AJOUTER UN SON DEPUIS TELEGRAM OU SUPPRIMER LES SONS INCONNUS -->
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(2,132,199,0.12); border:1px solid rgba(56,189,248,0.35); border-radius:16px; padding:10px 14px; margin-bottom:14px;">
-        <div style="min-width:0;">
-            <div style="font-size:11px; font-weight:800; color:#7DD3FC; display:flex; align-items:center; gap:6px;">
-                <i class="fa-brands fa-telegram"></i>
-                <span>Import Telegram & Gestion</span>
-            </div>
-            <div style="font-size:10px; color:rgba(255,255,255,0.65); margin-top:2px;">
-                Ajoutez vos audios trouvés sur Telegram ou supprimez (🗑️) les sons que vous ne connaissez pas.
-            </div>
-        </div>
-        <button type="button" onclick="openTelegramAudioModal()"
-                style="flex-shrink:0; padding:8px 12px; border-radius:11px; background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.5); color:#E0F2FE; font-size:10px; font-weight:800; cursor:pointer;">
-            Importer
-        </button>
-    </div>
 
     <!-- SEARCH -->
     <div class="search-wrap">
@@ -461,16 +449,18 @@
                         title="Enregistrer hors-ligne dans l'application">
                     <i class="fa-solid fa-cloud-arrow-down"></i>
                 </button>
+                {% if user.is_staff or user.is_superuser %}
                 <button type="button" class="track-btn"
                         onclick="openEditSonModal(event, {{ s.id }}, '{{ s.titre|escapejs }}', '{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}', '{{ s.categorie|escapejs }}')"
-                        title="Renommer ce son">
+                        title="Admin : Renommer ce son">
                     <i class="fa-solid fa-pen" style="font-size:11px;"></i>
                 </button>
                 <button type="button" class="track-btn"
                         onclick="deleteSonTrack(event, {{ s.id }}, '{{ s.titre|escapejs }}', this)"
-                        title="Supprimer ce son" style="color:rgba(248,113,113,0.75);">
+                        title="Admin : Supprimer ce son" style="color:rgba(248,113,113,0.75);">
                     <i class="fa-solid fa-trash-can" style="font-size:11px;"></i>
                 </button>
+                {% endif %}
             </div>
         </div>
         {% endif %}
@@ -484,7 +474,8 @@
 
 </div><!-- /wrapper -->
 
-<!-- MODAL 1 : AJOUTER DES SONS DEPUIS TELEGRAM (FICHIERS AUDIO OU LIEN TELEGRAM) -->
+{% if user.is_staff or user.is_superuser %}
+<!-- MODAL 1 (ADMIN UNIQUEMENT) : AJOUTER DES SONS DEPUIS FICHIERS AUDIO OU LIEN -->
 <div id="telegramAudioModal" style="display:none; position:fixed; inset:0; z-index:10050; background:rgba(0,0,0,0.82); backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;" onclick="if(event.target===this) closeTelegramAudioModal()">
     <div style="width:100%; max-width:480px; background:#07150F; border:1px solid rgba(56,189,248,0.45); border-radius:24px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,0.85); max-height:90vh; overflow-y:auto;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.08);">
@@ -597,6 +588,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 <!-- PLAYER IMMERSIF -->
 <div id="audio-player">
@@ -1085,7 +1077,8 @@ window.addEventListener('DOMContentLoaded', () => {
     } catch(e) {}
 });
 
-/* ══ AJOUT DE SONS DEPUIS TELEGRAM / FICHIERS & GESTION DES SONS INCONNUS ══ */
+{% if user.is_staff or user.is_superuser %}
+/* ══ ADMINISTRATION UNIQUEMENT : AJOUT, RENOMMAGE & SUPPRESSION DE SONS ══ */
 window.openTelegramAudioModal = function() {
     document.getElementById('telegramAudioModal').style.display = 'flex';
 };
@@ -1114,7 +1107,7 @@ window.submitTelegramAudio = async function(e) {
     const hasFiles = filesInput.files && filesInput.files.length > 0;
     const hasLink = linkInput.value && linkInput.value.trim().length > 0;
     if (!hasFiles && !hasLink) {
-        showToast('Choisissez un fichier audio Telegram ou collez un lien');
+        showToast('Choisissez un fichier audio ou collez un lien');
         return;
     }
 
@@ -1125,6 +1118,7 @@ window.submitTelegramAudio = async function(e) {
     try {
         const res = await fetch('/api/sons/ajouter/', {
             method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
             body: fd
         });
         const data = await res.json();
@@ -1148,10 +1142,10 @@ window.submitTelegramAudio = async function(e) {
                         <div class="track-author">${s.auteur}</div>
                     </div>
                     <div class="track-actions">
-                        <button type="button" class="track-btn" onclick="openEditSonModal(event, ${s.id}, '${s.titre.replace(/'/g, "\\'")}', '${s.auteur.replace(/'/g, "\\'")}', '${s.categorie}')" title="Renommer">
+                        <button type="button" class="track-btn" onclick="openEditSonModal(event, ${s.id}, '${s.titre.replace(/'/g, "\\'")}', '${s.auteur.replace(/'/g, "\\'")}', '${s.categorie}')" title="Admin : Renommer">
                             <i class="fa-solid fa-pen" style="font-size:11px;"></i>
                         </button>
-                        <button type="button" class="track-btn" onclick="deleteSonTrack(event, ${s.id}, '${s.titre.replace(/'/g, "\\'")}', this)" title="Supprimer" style="color:rgba(248,113,113,0.75);">
+                        <button type="button" class="track-btn" onclick="deleteSonTrack(event, ${s.id}, '${s.titre.replace(/'/g, "\\'")}', this)" title="Admin : Supprimer" style="color:rgba(248,113,113,0.75);">
                             <i class="fa-solid fa-trash-can" style="font-size:11px;"></i>
                         </button>
                     </div>
@@ -1164,7 +1158,6 @@ window.submitTelegramAudio = async function(e) {
             form.reset();
             closeTelegramAudioModal();
             showToast(data.message || 'Son ajouté avec succès ✓');
-            // Lancer la lecture du nouveau son ajouté
             if (items.length > 0) playTrack(items[0]);
         } else {
             showToast(data.message || 'Erreur lors de l\'import');
@@ -1184,7 +1177,10 @@ window.deleteSonTrack = async function(e, sonId, titre, btnEl) {
     }
     const row = btnEl.closest('.track-item');
     try {
-        const res = await fetch(`/api/sons/supprimer/${sonId}/`, { method: 'POST' });
+        const res = await fetch(`/api/sons/supprimer/${sonId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
         const data = await res.json();
         if (res.ok && data.status === 'success') {
             if (row) row.remove();
@@ -1222,7 +1218,10 @@ window.saveEditSon = async function() {
     try {
         const res = await fetch(`/api/sons/modifier/${sonId}/`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
             body: JSON.stringify({ titre, auteur_voix: auteur, categorie })
         });
         const data = await res.json();
@@ -1243,6 +1242,7 @@ window.saveEditSon = async function() {
         showToast('Erreur lors de la modification');
     }
 };
+{% endif %}
 
 /* Init waveform size */
 window.addEventListener('resize', ()=> drawWaveform(parseFloat(seekEl.value)/1000));

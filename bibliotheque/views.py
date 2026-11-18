@@ -865,12 +865,17 @@ def _extract_telegram_audio_info(tg_url):
     return None, None, None
 
 
-@csrf_exempt
+def _is_catalog_admin(user):
+    return bool(user and user.is_authenticated and (user.is_staff or user.is_superuser))
+
+
 def api_ajouter_son(request):
     """
-    Ajoute un ou plusieurs sons (depuis fichiers téléchargés sur Telegram/Téléphone ou lien Telegram/URL direct).
-    Héberge chaque fichier en streaming permanent sur Cloudinary (resource_type='video').
+    RESERVE STRICTEMENT A L'ADMINISTRATEUR (is_staff / is_superuser).
+    Ajoute un ou plusieurs sons (depuis fichiers audio ou lien direct) sur Cloudinary (resource_type='video').
     """
+    if not _is_catalog_admin(request.user):
+        return JsonResponse({'status': 'error', 'message': "Accès interdit : réservé à l'administrateur."}, status=403)
     if request.method != 'POST':
         return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
 
@@ -987,9 +992,10 @@ def api_ajouter_son(request):
         return JsonResponse({'status': 'error', 'message': f"Erreur lors de l'ajout : {str(e)}"}, status=400)
 
 
-@csrf_exempt
 def api_supprimer_son(request, son_id):
-    """Supprime définitivement un son de l'audiothèque."""
+    """RESERVE STRICTEMENT A L'ADMINISTRATEUR : Supprime définitivement un son de l'audiothèque."""
+    if not _is_catalog_admin(request.user):
+        return JsonResponse({'status': 'error', 'message': "Accès interdit : réservé à l'administrateur."}, status=403)
     if request.method != 'POST':
         return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
     try:
@@ -999,9 +1005,10 @@ def api_supprimer_son(request, son_id):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 
-@csrf_exempt
 def api_modifier_son(request, son_id):
-    """Permet de renommer un son inconnu ou de modifier son auteur / sa catégorie."""
+    """RESERVE STRICTEMENT A L'ADMINISTRATEUR : Permet de renommer un son ou modifier son auteur/catégorie."""
+    if not _is_catalog_admin(request.user):
+        return JsonResponse({'status': 'error', 'message': "Accès interdit : réservé à l'administrateur."}, status=403)
     if request.method != 'POST':
         return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
     try:
