@@ -227,41 +227,15 @@ def lire_pdf(request, categorie, id):
     # Fetch all sounds for background audio player
     sons = Son.objects.all().order_by('-date_ajout')
 
-    # Préparer l'URL directe du PDF comme fallback pour le JS
+    # Préparer l'URL directe du PDF comme fallback rapide (sans appel API synchrone bloquant)
     direct_pdf_url = ''
     try:
         if document.fichier_pdf:
             raw_url = document.fichier_pdf.url
             if raw_url.startswith('//'):
                 direct_pdf_url = 'https:' + raw_url
-            elif raw_url.startswith('http'):
-                direct_pdf_url = raw_url
             else:
-                direct_pdf_url = raw_url  # URL relative locale
-            
-            # Si c'est une URL Cloudinary, utiliser l'API Admin pour la vraie URL
-            if 'cloudinary' in direct_pdf_url or direct_pdf_url.startswith('http'):
-                try:
-                    import cloudinary
-                    import cloudinary.api
-                    from django.conf import settings as conf_settings
-                    cloud_config = getattr(conf_settings, 'CLOUDINARY_STORAGE', {})
-                    cloudinary.config(
-                        cloud_name=cloud_config.get('CLOUD_NAME', ''),
-                        api_key=cloud_config.get('API_KEY', ''),
-                        api_secret=cloud_config.get('API_SECRET', ''),
-                        secure=True,
-                    )
-                    resource_info = cloudinary.api.resource(
-                        str(document.fichier_pdf),
-                        resource_type='raw',
-                        type='upload',
-                    )
-                    real_url = resource_info.get('secure_url', '')
-                    if real_url:
-                        direct_pdf_url = real_url
-                except Exception:
-                    pass  # Garder l'URL non signée comme fallback
+                direct_pdf_url = raw_url
     except (ValueError, Exception):
         direct_pdf_url = ''
 
@@ -273,16 +247,109 @@ def lire_pdf(request, categorie, id):
         'direct_pdf_url': direct_pdf_url,
     })
 
-def proxy_pdf(request, categorie, id):
-    """Proxy robuste : streaming du PDF avec URLs signées Cloudinary."""
+
+def _get_pdf_bytes_cached(categorie, document):
+    """
+    Récupère les octets du fichier PDF avec mise en cache sur disque local
+    pour éviter de retélécharger le ZIP Cloudinary à chaque ouverture ou miniature.
+    """
+    import tempfile
+    import zipfile
+    import io
     import cloudinary
     import cloudinary.utils
     from django.conf import settings as conf_settings
-    
+
+    if not document.fichier_pdf:
+        return None
+
+    cache_dir = os.path.join(tempfile.gettempdir(), 'sdm_pdf_cache')
+    os.makedirs(cache_dir, exist_ok=True)
+    cache_file = os.path.join(cache_dir, f"{categorie}_{document.id}.pdf")
+
+    if os.path.exists(cache_file) and os.path.getsize(cache_file) > 500:
+        try:
+            with open(cache_file, 'rb') as f:
+                return f.read()
+        except Exception:
+            pass
+
+    try:
+        pdf_url = document.fichier_pdf.url
+        pdf_name = str(document.fichier_pdf)
+    except (ValueError, Exception):
+        return None
+
+    # 1. Fichier local dans MEDIA_ROOT
+    if pdf_url.startswith('/') and not pdf_url.startswith('//'):
+        file_path = os.path.join(conf_settings.MEDIA_ROOT, pdf_name)
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                data = f.read()
+            return data
+        return None
+
+    # 2. Fichier distant (Cloudinary)
+    cloud_config = getattr(conf_settings, 'CLOUDINARY_STORAGE', {})
+    cloudinary.config(
+        cloud_name=cloud_config.get('CLOUD_NAME', os.environ.get('CLOUDINARY_CLOUD_NAME', 'dcajqzg2h')),
+        api_key=cloud_config.get('API_KEY', os.environ.get('CLOUDINARY_API_KEY', '')),
+        api_secret=cloud_config.get('API_SECRET', os.environ.get('CLOUDINARY_API_SECRET', '')),
+        secure=True,
+    )
+
+    # Tentative A : URL directe rapide si accessible
+    full_direct_url = ('https:' + pdf_url) if pdf_url.startswith('//') else pdf_url
+    if full_direct_url.startswith('http'):
+        try:
+            r_direct = requests.get(full_direct_url, timeout=12)
+            if r_direct.status_code == 200 and len(r_direct.content) > 500 and r_direct.content[:4] == b'%PDF':
+                with open(cache_file, 'wb') as f:
+                    f.write(r_direct.content)
+                return r_direct.content
+        except Exception:
+            pass
+
+    # Tentative B : Contournement Cloudinary Raw via ZIP signé
+    try:
+        zip_url = cloudinary.utils.download_zip_url(
+            public_ids=[pdf_name],
+            resource_type='raw'
+        )
+        remote = requests.get(zip_url, timeout=25)
+        if remote.status_code == 200:
+            z = zipfile.ZipFile(io.BytesIO(remote.content))
+            filename_in_zip = z.namelist()[0]
+            pdf_data = z.read(filename_in_zip)
+            if len(pdf_data) > 500:
+                with open(cache_file, 'wb') as f:
+                    f.write(pdf_data)
+                return pdf_data
+    except Exception as e:
+        print(f"[_get_pdf_bytes_cached] ZIP workaround failed: {e}")
+
+    # Tentative C : API Admin Cloudinary en dernier recours
+    try:
+        import cloudinary.api
+        resource_info = cloudinary.api.resource(pdf_name, resource_type='raw', type='upload')
+        real_url = resource_info.get('secure_url', '')
+        if real_url:
+            remote = requests.get(real_url, timeout=20)
+            if remote.status_code == 200 and len(remote.content) > 500:
+                with open(cache_file, 'wb') as f:
+                    f.write(remote.content)
+                return remote.content
+    except Exception as e:
+        print(f"[_get_pdf_bytes_cached] API fallback failed: {e}")
+
+    return None
+
+
+def proxy_pdf(request, categorie, id):
+    """Proxy ultra-rapide avec cache disque serveur pour les PDF."""
     target_model = Coran if categorie == 'coran' else Khassida
     document = get_object_or_404(target_model, id=id)
-    
-    # Enregistrer automatiquement le téléchargement pour l'utilisateur
+
     if request.user.is_authenticated:
         try:
             content_type = ContentType.objects.get_for_model(target_model)
@@ -291,102 +358,91 @@ def proxy_pdf(request, categorie, id):
                 content_type=content_type,
                 object_id=id
             )
-        except Exception as e:
-            print(f"[proxy_pdf] Erreur telechargement: {e}")
-            
-    # Récupérer l'URL du PDF
-    try:
-        if not document.fichier_pdf:
-            return HttpResponse("Fichier PDF non disponible", status=404)
-        pdf_url = document.fichier_pdf.url
-        pdf_name = str(document.fichier_pdf)
-    except (ValueError, Exception):
-        return HttpResponse("Fichier PDF non disponible", status=404)
-    
-    # ── Fichier local : servir directement ──
-    if pdf_url.startswith('/') and not pdf_url.startswith('//'):
-        file_path = os.path.join(conf_settings.MEDIA_ROOT, pdf_name)
-        if os.path.exists(file_path):
-            with open(file_path, 'rb') as f:
-                res = HttpResponse(f.read(), content_type='application/pdf')
-                res['Access-Control-Allow-Origin'] = '*'
-                res['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-                res['Cache-Control'] = 'public, max-age=86400'
-                filename = f"{document.titre.replace(' ', '_')}.pdf"
-                res['Content-Disposition'] = f'inline; filename="{filename}"'
-                return res
-        return HttpResponse("Fichier local introuvable", status=404)
-    
-    # ── Fichier distant (Cloudinary) ──
-    # Configurer Cloudinary
-    cloud_config = getattr(conf_settings, 'CLOUDINARY_STORAGE', {})
-    cloudinary.config(
-        cloud_name=cloud_config.get('CLOUD_NAME', os.environ.get('CLOUDINARY_CLOUD_NAME', 'dcajqzg2h')),
-        api_key=cloud_config.get('API_KEY', os.environ.get('CLOUDINARY_API_KEY', '')),
-        api_secret=cloud_config.get('API_SECRET', os.environ.get('CLOUDINARY_API_SECRET', '')),
-        secure=True,
-    )
-    
-    # ── Solution Ultime : Contourner le blocage PDF de Cloudinary via ZIP ──
-    # Cloudinary bloque la distribution des fichiers PDF "raw" par défaut (Erreur 401).
-    # L'astuce consiste à demander à l'API de générer un ZIP contenant le PDF, 
-    # de le télécharger, et de l'extraire en mémoire pour le servir au navigateur.
-    try:
-        import cloudinary.utils
-        import zipfile
-        import io
-        
-        print(f"[proxy_pdf] Generation URL ZIP pour: {pdf_name}")
-        zip_url = cloudinary.utils.download_zip_url(
-            public_ids=[pdf_name],
-            resource_type='raw'
-        )
-        
-        remote = requests.get(zip_url, timeout=30)
-        
-        if remote.status_code == 200:
-            # Extraire le PDF depuis le ZIP en mémoire
-            z = zipfile.ZipFile(io.BytesIO(remote.content))
-            filename_in_zip = z.namelist()[0]
-            pdf_data = z.read(filename_in_zip)
-            
-            print(f"[proxy_pdf] OK PDF extrait du ZIP ({len(pdf_data)} bytes)")
-            res = HttpResponse(pdf_data, content_type='application/pdf')
-            res['Access-Control-Allow-Origin'] = '*'
-            res['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-            res['Cache-Control'] = 'public, max-age=86400'
-            filename = f"{document.titre.replace(' ', '_')}.pdf"
-            res['Content-Disposition'] = f'inline; filename="{filename}"'
-            return res
-        else:
-            print(f"[proxy_pdf] WARN ZIP download failed: HTTP {remote.status_code}")
-    except Exception as e:
-        print(f"[proxy_pdf] WARN ZIP workaround failed: {e}")
-        
-    # Si le workaround ZIP échoue, on tente de récupérer la secure_url API comme dernier recours
-    try:
-        import cloudinary.api
-        resource_info = cloudinary.api.resource(pdf_name, resource_type='raw', type='upload')
-        real_url = resource_info.get('secure_url', '')
-        if real_url:
-            print(f"[proxy_pdf] TRY API secure_url: {real_url[:120]}")
-            remote = requests.get(real_url, timeout=25, stream=True)
-            if remote.status_code == 200 and len(remote.content) > 0:
-                res = HttpResponse(remote.content, content_type='application/pdf')
-                res['Access-Control-Allow-Origin'] = '*'
-                res['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-                res['Cache-Control'] = 'public, max-age=86400'
-                filename = f"{document.titre.replace(' ', '_')}.pdf"
-                res['Content-Disposition'] = f'inline; filename="{filename}"'
-                return res
-    except Exception as e:
-        print(f"[proxy_pdf] API fallback failed: {e}")
-    
-    # Toutes les tentatives ont échoué
+        except Exception:
+            pass
+
+    pdf_data = _get_pdf_bytes_cached(categorie, document)
+    if pdf_data:
+        res = HttpResponse(pdf_data, content_type='application/pdf')
+        res['Access-Control-Allow-Origin'] = '*'
+        res['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        res['Cache-Control'] = 'public, max-age=604800, immutable'
+        safe_title = "".join(c if c.isalnum() or c in ('-', '_') else '_' for c in document.titre)
+        res['Content-Disposition'] = f'inline; filename="{safe_title}.pdf"'
+        return res
+
     return HttpResponse(
-        "Impossible de charger le PDF. Le fichier est restreint ou n'existe pas.", 
+        "Impossible de charger le PDF. Le fichier est restreint ou temporairement indisponible.",
         status=502
     )
+
+
+def thumb_pdf(request, categorie, id):
+    """
+    Extrait et renvoie l'image JPEG réelle de la 1re page (Page 1) du PDF
+    avec mise en cache disque et navigateur longue durée.
+    """
+    import tempfile
+    import io
+
+    target_model = Coran if categorie == 'coran' else Khassida
+    document = get_object_or_404(target_model, id=id)
+    is_hd = request.GET.get('hd') == '1'
+
+    thumb_dir = os.path.join(tempfile.gettempdir(), 'sdm_thumb_cache')
+    os.makedirs(thumb_dir, exist_ok=True)
+    suffix = 'hd' if is_hd else 'sm'
+    thumb_path = os.path.join(thumb_dir, f"{categorie}_{id}_p1_{suffix}.jpg")
+
+    if os.path.exists(thumb_path) and os.path.getsize(thumb_path) > 300:
+        try:
+            with open(thumb_path, 'rb') as f:
+                res = HttpResponse(f.read(), content_type='image/jpeg')
+                res['Cache-Control'] = 'public, max-age=31536000, immutable'
+                res['Access-Control-Allow-Origin'] = '*'
+                return res
+        except Exception:
+            pass
+
+    pdf_data = _get_pdf_bytes_cached(categorie, document)
+    if pdf_data:
+        try:
+            import fitz  # PyMuPDF
+            doc = fitz.open(stream=pdf_data, filetype="pdf")
+            if doc.page_count > 0:
+                page = doc.load_page(0)  # 1re page du PDF
+                rect = page.rect
+                target_w = 680.0 if is_hd else 300.0
+                scale = max(0.5, min(2.5, target_w / max(rect.width, 1.0)))
+                pix = page.get_pixmap(matrix=fitz.Matrix(scale, scale), alpha=False)
+                jpg_bytes = pix.tobytes("jpeg", jpg_quality=84 if is_hd else 76)
+                doc.close()
+
+                with open(thumb_path, 'wb') as f:
+                    f.write(jpg_bytes)
+
+                res = HttpResponse(jpg_bytes, content_type='image/jpeg')
+                res['Cache-Control'] = 'public, max-age=31536000, immutable'
+                res['Access-Control-Allow-Origin'] = '*'
+                return res
+        except Exception as e:
+            print(f"[thumb_pdf] PyMuPDF error: {e}")
+
+    # Fallback PIL : génère une image JPEG enluminée de 1re page si le PDF distant est hors-ligne
+    try:
+        from PIL import Image, ImageDraw
+        w, h = (480, 660) if is_hd else (260, 360)
+        img = Image.new('RGB', (w, h), color=(248, 237, 211))
+        draw = ImageDraw.Draw(img)
+        draw.rectangle([6, 6, w - 7, h - 7], outline=(196, 148, 39), width=3)
+        draw.rectangle([14, 14, w - 15, h - 15], outline=(16, 120, 80), width=1)
+        buf = io.BytesIO()
+        img.save(buf, format='JPEG', quality=80)
+        res = HttpResponse(buf.getvalue(), content_type='image/jpeg')
+        res['Cache-Control'] = 'public, max-age=3600'
+        return res
+    except Exception:
+        return HttpResponse(status=404)
 
 @csrf_exempt
 def sauvegarder_progression_pdf(request):
@@ -518,7 +574,7 @@ def run_import_xamxam(request):
 # --- AUTHENTIFICATION & PROFIL ---
 
 def login_view(request):
-    """Vue de connexion sécurisée avec protection anti-brute-force."""
+    """Vue de connexion sécurisée avec session persistante 365 jours (Mobile/Web)."""
     if request.user.is_authenticated:
         return redirect('home')
     
@@ -527,7 +583,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            # Toujours rediriger vers l'accueil après connexion
+            request.session.set_expiry(60 * 60 * 24 * 365)  # 365 jours
             next_url = request.GET.get('next', 'home')
             if next_url == 'home' or not next_url:
                 return redirect('home')
@@ -537,7 +593,7 @@ def login_view(request):
     return render(request, 'bibliotheque/login.html', {'form': form})
 
 def register_view(request):
-    """Gestion de l'inscription utilisateur."""
+    """Gestion de l'inscription utilisateur avec session persistante 365 jours."""
     if request.user.is_authenticated:
         return redirect('home')
         
@@ -545,12 +601,61 @@ def register_view(request):
         form = ModernRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Django nécessite de spécifier le backend s'il y en a plusieurs (ex: EmailAuthBackend + ModelBackend)
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            request.session.set_expiry(60 * 60 * 24 * 365)  # 365 jours
             return redirect('home') 
     else:
         form = ModernRegisterForm()
     return render(request, 'bibliotheque/register.html', {'form': form})
+
+@csrf_exempt
+def api_restore_session(request):
+    """
+    Restaure automatiquement la session Django à partir du jeton signé
+    stocké dans localStorage sur mobile (Android / iOS / WebView / PWA).
+    """
+    from .debug_middleware import verify_persistent_auth_token, create_persistent_auth_token, PERSISTENT_AUTH_MAX_AGE
+    from django.contrib.auth import get_user_model
+
+    if request.user.is_authenticated:
+        token = create_persistent_auth_token(request.user.id)
+        return JsonResponse({
+            'status': 'authenticated',
+            'username': request.user.username,
+            'token': token,
+        })
+
+    token = request.GET.get('token') or request.headers.get('X-SDM-Auth-Token')
+    if not token and request.method == 'POST':
+        try:
+            body = json.loads(request.body or '{}')
+            token = body.get('token')
+        except Exception:
+            token = request.POST.get('token')
+
+    uid = verify_persistent_auth_token(token)
+    if uid:
+        User = get_user_model()
+        user = User.objects.filter(id=uid, is_active=True).first()
+        if user:
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            request.session.set_expiry(PERSISTENT_AUTH_MAX_AGE)
+            new_token = create_persistent_auth_token(user.id)
+            res = JsonResponse({
+                'status': 'restored',
+                'username': user.username,
+                'token': new_token,
+            })
+            res.set_cookie(
+                'sdm_remember_token',
+                new_token,
+                max_age=PERSISTENT_AUTH_MAX_AGE,
+                httponly=False,
+                samesite='Lax',
+            )
+            return res
+
+    return JsonResponse({'status': 'anonymous'}, status=200)
 
 @login_required
 def profil_view(request):
@@ -813,37 +918,40 @@ def view_favoris(request):
     return render(request, 'bibliotheque/favoris.html', context)
 
 
-@login_required
 def view_telechargements(request):
-    telechargements = Telechargement.objects.filter(user=request.user)
-    
-    # Organiser les téléchargements par type
+    """
+    Affiche les téléchargements hors-ligne disponibles dans l'application
+    (Coffre-fort IndexedDB local + Synchronisation compte utilisateur).
+    """
     telechargements_by_type = {
         'Khassida': [],
         'Coran': [],
         'Son': []
     }
-    
-    for tc in telechargements:
-        if tc.content_object is None:
-            continue
-        model_name = tc.content_type.model
-        if model_name == 'khassida':
-            telechargements_by_type['Khassida'].append(tc.content_object)
-        elif model_name == 'coran':
-            telechargements_by_type['Coran'].append(tc.content_object)
-        elif model_name == 'son':
-            telechargements_by_type['Son'].append(tc.content_object)
-            
+
+    if request.user.is_authenticated:
+        telechargements = Telechargement.objects.filter(user=request.user)
+        for tc in telechargements:
+            if tc.content_object is None:
+                continue
+            model_name = tc.content_type.model
+            if model_name == 'khassida':
+                telechargements_by_type['Khassida'].append(tc.content_object)
+            elif model_name == 'coran':
+                telechargements_by_type['Coran'].append(tc.content_object)
+            elif model_name == 'son':
+                telechargements_by_type['Son'].append(tc.content_object)
+
     context = {
         'telechargements_by_type': telechargements_by_type
     }
-    
+
     return render(request, 'bibliotheque/telechargements.html', context)
 
 
-@login_required
 def ajouter_telechargement(request, model_name, object_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'local_only'})
     from django.apps import apps
     try:
         model_class = apps.get_model('bibliotheque', model_name)

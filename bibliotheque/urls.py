@@ -41,6 +41,8 @@ urlpatterns = [
 
     # Proxy PDF pour contourner les problèmes CORS avec Cloudinary
     path('proxy-pdf/<str:categorie>/<int:id>/', views.proxy_pdf, name='proxy_pdf'),
+    path('thumb-pdf/<str:categorie>/<int:id>/', views.thumb_pdf, name='thumb_pdf'),
+    path('api/auth/restore-session/', views.api_restore_session, name='api_restore_session'),
 
     # Khassida externe
     path('khassida-externe/', views.khassida_external, name='khassida_external'),

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="fr" data-reader-model="parchemin">
 <head>
-    <!-- PWA & Android -->
+    <!-- PWA & Mobile Meta -->
     <link rel="manifest" href="/static/manifest.json">
     <meta name="theme-color" content="#040B08">
     <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
@@ -11,12 +11,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=4.0, user-scalable=yes, viewport-fit=cover">
     <title>Lecteur Sacré — {{ document.titre }}</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="{% static 'js/sdm_offline_vault.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
         (function() {
             try {
                 var savedModel = localStorage.getItem('sdm_reader_model') || 'parchemin';
@@ -26,514 +28,563 @@
     </script>
 
     <style>
-        /* ═══════════════ 6 MODÈLES DE LECTURE (AMBIANCE + FILTRE MANUSCRIT) ═══════════════ */
+        /* ═══════════════ 6 MODÈLES DE LECTURE OPTIMISÉS GPU 60 FPS ═══════════════ */
         :root, [data-reader-model="parchemin"] {
-            --bg: #161008;
-            --surface: rgba(34, 24, 12, 0.88);
-            --surface-light: rgba(54, 38, 19, 0.92);
+            --bg: #140F08;
+            --surface: #21170B;
+            --surface-light: #312311;
             --text: #FDF6E7;
             --dim: #C7B28B;
             --accent: #F59E0B;
-            --accent-glow: rgba(245, 158, 11, 0.4);
-            --border: rgba(245, 158, 11, 0.25);
-            --border-focus: rgba(245, 158, 11, 0.6);
-            --canvas-filter: sepia(0.34) contrast(1.06) brightness(0.98);
+            --border: rgba(245, 158, 11, 0.28);
+            --border-focus: rgba(245, 158, 11, 0.65);
+            --canvas-filter: sepia(0.32) contrast(1.05);
             --canvas-border: 2px solid #C89B2B;
-            --sh: 0 18px 45px rgba(0, 0, 0, 0.75);
         }
         [data-reader-model="original"] {
-            --bg: #0B1310;
-            --surface: rgba(14, 28, 22, 0.88);
-            --surface-light: rgba(24, 46, 36, 0.92);
+            --bg: #0A120E;
+            --surface: #112019;
+            --surface-light: #1A3026;
             --text: #F8FAFC;
             --dim: #94A3B8;
             --accent: #D4AF37;
-            --accent-glow: rgba(212, 175, 55, 0.35);
-            --border: rgba(255, 255, 255, 0.14);
-            --border-focus: rgba(212, 175, 55, 0.55);
-            --canvas-filter: contrast(1.06);
-            --canvas-border: 1px solid rgba(212, 175, 55, 0.35);
-            --sh: 0 18px 45px rgba(0, 0, 0, 0.7);
+            --border: rgba(212, 175, 55, 0.25);
+            --border-focus: rgba(212, 175, 55, 0.6);
+            --canvas-filter: none;
+            --canvas-border: 1px solid rgba(212, 175, 55, 0.4);
         }
         [data-reader-model="touba_nuit"] {
             --bg: #030A07;
-            --surface: rgba(8, 26, 18, 0.9);
-            --surface-light: rgba(14, 42, 30, 0.95);
+            --surface: #081A12;
+            --surface-light: #0F2B1F;
             --text: #ECFDF5;
             --dim: #6EE7B7;
             --accent: #10B981;
-            --accent-glow: rgba(16, 185, 129, 0.4);
-            --border: rgba(16, 185, 129, 0.28);
-            --border-focus: rgba(16, 185, 129, 0.6);
-            --canvas-filter: invert(0.9) sepia(0.22) hue-rotate(115deg) contrast(1.1);
+            --border: rgba(16, 185, 129, 0.3);
+            --border-focus: rgba(16, 185, 129, 0.65);
+            --canvas-filter: invert(0.9) sepia(0.2) hue-rotate(115deg) contrast(1.08);
             --canvas-border: 1px solid rgba(16, 185, 129, 0.45);
-            --sh: 0 18px 45px rgba(0, 0, 0, 0.85);
         }
         [data-reader-model="kaaba_amoled"] {
             --bg: #000000;
-            --surface: rgba(14, 14, 14, 0.92);
-            --surface-light: rgba(26, 26, 26, 0.95);
+            --surface: #0D0D0D;
+            --surface-light: #1A1A1A;
             --text: #FEF08A;
             --dim: #A1A1AA;
             --accent: #FACC15;
-            --accent-glow: rgba(250, 204, 21, 0.4);
-            --border: rgba(250, 204, 21, 0.25);
+            --border: rgba(250, 204, 21, 0.28);
             --border-focus: rgba(250, 204, 21, 0.65);
-            --canvas-filter: invert(0.93) sepia(0.28) hue-rotate(155deg) contrast(1.14);
+            --canvas-filter: invert(0.92) sepia(0.25) hue-rotate(155deg) contrast(1.12);
             --canvas-border: 1px solid rgba(250, 204, 21, 0.4);
-            --sh: 0 18px 50px rgba(0, 0, 0, 0.95);
         }
         [data-reader-model="medine_saphir"] {
             --bg: #030919;
-            --surface: rgba(10, 22, 46, 0.9);
-            --surface-light: rgba(18, 36, 72, 0.94);
+            --surface: #0B1730;
+            --surface-light: #14264C;
             --text: #E0F2FE;
             --dim: #7DD3FC;
             --accent: #38BDF8;
-            --accent-glow: rgba(56, 189, 248, 0.4);
-            --border: rgba(56, 189, 248, 0.25);
-            --border-focus: rgba(56, 189, 248, 0.6);
-            --canvas-filter: sepia(0.15) contrast(1.08) brightness(0.96);
+            --border: rgba(56, 189, 248, 0.28);
+            --border-focus: rgba(56, 189, 248, 0.65);
+            --canvas-filter: sepia(0.14) contrast(1.06);
             --canvas-border: 1px solid rgba(56, 189, 248, 0.4);
-            --sh: 0 18px 45px rgba(0, 0, 0, 0.8);
         }
         [data-reader-model="calligraphie_hd"] {
-            --bg: #111111;
-            --surface: rgba(25, 25, 25, 0.9);
-            --surface-light: rgba(40, 40, 40, 0.95);
+            --bg: #101010;
+            --surface: #1B1B1B;
+            --surface-light: #282828;
             --text: #FFFFFF;
             --dim: #CCCCCC;
             --accent: #F59E0B;
-            --accent-glow: rgba(245, 158, 11, 0.35);
-            --border: rgba(255, 255, 255, 0.18);
-            --border-focus: rgba(245, 158, 11, 0.6);
-            --canvas-filter: contrast(1.42) grayscale(0.25) brightness(1.02);
+            --border: rgba(255, 255, 255, 0.2);
+            --border-focus: rgba(245, 158, 11, 0.65);
+            --canvas-filter: contrast(1.38) grayscale(0.2);
             --canvas-border: 2px solid #D4AF37;
-            --sh: 0 18px 45px rgba(0, 0, 0, 0.85);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body {
             background-color: var(--bg);
             color: var(--text);
             font-family: 'Inter', sans-serif;
-            margin: 0;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             height: 100dvh;
-            transition: background-color 0.35s ease;
+            user-select: none;
         }
 
-        .glass-panel {
-            background: var(--surface);
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            border: 1px solid var(--border);
-            box-shadow: var(--sh);
-        }
-        .accent-text { color: var(--accent); }
-
-        /* Barre de progression supérieure */
+        /* Barre fine de progression en haut */
         #top-prog {
             position: fixed; top: 0; left: 0; height: 3px; width: 0%;
-            background: linear-gradient(90deg, var(--accent), #FEF08A);
-            box-shadow: 0 0 12px var(--accent-glow);
-            z-index: 2000; transition: width 0.25s ease;
+            background: var(--accent);
+            z-index: 2500;
+            transition: width 0.2s linear;
         }
 
-        /* Header & Footer flottants ergonomiques Android */
-        .reader-ui { transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; }
-        .floating-header {
-            position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
-            width: calc(100% - 20px); max-width: 740px;
-            border-radius: 20px; height: 56px;
+        /* ═══════════════ BARRE SUPÉRIEURE FLUIDE (SANS BLUR LOURD) ═══════════════ */
+        .top-bar {
+            position: fixed; top: 8px; left: 10px; right: 10px;
+            max-width: 720px; margin: 0 auto;
+            height: 50px; border-radius: 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 10px;
+            padding: 0 8px; z-index: 1000;
+            transform: translate3d(0, 0, 0);
+            transition: transform 0.22s ease, opacity 0.22s ease;
+            will-change: transform, opacity;
         }
-        .floating-header.hide-up { transform: translate(-50%, -150%); opacity: 0; pointer-events: none; }
-
-        .floating-footer {
-            position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
-            width: calc(100% - 20px); max-width: 740px;
-            border-radius: 24px; padding: 12px 14px;
-            display: flex; flex-direction: column; gap: 10px;
+        .top-bar.hidden-ui {
+            transform: translate3d(0, -75px, 0);
+            opacity: 0; pointer-events: none;
         }
-        .floating-footer.hide-down { transform: translate(-50%, 150%); opacity: 0; pointer-events: none; }
 
-        .btn-icon {
+        .icon-btn {
             width: 38px; height: 38px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
+            display: inline-flex; align-items: center; justify-content: center;
             background: transparent; color: var(--text); border: none;
-            transition: 0.2s; cursor: pointer; flex-shrink: 0;
+            font-size: 14px; cursor: pointer; flex-shrink: 0; text-decoration: none;
         }
-        .btn-icon:hover, .btn-icon.active {
+        .icon-btn:active, .icon-btn.active {
             background: var(--surface-light); color: var(--accent);
-            box-shadow: inset 0 0 0 1px var(--border-focus);
         }
 
-        .btn-primary {
-            background: var(--surface-light); border: 1px solid var(--border);
-            border-radius: 14px; padding: 10px 14px;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s; cursor: pointer; flex: 1;
-            color: var(--text); font-size: 12px; font-weight: 700;
+        .doc-header-info {
+            flex: 1; min-width: 0; text-align: center; padding: 0 6px;
         }
-        .btn-primary:active { transform: scale(0.96); }
-        .btn-primary:hover { border-color: var(--border-focus); color: var(--accent); }
-
-        .speed-slider {
-            -webkit-appearance: none; appearance: none;
-            height: 5px; border-radius: 99px;
-            background: rgba(255,255,255,0.2); flex: 1; outline: none;
+        .doc-header-title {
+            font-size: 12px; font-weight: 800; color: var(--text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .speed-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 18px; height: 18px;
-            background: var(--accent); border-radius: 50%; cursor: pointer;
-            box-shadow: 0 0 10px var(--accent-glow);
+        .doc-header-sub {
+            font-size: 10px; font-weight: 700; color: var(--accent);
+            display: flex; align-items: center; justify-content: center; gap: 6px;
         }
 
-        /* Zone de lecture principale */
+        /* ═══════════════ ZONE DE LECTURE PRINCIPALE ═══════════════ */
         #viewport {
-            flex: 1; overflow-y: auto; overflow-x: auto;
+            flex: 1;
+            overflow-y: auto; overflow-x: auto;
             display: flex; flex-direction: column; align-items: center;
-            padding: 76px 0 190px; position: relative;
+            padding: 66px 0 84px;
+            position: relative;
             -webkit-overflow-scrolling: touch;
+            filter: brightness(var(--user-brightness, 1));
         }
         #viewport::-webkit-scrollbar { display: none; }
 
         .canvas-wrapper {
-            position: relative; margin-bottom: 18px;
+            position: relative; margin-bottom: 14px;
             display: flex; justify-content: center; width: 100%;
         }
         canvas.pdf-page-canvas {
             max-width: 96%; height: auto;
-            box-shadow: var(--sh); border-radius: 10px;
+            border-radius: 8px;
             border: var(--canvas-border);
-            filter: var(--canvas-filter) brightness(var(--user-brightness, 1));
-            transition: filter 0.3s ease, opacity 0.3s ease;
+            filter: var(--canvas-filter);
             background: #fff;
+            display: block;
         }
 
-        /* Ruban horizontal de Miniatures des Pages (1re page & suivantes) */
-        #thumbs-strip {
-            display: none; align-items: center; gap: 8px;
-            overflow-x: auto; padding: 6px 4px;
-            border-top: 1px solid var(--border);
+        /* ═══════════════ BARRE INFÉRIEURE COMPACTE AU POUCE (56PX) ═══════════════ */
+        .bottom-bar {
+            position: fixed; bottom: 10px; left: 10px; right: 10px;
+            max-width: 720px; margin: 0 auto;
+            height: 58px; border-radius: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.7);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 8px; gap: 6px; z-index: 1000;
+            transform: translate3d(0, 0, 0);
+            transition: transform 0.22s ease, opacity 0.22s ease;
+            will-change: transform, opacity;
+        }
+        .bottom-bar.hidden-ui {
+            transform: translate3d(0, 85px, 0);
+            opacity: 0; pointer-events: none;
+        }
+
+        .nav-page-btn {
+            height: 42px; padding: 0 14px; border-radius: 14px;
+            background: var(--surface-light); border: 1px solid var(--border);
+            color: var(--text); font-size: 12px; font-weight: 800;
+            display: inline-flex; align-items: center; gap: 6px;
+            cursor: pointer; flex-shrink: 0;
+        }
+        .nav-page-btn:active { transform: scale(0.96); }
+
+        .dock-center-actions {
+            display: flex; align-items: center; gap: 5px;
+        }
+        .dock-pill-btn {
+            height: 42px; padding: 0 12px; border-radius: 14px;
+            background: var(--surface-light); border: 1px solid var(--border);
+            color: var(--text); font-size: 11px; font-weight: 800;
+            display: inline-flex; align-items: center; gap: 6px;
+            cursor: pointer;
+        }
+        .dock-pill-btn.gold {
+            border-color: var(--border-focus);
+            color: var(--accent);
+        }
+        .dock-pill-btn:active { transform: scale(0.95); }
+
+        /* ═══════════════ TIROIR D'OPTIONS BOTTOM-SHEET ULTRA-FLUIDE (60 FPS) ═══════════════ */
+        .sheet-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 2000;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .sheet-backdrop.open {
+            opacity: 1; pointer-events: auto;
+        }
+
+        .options-sheet {
+            position: fixed; left: 0; right: 0; bottom: 0;
+            max-width: 680px; margin: 0 auto;
+            background: var(--surface);
+            border-top: 2px solid var(--accent);
+            border-radius: 26px 26px 0 0;
+            padding: 14px 16px 26px;
+            z-index: 2100;
+            transform: translate3d(0, 105%, 0);
+            transition: transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1);
+            will-change: transform;
+            max-height: 82dvh;
+            overflow-y: auto;
+            box-shadow: 0 -12px 40px rgba(0,0,0,0.85);
+        }
+        .options-sheet.open {
+            transform: translate3d(0, 0, 0);
+        }
+
+        .sheet-handle {
+            width: 42px; height: 4px; border-radius: 99px;
+            background: rgba(255,255,255,0.25);
+            margin: 0 auto 12px;
+        }
+        .sheet-section-title {
+            font-size: 10px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--accent);
+            margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+        }
+
+        /* Grille des 6 Modèles de Lecture */
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px; margin-bottom: 14px;
+        }
+        .model-card-btn {
+            padding: 10px 8px; border-radius: 14px;
+            background: var(--surface-light);
+            border: 1.5px solid var(--border);
+            color: var(--text); font-size: 11px; font-weight: 700;
+            cursor: pointer; display: flex; flex-direction: column;
+            align-items: center; gap: 4px; text-align: center;
+        }
+        .model-card-btn.active {
+            background: var(--accent); color: #050806;
+            border-color: #fff; font-weight: 800;
+        }
+
+        /* Boutons Mode Page / Scroll / Auto-scroll */
+        .mode-switch-row {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 8px; margin-bottom: 14px;
+        }
+        .mode-switch-btn {
+            padding: 10px 8px; border-radius: 14px;
+            background: var(--surface-light); border: 1px solid var(--border);
+            color: var(--text); font-size: 11px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .mode-switch-btn.active {
+            border-color: var(--accent); color: var(--accent);
+            background: rgba(245, 158, 11, 0.14);
+        }
+
+        /* Pellicule de Miniatures des Pages (1re Page & suivantes) */
+        .thumbs-row {
+            display: flex; align-items: center; gap: 8px;
+            overflow-x: auto; padding: 6px 2px 10px;
             scrollbar-width: none; -webkit-overflow-scrolling: touch;
         }
-        #thumbs-strip.open { display: flex; }
-        #thumbs-strip::-webkit-scrollbar { display: none; }
+        .thumbs-row::-webkit-scrollbar { display: none; }
         .page-thumb-item {
-            flex-shrink: 0; width: 54px; height: 74px;
-            border-radius: 8px; border: 2px solid var(--border);
+            flex-shrink: 0; width: 58px; height: 80px;
+            border-radius: 10px; border: 2px solid var(--border);
             background: #FAF0DC; position: relative; overflow: hidden;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease;
         }
         .page-thumb-item.active {
             border-color: var(--accent);
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 4px 12px var(--accent-glow);
+            box-shadow: 0 0 0 2px var(--accent);
         }
-        .page-thumb-item canvas {
-            width: 100%; height: 100%; object-fit: cover;
+        .page-thumb-item canvas, .page-thumb-item img {
+            width: 100%; height: 100%; object-fit: cover; object-position: top center;
         }
         .page-thumb-badge {
             position: absolute; bottom: 2px; right: 2px;
-            background: rgba(0,0,0,0.75); color: #fff;
+            background: rgba(0,0,0,0.8); color: #fff;
             font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 4px;
         }
 
-        /* Tiroir des 6 Modèles de Lecture & Luminosité Android */
-        #models-drawer {
-            display: none; flex-direction: column; gap: 10px;
-            padding: 10px; border-radius: 18px;
-            background: rgba(0,0,0,0.45); border: 1px solid var(--border);
+        .range-slider {
+            -webkit-appearance: none; appearance: none;
+            height: 6px; border-radius: 99px;
+            background: rgba(255,255,255,0.2); flex: 1; outline: none;
         }
-        #models-drawer.open { display: flex; }
-        .reader-model-grid {
-            display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
-        }
-        @media (min-width: 500px) {
-            .reader-model-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-        }
-        .reader-model-btn {
-            padding: 7px 6px; border-radius: 12px;
-            border: 1px solid var(--border); background: var(--surface-light);
-            color: var(--text); font-size: 10px; font-weight: 700;
-            cursor: pointer; text-align: center; transition: all 0.2s;
-        }
-        .reader-model-btn.active {
-            border-color: var(--accent);
-            background: var(--accent); color: #050806;
-            font-weight: 800;
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 20px; height: 20px;
+            background: var(--accent); border-radius: 50%; cursor: pointer;
         }
 
-        /* Sidebar Table des matières */
-        .sidebar {
-            position: fixed; left: -320px; top: 0; bottom: 0; width: 300px; z-index: 3000;
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            padding: 24px 18px; overflow-y: auto; border-radius: 0 24px 24px 0;
-        }
-        .sidebar.open { transform: translateX(320px); }
-
+        /* Loader */
         .loader-ring {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
-            z-index: 20; display: none;
+            z-index: 1500; display: none;
         }
         .loader-ring.show { display: block; }
-
-        /* Modal Reprise */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px); display: none;
-            align-items: center; justify-content: center; z-index: 9999;
-        }
-        .modal-overlay.show { display: flex; }
-        .modal-card {
-            background: var(--surface-light); border: 1px solid var(--border-focus);
-            padding: 26px; border-radius: 24px; width: 90%; max-width: 340px; text-align: center;
-        }
     </style>
 </head>
-<body class="page-mode">
+<body>
 
     <div id="top-prog"></div>
 
-    <!-- SIDEBAR SOMMAIRE -->
-    <aside class="sidebar glass-panel" id="sidebar">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="accent-text font-extrabold tracking-widest text-xs uppercase">۞ Sommaire & Pages</h2>
-            <button onclick="toggleSidebar()" class="btn-icon w-8 h-8"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div id="outline-list">
-            <p class="text-xs opacity-60 text-center mt-10">Aucun sommaire intégré</p>
-        </div>
-    </aside>
-
-    <!-- HEADER FLOTTANT COMPACT ANDROID -->
-    <header class="reader-ui floating-header glass-panel" id="header">
-        <a href="javascript:history.back()" class="btn-icon" title="Retour">
+    <!-- 1. BARRE SUPÉRIEURE LÉGÈRE & FLUIDE -->
+    <header class="top-bar" id="top-bar">
+        <a href="javascript:history.back()" class="icon-btn" title="Retour">
             <i class="fa-solid fa-arrow-left"></i>
         </a>
 
-        <div class="flex flex-col items-center flex-1 overflow-hidden px-2">
-            <h1 class="text-xs font-extrabold text-[var(--text)] truncate w-full text-center">{{ document.titre }}</h1>
-            <div class="flex items-center gap-2 mt-0.5">
-                <span class="text-[10px] font-bold text-[var(--accent)]">
-                    Page <span id="top-page-num">1</span> / <span id="max-page-num">1</span>
-                </span>
-                <span id="wakelock-badge" class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hidden">
-                    🔆 Écran Actif
+        <div class="doc-header-info" onclick="openOptionsSheet()">
+            <div class="doc-header-title">{{ document.titre }}</div>
+            <div class="doc-header-sub">
+                <span>Page <strong id="top-page-num">1</strong> / <span id="max-page-num">1</span></span>
+                <span id="offline-badge-top" style="display:none; background:rgba(16,185,129,0.2); color:#6EE7B7; padding:1px 6px; border-radius:99px; font-size:9px;">
+                    ✓ Hors-Ligne
                 </span>
             </div>
         </div>
 
-        <div class="flex items-center gap-1">
-            <button onclick="toggleFullScreenReader()" class="btn-icon w-8 h-8" title="Plein Écran Android">
-                <i class="fa-solid fa-expand text-xs"></i>
+        <div style="display:flex; align-items:center; gap:2px;">
+            <button type="button" id="btn-save-offline-top" onclick="saveCurrentDocOffline()" class="icon-btn" title="Enregistrer hors-ligne dans l'application">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
             </button>
-            <button onclick="downloadPdf()" class="btn-icon w-8 h-8" title="Télécharger le PDF">
-                <i class="fa-solid fa-download text-xs"></i>
+            <button type="button" onclick="openOptionsSheet()" class="icon-btn active" title="Options & Modèles de Lecture">
+                <i class="fa-solid fa-sliders"></i>
             </button>
-            <button onclick="toggleSearch()" class="btn-icon w-8 h-8" title="Rechercher">
-                <i class="fa-solid fa-magnifying-glass text-xs"></i>
-            </button>
-        </div>
-
-        <!-- Barre de recherche dans le PDF -->
-        <div id="search-bar" class="hidden absolute top-[calc(100%+8px)] left-0 right-0 glass-panel rounded-2xl p-2 flex items-center gap-2">
-            <input type="text" id="search-input" class="bg-transparent border-none outline-none flex-1 text-xs px-3 text-[var(--text)]" placeholder="Rechercher un mot dans le Khassida...">
-            <button onclick="performSearch()" class="px-3 py-2 rounded-xl bg-[var(--accent)] text-black font-bold text-xs">Chercher</button>
         </div>
     </header>
 
-    <!-- ZONE DE LECTURE DU MANUSCRIT (SWIPE GAUCHE/DROITE + DOUBLE TAP ZOOM) -->
-    <main id="viewport" onclick="handleTap(event)">
+    <!-- 2. ZONE DE LECTURE DU MANUSCRIT (TAP = PLEIN ÉCRAN, SWIPE = TOURNER PAGE, DOUBLE-TAP = ZOOM) -->
+    <main id="viewport">
         <div class="loader-ring" id="loader">
-            <div class="glass-panel px-5 py-4 rounded-2xl flex items-center gap-3">
-                <i class="fa-solid fa-circle-notch fa-spin text-2xl accent-text"></i>
-                <span class="text-xs font-bold">Préparation du manuscrit...</span>
+            <div style="background:var(--surface); border:1px solid var(--border-focus); padding:14px 20px; border-radius:18px; display:flex; align-items:center; gap:12px; box-shadow:0 12px 32px rgba(0,0,0,0.8);">
+                <i class="fa-solid fa-circle-notch fa-spin" style="font-size:20px; color:var(--accent);"></i>
+                <span style="font-size:12px; font-weight:700;">Ouverture du manuscrit...</span>
             </div>
         </div>
-        <div id="main-container" class="w-full flex flex-col items-center"></div>
+        <div id="main-container" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
     </main>
 
-    <!-- DOCK INFÉRIEUR ANDROID (À PORTÉE DU POUCE) -->
-    <footer class="reader-ui floating-footer glass-panel" id="footer">
+    <!-- 3. BARRE INFÉRIEURE ULTRA-FLUIDE AU POUCE -->
+    <footer class="bottom-bar" id="bottom-bar">
+        <button type="button" onclick="changePage(-1)" id="prev-btn" class="nav-page-btn">
+            <i class="fa-solid fa-chevron-left"></i>
+            <span>Préc.</span>
+        </button>
 
-        <!-- 1. TIROIR DES 6 MODÈLES DE LECTURE & LUMINOSITÉ -->
-        <div id="models-drawer">
-            <div class="flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-[var(--accent)]">
-                <span>🎨 Choisir un Modèle de Lecture (6 Styles)</span>
-                <span id="brightness-label">Luminosité : 100%</span>
+        <div class="dock-center-actions">
+            <button type="button" onclick="toggleQuickMode()" id="quick-mode-btn" class="dock-pill-btn" title="Basculer Livre / Défilement">
+                <i class="fa-solid fa-book-open" id="quick-mode-icon"></i>
+                <span id="quick-mode-lbl">Livre</span>
+            </button>
+
+            <button type="button" onclick="openOptionsSheet()" class="dock-pill-btn gold">
+                <i class="fa-solid fa-palette"></i>
+                <span>Options</span>
+            </button>
+        </div>
+
+        <button type="button" onclick="changePage(1)" id="next-btn" class="nav-page-btn">
+            <span>Suiv.</span>
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </footer>
+
+    <!-- 4. TIROIR BOTTOM-SHEET DES OPTIONS DE LECTURE (60 FPS SANS LATENCE) -->
+    <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeOptionsSheet()"></div>
+    <section class="options-sheet" id="options-sheet" aria-label="Options de lecture">
+        <div class="sheet-handle"></div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <span style="font-size:14px; font-weight:800; color:var(--text);">⚙️ Options & Modèles de Lecture</span>
+            <button type="button" onclick="closeOptionsSheet()" class="icon-btn" style="width:32px; height:32px;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- A. Navigation rapide par page + Miniatures avec 1re Page -->
+        <div class="sheet-section-title">
+            <span>📖 Aller à la page (<span id="sheet-page-lbl">1</span>)</span>
+            <span>1re Page & Suivantes</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <span style="font-size:10px; font-weight:700; opacity:0.75;">P.1</span>
+            <input type="range" id="page-slider" class="range-slider" min="1" max="1" value="1"
+                   oninput="onSliderMove(this.value)" onchange="onSliderChange(this.value)">
+            <span style="font-size:10px; font-weight:700; opacity:0.75;" id="slider-max-lbl">Fin</span>
+        </div>
+        <div class="thumbs-row" id="thumbs-strip"></div>
+
+        <!-- B. 6 Modèles Visuels de Lecture -->
+        <div class="sheet-section-title" style="margin-top:8px;">
+            <span>🎨 6 Modèles de Lecture</span>
+            <span>Confort Visuel</span>
+        </div>
+        <div class="models-grid">
+            <button type="button" class="model-card-btn" data-rmodel="parchemin" onclick="setReaderModel('parchemin')">
+                <span>📜 Parchemin</span>
+            </button>
+            <button type="button" class="model-card-btn" data-rmodel="original" onclick="setReaderModel('original')">
+                <span>☀️ Original HD</span>
+            </button>
+            <button type="button" class="model-card-btn" data-rmodel="touba_nuit" onclick="setReaderModel('touba_nuit')">
+                <span>🕌 Nuit Touba</span>
+            </button>
+            <button type="button" class="model-card-btn" data-rmodel="kaaba_amoled" onclick="setReaderModel('kaaba_amoled')">
+                <span>🕋 AMOLED Or</span>
+            </button>
+            <button type="button" class="model-card-btn" data-rmodel="medine_saphir" onclick="setReaderModel('medine_saphir')">
+                <span>🌙 Saphir</span>
+            </button>
+            <button type="button" class="model-card-btn" data-rmodel="calligraphie_hd" onclick="setReaderModel('calligraphie_hd')">
+                <span>🖋️ Encre HD+</span>
+            </button>
+        </div>
+
+        <!-- C. Mode Livre vs Défilement Continu vs Auto-Scroll -->
+        <div class="sheet-section-title">
+            <span>📱 Mode de Défilement</span>
+            <span id="wakelock-badge" style="color:#6EE7B7;">🔆 Écran Actif</span>
+        </div>
+        <div class="mode-switch-row">
+            <button type="button" id="m-p" class="mode-switch-btn active" onclick="setReadingMode('page')">
+                <i class="fa-solid fa-book-open"></i> Livre (Page)
+            </button>
+            <button type="button" id="m-s" class="mode-switch-btn" onclick="setReadingMode('scroll')">
+                <i class="fa-solid fa-scroll"></i> Continu
+            </button>
+            <button type="button" id="as-btn" class="mode-switch-btn" onclick="toggleAutoScroll()">
+                <i class="fa-solid fa-play"></i> Auto-Scroll
+            </button>
+        </div>
+
+        <!-- Vitesse Auto-Scroll (affiché si actif) -->
+        <div id="speed-ctrl" style="display:none; align-items:center; gap:10px; margin-bottom:14px; background:var(--surface-light); padding:8px 12px; border-radius:12px;">
+            <span style="font-size:11px; font-weight:700;">Vitesse :</span>
+            <button type="button" onclick="adjSpeed(-1)" class="icon-btn" style="width:28px;height:28px;"><i class="fa-solid fa-minus"></i></button>
+            <input type="range" id="scroll-speed" class="range-slider" min="1" max="50" value="10">
+            <button type="button" onclick="adjSpeed(1)" class="icon-btn" style="width:28px;height:28px;"><i class="fa-solid fa-plus"></i></button>
+        </div>
+
+        <!-- D. Zoom & Luminosité -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:14px;">
+            <div style="background:var(--surface-light); border:1px solid var(--border); border-radius:14px; padding:8px 10px; display:flex; align-items:center; justify-content:space-between;">
+                <button type="button" onclick="changeZoom(-0.2)" class="icon-btn" style="width:30px;height:30px;"><i class="fa-solid fa-minus"></i></button>
+                <span style="font-size:11px; font-weight:800;" id="z-val">Zoom 100%</span>
+                <button type="button" onclick="changeZoom(0.2)" class="icon-btn" style="width:30px;height:30px;"><i class="fa-solid fa-plus"></i></button>
             </div>
-            <div class="reader-model-grid">
-                <button type="button" class="reader-model-btn" data-rmodel="parchemin" onclick="setReaderModel('parchemin')">
-                    📜 Parchemin
-                </button>
-                <button type="button" class="reader-model-btn" data-rmodel="original" onclick="setReaderModel('original')">
-                    ☀️ Original HD
-                </button>
-                <button type="button" class="reader-model-btn" data-rmodel="touba_nuit" onclick="setReaderModel('touba_nuit')">
-                    🕌 Nuit Touba
-                </button>
-                <button type="button" class="reader-model-btn" data-rmodel="kaaba_amoled" onclick="setReaderModel('kaaba_amoled')">
-                    🕋 AMOLED Or
-                </button>
-                <button type="button" class="reader-model-btn" data-rmodel="medine_saphir" onclick="setReaderModel('medine_saphir')">
-                    🌙 Saphir
-                </button>
-                <button type="button" class="reader-model-btn" data-rmodel="calligraphie_hd" onclick="setReaderModel('calligraphie_hd')">
-                    🖋️ Encre Forte
-                </button>
-            </div>
-            <div class="flex items-center gap-2 pt-1">
-                <i class="fa-solid fa-sun text-xs opacity-60"></i>
-                <input type="range" min="45" max="115" value="100" class="speed-slider" oninput="setReaderBrightness(this.value)">
-                <i class="fa-solid fa-sun text-sm text-[var(--accent)]"></i>
+            <div style="background:var(--surface-light); border:1px solid var(--border); border-radius:14px; padding:8px 10px; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-sun" style="font-size:12px; color:var(--accent);"></i>
+                <input type="range" min="50" max="115" value="100" class="range-slider" oninput="setReaderBrightness(this.value)">
             </div>
         </div>
 
-        <!-- 2. CARROUSEL DE MINIATURES DES PAGES (1re PAGE & SUIVANTES) -->
-        <div id="thumbs-strip"></div>
-
-        <!-- 3. LECTEUR AUDIO D'ACCOMPAGNEMENT -->
-        <div id="audio-bar" class="hidden flex items-center justify-between gap-2 bg-[var(--surface-light)] rounded-2xl border border-[var(--border)] p-2">
-            <div class="flex-1 flex items-center gap-2 overflow-hidden">
-                <i class="fa-solid fa-music text-[var(--accent)] text-xs ml-1"></i>
-                <select id="audio-select" class="bg-transparent border-none text-[11px] font-bold outline-none text-[var(--text)] w-full truncate cursor-pointer" onchange="loadReaderAudio(this.value)">
-                    <option value="" class="bg-[#111] text-gray-400">Choisir une récitation audio...</option>
+        <!-- E. Audio d'accompagnement & Téléchargement Hors-Ligne dans l'App -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; background:var(--surface-light); border:1px solid var(--border); border-radius:14px; padding:8px 10px;">
+                <i class="fa-solid fa-headphones" style="color:var(--accent); font-size:13px;"></i>
+                <select id="audio-select" style="flex:1; background:transparent; border:none; color:var(--text); font-size:11px; font-weight:700; outline:none;" onchange="loadReaderAudio(this.value)">
+                    <option value="" style="background:#111; color:#aaa;">Accompagnement Audio / Kourel...</option>
                     {% if document.fichier_audio %}
-                    <option value="{{ document.fichier_audio.url }}" class="bg-[#111] text-[#d4af37]">Récitation officielle</option>
+                    <option value="{{ document.fichier_audio.url }}" style="background:#111; color:#F59E0B;">Récitation officielle</option>
                     {% endif %}
                     {% for s in sons %}
                         {% if s.fichier_audio %}
-                        <option value="{{ s.fichier_audio.url }}" class="bg-[#111]">{{ s.titre }}</option>
+                        <option value="{{ s.fichier_audio.url }}" style="background:#111;">{{ s.titre }}</option>
                         {% endif %}
                     {% endfor %}
                 </select>
+                <button type="button" onclick="toggleReaderPlay()" class="icon-btn" style="width:32px; height:32px; background:var(--accent); color:#000; border-radius:50%;">
+                    <i id="reader-pp-icon" class="fa-solid fa-play" style="font-size:11px;"></i>
+                </button>
             </div>
-            <button onclick="toggleReaderPlay()" class="btn-icon w-8 h-8 rounded-full bg-[var(--accent)] text-black shadow-lg">
-                <i id="reader-pp-icon" class="fa-solid fa-play text-xs"></i>
+
+            <button type="button" id="btn-save-offline-sheet" onclick="saveCurrentDocOffline()"
+                    style="width:100%; padding:12px; border-radius:14px; border:1px solid #10B981; background:rgba(16,185,129,0.15); color:#6EE7B7; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+                <span id="offline-sheet-lbl">Enregistrer Hors-Ligne dans l'Application</span>
             </button>
         </div>
+    </section>
 
-        <!-- 4. CURSEUR DE PROGRESSION DES PAGES -->
-        <div class="flex items-center gap-3 px-1">
-            <span class="text-[10px] font-bold opacity-70">P.1</span>
-            <input type="range" id="page-slider" class="speed-slider w-full" min="1" max="1" value="1"
-                   oninput="onSliderMove(this.value)" onchange="onSliderChange(this.value)">
-            <span class="text-[10px] font-bold opacity-70" id="slider-max-lbl">Fin</span>
-        </div>
-
-        <!-- 5. BARRE D'OUTILS PRINCIPALE (MODES, MINIATURES, AUTO-SCROLL, MODÈLES) -->
-        <div class="flex items-center justify-between gap-1.5">
-            <!-- Livre Page par Page vs Défilement Continu -->
-            <div class="flex gap-1 bg-[var(--surface-light)] p-1 rounded-2xl border border-[var(--border)]">
-                <button onclick="setReadingMode('page')" id="m-p" class="btn-icon w-9 h-9 active" title="Mode Livre (Swipe Gauche/Droite)">
-                    <i class="fa-solid fa-book-open text-xs"></i>
-                </button>
-                <button onclick="setReadingMode('scroll')" id="m-s" class="btn-icon w-9 h-9" title="Mode Défilement Continu Vertical">
-                    <i class="fa-solid fa-scroll text-xs"></i>
-                </button>
-                <button onclick="toggleThumbsStrip()" id="btn-thumbs" class="btn-icon w-9 h-9" title="Miniatures des Pages">
-                    <i class="fa-solid fa-images text-xs"></i>
-                </button>
-                <button onclick="toggleAudioBar()" id="btn-audio" class="btn-icon w-9 h-9" title="Audio & Kourel">
-                    <i class="fa-solid fa-headphones text-xs"></i>
-                </button>
-            </div>
-
-            <!-- Contrôle Vitesse Défilement Automatique -->
-            <div id="speed-ctrl" class="hidden flex items-center gap-1.5 flex-1 bg-[var(--surface-light)] p-1.5 rounded-2xl border border-[var(--border)]">
-                <button onclick="adjSpeed(-1)" class="w-7 h-7 rounded-lg flex items-center justify-center"><i class="fa-solid fa-minus text-[10px]"></i></button>
-                <input type="range" id="scroll-speed" class="speed-slider w-full" min="1" max="50" value="10" oninput="updateSpeedLabel()">
-                <button onclick="adjSpeed(1)" class="w-7 h-7 rounded-lg flex items-center justify-center"><i class="fa-solid fa-plus text-[10px]"></i></button>
-            </div>
-
-            <button onclick="toggleAutoScroll()" id="as-btn" class="w-10 h-10 rounded-2xl bg-[var(--surface-light)] border border-[var(--border)] flex items-center justify-center text-[var(--accent)]" title="Défilement automatique">
-                <i class="fa-solid fa-play text-xs"></i>
-            </button>
-
-            <!-- Bouton Studio des 6 Modèles de Lecture -->
-            <button onclick="toggleModelsDrawer()" id="btn-models" class="px-3 h-10 rounded-2xl bg-[var(--surface-light)] border border-[var(--border-focus)] text-[var(--accent)] font-extrabold text-xs flex items-center gap-1.5">
-                <i class="fa-solid fa-palette"></i>
-                <span>Modèles</span>
-            </button>
-        </div>
-
-        <!-- 6. NAVIGATION PAGE PRÉCÉDENTE / ZOOM / PAGE SUIVANTE (AU POUCE) -->
-        <div id="nav-btns" class="flex gap-2 h-11">
-            <button onclick="changePage(-1)" id="prev-btn" class="btn-primary">
-                <i class="fa-solid fa-chevron-left mr-1.5"></i> Précédent
-            </button>
-
-            <div class="flex items-center justify-center px-2 gap-1.5 bg-[var(--surface-light)] rounded-2xl border border-[var(--border)]">
-                <button onclick="changeZoom(-0.2)" class="p-1.5 text-xs"><i class="fa-solid fa-minus"></i></button>
-                <span class="text-[11px] font-extrabold w-11 text-center" id="z-val">100%</span>
-                <button onclick="changeZoom(0.2)" class="p-1.5 text-xs"><i class="fa-solid fa-plus"></i></button>
-            </div>
-
-            <button onclick="changePage(1)" id="next-btn" class="btn-primary">
-                Suivant <i class="fa-solid fa-chevron-right ml-1.5"></i>
-            </button>
-        </div>
-    </footer>
-
-    <!-- MODAL DE REPRISE DE LECTURE -->
-    <div id="resume-modal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="w-14 h-14 bg-[var(--surface)] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[var(--border-focus)]">
-                <i class="fa-solid fa-bookmark text-xl accent-text"></i>
-            </div>
-            <h3 class="font-extrabold text-lg mb-1">Reprendre votre lecture</h3>
-            <p class="text-xs opacity-75 mb-6">Vous étiez arrivé à la page <strong id="res-num" class="accent-text">1</strong>.</p>
-            <div class="flex flex-col gap-2.5">
-                <button onclick="doResume(true)" class="py-3 bg-[var(--accent)] text-black font-extrabold rounded-xl text-xs">
-                    Continuer à la page <span id="res-num-btn">1</span>
-                </button>
-                <button onclick="doResume(false)" class="py-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-xs font-semibold">
-                    Revenir à la 1re Page
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <audio id="reader-aud" preload="metadata" loop></audio>
+    <audio id="reader-aud" preload="none" loop></audio>
 
     <script>
         const PROXY_URL = "/proxy-pdf/{{ categorie }}/{{ document.id }}/";
+        const THUMB_URL = "/thumb-pdf/{{ categorie }}/{{ document.id }}/";
         const DIRECT_URL = "{{ direct_pdf_url|default:'' }}";
         const DOC_ID = "{{ document.id }}";
         const CAT = "{{ categorie }}";
-        const RESUME_PAGE = parseInt("{{ page_reprise|default:1 }}");
+        const DOC_TITLE = "{{ document.titre|escapejs }}";
+        const DOC_AUTEUR = "{{ document.auteur|default:'Cheikh Ahmadou Bamba'|escapejs }}";
+        const RESUME_PAGE = parseInt("{{ page_reprise|default:1 }}") || 1;
 
         let pdfDoc = null;
-        let pNum = 1, zoom = 1.0, mode = 'page', uiVisible = true, busy = false;
+        let pNum = RESUME_PAGE > 1 ? RESUME_PAGE : 1;
+        let zoom = 1.0, mode = 'page', uiVisible = true, busy = false;
         let asActive = false, asRaf = null, saveTimeout = null;
         const container = document.getElementById('main-container'), vport = document.getElementById('viewport');
         let observer = null;
-        let retryCount = 0;
-        const MAX_RETRIES = 2;
+        const pageCanvasCache = new Map(); // Cache mémoire des pages rendues pour changement de page en 0ms
 
-        // ── 1. WAKE LOCK ANDROID (GARDE L'ÉCRAN ALLUMÉ PENDANT LA RÉCITATION) ──
-        let wakeLockSentinel = null;
-        async function requestAndroidWakeLock() {
+        // ── 1. WAKE LOCK (ÉCRAN TOUJOURS ALLUMÉ PENDANT LA LECTURE) ──
+        async function requestWakeLock() {
             if ('wakeLock' in navigator) {
-                try {
-                    wakeLockSentinel = await navigator.wakeLock.request('screen');
-                    document.getElementById('wakelock-badge')?.classList.remove('hidden');
-                } catch (e) {}
+                try { await navigator.wakeLock.request('screen'); } catch (e) {}
             }
         }
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') requestAndroidWakeLock();
+            if (document.visibilityState === 'visible') requestWakeLock();
         });
-        requestAndroidWakeLock();
+        requestWakeLock();
 
-        // ── 2. MODÈLES DE LECTURE & LUMINOSITÉ ──
+        // ── 2. TIROIR D'OPTIONS FLUIDE (BOTTOM-SHEET 60 FPS) ──
+        function openOptionsSheet() {
+            document.getElementById('sheet-backdrop').classList.add('open');
+            document.getElementById('options-sheet').classList.add('open');
+            renderVisibleThumbs();
+        }
+        function closeOptionsSheet() {
+            document.getElementById('sheet-backdrop').classList.remove('open');
+            document.getElementById('options-sheet').classList.remove('open');
+        }
+
+        function toggleBarsUI() {
+            uiVisible = !uiVisible;
+            document.getElementById('top-bar').classList.toggle('hidden-ui', !uiVisible);
+            document.getElementById('bottom-bar').classList.toggle('hidden-ui', !uiVisible);
+        }
+
+        // ── 3. MODÈLES DE LECTURE & LUMINOSITÉ ──
         function setReaderModel(modelName) {
             document.documentElement.setAttribute('data-reader-model', modelName);
             try { localStorage.setItem('sdm_reader_model', modelName); } catch (e) {}
@@ -542,73 +593,118 @@
             });
             if (navigator.vibrate) navigator.vibrate(8);
         }
-        (function initReaderModel() {
-            const m = localStorage.getItem('sdm_reader_model') || 'parchemin';
-            setReaderModel(m);
-        })();
-
-        function toggleModelsDrawer() {
-            document.getElementById('models-drawer')?.classList.toggle('open');
-        }
+        setReaderModel(localStorage.getItem('sdm_reader_model') || 'parchemin');
 
         function setReaderBrightness(val) {
-            const ratio = (parseInt(val) / 100).toFixed(2);
-            document.documentElement.style.setProperty('--user-brightness', ratio);
-            const lbl = document.getElementById('brightness-label');
-            if (lbl) lbl.textContent = `Luminosité : ${val}%`;
+            document.documentElement.style.setProperty('--user-brightness', (parseInt(val) / 100).toFixed(2));
         }
 
-        function toggleFullScreenReader() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen?.().catch(() => {});
-            } else {
-                document.exitFullscreen?.().catch(() => {});
-            }
-        }
+        // ── 4. CHARGEMENT PRIORITAIRE DEPUIS LE COFFRE HORS-LIGNE (0 MS) PUIS RÉSEAU ──
+        async function loadPdfDocument(source) {
+            const params = (source instanceof ArrayBuffer || source instanceof Uint8Array)
+                ? { data: source }
+                : { url: source, disableRange: true, disableStream: true };
+            params.cMapUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/';
+            params.cMapPacked = true;
+            params.isEvalSupported = false;
 
-        // ── 3. CHARGEMENT DU PDF & RENDU HD ANDROID (DEVICE PIXEL RATIO) ──
-        async function loadPdfFromUrl(url) {
-            const loadingTask = pdfjsLib.getDocument({
-                url: url,
-                cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
-                cMapPacked: true,
-                withCredentials: false,
-                isEvalSupported: false,
-                disableRange: true,
-                disableStream: true,
-            });
+            const loadingTask = pdfjsLib.getDocument(params);
             loadingTask.onProgress = function(data) {
                 if (data.total > 0) {
-                    const pct = Math.round((data.loaded / data.total) * 100);
-                    document.getElementById('top-prog').style.width = pct + '%';
+                    document.getElementById('top-prog').style.width = Math.round((data.loaded / data.total) * 100) + '%';
                 }
             };
             return loadingTask.promise;
         }
 
+        async function markOfflineReadyUI() {
+            const topBadge = document.getElementById('offline-badge-top');
+            const topBtn = document.getElementById('btn-save-offline-top');
+            const sheetLbl = document.getElementById('offline-sheet-lbl');
+            if (topBadge) topBadge.style.display = 'inline-block';
+            if (topBtn) {
+                topBtn.style.color = '#10B981';
+                topBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+            }
+            if (sheetLbl) sheetLbl.textContent = 'Disponible Hors-Ligne dans l\'Application ✓';
+        }
+
         async function init() {
             document.getElementById('loader').classList.add('show');
-            try {
-                pdfDoc = await loadPdfFromUrl(PROXY_URL);
-                onPdfLoaded();
-                return;
-            } catch (proxyErr) {}
 
+            // 1. Vérifier si le PDF est déjà dans le Coffre-Fort Hors-Ligne de l'application (IndexedDB)
+            if (window.SDMOfflineVault) {
+                try {
+                    const localBuffer = await window.SDMOfflineVault.getOfflineArrayBuffer(CAT, DOC_ID);
+                    if (localBuffer && localBuffer.byteLength > 500) {
+                        pdfDoc = await loadPdfDocument(localBuffer);
+                        await markOfflineReadyUI();
+                        onPdfLoaded();
+                        return;
+                    }
+                } catch (e) {}
+            }
+
+            // 2. Sinon, charger depuis le serveur et mettre automatiquement en cache hors-ligne
+            try {
+                const res = await fetch(PROXY_URL, { credentials: 'same-origin' });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const arrayBuffer = await blob.arrayBuffer();
+                    pdfDoc = await loadPdfDocument(arrayBuffer.slice(0));
+                    onPdfLoaded();
+
+                    // Sauvegarder silencieusement dans IndexedDB pour que la prochaine ouverture soit hors-ligne & instantanée
+                    if (window.SDMOfflineVault && blob.size > 500) {
+                        window.SDMOfflineVault.storeExistingBlob({
+                            categorie: CAT,
+                            id: DOC_ID,
+                            titre: DOC_TITLE,
+                            auteur: DOC_AUTEUR,
+                            readUrl: window.location.pathname,
+                            mediaUrl: PROXY_URL,
+                            thumbUrl: THUMB_URL,
+                        }, blob).then(() => markOfflineReadyUI());
+                    }
+                    return;
+                }
+            } catch (err) {}
+
+            // 3. Fallback URL directe
             if (DIRECT_URL) {
                 try {
-                    pdfDoc = await loadPdfFromUrl(DIRECT_URL);
+                    pdfDoc = await loadPdfDocument(DIRECT_URL);
                     onPdfLoaded();
                     return;
-                } catch (directErr) {}
+                } catch (e) {}
             }
 
-            if (retryCount < MAX_RETRIES) {
-                retryCount++;
-                setTimeout(init, 1500 * retryCount);
-                return;
-            }
             document.getElementById('loader').classList.remove('show');
             showPdfError();
+        }
+
+        async function saveCurrentDocOffline() {
+            if (!window.SDMOfflineVault) return;
+            const sheetLbl = document.getElementById('offline-sheet-lbl');
+            if (sheetLbl) sheetLbl.textContent = 'Enregistrement hors-ligne en cours...';
+            try {
+                await window.SDMOfflineVault.saveItem({
+                    categorie: CAT,
+                    id: DOC_ID,
+                    titre: DOC_TITLE,
+                    auteur: DOC_AUTEUR,
+                    pdfUrl: PROXY_URL,
+                    thumbUrl: THUMB_URL,
+                    readUrl: window.location.pathname,
+                }, (pct) => {
+                    if (sheetLbl) sheetLbl.textContent = `Téléchargement hors-ligne : ${pct}%`;
+                });
+                await markOfflineReadyUI();
+                window.SDMOfflineVault.showToast(`« ${DOC_TITLE} » est disponible hors-ligne dans l'application !`, true);
+            } catch (e) {
+                if (sheetLbl) sheetLbl.textContent = 'Réessayer l\'enregistrement hors-ligne';
+                window.SDMOfflineVault.showToast('Erreur lors de la sauvegarde hors-ligne.', false);
+            }
         }
 
         function onPdfLoaded() {
@@ -617,106 +713,115 @@
             document.getElementById('page-slider').max = pdfDoc.numPages;
             document.getElementById('loader').classList.remove('show');
 
-            renderOutlines();
+            if (pNum > pdfDoc.numPages) pNum = 1;
             buildThumbsStrip();
-
-            if (RESUME_PAGE > 1 && RESUME_PAGE <= pdfDoc.numPages) {
-                document.getElementById('res-num').innerText = RESUME_PAGE;
-                document.getElementById('res-num-btn').innerText = RESUME_PAGE;
-                document.getElementById('resume-modal').classList.add('show');
-            } else {
-                render();
-            }
+            render();
         }
 
-        // ── 4. RUBAN DE MINIATURES DES PAGES (AVEC 1re PAGE EN VEDETTE) ──
-        function toggleThumbsStrip() {
-            const strip = document.getElementById('thumbs-strip');
-            const btn = document.getElementById('btn-thumbs');
-            if (!strip) return;
-            strip.classList.toggle('open');
-            btn?.classList.toggle('active', strip.classList.contains('open'));
-            if (strip.classList.contains('open')) {
-                renderVisibleThumbs();
-            }
-        }
-
+        // ── 5. MINIATURES DES PAGES AVEC L'IMAGE RÉELLE DE LA 1re PAGE ──
         function buildThumbsStrip() {
             const strip = document.getElementById('thumbs-strip');
             if (!strip || !pdfDoc) return;
             strip.innerHTML = '';
-            const maxThumbs = Math.min(pdfDoc.numPages, 40);
+            const maxThumbs = Math.min(pdfDoc.numPages, 36);
             for (let i = 1; i <= maxThumbs; i++) {
                 const item = document.createElement('div');
-                item.className = 'page-thumb-item' + (i === 1 ? ' active' : '');
+                item.className = 'page-thumb-item' + (i === pNum ? ' active' : '');
                 item.dataset.page = i;
-                item.innerHTML = `<canvas></canvas><span class="page-thumb-badge">${i === 1 ? '1re Page' : 'P.' + i}</span>`;
+                if (i === 1) {
+                    // La 1re page utilise directement l'image serveur /thumb-pdf/ (0 ms)
+                    item.innerHTML = `<img src="${THUMB_URL}" alt="1re Page"><span class="page-thumb-badge">1re Page</span>`;
+                    item.dataset.rendered = '1';
+                } else {
+                    item.innerHTML = `<canvas></canvas><span class="page-thumb-badge">P.${i}</span>`;
+                }
                 item.onclick = () => {
+                    closeOptionsSheet();
                     if (mode === 'page') renderSingle(i);
                     else document.getElementById(`p-${i}`)?.scrollIntoView({ behavior: 'smooth' });
                 };
                 strip.appendChild(item);
             }
-            // Toujours pré-rendre la miniature de la 1re page !
-            renderThumbPage(1);
-        }
-
-        async function renderThumbPage(pageNo) {
-            if (!pdfDoc) return;
-            const item = document.querySelector(`#thumbs-strip .page-thumb-item[data-page="${pageNo}"]`);
-            if (!item || item.dataset.rendered) return;
-            item.dataset.rendered = '1';
-            try {
-                const page = await pdfDoc.getPage(pageNo);
-                const canvas = item.querySelector('canvas');
-                const bVp = page.getViewport({ scale: 1 });
-                const vp = page.getViewport({ scale: 110 / bVp.width });
-                canvas.width = vp.width;
-                canvas.height = vp.height;
-                await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-            } catch (e) {}
         }
 
         async function renderVisibleThumbs() {
             if (!pdfDoc) return;
-            const limit = Math.min(pdfDoc.numPages, 12);
-            for (let i = 1; i <= limit; i++) {
-                await renderThumbPage(i);
+            const limit = Math.min(pdfDoc.numPages, 10);
+            for (let i = 2; i <= limit; i++) {
+                const item = document.querySelector(`#thumbs-strip .page-thumb-item[data-page="${i}"]`);
+                if (!item || item.dataset.rendered) continue;
+                item.dataset.rendered = '1';
+                try {
+                    const page = await pdfDoc.getPage(i);
+                    const canvas = item.querySelector('canvas');
+                    const bVp = page.getViewport({ scale: 1 });
+                    const vp = page.getViewport({ scale: 100 / bVp.width });
+                    canvas.width = vp.width;
+                    canvas.height = vp.height;
+                    await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+                } catch (e) {}
             }
         }
 
-        // ── 5. RENDU HAUTE DÉFINITION DES PAGES ──
+        // ── 6. RENDU DES PAGES ULTRA-RAPIDE AVEC PRÉ-CHARGEMENT DE LA PAGE SUIVANTE ──
+        function getOptimalDpr() {
+            const raw = window.devicePixelRatio || 1;
+            return window.innerWidth < 768 ? Math.min(raw, 1.65) : Math.min(raw, 2.0);
+        }
+
+        async function createRenderedPageCanvas(num) {
+            const cacheKey = `${num}_${zoom}`;
+            if (pageCanvasCache.has(cacheKey)) {
+                return pageCanvasCache.get(cacheKey);
+            }
+            const page = await pdfDoc.getPage(num);
+            const canvas = document.createElement('canvas');
+            canvas.className = 'pdf-page-canvas';
+            const ctx = canvas.getContext('2d', { alpha: false });
+
+            const dpr = getOptimalDpr();
+            const bVp = page.getViewport({ scale: 1 });
+            const cssWidth = Math.min(vport.clientWidth * 0.96, 740) * zoom;
+            const scale = (cssWidth * dpr) / bVp.width;
+            const vp = page.getViewport({ scale: scale });
+
+            canvas.width = vp.width;
+            canvas.height = vp.height;
+            canvas.style.width = `${cssWidth}px`;
+            canvas.style.height = `${Math.round(vp.height / dpr)}px`;
+
+            await page.render({ canvasContext: ctx, viewport: vp }).promise;
+
+            if (pageCanvasCache.size > 6) {
+                const oldestKey = pageCanvasCache.keys().next().value;
+                pageCanvasCache.delete(oldestKey);
+            }
+            pageCanvasCache.set(cacheKey, canvas);
+            return canvas;
+        }
+
         async function renderSingle(num) {
             if (busy || !pdfDoc) return;
             busy = true;
-            document.getElementById('loader').classList.add('show');
+            const cacheKey = `${num}_${zoom}`;
+            if (!pageCanvasCache.has(cacheKey)) {
+                document.getElementById('loader').classList.add('show');
+            }
 
             try {
-                const page = await pdfDoc.getPage(num);
-                const canvas = document.createElement('canvas');
-                canvas.className = 'pdf-page-canvas';
-                const ctx = canvas.getContext('2d');
-
-                const dpr = Math.min(window.devicePixelRatio || 1, 2.25);
-                const bVp = page.getViewport({ scale: 1 });
-                const cssWidth = Math.min(vport.clientWidth * 0.96, 760) * zoom;
-                const scale = (cssWidth * dpr) / bVp.width;
-                const vp = page.getViewport({ scale: scale });
-
-                canvas.width = vp.width;
-                canvas.height = vp.height;
-                canvas.style.width = `${cssWidth}px`;
-                canvas.style.height = `${(vp.height / dpr)}px`;
-
-                await page.render({ canvasContext: ctx, viewport: vp }).promise;
-
+                const canvas = await createRenderedPageCanvas(num);
                 container.innerHTML = '';
                 const wrap = document.createElement('div');
                 wrap.className = 'canvas-wrapper';
                 wrap.appendChild(canvas);
                 container.appendChild(wrap);
-
+                vport.scrollTop = 0;
                 updateUI(num);
+
+                // Pré-calculer silencieusement la page suivante pour un tourné de page instantané
+                if (num + 1 <= pdfDoc.numPages) {
+                    setTimeout(() => { createRenderedPageCanvas(num + 1).catch(() => {}); }, 40);
+                }
             } finally {
                 document.getElementById('loader').classList.remove('show');
                 busy = false;
@@ -729,64 +834,54 @@
                 entries.forEach(entry => {
                     const p = parseInt(entry.target.dataset.p);
                     if (entry.isIntersecting) {
-                        loadPage(entry.target);
-                        if (entry.intersectionRatio > 0.4) updateUI(p);
+                        loadScrollPage(entry.target);
+                        if (entry.intersectionRatio > 0.35) updateUI(p);
                     }
                 });
-            }, { root: vport, rootMargin: '900px 0px', threshold: [0, 0.4, 1] });
+            }, { root: vport, rootMargin: '600px 0px', threshold: [0, 0.4] });
 
             for (let i = 1; i <= pdfDoc.numPages; i++) {
                 const wrap = document.createElement('div');
                 wrap.className = 'canvas-wrapper';
                 wrap.id = `p-${i}`;
                 wrap.dataset.p = i;
-                wrap.style.minHeight = '220px';
-                wrap.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin opacity-20 py-20 text-[var(--accent)]"></i>';
+                wrap.style.minHeight = '260px';
                 container.appendChild(wrap);
                 observer.observe(wrap);
             }
         }
 
-        async function loadPage(w) {
+        async function loadScrollPage(w) {
             if (w.querySelector('canvas') || w.dataset.loading) return;
-            w.dataset.loading = "true";
-            const p = await pdfDoc.getPage(parseInt(w.dataset.p));
-            const canvas = document.createElement('canvas');
-            canvas.className = 'pdf-page-canvas';
-            const ctx = canvas.getContext('2d');
-
-            const dpr = Math.min(window.devicePixelRatio || 1, 2.0);
-            const bVp = p.getViewport({ scale: 1 });
-            const cssWidth = Math.min(vport.clientWidth * 0.96, 760) * zoom;
-            const scale = (cssWidth * dpr) / bVp.width;
-            const vp = p.getViewport({ scale: scale });
-
-            w.style.minHeight = (vp.height / dpr) + 'px';
-            canvas.width = vp.width;
-            canvas.height = vp.height;
-            canvas.style.width = `${cssWidth}px`;
-            canvas.style.height = `${(vp.height / dpr)}px`;
-
-            await p.render({ canvasContext: ctx, viewport: vp }).promise;
-            w.innerHTML = '';
-            w.appendChild(canvas);
+            w.dataset.loading = '1';
+            try {
+                const num = parseInt(w.dataset.p);
+                const canvas = await createRenderedPageCanvas(num);
+                w.style.minHeight = canvas.style.height;
+                w.innerHTML = '';
+                w.appendChild(canvas);
+            } catch (e) {}
             delete w.dataset.loading;
         }
 
         function setReadingMode(m) {
             mode = m;
-            document.body.className = m + '-mode';
             document.getElementById('m-p').classList.toggle('active', m === 'page');
             document.getElementById('m-s').classList.toggle('active', m === 'scroll');
-            document.getElementById('nav-btns').style.display = (m === 'page' ? 'flex' : 'none');
-            document.getElementById('speed-ctrl').classList.toggle('hidden', m !== 'scroll');
+            document.getElementById('prev-btn').style.visibility = (m === 'page' ? 'visible' : 'hidden');
+            document.getElementById('next-btn').style.visibility = (m === 'page' ? 'visible' : 'hidden');
+            document.getElementById('quick-mode-icon').className = m === 'page' ? 'fa-solid fa-book-open' : 'fa-solid fa-scroll';
+            document.getElementById('quick-mode-lbl').innerText = m === 'page' ? 'Livre' : 'Continu';
             if (m === 'page') stopAutoScroll();
             render();
         }
 
-        async function render() {
+        function toggleQuickMode() {
+            setReadingMode(mode === 'page' ? 'scroll' : 'page');
+        }
+
+        function render() {
             if (!pdfDoc) return;
-            container.innerHTML = '';
             if (observer) observer.disconnect();
             if (mode === 'page') renderSingle(pNum);
             else renderScroll();
@@ -795,6 +890,7 @@
         function updateUI(n) {
             pNum = n;
             document.getElementById('top-page-num').innerText = n;
+            document.getElementById('sheet-page-lbl').innerText = `Page ${n} / ${pdfDoc.numPages}`;
             document.getElementById('page-slider').value = n;
             document.getElementById('top-prog').style.width = `${(n / pdfDoc.numPages) * 100}%`;
 
@@ -803,14 +899,20 @@
             });
 
             if (saveTimeout) clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => save(n), 1500);
+            saveTimeout = setTimeout(() => {
+                fetch('/api/progression-pdf/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ categorie: CAT, id: DOC_ID, page: n })
+                }).catch(() => {});
+            }, 1500);
         }
 
         function changePage(d) {
             if (!pdfDoc) return;
             const n = pNum + d;
             if (n >= 1 && n <= pdfDoc.numPages) {
-                if (navigator.vibrate) navigator.vibrate(10);
+                if (navigator.vibrate) navigator.vibrate(8);
                 renderSingle(n);
             }
         }
@@ -820,16 +922,20 @@
             if (mode === 'page') renderSingle(n);
             else document.getElementById(`p-${n}`)?.scrollIntoView({ behavior: 'smooth' });
         }
-        function onSliderMove(v) { document.getElementById('top-page-num').innerText = v; }
+        function onSliderMove(v) {
+            document.getElementById('top-page-num').innerText = v;
+            document.getElementById('sheet-page-lbl').innerText = `Page ${v}`;
+        }
 
         function changeZoom(d) {
-            zoom = Math.max(0.8, Math.min(2.6, +(zoom + d).toFixed(2)));
-            document.getElementById('z-val').innerText = `${Math.round(zoom * 100)}%`;
+            zoom = Math.max(0.8, Math.min(2.4, +(zoom + d).toFixed(2)));
+            document.getElementById('z-val').innerText = `Zoom ${Math.round(zoom * 100)}%`;
+            pageCanvasCache.clear();
             render();
         }
 
-        // ── 6. GESTES TACTILES ANDROID : SWIPE GAUCHE/DROITE & DOUBLE-TAP ZOOM ──
-        let touchStartX = 0, touchStartY = 0, lastTapTime = 0;
+        // ── 7. GESTES TACTILES FLUIDES : TAP (PLEIN ÉCRAN), DOUBLE-TAP (ZOOM), SWIPE (PAGE) ──
+        let touchStartX = 0, touchStartY = 0, lastTapTime = 0, singleTapTimer = null;
         vport.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
                 touchStartX = e.touches[0].clientX;
@@ -842,29 +948,31 @@
             const dx = e.changedTouches[0].clientX - touchStartX;
             const dy = e.changedTouches[0].clientY - touchStartY;
 
-            // Double-tap pour zoomer/dézoomer rapidement sur Android
-            const now = Date.now();
-            if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
-                if (now - lastTapTime < 280) {
-                    zoom = (zoom > 1.15) ? 1.0 : 1.55;
-                    document.getElementById('z-val').innerText = `${Math.round(zoom * 100)}%`;
+            // Tap ou Double-Tap
+            if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
+                const now = Date.now();
+                if (now - lastTapTime < 260) {
+                    clearTimeout(singleTapTimer);
+                    zoom = (zoom > 1.1) ? 1.0 : 1.5;
+                    document.getElementById('z-val').innerText = `Zoom ${Math.round(zoom * 100)}%`;
+                    pageCanvasCache.clear();
                     render();
                     lastTapTime = 0;
                     return;
                 }
                 lastTapTime = now;
+                singleTapTimer = setTimeout(() => {
+                    toggleBarsUI();
+                }, 265);
+                return;
             }
 
-            // Swipe horizontal en mode Page (si zoom == 1)
-            if (mode === 'page' && zoom <= 1.05 && Math.abs(dx) > 62 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-                if (dx < 0) changePage(1);   // Swipe vers la gauche -> Page suivante
-                else changePage(-1);         // Swipe vers la droite -> Page précédente
+            // Swipe Gauche / Droite en mode Livre
+            if (mode === 'page' && zoom <= 1.05 && Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.35) {
+                if (dx < 0) changePage(1);
+                else changePage(-1);
             }
         }, { passive: true });
-
-        function handleTap(e) {
-            if (e.target.tagName !== 'CANVAS') return;
-        }
 
         // Auto-Scroll
         let lastTime = 0;
@@ -872,14 +980,16 @@
             asActive = !asActive;
             const btn = document.getElementById('as-btn');
             const ctrl = document.getElementById('speed-ctrl');
-            btn.innerHTML = asActive ? '<i class="fa-solid fa-pause text-xs"></i>' : '<i class="fa-solid fa-play text-xs"></i>';
             btn.classList.toggle('active', asActive);
-            ctrl.classList.toggle('hidden', !asActive);
+            ctrl.style.display = asActive ? 'flex' : 'none';
             if (asActive) {
                 if (mode !== 'scroll') setReadingMode('scroll');
+                closeOptionsSheet();
                 lastTime = performance.now();
                 runAutoScroll(lastTime);
-            } else stopAutoScroll();
+            } else {
+                stopAutoScroll();
+            }
         }
         function runAutoScroll(time) {
             if (!asActive) return;
@@ -889,102 +999,28 @@
             vport.scrollTop += (speed * (delta / 16.6));
             asRaf = requestAnimationFrame(runAutoScroll);
         }
-        function stopAutoScroll() { asActive = false; cancelAnimationFrame(asRaf); }
+        function stopAutoScroll() {
+            asActive = false;
+            cancelAnimationFrame(asRaf);
+            document.getElementById('as-btn')?.classList.remove('active');
+            const ctrl = document.getElementById('speed-ctrl');
+            if (ctrl) ctrl.style.display = 'none';
+        }
         function adjSpeed(d) {
             const el = document.getElementById('scroll-speed');
             el.value = Math.max(1, Math.min(50, parseInt(el.value) + d * 5));
-        }
-        function updateSpeedLabel() {}
-
-        function doResume(r) {
-            document.getElementById('resume-modal').classList.remove('show');
-            pNum = r ? RESUME_PAGE : 1;
-            render();
-        }
-
-        function save(p) {
-            fetch('/api/progression-pdf/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ categorie: CAT, id: DOC_ID, page: p })
-            }).catch(() => {});
-        }
-
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-        async function renderOutlines() {
-            const list = document.getElementById('outline-list');
-            try {
-                const outlines = await pdfDoc.getOutline();
-                if (outlines && outlines.length > 0) {
-                    list.innerHTML = '';
-                    outlines.forEach(obj => {
-                        const div = document.createElement('div');
-                        div.className = 'p-3 rounded-xl mb-1 text-xs cursor-pointer hover:bg-white/10';
-                        div.innerText = obj.title;
-                        div.onclick = async () => {
-                            const dest = await pdfDoc.getDestination(obj.dest);
-                            const idx = await pdfDoc.getPageIndex(dest[0]);
-                            toggleSidebar();
-                            if (mode === 'page') renderSingle(idx + 1);
-                            else document.getElementById(`p-${idx + 1}`)?.scrollIntoView();
-                        };
-                        list.appendChild(div);
-                    });
-                }
-            } catch (e) {}
-        }
-
-        function toggleSearch() {
-            const bar = document.getElementById('search-bar');
-            bar.classList.toggle('hidden');
-            if (!bar.classList.contains('hidden')) document.getElementById('search-input').focus();
-        }
-
-        async function performSearch() {
-            const query = document.getElementById('search-input').value.toLowerCase().trim();
-            if (!query || !pdfDoc) return;
-            document.getElementById('loader').classList.add('show');
-            for (let i = 1; i <= pdfDoc.numPages; i++) {
-                const page = await pdfDoc.getPage(i);
-                const content = await page.getTextContent();
-                const text = content.items.map(item => item.str).join(' ').toLowerCase();
-                if (text.includes(query)) {
-                    if (mode === 'page') renderSingle(i);
-                    else document.getElementById(`p-${i}`)?.scrollIntoView({ behavior: 'smooth' });
-                    toggleSearch();
-                    document.getElementById('loader').classList.remove('show');
-                    return;
-                }
-            }
-            alert("Aucune occurrence trouvée.");
-            document.getElementById('loader').classList.remove('show');
-        }
-
-        async function downloadPdf() {
-            try {
-                const response = await fetch(PROXY_URL);
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = '{{ document.titre|escapejs }}.pdf';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                a.remove();
-            } catch (e) {}
         }
 
         function showPdfError() {
             const downloadUrl = DIRECT_URL || PROXY_URL;
             document.getElementById('viewport').innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full p-6 text-center">
-                    <i class="fa-solid fa-file-pdf text-4xl text-amber-400 mb-4"></i>
-                    <h2 class="text-base font-bold mb-2">Chargement du manuscrit</h2>
-                    <p class="text-xs opacity-70 mb-5 max-w-xs">Vérifiez votre connexion ou ouvrez directement le PDF.</p>
-                    <div class="flex gap-3">
-                        <button onclick="retryCount=0;init();" class="px-5 py-2.5 rounded-xl bg-amber-500 text-black font-bold text-xs">Réessayer</button>
-                        <a href="${downloadUrl}" target="_blank" class="px-5 py-2.5 rounded-xl border border-white/20 text-xs font-bold">Ouvrir PDF</a>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:24px;text-align:center;">
+                    <i class="fa-solid fa-book-open" style="font-size:38px;color:var(--accent);margin-bottom:14px;"></i>
+                    <h2 style="font-size:16px;font-weight:800;margin-bottom:8px;">Chargement du manuscrit</h2>
+                    <p style="font-size:12px;opacity:0.75;margin-bottom:18px;max-width:280px;">Vérifiez votre connexion internet ou consultez vos Khassidas enregistrés hors-ligne.</p>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="init()" style="padding:10px 18px;border-radius:12px;background:var(--accent);color:#000;font-weight:800;font-size:12px;border:none;cursor:pointer;">Réessayer</button>
+                        <a href="/telechargements/" style="padding:10px 18px;border-radius:12px;border:1px solid var(--border);color:var(--text);font-weight:700;font-size:12px;text-decoration:none;">Mes Hors-Ligne</a>
                     </div>
                 </div>
             `;
@@ -994,14 +1030,10 @@
         const rAud = document.getElementById('reader-aud');
         const rIcon = document.getElementById('reader-pp-icon');
         let rAudioLoaded = false;
-        function toggleAudioBar() {
-            document.getElementById('audio-bar').classList.toggle('hidden');
-            document.getElementById('btn-audio').classList.toggle('active');
-        }
         function loadReaderAudio(url) {
-            if (!url) { rAud.pause(); rAud.src = ""; rIcon.className = "fa-solid fa-play text-xs"; return; }
+            if (!url) { rAud.pause(); rAud.src = ""; rIcon.className = "fa-solid fa-play"; return; }
             rAud.src = url;
-            rAud.play().then(() => { rAudioLoaded = true; rIcon.className = "fa-solid fa-pause text-xs"; }).catch(() => {});
+            rAud.play().then(() => { rAudioLoaded = true; rIcon.className = "fa-solid fa-pause"; }).catch(() => {});
         }
         function toggleReaderPlay() {
             if (!rAud.src || !rAudioLoaded) {
@@ -1009,8 +1041,8 @@
                 if (sel.value) loadReaderAudio(sel.value);
                 return;
             }
-            if (rAud.paused) { rAud.play(); rIcon.className = "fa-solid fa-pause text-xs"; }
-            else { rAud.pause(); rIcon.className = "fa-solid fa-play text-xs"; }
+            if (rAud.paused) { rAud.play(); rIcon.className = "fa-solid fa-pause"; }
+            else { rAud.pause(); rIcon.className = "fa-solid fa-play"; }
         }
 
         init();

@@ -15,12 +15,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <!-- PDF.js pour le rendu automatique des miniatures de la 1re page des Khassidas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Coffre-fort Hors-Ligne & Persistance de Connexion Mobile -->
+    <script src="{% static 'js/sdm_offline_vault.js' %}"></script>
     <script>
-        if (window.pdfjsLib) {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        }
         (function() {
             try {
                 var savedTheme = localStorage.getItem('sdm_theme') || 'touba';
@@ -709,10 +706,20 @@
                 </div>
 
             {% else %}
-                <!-- KHASSIDA & CORAN : MINIATURE DE LA 1re PAGE DU MANUSCRIT + RENDU PDF PAGE 1 -->
-                <div class="item-card" data-title="{{ item.titre|lower }}">
+                <!-- KHASSIDA & CORAN : VRAIE IMAGE DE LA 1re PAGE DU PDF + TÉLÉCHARGEMENT HORS-LIGNE INTÉGRÉ -->
+                <div class="item-card"
+                     data-title="{{ item.titre|lower }}"
+                     data-cat="{{ categorie }}"
+                     data-id="{{ item.id }}"
+                     data-raw-title="{{ item.titre|escape }}"
+                     data-auteur="{{ item.auteur|default:'Cheikh Ahmadou Bamba'|escape }}"
+                     data-pdf-url="{% url 'proxy_pdf' categorie item.id %}"
+                     data-thumb-url="{% url 'thumb_pdf' categorie item.id %}"
+                     data-read-url="{% url 'lire_pdf' categorie item.id %}">
                     <div class="first-page-miniature"
                          data-manuscript-style="{% widthratio forloop.counter0 1 1 %}"
+                         data-thumb-src="{% if item.image_couverture %}{{ item.image_couverture.url }}{% else %}{% url 'thumb_pdf' categorie item.id %}{% endif %}"
+                         data-thumb-hd="{% url 'thumb_pdf' categorie item.id %}?hd=1"
                          data-pdf-url="{% url 'proxy_pdf' categorie item.id %}"
                          data-doc-key="{{ categorie }}_{{ item.id }}"
                          data-doc-title="{{ item.titre|escape }}"
@@ -728,10 +735,13 @@
                         </div>
                         <span class="miniature-footer-badge">1re Page · N°{{ forloop.counter }}</span>
 
-                        {% if item.image_couverture %}
-                            <img src="{{ item.image_couverture.url }}" alt="{{ item.titre }}" class="cover-img-real" onload="this.parentElement.classList.add('rendered')" onerror="this.remove()">
-                        {% endif %}
-                        <canvas class="pdf-page1-canvas"></canvas>
+                        <!-- Image réelle de la 1re page du PDF (chargée au défilement) -->
+                        <img alt="1re page de {{ item.titre }}" class="cover-img-real">
+
+                        <!-- Badge Hors-Ligne si enregistré dans l'application -->
+                        <span class="offline-status-pill" style="display:none; position:absolute; top:5px; left:5px; z-index:6; background:rgba(6,78,59,0.92); color:#6EE7B7; border:1px solid #10B981; font-size:8px; font-weight:800; padding:2px 6px; border-radius:99px;">
+                            <i class="fa-solid fa-circle-check"></i> Hors-Ligne
+                        </span>
 
                         <!-- Bouton Loupe : Aperçu rapide de la 1re page en grand -->
                         <button type="button" class="page1-zoom-badge"
@@ -760,10 +770,11 @@
                             <a href="{% url 'toggle_favori' categorie item.id %}" class="fav-btn" title="Ajouter aux favoris">
                                 <i class="fa-solid fa-star"></i>
                             </a>
-                            <a href="{% url 'proxy_pdf' categorie item.id %}" download class="fav-btn"
-                               onclick="registerDownload(event, '{{ categorie }}', {{ item.id }})" title="Télécharger le PDF">
-                                <i class="fa-solid fa-download"></i>
-                            </a>
+                            <button type="button" class="fav-btn btn-offline-save"
+                                    onclick="saveCardOffline(event, this)"
+                                    title="Enregistrer hors-ligne dans l'application">
+                                <i class="fa-solid fa-cloud-arrow-down"></i>
+                            </button>
                         </div>
                         <a href="{% url 'lire_pdf' categorie item.id %}" class="read-pill-btn">
                             <i class="fa-solid fa-book-open"></i>
@@ -803,9 +814,9 @@
             <div class="preview-canvas-stage" id="preview-stage">
                 <div id="preview-loader" style="color:#5A3804; font-size:12px; font-weight:700; display:flex; flex-direction:column; align-items:center; gap:8px;">
                     <i class="fa-solid fa-circle-notch fa-spin" style="font-size:26px; color:#C89B2B;"></i>
-                    <span>Chargement de la 1re page du manuscrit...</span>
+                    <span>Chargement de la 1re page du PDF...</span>
                 </div>
-                <canvas id="preview-modal-canvas" style="display:none;"></canvas>
+                <img id="preview-modal-img" alt="Aperçu 1re page" style="display:none; width:100%; height:100%; object-fit:contain; background:#fff;">
             </div>
 
             <div style="display:flex; gap:10px;">
@@ -914,162 +925,120 @@
             if (cntEl) cntEl.textContent = String(visible);
         }
 
-        // ── 3. MOTEUR DE RENDU AUTOMATIQUE DES MINIATURES DE LA 1re PAGE (PDF.JS + CACHE) ──
-        const thumbQueue = [];
-        let activeThumbWorkers = 0;
-        const MAX_CONCURRENT_THUMBS = 2;
-
-        async function processThumbQueue() {
-            if (activeThumbWorkers >= MAX_CONCURRENT_THUMBS || thumbQueue.length === 0) return;
-            if (!window.pdfjsLib) return;
-
-            const miniatureEl = thumbQueue.shift();
-            if (!miniatureEl || miniatureEl.classList.contains('rendered')) {
-                processThumbQueue();
-                return;
-            }
-
-            const docKey = miniatureEl.getAttribute('data-doc-key');
-            const pdfUrl = miniatureEl.getAttribute('data-pdf-url');
-            const canvas = miniatureEl.querySelector('canvas.pdf-page1-canvas');
-            if (!pdfUrl || !canvas) {
-                processThumbQueue();
-                return;
-            }
-
-            // Vérifier le cache local (sessionStorage / localStorage) pour affichage 0ms
-            try {
-                const cachedDataUrl = sessionStorage.getItem('sdm_p1_' + docKey);
-                if (cachedDataUrl) {
-                    const img = new Image();
-                    img.className = 'cover-img-real';
-                    img.onload = () => {
-                        miniatureEl.appendChild(img);
-                        miniatureEl.classList.add('rendered');
-                    };
-                    img.src = cachedDataUrl;
-                    processThumbQueue();
-                    return;
-                }
-            } catch (e) {}
-
-            activeThumbWorkers++;
-            try {
-                const loadingTask = pdfjsLib.getDocument({
-                    url: pdfUrl,
-                    cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
-                    cMapPacked: true,
-                    disableRange: true,
-                    disableStream: true,
-                });
-                const pdf = await loadingTask.promise;
-                const page = await pdf.getPage(1);
-                const baseVp = page.getViewport({ scale: 1 });
-                const targetWidth = 220;
-                const scale = targetWidth / baseVp.width;
-                const vp = page.getViewport({ scale: scale });
-
-                canvas.width = vp.width;
-                canvas.height = vp.height;
-                const ctx = canvas.getContext('2d');
-                await page.render({ canvasContext: ctx, viewport: vp }).promise;
-                miniatureEl.classList.add('rendered');
-
-                try {
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
-                    sessionStorage.setItem('sdm_p1_' + docKey, dataUrl);
-                } catch (e) {}
-                pdf.destroy();
-            } catch (err) {
-                // Conserver la miniature enluminée islamique si le PDF distant tarde
-            } finally {
-                activeThumbWorkers--;
-                processThumbQueue();
-            }
-        }
-
+        // ── 3. CHARGEMENT ULTRA-FLUIDE DE LA VRAIE IMAGE DE LA 1re PAGE DU PDF (/thumb-pdf/) ──
         if ('IntersectionObserver' in window) {
-            const thumbObserver = new IntersectionObserver((entries) => {
+            const imgObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        const el = entry.target;
-                        thumbObserver.unobserve(el);
-                        if (!el.classList.contains('rendered')) {
-                            thumbQueue.push(el);
-                            processThumbQueue();
+                        const mini = entry.target;
+                        imgObserver.unobserve(mini);
+                        const src = mini.getAttribute('data-thumb-src');
+                        const img = mini.querySelector('img.cover-img-real');
+                        if (src && img && !img.getAttribute('src')) {
+                            img.onload = () => mini.classList.add('rendered');
+                            img.onerror = () => img.remove();
+                            img.src = src;
                         }
                     }
                 });
-            }, { rootMargin: '180px 0px' });
+            }, { rootMargin: '260px 0px' });
 
-            document.querySelectorAll('.first-page-miniature[data-pdf-url]').forEach(el => {
-                thumbObserver.observe(el);
+            document.querySelectorAll('.first-page-miniature[data-thumb-src]').forEach(el => {
+                imgObserver.observe(el);
             });
         }
 
-        // ── 4. APERÇU GRAND FORMAT DE LA 1re PAGE (QUICK-LOOK MODAL) ──
-        async function openFirstPageQuickLook(miniatureEl) {
+        // ── 4. TÉLÉCHARGEMENT HORS-LIGNE INTÉGRÉ DANS L'APPLICATION (INDEXEDDB) ──
+        async function markOfflineCards() {
+            if (!window.SDMOfflineVault) return;
+            const savedList = await window.SDMOfflineVault.listAll();
+            const savedKeys = new Set(savedList.map(x => x.key));
+            document.querySelectorAll('.item-card[data-cat][data-id]').forEach(card => {
+                const key = `${card.getAttribute('data-cat')}_${card.getAttribute('data-id')}`;
+                if (savedKeys.has(key)) {
+                    const pill = card.querySelector('.offline-status-pill');
+                    if (pill) pill.style.display = 'inline-flex';
+                    const btn = card.querySelector('.btn-offline-save');
+                    if (btn) {
+                        btn.style.color = '#10B981';
+                        btn.style.borderColor = '#10B981';
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    }
+                }
+            });
+        }
+        markOfflineCards();
+
+        async function saveCardOffline(event, btnEl) {
+            event.stopPropagation();
+            const card = btnEl.closest('.item-card');
+            if (!card || !window.SDMOfflineVault) return;
+
+            const meta = {
+                categorie: card.getAttribute('data-cat'),
+                id: card.getAttribute('data-id'),
+                titre: card.getAttribute('data-raw-title'),
+                auteur: card.getAttribute('data-auteur'),
+                pdfUrl: card.getAttribute('data-pdf-url'),
+                thumbUrl: card.getAttribute('data-thumb-url'),
+                readUrl: card.getAttribute('data-read-url'),
+            };
+
+            btnEl.disabled = true;
+            btnEl.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+
+            try {
+                await window.SDMOfflineVault.saveItem(meta, (pct) => {
+                    btnEl.title = `Téléchargement hors-ligne : ${pct}%`;
+                });
+                btnEl.style.color = '#10B981';
+                btnEl.style.borderColor = '#10B981';
+                btnEl.innerHTML = '<i class="fa-solid fa-check"></i>';
+                const pill = card.querySelector('.offline-status-pill');
+                if (pill) pill.style.display = 'inline-flex';
+                window.SDMOfflineVault.showToast(`« ${meta.titre} » est disponible hors-ligne dans l'application !`, true);
+            } catch (e) {
+                btnEl.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i>';
+                window.SDMOfflineVault.showToast('Impossible d\'enregistrer hors-ligne pour le moment.', false);
+            } finally {
+                btnEl.disabled = false;
+            }
+        }
+
+        // ── 5. APERÇU GRAND FORMAT DE LA 1re PAGE DU PDF (QUICK-LOOK MODAL) ──
+        function openFirstPageQuickLook(miniatureEl) {
             if (!miniatureEl) return;
             const modal = document.getElementById('page1-preview-modal');
             const titleEl = document.getElementById('preview-modal-title');
             const linkEl = document.getElementById('preview-modal-read-link');
             const loaderEl = document.getElementById('preview-loader');
-            const canvas = document.getElementById('preview-modal-canvas');
+            const imgEl = document.getElementById('preview-modal-img');
 
             const title = miniatureEl.getAttribute('data-doc-title') || 'Khassida';
             const readUrl = miniatureEl.getAttribute('data-read-url') || '#';
-            const pdfUrl = miniatureEl.getAttribute('data-pdf-url');
+            const hdUrl = miniatureEl.getAttribute('data-thumb-hd') || miniatureEl.getAttribute('data-thumb-src');
 
             titleEl.textContent = title;
             linkEl.href = readUrl;
             modal.classList.add('open');
 
-            // Si la miniature a déjà rendu son canvas, l'afficher immédiatement pendant le rendu HD
-            const thumbCanvas = miniatureEl.querySelector('canvas.pdf-page1-canvas');
-            if (miniatureEl.classList.contains('rendered') && thumbCanvas && thumbCanvas.width > 0) {
-                canvas.width = thumbCanvas.width;
-                canvas.height = thumbCanvas.height;
-                canvas.getContext('2d').drawImage(thumbCanvas, 0, 0);
-                canvas.style.display = 'block';
-                loaderEl.style.display = 'none';
-            } else {
-                canvas.style.display = 'none';
-                loaderEl.style.display = 'flex';
-            }
+            imgEl.style.display = 'none';
+            loaderEl.style.display = 'flex';
 
-            if (pdfUrl && window.pdfjsLib) {
-                try {
-                    const pdf = await pdfjsLib.getDocument({
-                        url: pdfUrl,
-                        disableRange: true,
-                        disableStream: true,
-                    }).promise;
-                    const page = await pdf.getPage(1);
-                    const bVp = page.getViewport({ scale: 1 });
-                    const scale = 600 / bVp.width;
-                    const vp = page.getViewport({ scale: scale });
-                    canvas.width = vp.width;
-                    canvas.height = vp.height;
-                    await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-                    canvas.style.display = 'block';
+            if (hdUrl) {
+                imgEl.onload = () => {
+                    imgEl.style.display = 'block';
                     loaderEl.style.display = 'none';
-                    pdf.destroy();
-                } catch (e) {
-                    loaderEl.innerHTML = '<span>Cliquez sur « Ouvrir la Lecture Complète » pour consulter le manuscrit.</span>';
-                }
+                };
+                imgEl.onerror = () => {
+                    loaderEl.innerHTML = '<span>Cliquez sur « Ouvrir la Lecture Complète » pour lire le manuscrit.</span>';
+                };
+                imgEl.src = hdUrl;
             }
         }
 
         function closeFirstPageQuickLook() {
             document.getElementById('page1-preview-modal')?.classList.remove('open');
-        }
-
-        function registerDownload(event, categorie, id) {
-            event.stopPropagation();
-            fetch(`/telechargements/ajouter/${categorie}/${id}/`, {
-                method: 'GET',
-                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-            }).catch(() => {});
         }
     </script>
 </body>

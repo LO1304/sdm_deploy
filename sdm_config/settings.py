@@ -1,6 +1,7 @@
 import os
 import environ
 from pathlib import Path
+from datetime import timedelta
 
 # ── Initialisation d'environ ──
 env = environ.Env(DEBUG=(bool, False))
@@ -21,8 +22,9 @@ DEBUG = env('DEBUG', default=False)
 ALLOWED_HOSTS = ['sdm-mouride.com', 'www.sdm-mouride.com', 'sdm-mouride.onrender.com', 'sdm-mourit.onrender.com', 'sdm-mouride-2jbn.onrender.com', 'localhost', '127.0.0.1', 'testserver']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# ── SÉCURITÉ RENFORCÉE DES SESSIONS ──
-SESSION_COOKIE_AGE = 1209600  # 2 semaines
+# ── SÉCURITÉ RENFORCÉE DES SESSIONS (PERSISTANCE MOBILE 365 JOURS) ──
+SESSION_COOKIE_AGE = 31536000         # 365 jours (1 an) : garde l'utilisateur connecté même s'il quitte l'app
+SESSION_SAVE_EVERY_REQUEST = True     # Renouvelle automatiquement la session à chaque interaction
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_HTTPONLY = True        # Empêche l'accès JS au cookie de session
 SESSION_COOKIE_SAMESITE = 'Lax'      # Protection CSRF via cookies
@@ -83,6 +85,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'bibliotheque.debug_middleware.PersistentAuthMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -197,7 +200,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:8088',
     'http://127.0.0.1:8088',
 ]
-# CORS_ALLOW_ALL_ORIGINS = True  # Désactivé pour la production
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -208,10 +210,9 @@ REST_FRAMEWORK = {
     )
 }
 
-from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=90),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=365),
     'ROTATE_REFRESH_TOKENS': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
@@ -226,4 +227,4 @@ _DEFAULT_DP_PK = 'pk_live_' + '8dd9e0872f7c7744ffc45bbda6203a8f'
 _DEFAULT_DP_SK = 'sk_live_' + '1c7436d51e35647945b677b41a283730dbcb39527cd33205a4295450e6c67ed5'
 DEXPAY_API_KEY = env('DEXPAY_API_KEY', default=_DEFAULT_DP_PK)
 DEXPAY_API_SECRET = env('DEXPAY_API_SECRET', default=_DEFAULT_DP_SK)
-DEXPAY_ENVIRONMENT = env('DEXPAY_ENVIRONMENT', default='production')  # 'test' ou 'production'
+DEXPAY_ENVIRONMENT = env('DEXPAY_ENVIRONMENT', default='production')  # 'test' ou 'production'
