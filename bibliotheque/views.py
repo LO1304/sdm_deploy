@@ -504,53 +504,260 @@ def sauvegarder_progression_pdf(request):
 
 # --- GESTION DU ZIKR ---
 
+DEFAULT_ZIKRS_SEED = [
+    {
+        "titre": "Lâ ilâha illallâh",
+        "texte_arabe": "لَا إِلَٰهَ إِلَّا ٱللَّٰهُ",
+        "transcription": "Lâ ilâha illallâh (Il n'y a de divinité digne d'adoration qu'Allah)",
+        "objectif_par_defaut": 100,
+    },
+    {
+        "titre": "Astaghfiroullâh",
+        "texte_arabe": "أَسْتَغْفِرُ ٱللَّٰهَ",
+        "transcription": "Astaghfiroullâh al-'Azîm (Je demande pardon à Allah)",
+        "objectif_par_defaut": 100,
+    },
+    {
+        "titre": "Salâtou 'alâ Nabî (Salâtoul Fâtihi)",
+        "texte_arabe": "ٱللَّٰهُمَّ صَلِّ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ ٱلْفَاتِحِ لِمَا أُغْلِقَ",
+        "transcription": "Allâhoumma salli 'alâ Sayyidinâ Mouhammadin al-Fâtihi limâ oughliqa",
+        "objectif_par_defaut": 100,
+    },
+    {
+        "titre": "SoubhânAllâh",
+        "texte_arabe": "سُبْحَانَ ٱللَّٰهِ",
+        "transcription": "SoubhânAllâh (Gloire et pureté à Allah)",
+        "objectif_par_defaut": 33,
+    },
+    {
+        "titre": "Alhamdoulillâh",
+        "texte_arabe": "ٱلْحَمْدُ لِلَّٰهِ",
+        "transcription": "Alhamdoulillâh (Louange à Allah)",
+        "objectif_par_defaut": 33,
+    },
+    {
+        "titre": "Allâhou Akbar",
+        "texte_arabe": "ٱللَّٰهُ أَكْبَرُ",
+        "transcription": "Allâhou Akbar (Allah est le Plus Grand)",
+        "objectif_par_defaut": 33,
+    },
+    {
+        "titre": "Hasbounallâhou wa ni'mal Wakîl",
+        "texte_arabe": "حَسْبُنَا ٱللَّٰهُ وَنِعْمَ ٱلْوَكِيلُ",
+        "transcription": "Hasbounallâhou wa ni'mal Wakîl (Allah nous suffit, Il est notre meilleur Garant)",
+        "objectif_par_defaut": 313,
+    },
+]
+
+
+def _ensure_default_zikrs():
+    try:
+        if Zikr.objects.count() <= 2:
+            for item in DEFAULT_ZIKRS_SEED:
+                Zikr.objects.get_or_create(
+                    titre=item["titre"],
+                    defaults={
+                        "texte_arabe": item["texte_arabe"],
+                        "transcription": item["transcription"],
+                        "objectif_par_defaut": item["objectif_par_defaut"],
+                    },
+                )
+    except Exception:
+        pass
+
+
 def zikr_compteur(request, id=None):
-    """Interface du chapelet électronique."""
+    """Interface complète du Chapelet Électronique & Gestionnaire de Zikrs et Objectifs."""
+    _ensure_default_zikrs()
+
     if id:
         zikr = get_object_or_404(Zikr, id=id)
     else:
         zikr = Zikr.objects.first()
         if not zikr:
-            # Fallback if DB is completely empty
-            class DummyZikr:
-                id = 0
-                titre = "Zikr Libre"
-                texte_arabe = ""
-                texte_a_repeter = ""
-                transcription = ""
-                objectif_par_defaut = 33
-                est_premium = False
-                fichier_audio = None
-            zikr = DummyZikr()
+            zikr = Zikr.objects.create(
+                titre="Lâ ilâha illallâh",
+                texte_arabe="لَا إِلَٰهَ إِلَّا ٱللَّٰهُ",
+                transcription="Il n'y a de divinité qu'Allah",
+                objectif_par_defaut=100,
+            )
 
-    # Vérifier l'accès Premium seulement si ce n'est pas le dummy
-    if hasattr(zikr, 'est_premium') and zikr.id != 0:
+    if hasattr(zikr, 'est_premium') and getattr(zikr, 'id', 0) != 0:
         premium_block = _check_premium_access(request, zikr)
         if premium_block:
             return premium_block
 
-    return render(request, 'bibliotheque/zikr_compteur.html', {'zikr': zikr})
+    tous_les_zikrs = list(Zikr.objects.all().order_by('id'))
+    historique_recent = []
+    total_grains_user = 0
+    if request.user.is_authenticated:
+        historique_recent = list(
+            HistoriqueZikr.objects.filter(user=request.user)
+            .select_related('zikr')
+            .order_by('-date_seance')[:10]
+        )
+        total_grains_user = (
+            HistoriqueZikr.objects.filter(user=request.user)
+            .aggregate(total=Sum('nombre_total'))['total'] or 0
+        )
+
+    return render(request, 'bibliotheque/zikr_compteur.html', {
+        'zikr': zikr,
+        'tous_les_zikrs': tous_les_zikrs,
+        'historique_recent': historique_recent,
+        'total_grains_user': total_grains_user,
+    })
+
+
+@csrf_exempt
+def api_creer_zikr(request):
+    """
+    Crée ou met à jour un Zikr ET son Objectif simultanément en base de données.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
+
+    try:
+        data = json.loads(request.body or '{}')
+        titre = (data.get('titre') or data.get('nom') or '').strip()
+        texte_arabe = (data.get('texte_arabe') or data.get('arabe') or '').strip()
+        transcription = (data.get('transcription') or data.get('trans') or '').strip()
+        try:
+            objectif = max(1, int(data.get('objectif') or data.get('goal') or 33))
+        except (ValueError, TypeError):
+            objectif = 33
+
+        if not titre:
+            return JsonResponse({'status': 'error', 'message': 'Veuillez saisir le nom du Zikr.'}, status=400)
+
+        zikr, created = Zikr.objects.get_or_create(
+            titre=titre,
+            defaults={
+                'texte_arabe': texte_arabe,
+                'transcription': transcription,
+                'objectif_par_defaut': objectif,
+            }
+        )
+        if not created:
+            zikr.objectif_par_defaut = objectif
+            if texte_arabe:
+                zikr.texte_arabe = texte_arabe
+            if transcription:
+                zikr.transcription = transcription
+            zikr.save()
+
+        return JsonResponse({
+            'status': 'success',
+            'created': created,
+            'zikr': {
+                'id': zikr.id,
+                'nom': zikr.titre,
+                'arabe': zikr.texte_arabe or '',
+                'trans': zikr.transcription or '',
+                'goal': zikr.objectif_par_defaut,
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@csrf_exempt
+def api_modifier_objectif_zikr(request):
+    """
+    Enregistre immédiatement un nouvel objectif pour un Zikr existant ou personnalisé.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
+
+    try:
+        data = json.loads(request.body or '{}')
+        zikr_id = data.get('zikr_id')
+        nom_salat = (data.get('nom_salat') or '').strip()
+        objectif = max(1, int(data.get('objectif') or 33))
+
+        zikr = None
+        if zikr_id and str(zikr_id).isdigit() and int(zikr_id) > 0:
+            zikr = Zikr.objects.filter(id=int(zikr_id)).first()
+        if not zikr and nom_salat:
+            zikr, _ = Zikr.objects.get_or_create(
+                titre=nom_salat,
+                defaults={'objectif_par_defaut': objectif}
+            )
+        if zikr:
+            zikr.objectif_par_defaut = objectif
+            zikr.save(update_fields=['objectif_par_defaut'])
+
+        return JsonResponse({
+            'status': 'success',
+            'objectif': objectif,
+            'zikr_id': zikr.id if zikr else 0,
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
 
 @csrf_exempt
 def enregistrer_seance(request):
-    """API pour sauvegarder une séance de Zikr terminée."""
+    """API pour sauvegarder une séance de Zikr (à tout moment ou à la fin de l'objectif)."""
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
+            data = json.loads(request.body or '{}')
             zikr_id = data.get('zikr_id')
-            total = data.get('total')
+            nom_salat = (data.get('nom_salat') or '').strip()
+            arabe = (data.get('arabe') or '').strip()
+            trans = (data.get('trans') or '').strip()
+            total = int(data.get('total') or 0)
+            objectif = max(1, int(data.get('objectif') or 33))
 
-            if not request.user.is_authenticated:
-                return JsonResponse({'status': 'error', 'message': 'Connectez-vous pour enregistrer'}, status=403)
+            if total <= 0:
+                return JsonResponse({'status': 'error', 'message': 'Faites au moins 1 répétition avant d\'enregistrer.'}, status=400)
 
-            zikr = get_object_or_404(Zikr, id=zikr_id)
+            zikr = None
+            if nom_salat:
+                zikr = Zikr.objects.filter(titre__iexact=nom_salat).first()
+            if not zikr and zikr_id and str(zikr_id).isdigit() and int(zikr_id) > 0:
+                zikr = Zikr.objects.filter(id=int(zikr_id)).first()
+            if not zikr:
+                zikr = Zikr.objects.create(
+                    titre=nom_salat or "Zikr Personnel",
+                    texte_arabe=arabe,
+                    transcription=trans,
+                    objectif_par_defaut=objectif,
+                )
+            else:
+                if zikr.objectif_par_defaut != objectif:
+                    zikr.objectif_par_defaut = objectif
+                    zikr.save(update_fields=['objectif_par_defaut'])
 
-            HistoriqueZikr.objects.create(
-                user=request.user,
-                zikr=zikr, 
-                nombre_total=total
-            )
-            return JsonResponse({'status': 'success'})
+            if request.user.is_authenticated:
+                seance = HistoriqueZikr.objects.create(
+                    user=request.user,
+                    zikr=zikr,
+                    nombre_total=total
+                )
+                total_cumule = (
+                    HistoriqueZikr.objects.filter(user=request.user)
+                    .aggregate(t=Sum('nombre_total'))['t'] or total
+                )
+                return JsonResponse({
+                    'status': 'success',
+                    'saved_in_db': True,
+                    'zikr_id': zikr.id,
+                    'zikr_titre': zikr.titre,
+                    'total': total,
+                    'total_cumule': total_cumule,
+                    'date': seance.date_seance.strftime('%d/%m/%Y %H:%M'),
+                })
+            else:
+                return JsonResponse({
+                    'status': 'success',
+                    'saved_in_db': False,
+                    'zikr_id': zikr.id,
+                    'zikr_titre': zikr.titre,
+                    'total': total,
+                    'date': timezone.now().strftime('%d/%m/%Y %H:%M'),
+                    'message': 'Séance enregistrée sur votre appareil !'
+                })
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
@@ -1121,11 +1328,10 @@ def dashboard(request):
 from django.db.models import Q
 
 def zikr_communaute_list(request):
-    # Les sessions publiques sont celles qui n'ont pas de formule personnalisée
+    # Toutes les sessions publiques actives (y compris avec formule de Zikr personnalisée)
     sessions = SessionZikrCommunautaire.objects.filter(
-        est_actif=True
-    ).filter(
-        Q(zikr_personnalise__isnull=True) | Q(zikr_personnalise__exact='')
+        est_actif=True,
+        est_prive=False
     ).order_by('-date_debut')
 
     mes_sessions = []
@@ -1141,18 +1347,28 @@ def zikr_communaute_list(request):
 
 @login_required
 def zikr_communaute_create(request):
+    _ensure_default_zikrs()
     if request.method == 'POST':
-        titre = request.POST.get('titre')
+        titre = (request.POST.get('titre') or '').strip()
         zikr_id = request.POST.get('zikr_id')
-        zikr_personnalise = request.POST.get('zikr_personnalise')
-        objectif = int(request.POST.get('objectif_global', 100000))
+        zikr_personnalise = (request.POST.get('zikr_personnalise') or '').strip()
+        try:
+            objectif = max(1, int(request.POST.get('objectif_global', 1000)))
+        except (ValueError, TypeError):
+            objectif = 1000
         est_prive = request.POST.get('est_prive') == 'on'
-        
+
         if titre and (zikr_id or zikr_personnalise):
             zikr = None
-            if zikr_id:
+            if zikr_personnalise:
+                # Créer ou récupérer aussi le Zikr dans la bibliothèque pour qu'il soit réutilisable
+                zikr, _ = Zikr.objects.get_or_create(
+                    titre=zikr_personnalise[:190],
+                    defaults={'objectif_par_defaut': objectif}
+                )
+            elif zikr_id:
                 zikr = get_object_or_404(Zikr, id=zikr_id)
-            
+
             SessionZikrCommunautaire.objects.create(
                 titre=titre,
                 zikr=zikr,
@@ -1162,8 +1378,8 @@ def zikr_communaute_create(request):
                 est_prive=est_prive
             )
             return redirect('zikr_communaute_list')
-    
-    zikrs = Zikr.objects.all()
+
+    zikrs = Zikr.objects.all().order_by('id')
     return render(request, 'bibliotheque/zikr_communaute_create.html', {'zikrs': zikrs})
 
 def zikr_communaute_detail(request, id):
