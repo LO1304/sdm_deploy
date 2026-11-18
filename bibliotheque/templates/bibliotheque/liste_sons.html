@@ -397,10 +397,10 @@
     <!-- TRACK LIST -->
     <div id="sonList">
         {% for s in sons %}
-        {% if s.fichier_audio or s.lien_audio_externe %}
+        {% if s.lien_audio_externe or s.fichier_audio %}
         <div class="track-item"
              data-id="{{ s.id }}"
-             data-url="{% if s.fichier_audio %}{{ s.fichier_audio.url }}{% else %}{{ s.lien_audio_externe }}{% endif %}"
+             data-url="{% if s.lien_audio_externe %}{{ s.lien_audio_externe }}{% else %}{{ s.fichier_audio.url }}{% endif %}"
              data-titre="{{ s.titre }}"
              data-auteur="{{ s.auteur_voix|default:s.get_categorie_display }}"
              data-index="{{ forloop.counter0 }}"
@@ -435,10 +435,11 @@
                         data-liked="{% if s.id in favoris_ids %}true{% else %}false{% endif %}">
                     <i class="fa-{% if s.id in favoris_ids %}solid{% else %}regular{% endif %} fa-heart"></i>
                 </button>
-                <a href="{% if s.fichier_audio %}{{ s.fichier_audio.url }}{% else %}{{ s.lien_audio_externe }}{% endif %}" download
-                   class="track-btn" onclick="registerDownload(event, 'son', {{ s.id }})">
-                    <i class="fa-solid fa-download"></i>
-                </a>
+                <button type="button" class="track-btn"
+                        onclick="saveAudioOffline(event, {{ s.id }}, '{{ s.titre|escapejs }}', '{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}', '{% if s.lien_audio_externe %}{{ s.lien_audio_externe|escapejs }}{% else %}{{ s.fichier_audio.url|escapejs }}{% endif %}', this)"
+                        title="Enregistrer hors-ligne dans l'application">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </button>
             </div>
         </div>
         {% endif %}
@@ -586,31 +587,38 @@ function drawWaveform(progress){
     });
 }
 
-/* ══ COVER EXTRACTION ══ */
+/* ══ COVER EXTRACTION (SANS DOUBLE TÉLÉCHARGEMENT BLOQUANT SUR MOBILE) ══ */
 function applyCover(url){
     playerImg.classList.remove('show');
     vinylIcon.style.display='';
     document.getElementById('player-bg').style.backgroundImage = 'none';
-    try {
-        jsmediatags.read(url,{
-            onSuccess(tag){
-                const pic = tag.tags.picture;
-                if(!pic) return;
-                let b64=''; for(let i=0;i<pic.data.length;i++) b64+=String.fromCharCode(pic.data[i]);
-                const uri=`data:${pic.format};base64,${btoa(b64)}`;
-                playerImg.src=uri; playerImg.classList.add('show'); vinylIcon.style.display='none';
-                document.getElementById('player-bg').style.backgroundImage=`url(${uri})`;
-                // Cover sur la carte active uniquement si URL valide
-                const activeImg = items[curIdx]?.querySelector('.tcover');
-                if(activeImg){ 
-                    activeImg.src=uri; 
-                    activeImg.style.display='block';
-                    activeImg.style.opacity='0.35';
-                }
-            }
-        });
-    }catch(e){}
 }
+
+/* ══ SAUVEGARDE HORS-LIGNE D'UN AUDIO DANS L'APPLICATION (INDEXEDDB) ══ */
+window.saveAudioOffline = async function(e, id, titre, auteur, url, btnEl) {
+    e.stopPropagation();
+    if (!window.SDMOfflineVault) return;
+    btnEl.disabled = true;
+    btnEl.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+    try {
+        await window.SDMOfflineVault.saveItem({
+            categorie: 'son',
+            id: id,
+            titre: titre,
+            auteur: auteur,
+            audioUrl: url,
+            readUrl: `/collection/son/?autoplay=${id}`
+        });
+        btnEl.style.color = '#10B981';
+        btnEl.innerHTML = '<i class="fa-solid fa-check"></i>';
+        showToast('Enregistré hors-ligne dans l\'application ✓');
+    } catch (err) {
+        btnEl.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i>';
+        showToast('Erreur de sauvegarde hors-ligne');
+    } finally {
+        btnEl.disabled = false;
+    }
+};
 
 /* ══ PLAYBACK ══ */
 function updateActive(idx){
@@ -649,14 +657,33 @@ function playTrack(el){
     }
 
     seekEl.value=0; seekEl.style.setProperty('--value','0%');
-    aud.src = el.dataset.url;
-    aud.play().then(()=>{
-        player.classList.add('active');
-        ppIcon.className='fa-solid fa-pause';
-        vinyl.classList.add('spin'); vinyl.classList.remove('spin-paused');
-        document.getElementById('play-btn').style.boxShadow='0 12px 36px rgba(212,175,55,0.5)';
-        setMediaSession(el);
-    }).catch(e=>{ console.error(e); showToast('Erreur de lecture'); });
+
+    // Vérifier d'abord si l'audio est disponible hors-ligne dans l'application (IndexedDB)
+    (async function startAudioSource() {
+        let playUrl = el.dataset.url;
+        if (window.SDMOfflineVault) {
+            try {
+                const item = await window.SDMOfflineVault.getItem('son', el.dataset.id);
+                if (item && item.blob) {
+                    playUrl = URL.createObjectURL(item.blob);
+                }
+            } catch (err) {}
+        }
+        aud.src = playUrl;
+        aud.play().then(()=>{
+            player.classList.add('active');
+            ppIcon.className='fa-solid fa-pause';
+            vinyl.classList.add('spin'); vinyl.classList.remove('spin-paused');
+            document.getElementById('play-btn').style.boxShadow='0 12px 36px rgba(212,175,55,0.5)';
+            setMediaSession(el);
+        }).catch(e=>{
+            console.error(e);
+            // Masquer automatiquement une piste si elle ne peut pas être lue
+            el.style.display = 'none';
+            showToast('Piste indisponible — passage au suivant');
+            setTimeout(() => playNext(), 600);
+        });
+    })();
 }
 
 window.togglePlay=function(){

@@ -7,7 +7,7 @@ from django.contrib.auth import login, get_user_model
 logger = logging.getLogger(__name__)
 
 PERSISTENT_AUTH_SALT = 'sdm_persistent_auth_v1'
-PERSISTENT_AUTH_MAX_AGE = 60 * 60 * 24 * 365  # 365 jours (1 an)
+PERSISTENT_AUTH_MAX_AGE = 60 * 60 * 24 * 365 * 50  # 50 ans (Permanent / Sans expiration)
 
 
 def create_persistent_auth_token(user_id):
@@ -18,7 +18,8 @@ def verify_persistent_auth_token(token):
     if not token:
         return None
     try:
-        data = signing.loads(token, salt=PERSISTENT_AUTH_SALT, max_age=PERSISTENT_AUTH_MAX_AGE)
+        # Aucune limite max_age : le jeton signé reste valide de façon permanente tant que l'utilisateur ne se déconnecte pas
+        data = signing.loads(token, salt=PERSISTENT_AUTH_SALT)
         return data.get('uid')
     except Exception:
         return None

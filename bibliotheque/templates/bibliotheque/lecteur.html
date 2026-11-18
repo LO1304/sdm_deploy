@@ -518,7 +518,9 @@
                     <option value="{{ document.fichier_audio.url }}" style="background:#111; color:#F59E0B;">Récitation officielle</option>
                     {% endif %}
                     {% for s in sons %}
-                        {% if s.fichier_audio %}
+                        {% if s.lien_audio_externe %}
+                        <option value="{{ s.lien_audio_externe }}" style="background:#111;">{{ s.titre }}</option>
+                        {% elif s.fichier_audio %}
                         <option value="{{ s.fichier_audio.url }}" style="background:#111;">{{ s.titre }}</option>
                         {% endif %}
                     {% endfor %}

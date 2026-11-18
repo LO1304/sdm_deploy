@@ -187,6 +187,10 @@ def liste_dynamique(request, categorie):
         items = Wird.objects.all()
     elif categorie == 'coran':
         items = Coran.objects.all()
+        return render(request, 'bibliotheque/coran_interactif.html', {
+            'coran_pdfs': items,
+            'categorie': 'coran',
+        })
 
     if query and items:
         items = items.filter(titre__icontains=query)
@@ -420,6 +424,26 @@ def thumb_pdf(request, categorie, id):
 
                 with open(thumb_path, 'wb') as f:
                     f.write(jpg_bytes)
+
+                # Sauvegarde PERMANENTE dans la base de données Supabase + Cloudinary (pour l'éternité)
+                if not is_hd and categorie == 'khassida' and not document.image_couverture:
+                    def _persist_cover_forever(doc_id, raw_jpg):
+                        try:
+                            import cloudinary.uploader
+                            up = cloudinary.uploader.upload(
+                                raw_jpg,
+                                folder="couvertures_page1",
+                                public_id=f"khassida_{doc_id}_page1",
+                                overwrite=True,
+                                resource_type="image"
+                            )
+                            sec_url = up.get('secure_url')
+                            if sec_url:
+                                Khassida.objects.filter(id=doc_id).update(image_couverture=sec_url)
+                        except Exception:
+                            pass
+                    import threading
+                    threading.Thread(target=_persist_cover_forever, args=(document.id, jpg_bytes), daemon=True).start()
 
                 res = HttpResponse(jpg_bytes, content_type='image/jpeg')
                 res['Cache-Control'] = 'public, max-age=31536000, immutable'

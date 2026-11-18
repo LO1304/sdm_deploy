@@ -792,6 +792,14 @@
             </div>
             {% endfor %}
         </div>
+
+        <!-- Sentinelle de Défilement Infini (Lots de 40 pour fluidité 60 FPS) -->
+        <div id="infinite-scroll-sentinel" style="text-align:center; padding:18px 10px;">
+            <button type="button" id="btn-load-more" onclick="loadNextBatch()"
+                    style="display:none; margin:0 auto; padding:10px 22px; border-radius:99px; background:var(--surface); border:1px solid var(--border-g); color:var(--gold-lt); font-size:12px; font-weight:800; cursor:pointer;">
+                Afficher les œuvres suivantes (+40)
+            </button>
+        </div>
     </div>
 
     <!-- MODAL D'APERÇU DE LA 1re PAGE EN GRAND FORMAT (QUICK-LOOK ANDROID) -->
@@ -901,33 +909,15 @@
             });
         })();
 
-        // ── 2. FILTRAGE INSTANTANÉ & BARRE ALPHABÉTIQUE ANDROID ──
+        // ── 2. FILTRAGE INSTANTANÉ + PAGINATION DYNAMIQUE PAR LOTS DE 40 (INFINITE SCROLL 60 FPS) ──
         let currentLetter = 'ALL';
-        function filterByLetter(letter, btnEl) {
-            currentLetter = letter;
-            document.querySelectorAll('.alpha-chip').forEach(c => c.classList.remove('active'));
-            if (btnEl) btnEl.classList.add('active');
-            filterItemsInstant();
-        }
+        const BATCH_SIZE = 40;
+        let currentDisplayLimit = BATCH_SIZE;
+        const allCards = Array.from(document.querySelectorAll('#items-container .item-card'));
+        let imgObserver = null;
 
-        function filterItemsInstant() {
-            const q = (document.getElementById('live-search-input')?.value || '').trim().toLowerCase();
-            let visible = 0;
-            document.querySelectorAll('#items-container .item-card').forEach(card => {
-                const title = (card.getAttribute('data-title') || '').trim();
-                const matchQuery = !q || title.includes(q);
-                const matchLetter = (currentLetter === 'ALL') || title.startsWith(currentLetter.toLowerCase());
-                const show = matchQuery && matchLetter;
-                card.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-            const cntEl = document.getElementById('visible-count');
-            if (cntEl) cntEl.textContent = String(visible);
-        }
-
-        // ── 3. CHARGEMENT ULTRA-FLUIDE DE LA VRAIE IMAGE DE LA 1re PAGE DU PDF (/thumb-pdf/) ──
         if ('IntersectionObserver' in window) {
-            const imgObserver = new IntersectionObserver((entries) => {
+            imgObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const mini = entry.target;
@@ -942,11 +932,76 @@
                     }
                 });
             }, { rootMargin: '260px 0px' });
-
-            document.querySelectorAll('.first-page-miniature[data-thumb-src]').forEach(el => {
-                imgObserver.observe(el);
-            });
         }
+
+        function filterByLetter(letter, btnEl) {
+            currentLetter = letter;
+            currentDisplayLimit = BATCH_SIZE;
+            document.querySelectorAll('.alpha-chip').forEach(c => c.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            filterItemsInstant(true);
+        }
+
+        function filterItemsInstant(keepLimit = false) {
+            if (!keepLimit) currentDisplayLimit = BATCH_SIZE;
+            const q = (document.getElementById('live-search-input')?.value || '').trim().toLowerCase();
+            let totalMatching = 0;
+            let shownCount = 0;
+
+            allCards.forEach(card => {
+                const title = (card.getAttribute('data-title') || '').trim();
+                const matchQuery = !q || title.includes(q);
+                const matchLetter = (currentLetter === 'ALL') || title.startsWith(currentLetter.toLowerCase());
+                const matches = matchQuery && matchLetter;
+
+                if (matches) {
+                    totalMatching++;
+                    if (shownCount < currentDisplayLimit) {
+                        card.style.display = '';
+                        shownCount++;
+                        const mini = card.querySelector('.first-page-miniature[data-thumb-src]');
+                        if (mini && imgObserver && !mini.dataset.observed) {
+                            mini.dataset.observed = '1';
+                            imgObserver.observe(mini);
+                        }
+                    } else {
+                        card.style.display = 'none';
+                    }
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const cntEl = document.getElementById('visible-count');
+            if (cntEl) cntEl.textContent = String(totalMatching);
+
+            const moreBtn = document.getElementById('btn-load-more');
+            if (moreBtn) {
+                moreBtn.style.display = (shownCount < totalMatching) ? 'inline-block' : 'none';
+                moreBtn.textContent = `Afficher la suite (${shownCount} / ${totalMatching})`;
+            }
+        }
+
+        function loadNextBatch() {
+            currentDisplayLimit += BATCH_SIZE;
+            filterItemsInstant(true);
+        }
+
+        // Déclenchement automatique du lot suivant (+40) en arrivant en bas de page
+        if ('IntersectionObserver' in window) {
+            const sentinel = document.getElementById('infinite-scroll-sentinel');
+            if (sentinel) {
+                const scrollObserver = new IntersectionObserver((entries) => {
+                    if (entries[0].isIntersecting) {
+                        loadNextBatch();
+                    }
+                }, { rootMargin: '420px 0px' });
+                scrollObserver.observe(sentinel);
+            }
+        }
+
+        // Initialiser l'affichage du premier lot de 40 cartes
+        filterItemsInstant(true);
 
         // ── 4. TÉLÉCHARGEMENT HORS-LIGNE INTÉGRÉ DANS L'APPLICATION (INDEXEDDB) ──
         async function markOfflineCards() {

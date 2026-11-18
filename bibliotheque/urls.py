@@ -26,6 +26,7 @@ urlpatterns = [
     path('telechargements/ajouter/<str:model_name>/<int:object_id>/', views.ajouter_telechargement, name='ajouter_telechargement'),
 
     # Contenu (Sons, Coran, etc.)
+    path('coran/', views.liste_dynamique, {'categorie': 'coran'}, name='coran_interactif'),
     path('collection/son/', views.liste_sons, name='liste_sons'),
     path('collection/<str:categorie>/', views.liste_dynamique, name='liste'),
     path('lire/<str:categorie>/<int:id>/', views.lire_pdf, name='lire_pdf'),

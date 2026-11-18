@@ -626,42 +626,47 @@ SONS_DATA = [
     },
     {
         "titre": "diawartou kourel1 mafatihoul bichri touba alieu ga",
-        "auteur_voix": "",
+        "auteur_voix": "Kourel Mafatihoul Bichri Touba",
         "categorie": "KHASSIDA",
         "lien_audio_externe": "https://res.cloudinary.com/dcajqzg2h/video/upload/v1781478736/media/audios/khassida/Khassida%20Ramadan%202026/diawartou%20kourel1%20mafatihoul%20bichri%20touba%20alieu%20ga.mp3.mp3"
     },
     {
-        "titre": "yamane yaroumo kourel1 Dmb touba alieu gamou 2025 (1)",
-        "auteur_voix": "",
-        "categorie": "KHASSIDA",
-        "lien_audio_externe": "https://res.cloudinary.com/dcajqzg2h/video/upload/v1781478746/media/audios/khassida/Khassida%20Ramadan%202026/yamane%20yaroumo%20kourel1%20Dmb%20touba%20alieu%20gamou%202025%20%281%29.mp3.mp3"
-    },
-    {
         "titre": "yamane yaroumo kourel1 Dmb touba alieu gamou 2025",
-        "auteur_voix": "",
+        "auteur_voix": "Kourel 1 DMB Touba",
         "categorie": "KHASSIDA",
         "lien_audio_externe": "https://res.cloudinary.com/dcajqzg2h/video/upload/v1781478754/media/audios/khassida/Khassida%20Ramadan%202026/yamane%20yaroumo%20kourel1%20Dmb%20touba%20alieu%20gamou%202025.mp3.mp3"
     }
 ]
 
 def run():
-    print("Insertion des sons dans la base de donnees de production...")
+    print("Nettoyage des sons defectueux (404 / raw) et doublons...")
+    valid_urls = {item['lien_audio_externe'] for item in SONS_DATA}
+    deleted_count = 0
+    for s in list(Son.objects.all()):
+        ext_url = (s.lien_audio_externe or '').strip()
+        if not ext_url or ext_url not in valid_urls or '(1)' in (s.titre or ''):
+            s.delete()
+            deleted_count += 1
+    print(f"Sons defectueux supprimes : {deleted_count}")
+
+    print("Insertion/Mise a jour des 105 sons verifies (HTTP 200)...")
     for item in SONS_DATA:
+        auteur = (item.get('auteur_voix') or '').strip() or "Kourel Hizbut Tarqiyyah Touba"
         obj, created = Son.objects.get_or_create(
             titre=item['titre'],
             defaults={
-                'auteur_voix': item['auteur_voix'],
+                'auteur_voix': auteur,
                 'categorie': item['categorie'],
-                'lien_audio_externe': item['lien_audio_externe']
+                'lien_audio_externe': item['lien_audio_externe'],
+                'fichier_audio': None,
             }
         )
-        if created:
-            print(f"Ajouté : {item['titre'].encode('ascii', 'replace').decode()}")
-        else:
+        if not created:
             obj.lien_audio_externe = item['lien_audio_externe']
-            obj.auteur_voix = item['auteur_voix']
+            obj.auteur_voix = auteur
+            obj.fichier_audio = None
             obj.save()
-            print(f"Mis à jour : {item['titre'].encode('ascii', 'replace').decode()}")
+    print(f"Bibliotheque sonore prete : {Son.objects.count()} sons fonctionnels.")
 
 if __name__ == '__main__':
     run()

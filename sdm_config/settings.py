@@ -22,9 +22,9 @@ DEBUG = env('DEBUG', default=False)
 ALLOWED_HOSTS = ['sdm-mouride.com', 'www.sdm-mouride.com', 'sdm-mouride.onrender.com', 'sdm-mourit.onrender.com', 'sdm-mouride-2jbn.onrender.com', 'localhost', '127.0.0.1', 'testserver']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# ── SÉCURITÉ RENFORCÉE DES SESSIONS (PERSISTANCE MOBILE 365 JOURS) ──
-SESSION_COOKIE_AGE = 31536000         # 365 jours (1 an) : garde l'utilisateur connecté même s'il quitte l'app
-SESSION_SAVE_EVERY_REQUEST = True     # Renouvelle automatiquement la session à chaque interaction
+# ── SÉCURITÉ RENFORCÉE DES SESSIONS (PERSISTANCE MOBILE PERMANENTE MULTI-ANNÉES) ──
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 365 * 50  # 50 ans : connexion permanente tant que l'utilisateur ne se déconnecte pas
+SESSION_SAVE_EVERY_REQUEST = True             # Renouvelle automatiquement la session à chaque interaction
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_HTTPONLY = True        # Empêche l'accès JS au cookie de session
 SESSION_COOKIE_SAMESITE = 'Lax'      # Protection CSRF via cookies

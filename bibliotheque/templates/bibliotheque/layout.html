@@ -66,26 +66,49 @@
     <!-- FOND ÉTOILÉ (Global) -->
     <canvas id="sdm-cosmos"></canvas>
 
-    <!-- BARRE D'ACTIONS RAPIDES HAUT DROITE : SÉLECTEUR DE MODÈLES & NOTIFICATIONS -->
-    <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
-        <button type="button" onclick="openSdmModelPicker()"
-                class="glass px-3.5 h-11 rounded-full flex items-center gap-2 border border-gold-500/35 hover:border-gold-400 transition-all shadow-glass group active:scale-95"
-                title="Choisir un Modèle Visuel">
-            <i class="fa-solid fa-palette text-gold-400 text-sm group-hover:rotate-12 transition-transform"></i>
-            <span class="text-[11px] font-extrabold text-white/90 hidden sm:inline">Modèles</span>
-        </button>
+    <!-- BARRE SUPÉRIEURE MOBILE PROPRE (SANS CHEVAUCHEMENT SUR TÉLÉPHONE) -->
+    <div class="sticky top-0 z-50 w-full bg-[#040B08]/90 backdrop-blur-md border-b border-white/10 px-4 py-2.5">
+        <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+            <a href="/" class="flex items-center gap-2.5 min-w-0" style="text-decoration:none;">
+                <div class="w-8 h-8 rounded-xl bg-gold-500/15 border border-gold-500/35 flex items-center justify-center text-gold-400 font-black text-xs flex-shrink-0">
+                    ۞
+                </div>
+                <div class="min-w-0">
+                    <span class="text-xs font-black tracking-wider text-gradient-gold block truncate">SDM MOURIDE</span>
+                </div>
+            </a>
 
-        {% if request.user.is_authenticated %}
-        <a href="{% url 'notifications' %}" class="glass w-11 h-11 rounded-full flex items-center justify-center border border-white/10 hover:border-gold-500/50 transition-all shadow-glass group relative">
-            <i class="fa-regular fa-bell text-white/80 group-hover:text-gold-400 text-xl transition-colors"></i>
-            {% if unread_notifications_count > 0 %}
-            <span class="absolute top-1 right-1 flex h-3 w-3">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-            </span>
-            {% endif %}
-        </a>
-        {% endif %}
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <a href="{% url 'coran_interactif' %}" class="glass px-2.5 h-9 rounded-xl flex items-center gap-1.5 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold" style="text-decoration:none;" title="Le Noble Coran">
+                    <i class="fa-solid fa-book-quran text-xs"></i>
+                    <span>Coran</span>
+                </a>
+
+                <a href="{% url 'telechargements' %}" class="glass px-2.5 h-9 rounded-xl flex items-center gap-1.5 border border-white/15 text-white/90 text-[11px] font-bold" style="text-decoration:none;" title="Bibliothèque Hors-Ligne">
+                    <i class="fa-solid fa-cloud-arrow-down text-emerald-400 text-xs"></i>
+                    <span class="hidden xs:inline">Hors-Ligne</span>
+                </a>
+
+                <button type="button" onclick="openSdmModelPicker()"
+                        class="glass px-3 h-9 rounded-xl flex items-center gap-1.5 border border-gold-500/40 hover:border-gold-400 transition-all active:scale-95"
+                        title="Choisir un Modèle Visuel">
+                    <i class="fa-solid fa-palette text-gold-400 text-xs"></i>
+                    <span class="text-[11px] font-extrabold text-white/95">Modèles</span>
+                </button>
+
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'notifications' %}" class="glass w-9 h-9 rounded-xl flex items-center justify-center border border-white/15 relative" style="text-decoration:none;">
+                    <i class="fa-regular fa-bell text-white/85 text-sm"></i>
+                    {% if unread_notifications_count > 0 %}
+                    <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                    </span>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     <!-- STUDIO DE SÉLECTION DES 8 MODÈLES VISUELS (ANDROID BOTTOM-SHEET & MODAL) -->

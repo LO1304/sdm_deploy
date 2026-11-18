@@ -9,19 +9,19 @@
        <source src="{% if config and config.fichier_adhan %}{{ config.fichier_adhan.url }}{% else %}https://archive.org/download/MakkahAzan/Makkah-Azan.mp3{% endif %}" type="audio/mpeg">
     </audio>
 
-    <!-- HEADER -->
-    <header class="flex justify-between items-center mb-8" data-aos="fade-down" data-aos-duration="1000">
-        <div>
+    <!-- HEADER MOBILE ORGANISÉ ET LISIBLE SUR TOUS LES ÉCRANS -->
+    <header class="flex justify-between items-center gap-3 mb-6" data-aos="fade-down" data-aos-duration="800">
+        <div class="min-w-0 flex-1">
             {% if user.is_authenticated %}
-            <p class="text-[10px] md:text-xs font-bold tracking-widest text-gold-500 uppercase mb-1">Assalamou Alaykoum</p>
-            <h1 class="text-2xl md:text-4xl font-bold text-white tracking-tight capitalize">{{ user.username }}</h1>
+            <p class="text-[10px] md:text-xs font-bold tracking-widest text-gold-500 uppercase mb-0.5">Assalamou Alaykoum</p>
+            <h1 class="text-xl md:text-3xl font-extrabold text-white tracking-tight capitalize truncate">{{ user.username }}</h1>
             {% else %}
-            <h1 class="text-2xl md:text-4xl font-bold text-white tracking-tight text-gradient-gold">SDM Premium</h1>
-            <p class="text-[10px] md:text-xs font-bold tracking-widest text-white/50 uppercase mt-1">Sopey Dialibatoul Marakhib</p>
+            <h1 class="text-xl md:text-3xl font-extrabold text-white tracking-tight text-gradient-gold truncate">SDM Mouride</h1>
+            <p class="text-[10px] md:text-xs font-bold tracking-widest text-white/55 uppercase mt-0.5 truncate">Sopey Dialibatoul Marakhib</p>
             {% endif %}
         </div>
-        <a href="{% url 'profile' %}" class="w-12 h-12 md:w-14 md:h-14 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold-500/50 transition-colors shadow-lg">
-            <i class="fa-solid fa-user text-lg md:text-xl text-white/70"></i>
+        <a href="{% url 'profile' %}" class="w-11 h-11 rounded-2xl glass flex items-center justify-center border border-gold-500/30 hover:border-gold-400 transition-colors shadow-lg flex-shrink-0">
+            <i class="fa-solid fa-user text-sm text-gold-400"></i>
         </a>
     </header>
 
@@ -681,50 +681,106 @@
 
 
 
-    <!-- BIBLIOTHÈQUE HORS-LIGNE INTÉGRÉE & APPLICATION MOBILE STORES (ANDROID & iOS) -->
+    <!-- BIBLIOTHÈQUE HORS-LIGNE INTÉGRÉE & TÉLÉCHARGEMENT DIRECT MOBILE (ANDROID .APK & APPLE iOS) -->
     <div class="mb-14 grid grid-cols-1 md:grid-cols-2 gap-4" data-aos="fade-up" data-aos-delay="700" data-aos-duration="1000">
         <!-- 1. Bibliothèque Hors-Ligne intégrée dans l'application -->
-        <a href="{% url 'telechargements' %}" class="glass rounded-[28px] p-5 md:p-6 border border-emerald-500/25 hover:border-emerald-400/50 flex items-center gap-4 transition-all group" style="text-decoration:none;">
-            <div class="w-14 h-14 rounded-[18px] bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+        <a href="{% url 'telechargements' %}" class="glass rounded-[28px] p-5 border border-emerald-500/30 hover:border-emerald-400/60 flex items-center gap-4 transition-all group" style="text-decoration:none;">
+            <div class="w-13 h-13 p-3.5 rounded-[18px] bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                 <i class="fa-solid fa-cloud-arrow-down text-emerald-400 text-xl"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-0.5">
-                    <p class="text-sm md:text-base font-bold text-white">Bibliothèque Hors-Ligne</p>
-                    <span id="home-offline-badge" class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-extrabold uppercase border border-emerald-500/30">
+                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                    <p class="text-sm md:text-base font-extrabold text-white">Coffre Hors-Ligne</p>
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-extrabold uppercase border border-emerald-500/30">
                         Dans l'App
                     </span>
                 </div>
-                <p class="text-[11px] text-white/55">Lisez vos Khassidas et écoutez vos audios enregistrés même sans connexion internet</p>
+                <p class="text-[11px] text-white/60 leading-snug">Retrouvez vos Khassidas, Sourates et Audios enregistrés dans l'application pour les lire sans internet</p>
             </div>
-            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center flex-shrink-0">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center flex-shrink-0">
                 <i class="fa-solid fa-chevron-right text-xs"></i>
             </div>
         </a>
 
-        <!-- 2. Application Mobile Officielle (Google Play Store & Apple App Store) -->
-        <div class="glass rounded-[28px] p-5 md:p-6 border border-gold-500/25 flex flex-col justify-between gap-3">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-[16px] bg-gradient-to-br from-gold-400/20 to-gold-600/10 border border-gold-500/30 flex items-center justify-center flex-shrink-0">
+        <!-- 2. Télécharger l'Application Mobile (APK Direct Android + Installation Apple iPhone/iPad) -->
+        <div class="glass rounded-[28px] p-5 border border-gold-500/30 flex flex-col justify-between gap-3.5">
+            <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-[16px] bg-gradient-to-br from-gold-400/20 to-gold-600/10 border border-gold-500/35 flex items-center justify-center flex-shrink-0">
                     <i class="fa-solid fa-mobile-screen-button text-gold-400 text-xl"></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm md:text-base font-bold text-white">Application Mobile SDM Mouride</p>
-                    <p class="text-[11px] text-white/50">Conçue pour Android (Google Play) & iPhone / iPad (App Store) · Session permanente</p>
+                    <p class="text-sm md:text-base font-extrabold text-white">Télécharger l'Application Mobile</p>
+                    <p class="text-[11px] text-white/55 leading-snug">Installez directement l'application sur votre téléphone Android (.apk) ou iPhone (iOS)</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2.5 pt-1">
-                <a href="{% url 'telechargements' %}" class="flex-1 py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-white text-[11px] font-bold flex items-center justify-center gap-2 transition-all" style="text-decoration:none;">
-                    <i class="fa-brands fa-google-play text-emerald-400 text-sm"></i>
-                    <span>Google Play</span>
+            <div class="grid grid-cols-2 gap-2.5">
+                <a href="{% static 'app/sdm-premium.apk' %}" download="SDM-Mouride.apk"
+                   class="py-3 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-[11px] font-extrabold flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-95"
+                   style="text-decoration:none;">
+                    <i class="fa-brands fa-android text-base"></i>
+                    <span>APK Android</span>
                 </a>
-                <a href="{% url 'telechargements' %}" class="flex-1 py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-white text-[11px] font-bold flex items-center justify-center gap-2 transition-all" style="text-decoration:none;">
-                    <i class="fa-brands fa-apple text-white text-base"></i>
-                    <span>App Store</span>
-                </a>
+                <button type="button" onclick="openAppleInstallModal()"
+                        class="py-3 px-3 rounded-xl bg-white/10 hover:bg-white/15 border border-gold-500/40 text-white text-[11px] font-extrabold flex items-center justify-center gap-2 transition-transform active:scale-95">
+                    <i class="fa-brands fa-apple text-gold-400 text-base"></i>
+                    <span>iPhone / iOS</span>
+                </button>
             </div>
         </div>
     </div>
+
+    <!-- MODAL D'INSTALLATION DIRECTE SUR IPHONE / IPAD (APPLE iOS) -->
+    <div id="apple-install-modal" class="fixed inset-0 z-[1300] hidden items-center justify-center bg-black/80 backdrop-blur-md p-4" onclick="if(event.target===this) closeAppleInstallModal()">
+        <div class="w-full max-w-md rounded-3xl glass mihrab-card border border-gold-500/40 p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-brands fa-apple text-2xl text-gold-400"></i>
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-gold-400 block">Application Mobile iOS</span>
+                        <h3 class="text-base font-black text-white">Installer SDM Mouride sur iPhone</h3>
+                    </div>
+                </div>
+                <button type="button" onclick="closeAppleInstallModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-3 text-xs text-white/85 leading-relaxed mb-5">
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-full bg-gold-500 text-black font-black flex items-center justify-center flex-shrink-0">1</span>
+                    <span>Dans <strong>Safari</strong> sur votre iPhone, appuyez sur l'icône <strong>Partager</strong> <i class="fa-solid fa-arrow-up-from-bracket text-gold-400 mx-1"></i> en bas de l'écran.</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-full bg-gold-500 text-black font-black flex items-center justify-center flex-shrink-0">2</span>
+                    <span>Faites défiler et appuyez sur <strong>« Sur l'écran d'accueil »</strong> <i class="fa-regular fa-square-plus text-gold-400 mx-1"></i> puis sur <strong>Ajouter</strong>.</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold">
+                    ✓ L'application s'ouvrira en plein écran sur votre iPhone avec votre compte connecté en permanence et votre coffre hors-ligne activé.
+                </div>
+            </div>
+            <button type="button" onclick="closeAppleInstallModal()" class="w-full py-3 rounded-xl bg-gradient-to-r from-gold-400 to-gold-600 text-black font-extrabold text-xs">
+                J'ai compris
+            </button>
+        </div>
+    </div>
+    <script>
+        let deferredPwaPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPwaPrompt = e;
+        });
+        function openAppleInstallModal() {
+            if (deferredPwaPrompt) {
+                deferredPwaPrompt.prompt();
+                return;
+            }
+            const m = document.getElementById('apple-install-modal');
+            if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+        }
+        function closeAppleInstallModal() {
+            const m = document.getElementById('apple-install-modal');
+            if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+        }
+    </script>
 
 {% endblock %}
 
