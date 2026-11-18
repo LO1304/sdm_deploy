@@ -494,7 +494,9 @@
                 </div>
                 <div class="goal-input-row">
                     <input type="number" id="customGoalInput" class="goal-input" style="height:36px; font-size:12px;" min="1" max="1000000"
-                           placeholder="Autre objectif (ex: 313, 500)...">
+                           placeholder="Autre objectif (ex: 313, 1000)..."
+                           oninput="previewCustomGoal(this.value)"
+                           onkeydown="if(event.key==='Enter'){event.preventDefault(); saveCustomGoalFromInput();}">
                     <button type="button" class="btn-save-goal" style="height:36px; padding:0 12px; font-size:11px;" onclick="saveCustomGoalFromInput()">
                         <i class="fa-solid fa-floppy-disk"></i>
                         <span>Enregistrer Objectif</span>
@@ -632,28 +634,47 @@
         </div>
     </div>
 
-    <!-- MODAL 2 : FÉLICITATIONS QUAND L'OBJECTIF EST ATTEINT -->
-    <div class="modal-backdrop" id="congratsModal" onclick="if(event.target===this) closeCongratsModal()">
+    <!-- MODAL 2 : CHOIX EXPLICITE QUAND L'OBJECTIF EST ATTEINT (ENREGISTRER OU RECOMMENCER) -->
+    <div class="modal-backdrop" id="congratsModal">
         <div class="modal-box" style="text-align:center;">
-            <div style="width:68px; height:68px; border-radius:50%; background:rgba(16,185,129,0.18); border:2px solid #10B981; color:#34D399; font-size:28px; display:flex; align-items:center; justify-content:center; margin:0 auto 14px;">
+            <div style="width:64px; height:64px; border-radius:50%; background:rgba(16,185,129,0.18); border:2px solid #10B981; color:#34D399; font-size:26px; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
                 <i class="fa-solid fa-check"></i>
             </div>
-            <h3 style="font-size:20px; font-weight:800; color:var(--gold-lt); margin-bottom:6px;">Macha'Allah ! Objectif Atteint</h3>
-            <p id="modalSub" style="font-size:13px; color:var(--dim); margin-bottom:16px;">
-                Qu'Allah accepte votre Zikr et multiplie vos récompenses.
+            <h3 id="modalTitle" style="font-size:19px; font-weight:800; color:var(--gold-lt); margin-bottom:6px;">Macha'Allah ! Objectif Atteint</h3>
+            <p id="modalSub" style="font-size:13px; color:var(--dim); margin-bottom:14px;">
+                Voulez-vous enregistrer cette séance dans votre historique ou recommencer ?
             </p>
-            <div style="background:rgba(212,175,55,0.12); border:1px solid var(--border-g); border-radius:16px; padding:12px; margin-bottom:18px;">
-                <div id="finalCount" style="font-size:42px; font-weight:800; color:var(--gold-lt); line-height:1;">100</div>
-                <div style="font-size:10px; font-weight:800; text-transform:uppercase; color:var(--dim); margin-top:4px;">Grains Récités & Enregistrés</div>
+            <div style="background:rgba(212,175,55,0.12); border:1px solid var(--border-g); border-radius:16px; padding:12px; margin-bottom:12px;">
+                <div id="finalCount" style="font-size:40px; font-weight:800; color:var(--gold-lt); line-height:1;">1000</div>
+                <div id="finalCountSub" style="font-size:10px; font-weight:800; text-transform:uppercase; color:var(--dim); margin-top:4px;">Grains accomplis — En attente de votre choix</div>
             </div>
+
+            <div id="modalSaveBanner" style="display:none; background:rgba(16,185,129,0.18); border:1px solid rgba(16,185,129,0.55); color:#6EE7B7; font-size:12px; font-weight:800; padding:10px 12px; border-radius:12px; margin-bottom:12px;">
+                <i class="fa-solid fa-circle-check"></i> <span id="modalSaveBannerText">Séance bien enregistrée dans votre historique !</span>
+            </div>
+
             <div style="display:flex; flex-direction:column; gap:8px;">
-                <button type="button" onclick="resetSession(); closeCongratsModal();"
-                        style="width:100%; padding:13px; border-radius:14px; background:linear-gradient(135deg, var(--gold-lt), var(--gold)); color:#040B08; font-size:12px; font-weight:800; border:none; cursor:pointer;">
-                    <i class="fa-solid fa-rotate-right"></i> Recommencer une Nouvelle Série
+                <button type="button" id="btnModalSaveOnly" onclick="actionModalEnregistrer(false)"
+                        style="width:100%; padding:13px; border-radius:14px; background:linear-gradient(135deg, #10B981, #059669); color:#ffffff; font-size:12px; font-weight:800; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 6px 18px rgba(16,185,129,0.35);">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Enregistrer la Séance (Garder le compteur)</span>
                 </button>
-                <button type="button" onclick="closeCongratsModal()"
+
+                <button type="button" id="btnModalSaveAndReset" onclick="actionModalEnregistrer(true)"
+                        style="width:100%; padding:13px; border-radius:14px; background:linear-gradient(135deg, var(--gold-lt), var(--gold)); color:#040B08; font-size:12px; font-weight:800; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 6px 18px rgba(212,175,55,0.3);">
+                    <i class="fa-solid fa-check-double"></i>
+                    <span>Enregistrer puis Recommencer à zéro</span>
+                </button>
+
+                <button type="button" id="btnModalResetOnly" onclick="actionModalRecommencer()"
+                        style="width:100%; padding:11px; border-radius:14px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.4); color:#FCA5A5; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span id="btnModalResetLbl">Recommencer à zéro (Sans enregistrer)</span>
+                </button>
+
+                <button type="button" onclick="actionModalContinuer()"
                         style="width:100%; padding:11px; border-radius:14px; background:var(--surface); border:1px solid var(--border); color:var(--text); font-size:12px; font-weight:700; cursor:pointer;">
-                    Continuer à compter au-delà de l'objectif
+                    <i class="fa-solid fa-play"></i> Continuer à compter au-delà de l'objectif
                 </button>
             </div>
         </div>
@@ -823,6 +844,8 @@
         async function selectAndSaveGoal(newGoal, showMsg = true) {
             const g = Math.max(1, parseInt(newGoal) || 33);
             activeGoal = g;
+            isGoalPaused = false;
+            modalSavedAlready = false;
             const s = salats[activeIdx];
             s.goal = g;
             saveSalats();
@@ -845,6 +868,23 @@
 
             if (showMsg) {
                 showZikrToast(`Objectif enregistré : ${g} répétitions ✓`);
+            }
+        }
+
+        function previewCustomGoal(rawVal) {
+            const val = parseInt(rawVal);
+            if (!val || val < 1) return;
+            activeGoal = val;
+            isGoalPaused = false;
+            modalSavedAlready = false;
+            const s = salats[activeIdx];
+            if (s) {
+                s.goal = val;
+                saveSalats();
+                document.getElementById('goalDisp').textContent = activeGoal;
+                document.getElementById('goalCardLbl').textContent = activeGoal;
+                renderTabs();
+                updateBeads(s.count, activeGoal);
             }
         }
 
@@ -883,6 +923,8 @@
 
         function switchSalat(i) {
             activeIdx = i;
+            isGoalPaused = false;
+            modalSavedAlready = false;
             const s = salats[i];
             document.getElementById('mainTitle').textContent = s.nom;
             document.getElementById('cNum').textContent = s.count;
@@ -941,9 +983,16 @@
             document.getElementById('inlineZikrCreator').style.display = 'none';
         }
 
-        // ── 4. COMPTAGE DES GRAINS (SANS DOUBLE-CLIC) ──
+        // ── 4. COMPTAGE DES GRAINS (SANS DOUBLE-CLIC & ARRÊT À L'OBJECTIF) ──
         let lastTapTime = 0;
+        let isGoalPaused = false;
+        let modalLockUntil = 0;
+        let modalSavedAlready = false;
+
         function handleBeadTap() {
+            if (isGoalPaused || document.getElementById('congratsModal').classList.contains('open')) {
+                return;
+            }
             const now = Date.now();
             if (now - lastTapTime < 45) return;
             lastTapTime = now;
@@ -957,11 +1006,15 @@
             updateBeads(s.count, activeGoal);
 
             if (navigator.vibrate) {
-                navigator.vibrate(s.count === activeGoal ? [60, 40, 80] : 25);
+                navigator.vibrate(s.count === activeGoal ? [80, 50, 100] : 25);
             }
 
+            // Dès qu'on atteint l'objectif (ex: 1000), on ARRÊTE le compteur à 1000
+            // et on ouvre la boîte de dialogue qui propose : Enregistrer OU Recommencer
             if (s.count === activeGoal) {
-                openCongratsModal();
+                isGoalPaused = true;
+                modalSavedAlready = false;
+                openCongratsModal(false);
             }
         }
 
@@ -969,6 +1022,7 @@
             const s = salats[activeIdx];
             if (s.count > 0) {
                 s.count--;
+                isGoalPaused = false;
                 saveSalats();
                 document.getElementById('cNum').textContent = s.count;
                 renderTabs();
@@ -979,6 +1033,8 @@
         function resetSession() {
             const s = salats[activeIdx];
             s.count = 0;
+            isGoalPaused = false;
+            modalSavedAlready = false;
             saveSalats();
             document.getElementById('cNum').textContent = '0';
             renderTabs();
@@ -1060,18 +1116,19 @@
             showZikrToast(`Zikr « ${nom} » (Objectif : ${goal}) enregistré ✓`);
         }
 
-        // ── 6. ENREGISTRER LA SÉANCE EN BASE DE DONNÉES (SANS ERREUR) ──
-        async function sauvegarderSeance(fromAutoModal = false) {
+        // ── 6. ENREGISTRER LA SÉANCE EN BASE DE DONNÉES (SANS REMISE À ZÉRO FORCÉE) ──
+        async function sauvegarderSeance(openChoiceAfter = false, resetAfter = false) {
             const s = salats[activeIdx];
             if (!s || s.count <= 0) {
                 showZikrToast('Comptez au moins 1 grain avant d\'enregistrer');
-                return;
+                return false;
             }
 
             const btn = document.getElementById('btnSaveMain');
             const countToSave = s.count;
             if (btn) btn.disabled = true;
 
+            let savedOk = false;
             try {
                 const res = await fetch("{% url 'enregistrer_seance' %}", {
                     method: 'POST',
@@ -1087,6 +1144,7 @@
                 });
                 const data = await res.json();
                 if (res.ok && data.status === 'success') {
+                    savedOk = true;
                     if (data.zikr_id) s.dbId = data.zikr_id;
 
                     // Ajouter en haut de l'historique visuel immédiatement
@@ -1114,30 +1172,89 @@
                         totEl.textContent = data.total_cumule || (curTot + countToSave);
                     }
 
-                    if (!fromAutoModal) {
-                        s.count = 0;
-                        saveSalats();
-                        document.getElementById('cNum').textContent = '0';
-                        renderTabs();
-                        updateBeads(0, activeGoal);
-                    }
                     showZikrToast(`Séance de ${countToSave} « ${s.nom} » enregistrée ✓`);
                 } else {
                     showZikrToast(data.message || 'Erreur lors de l\'enregistrement');
                 }
             } catch (err) {
+                savedOk = true;
                 showZikrToast('Séance sauvegardée localement sur votre appareil ✓');
             } finally {
                 if (btn) btn.disabled = false;
             }
+
+            if (savedOk) {
+                modalSavedAlready = true;
+                if (resetAfter) {
+                    resetSession();
+                } else if (!document.getElementById('congratsModal').classList.contains('open')) {
+                    // Demander à l'utilisateur s'il souhaite garder son compteur ou recommencer à zéro
+                    openCongratsModal(true);
+                }
+            }
+            return savedOk;
         }
 
-        function openCongratsModal() {
+        function openCongratsModal(alreadySaved = false) {
             const s = salats[activeIdx];
+            modalLockUntil = Date.now() + 650; // Verrou anti-clic réflexe pendant 650ms
             document.getElementById('finalCount').textContent = s.count;
-            document.getElementById('modalSub').innerHTML = `Vous avez accompli <strong>${s.count}</strong> répétitions de <strong style="color:var(--gold-lt);">${s.nom}</strong>.`;
+
+            const banner = document.getElementById('modalSaveBanner');
+            const btnSaveOnly = document.getElementById('btnModalSaveOnly');
+            const btnSaveAndReset = document.getElementById('btnModalSaveAndReset');
+            const btnResetLbl = document.getElementById('btnModalResetLbl');
+            const subCount = document.getElementById('finalCountSub');
+            const titleEl = document.getElementById('modalTitle');
+
+            if (alreadySaved) {
+                titleEl.textContent = 'Séance Enregistrée !';
+                document.getElementById('modalSub').innerHTML = `Vos <strong>${s.count}</strong> répétitions de <strong style="color:var(--gold-lt);">${s.nom}</strong> sont enregistrées. Voulez-vous recommencer à zéro ou continuer ?`;
+                banner.style.display = 'block';
+                subCount.textContent = 'Grains Récités & Enregistrés dans l\'historique';
+                btnSaveOnly.style.display = 'none';
+                btnSaveAndReset.style.display = 'none';
+                btnResetLbl.textContent = 'Recommencer à zéro (Nouvelle séance)';
+            } else {
+                titleEl.textContent = 'Macha\'Allah ! Objectif Atteint';
+                document.getElementById('modalSub').innerHTML = `Vous avez terminé l'objectif de <strong>${s.count}</strong> répétitions de <strong style="color:var(--gold-lt);">${s.nom}</strong>. Que souhaitez-vous faire ?`;
+                banner.style.display = 'none';
+                subCount.textContent = 'Objectif atteint — Choisissez d\'enregistrer ou de recommencer';
+                btnSaveOnly.style.display = 'flex';
+                btnSaveAndReset.style.display = 'flex';
+                btnResetLbl.textContent = 'Recommencer à zéro (Sans enregistrer)';
+            }
+
             document.getElementById('congratsModal').classList.add('open');
-            sauvegarderSeance(true);
+        }
+
+        async function actionModalEnregistrer(andReset = false) {
+            if (Date.now() < modalLockUntil) return;
+            const s = salats[activeIdx];
+            if (!modalSavedAlready) {
+                await sauvegarderSeance(false, false);
+            }
+            if (andReset) {
+                resetSession();
+                closeCongratsModal();
+                showZikrToast('Séance enregistrée et compteur remis à zéro ✓');
+            } else {
+                // On garde le compteur à 1000 (sans recommencer directement) et on affiche la confirmation
+                openCongratsModal(true);
+            }
+        }
+
+        function actionModalRecommencer() {
+            if (Date.now() < modalLockUntil) return;
+            resetSession();
+            closeCongratsModal();
+            showZikrToast('Compteur remis à zéro pour une nouvelle série');
+        }
+
+        function actionModalContinuer() {
+            if (Date.now() < modalLockUntil) return;
+            isGoalPaused = false;
+            closeCongratsModal();
         }
 
         function closeCongratsModal() {
