@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sdm-premium-v5';
+const CACHE_NAME = 'sdm-premium-v7';
 const ASSETS_TO_CACHE = [
   '/',
   '/offline/',
@@ -6,6 +6,7 @@ const ASSETS_TO_CACHE = [
   '/static/css/sdm_theme.css',
   '/static/js/sdm_main.js',
   '/static/js/sdm_offline_vault.js',
+  '/static/js/sdm_audio_engine.js',
   '/static/manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
@@ -60,12 +61,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Ne pas bloquer les flux lourds ou l'admin
+  // 2. Ne pas bloquer les flux lourds, proxies ou APIs
   if (
     url.includes('/media/') ||
     url.includes('/proxy-pdf/') ||
+    url.includes('/proxy-audio/') ||
     url.includes('cloudinary.com') ||
+    url.includes('archive.org') ||
+    url.includes('mp3quran.net') ||
     url.includes('/api/') ||
+    url.includes('/sons-api/') ||
     url.includes('/admin/')
   ) {
     return;

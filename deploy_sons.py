@@ -640,11 +640,12 @@ SONS_DATA = [
 
 def run():
     print("Nettoyage des sons defectueux (404 / raw) et doublons...")
-    valid_urls = {item['lien_audio_externe'] for item in SONS_DATA}
     deleted_count = 0
     for s in list(Son.objects.all()):
         ext_url = (s.lien_audio_externe or '').strip()
-        if not ext_url or ext_url not in valid_urls or '(1)' in (s.titre or ''):
+        is_broken_raw = ('/raw/upload/' in ext_url)
+        is_dup = ('(1)' in (s.titre or '')) or ('(2)' in (s.titre or ''))
+        if (not ext_url and not s.fichier_audio) or is_broken_raw or is_dup:
             s.delete()
             deleted_count += 1
     print(f"Sons defectueux supprimes : {deleted_count}")

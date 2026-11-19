@@ -831,16 +831,22 @@ def enregistrer_seance(request):
 # --- GESTION DES SONS ---
 
 def liste_sons(request):
-    """Liste audio filtrable."""
+    """Liste audio filtrable avec compteurs par catégorie."""
     categorie_filter = request.GET.get('cat')
     if categorie_filter:
-        sons = Son.objects.filter(categorie=categorie_filter).order_by('-date_ajout')
+        sons = Son.objects.filter(categorie=categorie_filter).order_by('-date_ajout', 'titre')
     else:
-        sons = Son.objects.all().order_by('-date_ajout')
-    
+        sons = Son.objects.all().order_by('-date_ajout', 'titre')
+
+    counts_map = dict(
+        Son.objects.values('categorie').annotate(c=Count('id')).values_list('categorie', 'c')
+    )
+    total_all_sons = sum(counts_map.values())
     categories = Son.CATEGORIES
-    
-    # Get favorited sound IDs for the current user
+    categories_with_counts = [
+        (code, label, counts_map.get(code, 0)) for code, label in Son.CATEGORIES
+    ]
+
     favoris_ids = []
     if request.user.is_authenticated:
         try:
@@ -852,6 +858,8 @@ def liste_sons(request):
     return render(request, 'bibliotheque/liste_sons.html', {
         'sons': sons,
         'categories': categories,
+        'categories_with_counts': categories_with_counts,
+        'total_all_sons': total_all_sons,
         'active_cat': categorie_filter,
         'favoris_ids': favoris_ids,
     })

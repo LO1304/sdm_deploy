@@ -39,4 +39,7 @@ echo "🔥 Création des Sessions de Zikr par défaut 🔥"
 echo "🔥 Nettoyage & Déploiement des Sons Vérifiés (Base de données) 🔥"
 python deploy_sons.py
 
+echo "🔥 Enrichissement Audiothèque (~600 Sons : Khassidas, Coran, Xam Xam, Wakhtane) & 30 Jukkis Coran 🔥"
+python enrich_audiotheque.py
+
 echo "═══ Build terminé avec succès ! ═══"

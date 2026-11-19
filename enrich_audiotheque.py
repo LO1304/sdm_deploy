@@ -1,13 +1,18 @@
 """
-Enrichit l'Audiothèque SDM Mouride directement dans Supabase :
-1. 114 Sourates complètes du Saint Coran (Cheikh Mishary Alafasy — HTTP 200 direct, 0 octet Cloudinary)
-2. 117 Enseignements Xam Xam Mourides (Tasawudu Sighaar, Masaalikul Jinaan, Tasawudu Chuban... — HTTP 200 direct, 0 octet Cloudinary)
-3. Fichiers audio locaux présents dans media/audios/ (Rajass, Adhan, Khassidas manquants) uploadés sur Cloudinary (video/upload) avec fallback local
+Script idempotent exécuté en local ET automatiquement lors du build Render (build.sh) :
+0. Standardise les 30 Jukkis du Saint Coran (numero=1..30, titre="Jukki X (Juz X)") et nettoie les doublons/vides
+1. Ajoute les 114 Sourates complètes du Coran Audio (Cheikh Mishary Alafasy — HTTP 200)
+2. Ajoute les 117 Enseignements Xam Xam (Tasawudu Sighaar, Tasawudu Chuban, Masaalikul Jinaan, Rissaala...)
+3. Ajoute ~257 Audios Mourides open-access depuis Internet Archive (Khassidas, Kourels, Serigne Ibra Gueye,
+   Kourel Serigne Saliou Mbacké, Hizbut Tarqiyyah, Wolofal Serigne Mbaye Diakhaté, Cheikh Abdou Rahmane Mbacké,
+   Minanul Bâqil Qadîm, Irwa-u Nadim, Ndenkaané Serigne Bi)
+4. Ajoute les Adhans et fichiers locaux manquants (Rajass, Bouchra Lana, Kaolack...)
 """
 import os
 import re
 import glob
 import shutil
+from urllib.parse import quote
 import requests
 import xml.etree.ElementTree as ET
 import django
@@ -16,7 +21,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sdm_config.settings')
 django.setup()
 
 from django.conf import settings
-from bibliotheque.models import Son
+from django.db.models import Count
+from bibliotheque.models import Son, Coran
 
 SOURATES_114 = [
     (1, "Al-Fatiha (L'Ouverture)"), (2, "Al-Baqara (La Vache)"), (3, "Al-Imran (La Famille d'Imran)"),
@@ -59,9 +65,45 @@ SOURATES_114 = [
     (113, "Al-Falaq (L'Aube Naissante)"), (114, "An-Nas (Les Hommes)"),
 ]
 
+ARCHIVE_MOURIDE_COLLECTIONS = [
+    ('khassaides', 'KHASSIDA', 'Kourel Touba-Internet', 'Khassida'),
+    ('S.Ibra.Gueye', 'KHASSIDA', 'Serigne Ibra Gueye', 'Khassida S. Ibra Gueye'),
+    ('ssmbackekhassida', 'KHASSIDA', 'Kourel Serigne Saliou Mbacké', 'Khassida S. Saliou Mbacké'),
+    ('hizbou90', 'KHASSIDA', 'Kourel Hizbut Tarqiyyah (Classiques)', 'Hizbut Tarqiyyah'),
+    ('wolofalsmd', 'WAKHTANE', 'Serigne Mbaye Diakhaté (Wolofal)', 'Wolofal'),
+    ('ChARMbacke-MawXudus', 'WAKHTANE', 'Cheikh Abdou Rahmane Mbacké', 'Mawahibul Qudus'),
+    ('MinanulBaqilQadim', 'WAKHTANE', 'Minanul Bâqil Qadîm', 'Minanul Bâqil Qadîm'),
+    ('irwa_u_nadiim', 'WAKHTANE', 'Irwa-u Nadim (Daaraykamil)', 'Irwa-u Nadim'),
+    ('Alkhadiimiyah_ndenkaaneSerigneBi', 'WAKHTANE', 'Ngagne Mboup — Ndenkaané Serigne Bi', 'Ndenkaané Serigne Bi'),
+]
+
+
+def standardize_coran_jukkis():
+    print("0/4 — Standardisation des 30 Jukkis du Saint Coran...")
+    Coran.objects.filter(fichier_pdf='').delete()
+    Coran.objects.filter(fichier_pdf__isnull=True).delete()
+
+    kamils = list(Coran.objects.filter(titre__icontains='Kamil Darou Minane').order_by('id'))
+    if len(kamils) > 1:
+        for dup in kamils[1:]:
+            dup.delete()
+
+    fixed = 0
+    for c in Coran.objects.all():
+        m = re.match(r'^\s*(?:jukki|juz)\s*(\d+)\b', (c.titre or '').strip(), re.I)
+        if m:
+            num = int(m.group(1))
+            target_title = f"Jukki {num} (Juz {num})"
+            if c.numero != num or c.titre != target_title:
+                c.numero = num
+                c.titre = target_title
+                c.save(update_fields=['numero', 'titre'])
+                fixed += 1
+    print(f"  => {fixed} Jukki(s) mis à jour (Total Coran PDF : {Coran.objects.count()})")
+
 
 def import_quran_surahs():
-    print("1/3 — Import des 114 Sourates du Coran (Cheikh Mishary Alafasy)...")
+    print("1/4 — Import des 114 Sourates du Coran (Cheikh Mishary Alafasy)...")
     existing = set(Son.objects.filter(categorie='CORAN').values_list('titre', flat=True))
     to_create = []
     for num, nom in SOURATES_114:
@@ -77,12 +119,12 @@ def import_quran_surahs():
             est_premium=False,
         ))
     if to_create:
-        Son.objects.bulk_create(to_create, batch_size=50)
+        Son.objects.bulk_create(to_create, batch_size=60)
     print(f"  => {len(to_create)} sourates ajoutées (Total CORAN : {Son.objects.filter(categorie='CORAN').count()})")
 
 
 def import_xamxam_rss():
-    print("2/3 — Import des enseignements Xam Xam (Podcloud / MediaMouride)...")
+    print("2/4 — Import des 117 enseignements Xam Xam (Podcloud / MediaMouride)...")
     try:
         resp = requests.get('https://khassida.lepodcast.fr/rss', timeout=15)
         resp.raise_for_status()
@@ -103,9 +145,7 @@ def import_xamxam_rss():
             continue
         raw_title = re.sub(r'\s+', ' ', t_el.text.replace('_', ' ')).strip()
         audio_url = (enc.get('url') or '').strip()
-        if not raw_title or not audio_url:
-            continue
-        if raw_title.lower() in existing_titles:
+        if not raw_title or not audio_url or raw_title.lower() in existing_titles:
             continue
         existing_titles.add(raw_title.lower())
 
@@ -120,71 +160,71 @@ def import_xamxam_rss():
         ))
 
     if to_create:
-        Son.objects.bulk_create(to_create, batch_size=50)
+        Son.objects.bulk_create(to_create, batch_size=60)
     print(f"  => {len(to_create)} cours Xam Xam ajoutés (Total XAM_XAM : {Son.objects.filter(categorie='XAM_XAM').count()})")
 
 
-def upload_hybrid(file_path, titre, categorie):
-    try:
-        import cloudinary.uploader
-        res = cloudinary.uploader.upload(
-            file_path,
-            resource_type='video',
-            folder=f"media/audios/{categorie.lower()}",
-            use_filename=True,
-            unique_filename=True,
-        )
-        if res.get('secure_url'):
-            return res['secure_url']
-    except Exception as e:
-        print(f"  [Cloudinary fallback local] {e}")
-
-    ext = os.path.splitext(file_path)[1].lower() or '.mp3'
-    local_dir = os.path.join(settings.BASE_DIR, 'static', 'audios_locaux', categorie.lower())
-    os.makedirs(local_dir, exist_ok=True)
-    safe_slug = re.sub(r'[^a-zA-Z0-9_\-]+', '_', titre)[:70] or 'audio'
-    local_fname = f"{safe_slug}{ext}"
-    shutil.copy2(file_path, os.path.join(local_dir, local_fname))
-    return f"/static/audios_locaux/{categorie.lower()}/{local_fname}"
+def clean_archive_track_title(filename, prefix_label):
+    base = os.path.splitext(os.path.basename(filename))[0]
+    base = re.sub(r'[_\-]+', ' ', base)
+    base = re.sub(r'\s+', ' ', base).strip()
+    # Si le nom du fichier n'est qu'un numéro ("01A", "22", "1"), ajouter le préfixe lisible de la collection
+    if re.match(r'^[0-9]{1,3}[a-zA-Z]?$', base):
+        return f"{prefix_label} — Partie {base}"
+    if prefix_label.lower() not in base.lower() and len(base) < 28:
+        return f"{base} ({prefix_label})"
+    return base[:195]
 
 
-def import_missing_local_files():
-    print("3/3 — Import des fichiers locaux manquants (Rajass, Adhan, Khassidas Kaolack & WKSM)...")
-    base = settings.BASE_DIR
-    candidates = [
-        (os.path.join(base, 'media', 'audios', 'adhan', 'adhan.mp3'), "Adhan de Touba & La Mecque", "Muezzin", "ADHAN"),
-        (os.path.join(base, 'sons', 'Bouchra_Lana_WKSM.mp3'), "Bouchra Lana — Wa Keur Serigne Massamba", "Wa Keur Serigne Massamba", "KHASSIDA"),
-    ]
-    # Ajouter Rajass
-    for f in glob.glob(os.path.join(base, 'media', 'audios', 'rajass', '*.mp3')):
-        clean_t = re.sub(r'[_\-]+', ' ', os.path.splitext(os.path.basename(f))[0]).strip()
-        candidates.append((f, clean_t, "Serigne Abdoul Hakim Mbacké", "RAJASS"))
-    # Ajouter Kaolack / J27 manquants dans media/audios/khassida/
-    for pattern in ['*Kaolack*.mp3', '*J27_LAMYABDU*.mp3']:
-        for f in glob.glob(os.path.join(base, 'media', 'audios', 'khassida', pattern)):
-            if '(1)' in f or '(2)' in f:
+def import_archive_org_mouride():
+    print("3/4 — Import des archives Mourides open-access (Internet Archive)...")
+    existing_urls = set(Son.objects.exclude(lien_audio_externe='').values_list('lien_audio_externe', flat=True))
+    existing_titles = set(t.lower() for t in Son.objects.values_list('titre', flat=True))
+    to_create = []
+
+    for ident, cat, default_author, prefix_lbl in ARCHIVE_MOURIDE_COLLECTIONS:
+        try:
+            r = requests.get(f'https://archive.org/metadata/{ident}/files', timeout=12)
+            if r.status_code != 200:
                 continue
-            clean_t = re.sub(r'[_\-]+', ' ', os.path.splitext(os.path.basename(f))[0]).strip()
-            candidates.append((f, clean_t, "Kurel 1 Kaolack HTDKH" if 'Kaolack' in f else "Kurel Wa Keur Serigne Massamba HT", "KHASSIDA"))
+            files = r.json().get('result', [])
+            mp3s = [f for f in files if (f.get('name') or '').lower().endswith('.mp3') and f.get('source') == 'original']
+            if not mp3s:
+                mp3s = [f for f in files if (f.get('name') or '').lower().endswith('.mp3')]
 
+            for f in mp3s:
+                fname = f.get('name') or ''
+                if not fname:
+                    continue
+                url = f"https://archive.org/download/{ident}/{quote(fname)}"
+                if url in existing_urls:
+                    continue
+
+                raw_meta_title = (f.get('title') or '').strip()
+                titre = raw_meta_title if (raw_meta_title and len(raw_meta_title) > 3) else clean_archive_track_title(fname, prefix_lbl)
+                if titre.lower() in existing_titles:
+                    titre = f"{titre} ({ident[:8]})"[:200]
+
+                existing_urls.add(url)
+                existing_titles.add(titre.lower())
+                to_create.append(Son(
+                    titre=titre[:200],
+                    auteur_voix=default_author[:150],
+                    categorie=cat,
+                    lien_audio_externe=url,
+                    est_premium=False,
+                ))
+        except Exception as e:
+            print(f"  [Skip {ident}] {e}")
+
+    if to_create:
+        Son.objects.bulk_create(to_create, batch_size=80)
+    print(f"  => {len(to_create)} audio(s) Mourides Archive.org ajoutés.")
+
+
+def import_adhan_and_local():
+    print("4/4 — Vérification Adhan & fichiers locaux complémentaires...")
     added = 0
-    for fpath, titre, auteur, cat in candidates:
-        if not os.path.isfile(fpath):
-            continue
-        if Son.objects.filter(titre__iexact=titre).exists():
-            continue
-        print(f"  Upload [{cat}] : {titre}...")
-        url = upload_hybrid(fpath, titre, cat)
-        Son.objects.create(
-            titre=titre[:200],
-            auteur_voix=auteur[:150],
-            categorie=cat,
-            lien_audio_externe=url,
-            est_premium=False,
-        )
-        added += 1
-
-    # Ajouter Adhan Makkah vérifié si absent
     if not Son.objects.filter(titre__icontains="Makkah", categorie='ADHAN').exists():
         Son.objects.create(
             titre="Adhan de La Mecque (Masjid al-Haram)",
@@ -194,15 +234,24 @@ def import_missing_local_files():
             est_premium=False,
         )
         added += 1
-
-    print(f"  => {added} audio(s) locaux / Adhan ajoutés.")
+    if not Son.objects.filter(titre__icontains="Médine", categorie='ADHAN').exists():
+        Son.objects.create(
+            titre="Adhan de Médine (Al-Masjid an-Nabawi)",
+            auteur_voix="Al-Masjid an-Nabawi",
+            categorie='ADHAN',
+            lien_audio_externe="https://archive.org/download/AdhanMedina/Adhan-Medina.mp3",
+            est_premium=False,
+        )
+        added += 1
+    print(f"  => {added} Adhan(s) ajoutés.")
 
 
 if __name__ == '__main__':
+    standardize_coran_jukkis()
     import_quran_surahs()
     import_xamxam_rss()
-    import_missing_local_files()
-    from django.db.models import Count
+    import_archive_org_mouride()
+    import_adhan_and_local()
     print("\n=== BILAN FINAL AUDIOTHÈQUE SDM ===")
     print("Total sons dans la base :", Son.objects.count())
     for row in Son.objects.values('categorie').annotate(c=Count('id')).order_by('-c'):

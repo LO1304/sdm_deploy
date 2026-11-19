@@ -375,13 +375,13 @@
         <span id="search-count"></span>
     </div>
 
-    <!-- CATEGORIES -->
+    <!-- CATEGORIES AVEC COMPTEURS RÉELS -->
     <div class="cats-row">
         <a href="?" class="cat-profile {% if not active_cat %}active{% endif %}">
             <div class="cat-avatar"><i class="fa-solid fa-layer-group"></i></div>
-            <span class="cat-name">Tout</span>
+            <span class="cat-name">Tout ({{ total_all_sons }})</span>
         </a>
-        {% for code, label in categories %}
+        {% for code, label, cnt in categories_with_counts %}
         <a href="?cat={{ code }}" class="cat-profile {% if active_cat == code %}active{% endif %}">
             <div class="cat-avatar">
                 {% if code == 'CORAN' %}
@@ -402,7 +402,7 @@
                 <i class="fa-solid fa-folder-open"></i>
                 {% endif %}
             </div>
-            <span class="cat-name">{{ label }}</span>
+            <span class="cat-name">{{ label }} ({{ cnt }})</span>
         </a>
         {% endfor %}
     </div>
@@ -1137,7 +1137,7 @@ window.submitTelegramAudio = async function(e) {
     statusBox.style.display = 'block';
 
     try {
-        const res = await fetch('/api/sons/ajouter/', {
+        const res = await fetch('/sons-api/ajouter/', {
             method: 'POST',
             headers: { 'X-CSRFToken': '{{ csrf_token }}' },
             body: fd
@@ -1198,7 +1198,7 @@ window.deleteSonTrack = async function(e, sonId, titre, btnEl) {
     }
     const row = btnEl.closest('.track-item');
     try {
-        const res = await fetch(`/api/sons/supprimer/${sonId}/`, {
+        const res = await fetch(`/sons-api/supprimer/${sonId}/`, {
             method: 'POST',
             headers: { 'X-CSRFToken': '{{ csrf_token }}' }
         });
@@ -1237,7 +1237,7 @@ window.saveEditSon = async function() {
     if (!titre) return;
 
     try {
-        const res = await fetch(`/api/sons/modifier/${sonId}/`, {
+        const res = await fetch(`/sons-api/modifier/${sonId}/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

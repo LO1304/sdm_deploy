@@ -193,7 +193,7 @@
 
         // Sinon charger la playlist en arrière-plan si vide
         if (playlist.length === 0) {
-            fetch('/api/sons/liste/')
+            fetch('/sons-api/liste/')
                 .then(r => r.json())
                 .then(data => {
                     if (data && Array.isArray(data.playlist) && data.playlist.length > 0) {
