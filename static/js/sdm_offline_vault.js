@@ -1,5 +1,5 @@
 /**
- * SDM MOURIDE — COFFRE-FORT HORS-LIGNE (INDEXEDDB + CACHE API)
+ * SDM MOURIDE — COFFRE-FORT HORS-LIGNE ORGANISÉ PAR CATÉGORIE & DOSSIER (INDEXEDDB + CACHE API)
  * & PERSISTANCE DE CONNEXION MOBILE 365 JOURS
  */
 (function () {
@@ -8,7 +8,21 @@
     const DB_NAME = 'sdm_offline_vault_db';
     const DB_VERSION = 1;
     const STORE_NAME = 'offline_items';
-    const CACHE_NAME = 'sdm-premium-v5';
+    const CACHE_NAME = 'sdm-premium-v6';
+    const FOLDERS_LS_KEY = 'sdm_offline_custom_folders_v1';
+
+    const CATEGORY_LABELS = {
+        'KHASSIDA': 'Khassidas Audio',
+        'CORAN': 'Coran Audio',
+        'XAM_XAM': 'Xam Xam Audio',
+        'WAKHTANE': 'Wakhtane',
+        'ZIKR': 'Zikr Audio',
+        'RAJASS': 'Rajass',
+        'ADHAN': 'Adhan',
+        'khassida': 'Khassidas PDF',
+        'coran': 'Coran PDF',
+        'son': 'Audios'
+    };
 
     // ═══════════════════════════════════════════════════════════════════
     // 1. PERSISTANCE AUTOMATIQUE DE CONNEXION (ANTI-DÉCONNEXION MOBILE)
@@ -20,13 +34,11 @@
 
     function syncPersistentAuth() {
         try {
-            // Si un jeton de session signé est présent en cookie, le sauvegarder dans localStorage
             const cookieToken = getCookie('sdm_remember_token');
             if (cookieToken) {
                 localStorage.setItem('sdm_auth_token', cookieToken);
             }
 
-            // Intercepter les clics sur Déconnexion pour nettoyer volontairement le jeton
             document.addEventListener('click', function (e) {
                 const link = e.target.closest('a[href*="/logout"], button[formaction*="/logout"]');
                 const form = e.target.closest('form[action*="/logout"]');
@@ -36,7 +48,6 @@
                 }
             }, true);
 
-            // Si le cookie a été purgé à la fermeture de l'app mobile mais que localStorage a le jeton
             const storedToken = localStorage.getItem('sdm_auth_token');
             if (!cookieToken && storedToken && navigator.onLine) {
                 fetch('/api/auth/restore-session/', {
@@ -53,7 +64,6 @@
                     if (data && data.token) {
                         localStorage.setItem('sdm_auth_token', data.token);
                         if (data.status === 'restored') {
-                            // Si l'utilisateur était sur la page login, le rediriger vers l'accueil connecté
                             if (window.location.pathname.indexOf('/login') === 0) {
                                 window.location.replace('/');
                             } else {
@@ -76,7 +86,41 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════
-    // 2. MOTEUR INDEXEDDB POUR LE STOCKAGE HORS-LIGNE DANS L'APPLICATION
+    // 2. GESTION DES DOSSIERS PERSONNALISÉS (ORGANISATION HORS-LIGNE)
+    // ═══════════════════════════════════════════════════════════════════
+    function readCustomFolders() {
+        try {
+            const raw = localStorage.getItem(FOLDERS_LS_KEY);
+            const parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function writeCustomFolders(list) {
+        try {
+            localStorage.setItem(FOLDERS_LS_KEY, JSON.stringify(list));
+        } catch (e) {}
+    }
+
+    function computeDefaultFolder(meta) {
+        if (meta.dossier && String(meta.dossier).trim()) {
+            return String(meta.dossier).trim();
+        }
+        const cat = String(meta.categorie || '').toLowerCase();
+        const sub = String(meta.sousCategorie || '').toUpperCase();
+        if (cat === 'son') {
+            if (sub && CATEGORY_LABELS[sub]) return CATEGORY_LABELS[sub];
+            return 'Audios Divers';
+        }
+        if (cat === 'khassida') return 'Khassidas PDF';
+        if (cat === 'coran') return 'Coran PDF';
+        return 'Mes Téléchargements';
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // 3. MOTEUR INDEXEDDB POUR LE STOCKAGE HORS-LIGNE DANS L'APPLICATION
     // ═══════════════════════════════════════════════════════════════════
     function openVaultDB() {
         return new Promise((resolve, reject) => {
@@ -106,19 +150,41 @@
         });
     }
 
+    async function fetchMediaWithFallback(meta) {
+        const mediaUrl = meta.pdfUrl || meta.audioUrl || `/proxy-pdf/${meta.categorie}/${meta.id}/`;
+        try {
+            const resp = await fetch(mediaUrl, {
+                credentials: mediaUrl.startsWith('/') ? 'same-origin' : 'omit'
+            });
+            if (resp.ok) return resp;
+        } catch (e) {}
+
+        // Fallback CORS via notre proxy Django pour garantir 100% de réussite hors-ligne
+        if (String(meta.categorie) === 'son') {
+            const proxyResp = await fetch(`/proxy-audio/${meta.id}/`, { credentials: 'same-origin' });
+            if (proxyResp.ok) return proxyResp;
+        } else {
+            const proxyResp = await fetch(`/proxy-pdf/${meta.categorie}/${meta.id}/`, { credentials: 'same-origin' });
+            if (proxyResp.ok) return proxyResp;
+        }
+        throw new Error('Échec du téléchargement du fichier média');
+    }
+
     const SDMOfflineVault = {
+        CATEGORY_LABELS,
+
         async saveItem(meta, onProgress) {
             const key = `${meta.categorie}_${meta.id}`;
             const mediaUrl = meta.pdfUrl || meta.audioUrl || `/proxy-pdf/${meta.categorie}/${meta.id}/`;
-            const readUrl = meta.readUrl || `/lire/${meta.categorie}/${meta.id}/`;
+            const readUrl = meta.readUrl || (meta.categorie === 'son' ? `/collection/son/?autoplay=${meta.id}` : `/lire/${meta.categorie}/${meta.id}/`);
             const thumbUrl = meta.thumbUrl || `/thumb-pdf/${meta.categorie}/${meta.id}/`;
+            const sousCategorie = (meta.sousCategorie || (meta.categorie === 'son' ? 'KHASSIDA' : String(meta.categorie).toUpperCase())).toUpperCase();
+            const dossier = computeDefaultFolder({ ...meta, sousCategorie });
 
             if (onProgress) onProgress(10, 'Téléchargement...');
 
-            // 1. Télécharger le binaire (PDF ou Audio) avec suivi de progression
-            const response = await fetch(mediaUrl, { credentials: 'same-origin' });
-            if (!response.ok) throw new Error('Échec du téléchargement');
-
+            // 1. Télécharger le binaire (PDF ou Audio) avec fallback CORS automatique
+            const response = await fetchMediaWithFallback(meta);
             const contentLength = parseInt(response.headers.get('content-length') || '0', 10);
             let blob;
 
@@ -134,13 +200,14 @@
                     const pct = Math.min(90, Math.round((received / contentLength) * 85) + 10);
                     onProgress(pct, `${pct}%`);
                 }
-                blob = new Blob(chunks, { type: response.headers.get('content-type') || 'application/pdf' });
+                const fallbackType = meta.categorie === 'son' ? 'audio/mpeg' : 'application/pdf';
+                blob = new Blob(chunks, { type: response.headers.get('content-type') || fallbackType });
             } else {
                 blob = await response.blob();
                 if (onProgress) onProgress(85, '85%');
             }
 
-            // 2. Récupérer la miniature de la 1re page en Base64 pour l'affichage hors-ligne
+            // 2. Récupérer la miniature de la 1re page en Base64 pour les PDF
             let thumbDataUrl = meta.thumbDataUrl || null;
             if (!thumbDataUrl && meta.categorie !== 'son') {
                 try {
@@ -152,7 +219,7 @@
                 } catch (e) {}
             }
 
-            // 3. Mettre en cache la page HTML du lecteur + la page Téléchargements dans CacheStorage
+            // 3. Mettre en cache les pages clés dans CacheStorage
             if ('caches' in window) {
                 try {
                     const cache = await caches.open(CACHE_NAME);
@@ -164,10 +231,12 @@
                 } catch (e) {}
             }
 
-            // 4. Stocker dans IndexedDB
+            // 4. Stocker dans IndexedDB avec Catégorie + Sous-Catégorie + Dossier
             const record = {
                 key: key,
                 categorie: String(meta.categorie),
+                sousCategorie: sousCategorie,
+                dossier: dossier,
                 id: String(meta.id),
                 titre: meta.titre || 'Document Sacré',
                 auteur: meta.auteur || 'Cheikh Ahmadou Bamba',
@@ -188,7 +257,7 @@
                 tx.onerror = (e) => reject(e.target.error);
             });
 
-            // 5. Enregistrer côté serveur si connecté
+            // 5. Synchroniser l'historique côté serveur si connecté
             fetch(`/telechargements/ajouter/${meta.categorie}/${meta.id}/`, {
                 method: 'GET',
                 headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
@@ -204,9 +273,13 @@
                 const key = `${meta.categorie}_${meta.id}`;
                 const db = await openVaultDB();
                 const existing = await this.getItem(meta.categorie, meta.id);
+                const sousCategorie = (meta.sousCategorie || (existing && existing.sousCategorie) || String(meta.categorie).toUpperCase()).toUpperCase();
+                const dossier = (meta.dossier || (existing && existing.dossier)) || computeDefaultFolder({ ...meta, sousCategorie });
                 const record = {
                     key: key,
                     categorie: String(meta.categorie),
+                    sousCategorie: sousCategorie,
+                    dossier: dossier,
                     id: String(meta.id),
                     titre: meta.titre || (existing && existing.titre) || 'Manuscrit Sacré',
                     auteur: meta.auteur || (existing && existing.auteur) || 'Cheikh Ahmadou Bamba',
@@ -269,7 +342,11 @@
                     const tx = db.transaction(STORE_NAME, 'readonly');
                     const req = tx.objectStore(STORE_NAME).getAll();
                     req.onsuccess = () => {
-                        const list = req.result || [];
+                        const list = (req.result || []).map(item => ({
+                            ...item,
+                            sousCategorie: item.sousCategorie || (item.categorie === 'son' ? 'KHASSIDA' : String(item.categorie || '').toUpperCase()),
+                            dossier: item.dossier || computeDefaultFolder(item)
+                        }));
                         list.sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
                         resolve(list);
                     };
@@ -278,6 +355,49 @@
             } catch (e) {
                 return [];
             }
+        },
+
+        async getSavedKeysSet() {
+            const all = await this.listAll();
+            return new Set(all.map(x => x.key));
+        },
+
+        async moveToFolder(categorie, id, newFolderName) {
+            const cleanFolder = String(newFolderName || '').trim();
+            if (!cleanFolder) return false;
+            const existing = await this.getItem(categorie, id);
+            if (!existing) return false;
+            existing.dossier = cleanFolder;
+            const db = await openVaultDB();
+            await new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).put(existing);
+                tx.oncomplete = () => resolve();
+                tx.onerror = (e) => reject(e.target.error);
+            });
+            this.createFolder(cleanFolder, existing.categorie);
+            return true;
+        },
+
+        getCustomFolders() {
+            return readCustomFolders();
+        },
+
+        createFolder(name, mediaType = 'all') {
+            const clean = String(name || '').trim();
+            if (!clean) return null;
+            const list = readCustomFolders();
+            const exists = list.find(f => f.name.toLowerCase() === clean.toLowerCase());
+            if (!exists) {
+                list.push({ name: clean, mediaType: mediaType || 'all', createdAt: Date.now() });
+                writeCustomFolders(list);
+            }
+            return clean;
+        },
+
+        deleteCustomFolder(name) {
+            const list = readCustomFolders().filter(f => f.name.toLowerCase() !== String(name || '').toLowerCase());
+            writeCustomFolders(list);
         },
 
         async removeItem(categorie, id) {
@@ -307,7 +427,7 @@
             toast.style.background = isSuccess ? 'rgba(6, 48, 32, 0.96)' : 'rgba(68, 18, 18, 0.96)';
             toast.style.border = isSuccess ? '1px solid #10B981' : '1px solid #F87171';
             toast.style.color = '#FFFFFF';
-            toast.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check text-emerald-400' : 'fa-triangle-exclamation text-red-400'}"></i><span>${message}</span>`;
+            toast.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-triangle-exclamation'}" style="color:${isSuccess ? '#34D399' : '#F87171'};"></i><span>${message}</span>`;
             toast.style.opacity = '1';
             clearTimeout(window._sdmToastTimer);
             window._sdmToastTimer = setTimeout(() => {

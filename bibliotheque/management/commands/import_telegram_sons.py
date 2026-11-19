@@ -66,6 +66,11 @@ class Command(BaseCommand):
             default='',
             help="Telegram API HASH (ou variable d'environnement TELEGRAM_API_HASH)",
         )
+        parser.add_argument(
+            '--local',
+            action='store_true',
+            help="Forcer l'enregistrement local dans static/audios_locaux/ sans utiliser Cloudinary",
+        )
 
     def handle(self, *args, **options):
         dossier = options.get('dossier')
@@ -73,6 +78,7 @@ class Command(BaseCommand):
         categorie = options['categorie']
         default_auteur = (options.get('auteur') or '').strip()
         limit = options['limit']
+        self.force_local = bool(options.get('local'))
 
         if not dossier and not channel:
             raise CommandError("Spécifiez --dossier <chemin> OU --channel <lien_telegram>.")
@@ -91,24 +97,39 @@ class Command(BaseCommand):
             asyncio.run(self._import_from_channel(channel, categorie, default_auteur, limit, api_id, api_hash))
 
     def _upload_and_save(self, file_path, titre, auteur, categorie):
-        import cloudinary.uploader
+        import shutil
+        from django.conf import settings
 
         if Son.objects.filter(titre__iexact=titre).exists():
             self.stdout.write(f"  [Ignoré - déjà présent] {titre}")
             return False
 
-        folder = f"media/audios/telegram/{categorie.lower()}"
-        res = cloudinary.uploader.upload(
-            file_path,
-            resource_type='video',
-            folder=folder,
-            use_filename=True,
-            unique_filename=True,
-        )
-        secure_url = res.get('secure_url')
+        secure_url = ''
+        if not getattr(self, 'force_local', False):
+            try:
+                import cloudinary.uploader
+                folder = f"media/audios/telegram/{categorie.lower()}"
+                res = cloudinary.uploader.upload(
+                    file_path,
+                    resource_type='video',
+                    folder=folder,
+                    use_filename=True,
+                    unique_filename=True,
+                )
+                secure_url = res.get('secure_url') or ''
+            except Exception as e:
+                self.stderr.write(f"  [Cloudinary indisponible, bascule locale] {e}")
+                secure_url = ''
+
         if not secure_url:
-            self.stderr.write(f"  [Erreur Cloudinary] Aucun lien retourné pour {titre}")
-            return False
+            ext = os.path.splitext(file_path)[1].lower() or '.mp3'
+            local_dir = os.path.join(settings.BASE_DIR, 'static', 'audios_locaux', categorie.lower())
+            os.makedirs(local_dir, exist_ok=True)
+            safe_slug = re.sub(r'[^a-zA-Z0-9_\-]+', '_', titre)[:70] or 'audio_sdm'
+            local_fname = f"{safe_slug}{ext}"
+            dest_path = os.path.join(local_dir, local_fname)
+            shutil.copy2(file_path, dest_path)
+            secure_url = f"/static/audios_locaux/{categorie.lower()}/{local_fname}"
 
         Son.objects.create(
             titre=titre[:200],
@@ -116,7 +137,8 @@ class Command(BaseCommand):
             categorie=categorie,
             lien_audio_externe=secure_url,
         )
-        self.stdout.write(self.style.SUCCESS(f"  [OK] {titre} ({auteur or categorie})"))
+        mode_lbl = 'LOCAL' if secure_url.startswith('/static/') else 'CLOUDINARY'
+        self.stdout.write(self.style.SUCCESS(f"  [OK {mode_lbl}] {titre} ({auteur or categorie})"))
         return True
 
     def _import_from_folder(self, dossier, categorie, default_auteur, limit):

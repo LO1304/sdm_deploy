@@ -61,14 +61,37 @@ async def main():
                     
                 try:
                     await client.download_media(message, tmp_path)
-                    
-                    # Sauvegarder dans Django (ça l'envoie sur Cloudinary)
-                    son = Son(titre=titre, auteur_voix="Kourelou Khaidayi", categorie='KHASSIDA', est_premium=False)
-                    with open(tmp_path, 'rb') as f:
-                        # Le nom du fichier sera basé sur l'ID Telegram
-                        filename = f"telegram_{message.id}.mp3"
-                        son.fichier_audio.save(filename, File(f), save=True)
-                    
+
+                    # 1. Upload Cloudinary (video/upload) avec fallback local automatique
+                    secure_url = ''
+                    try:
+                        import cloudinary.uploader
+                        up = cloudinary.uploader.upload(
+                            tmp_path,
+                            resource_type='video',
+                            folder='media/audios/telegram/khassida',
+                            public_id=f"tg_{CHANNEL_USERNAME}_{message.id}",
+                        )
+                        secure_url = up.get('secure_url') or ''
+                    except Exception as ce:
+                        print(f"  [Cloudinary fallback local] {ce}")
+
+                    if not secure_url:
+                        import shutil
+                        from django.conf import settings
+                        local_dir = os.path.join(settings.BASE_DIR, 'static', 'audios_locaux', 'khassida')
+                        os.makedirs(local_dir, exist_ok=True)
+                        local_fname = f"tg_{CHANNEL_USERNAME}_{message.id}.mp3"
+                        shutil.copy2(tmp_path, os.path.join(local_dir, local_fname))
+                        secure_url = f"/static/audios_locaux/khassida/{local_fname}"
+
+                    Son.objects.create(
+                        titre=titre,
+                        auteur_voix=f"Kourel @{CHANNEL_USERNAME}",
+                        categorie='KHASSIDA',
+                        lien_audio_externe=secure_url,
+                        est_premium=False,
+                    )
                     print(f" => Enregistré avec succès : {titre}")
                 except Exception as e:
                     print(f"Erreur pour {titre} : {e}")

@@ -47,8 +47,9 @@ urlpatterns = [
     path('api/ecoute-son/<int:id>/', views.enregistrer_ecoute_son, name='enregistrer_ecoute_son'),
     path('api/progression-pdf/', views.sauvegarder_progression_pdf, name='sauvegarder_progression_pdf'),
 
-    # Proxy PDF pour contourner les problèmes CORS avec Cloudinary
+    # Proxy PDF & Audio pour contourner les problèmes CORS (Hors-Ligne IndexedDB)
     path('proxy-pdf/<str:categorie>/<int:id>/', views.proxy_pdf, name='proxy_pdf'),
+    path('proxy-audio/<int:son_id>/', views.proxy_audio, name='proxy_audio'),
     path('thumb-pdf/<str:categorie>/<int:id>/', views.thumb_pdf, name='thumb_pdf'),
     path('api/auth/restore-session/', views.api_restore_session, name='api_restore_session'),
 

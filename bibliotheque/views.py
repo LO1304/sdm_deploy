@@ -186,9 +186,62 @@ def liste_dynamique(request, categorie):
     elif categorie == 'wird':
         items = Wird.objects.all()
     elif categorie == 'coran':
-        items = Coran.objects.all()
+        all_corans = Coran.objects.exclude(fichier_pdf='').exclude(fichier_pdf__isnull=True)
+        jukkis_pdfs = list(all_corans.filter(numero__isnull=False).order_by('numero', 'id'))
+        mushafs_pdfs = list(all_corans.filter(numero__isnull=True).order_by('id'))
+
+        # Métadonnées officielles des 30 Jukkis (Juz 1 à 30) : nom arabe, sourate de début, plage de sourates
+        JUKKI_INFOS = {
+            1:  ("الجزء ١ · الم", "Al-Fâtiha (1) → Al-Baqara (2:141)", 1),
+            2:  ("الجزء ٢ · سيقول", "Al-Baqara (2:142 → 2:252)", 2),
+            3:  ("الجزء ٣ · تلك الرسل", "Al-Baqara (2:253) → Âl-'Imrân (3:92)", 3),
+            4:  ("الجزء ٤ · لن تنالوا", "Âl-'Imrân (3:93) → An-Nisâ' (4:23)", 3),
+            5:  ("الجزء ٥ · والمحصنات", "An-Nisâ' (4:24 → 4:147)", 4),
+            6:  ("الجزء ٦ · لا يحب الله", "An-Nisâ' (4:148) → Al-Mâ'ida (5:81)", 5),
+            7:  ("الجزء ٧ · وإذا سمعوا", "Al-Mâ'ida (5:82) → Al-An'âm (6:110)", 6),
+            8:  ("الجزء ٨ · ولو أننا", "Al-An'âm (6:111) → Al-A'râf (7:87)", 7),
+            9:  ("الجزء ٩ · قال الملأ", "Al-A'râf (7:88) → Al-Anfâl (8:40)", 7),
+            10: ("الجزء ١٠ · واعلموا", "Al-Anfâl (8:41) → At-Tawba (9:92)", 8),
+            11: ("الجزء ١١ · يعتذرون", "At-Tawba (9:93) → Hûd (11:5)", 10),
+            12: ("الجزء ١٢ · وما من دابة", "Hûd (11:6) → Yûsuf (12:52)", 11),
+            13: ("الجزء ١٣ · وما أبرئ", "Yûsuf (12:53) → Ibrâhîm (14:52)", 12),
+            14: ("الجزء ١٤ · ربما", "Al-Hijr (15:1) → An-Nahl (16:128)", 15),
+            15: ("الجزء ١٥ · سبحان الذي", "Al-Isrâ' (17:1) → Al-Kahf (18:74)", 17),
+            16: ("الجزء ١٦ · قال ألم", "Al-Kahf (18:75) → Tâ-Hâ (20:135)", 19),
+            17: ("الجزء ١٧ · اقترب", "Al-Anbiyâ' (21:1) → Al-Hajj (22:78)", 21),
+            18: ("الجزء ١٨ · قد أفلح", "Al-Mu'minûn (23:1) → Al-Furqân (25:20)", 23),
+            19: ("الجزء ١٩ · وقال الذين", "Al-Furqân (25:21) → An-Naml (27:55)", 26),
+            20: ("الجزء ٢٠ · أمن خلق", "An-Naml (27:56) → Al-'Ankabût (29:45)", 28),
+            21: ("الجزء ٢١ · اتل ما أوحي", "Al-'Ankabût (29:46) → Al-Ahzâb (33:30)", 30),
+            22: ("الجزء ٢٢ · ومن يقنت", "Al-Ahzâb (33:31) → Yâ-Sîn (36:27)", 34),
+            23: ("الجزء ٢٣ · وما لي", "Yâ-Sîn (36:28) → Az-Zumar (39:31)", 36),
+            24: ("الجزء ٢٤ · فمن أظلم", "Az-Zumar (39:32) → Fussilat (41:46)", 40),
+            25: ("الجزء ٢٥ · إليه يرد", "Fussilat (41:47) → Al-Jâthiya (45:37)", 42),
+            26: ("الجزء ٢٦ · حم", "Al-Ahqâf (46:1) → Adh-Dhâriyât (51:30)", 46),
+            27: ("الجزء ٢٧ · قال فما خطبكم", "Adh-Dhâriyât (51:31) → Al-Hadîd (57:29)", 55),
+            28: ("الجزء ٢٨ · قد سمع الله", "Al-Mujâdala (58:1) → At-Tahrîm (66:12)", 58),
+            29: ("الجزء ٢٩ · تبارك الذي", "Al-Mulk (67:1) → Al-Mursalât (77:50)", 67),
+            30: ("الجزء ٣٠ · عمّ يتساءلون", "Juz Amma : An-Naba' (78) → An-Nâs (114)", 78),
+        }
+        jukki_by_num = {j.numero: j for j in jukkis_pdfs}
+        jukkis_list = []
+        for num in range(1, 31):
+            ar_lbl, fr_range, start_surah = JUKKI_INFOS[num]
+            doc = jukki_by_num.get(num)
+            jukkis_list.append({
+                'numero': num,
+                'ar_label': ar_lbl,
+                'fr_range': fr_range,
+                'start_surah': start_surah,
+                'hizb_range': f"Hizb {num * 2 - 1} – {num * 2}",
+                'pdf_id': doc.id if doc else None,
+                'titre': doc.titre if doc else f"Jukki {num} (Juz {num})",
+            })
+
         return render(request, 'bibliotheque/coran_interactif.html', {
-            'coran_pdfs': items,
+            'jukkis_list': jukkis_list,
+            'mushafs_pdfs': mushafs_pdfs,
+            'coran_pdfs': jukkis_pdfs + mushafs_pdfs,
             'categorie': 'coran',
         })
 
@@ -899,21 +952,38 @@ def api_ajouter_son(request):
         if fichiers:
             for idx, f in enumerate(fichiers):
                 raw_name = os.path.splitext(f.name)[0]
+                ext = os.path.splitext(f.name)[1].lower() or '.mp3'
                 clean_name = re.sub(r'[_\-]+', ' ', raw_name).strip()
                 track_title = titre_saisi if (titre_saisi and len(fichiers) == 1) else (
                     f"{titre_saisi} ({idx + 1})" if titre_saisi else (clean_name or "Son Telegram")
                 )
 
-                upload_res = cloudinary.uploader.upload(
-                    f,
-                    resource_type='video',
-                    folder='media/audios/telegram',
-                    use_filename=True,
-                    unique_filename=True,
-                )
-                secure_url = upload_res.get('secure_url')
+                secure_url = ''
+                # 1. Essayer Cloudinary (resource_type='video' pour streaming Range HTTP)
+                try:
+                    upload_res = cloudinary.uploader.upload(
+                        f,
+                        resource_type='video',
+                        folder=f'media/audios/{categorie.lower()}',
+                        use_filename=True,
+                        unique_filename=True,
+                    )
+                    secure_url = upload_res.get('secure_url') or ''
+                except Exception:
+                    secure_url = ''
+
+                # 2. Fallback automatique en stockage local dans l'application si Cloudinary est plein/indisponible
                 if not secure_url:
-                    continue
+                    local_dir = os.path.join(settings.BASE_DIR, 'static', 'audios_locaux', categorie.lower())
+                    os.makedirs(local_dir, exist_ok=True)
+                    safe_slug = re.sub(r'[^a-zA-Z0-9_\-]+', '_', clean_name)[:70] or f'audio_{idx}'
+                    local_fname = f"{safe_slug}_{int(timezone.now().timestamp())}{ext}"
+                    local_path = os.path.join(local_dir, local_fname)
+                    f.seek(0)
+                    with open(local_path, 'wb+') as dest:
+                        for chunk in f.chunks():
+                            dest.write(chunk)
+                    secure_url = f"/static/audios_locaux/{categorie.lower()}/{local_fname}"
 
                 son = Son.objects.create(
                     titre=track_title[:200],
@@ -1059,6 +1129,53 @@ def api_liste_sons_json(request):
             'url': url,
         })
     return JsonResponse({'status': 'success', 'playlist': playlist})
+
+
+def proxy_audio(request, son_id):
+    """
+    Proxy Audio CORS-safe pour le téléchargement hors-ligne fiable dans IndexedDB
+    (contourne les restrictions CORS des hébergeurs audio externes comme Podcloud / MP3Quran).
+    """
+    from django.http import StreamingHttpResponse, FileResponse
+    son = get_object_or_404(Son, id=son_id)
+    url = (son.lien_audio_externe or '').strip()
+    if not url and son.fichier_audio:
+        url = son.fichier_audio.url
+
+    if not url:
+        return HttpResponse("Aucun fichier audio associé.", status=404)
+
+    # Cas d'un fichier stocké localement dans /static/audios_locaux/
+    if url.startswith('/static/'):
+        rel_path = url[len('/static/'):].lstrip('/')
+        abs_path = os.path.join(settings.BASE_DIR, 'static', rel_path)
+        if os.path.isfile(abs_path):
+            resp = FileResponse(open(abs_path, 'rb'), content_type='audio/mpeg')
+            resp['Access-Control-Allow-Origin'] = '*'
+            resp['Accept-Ranges'] = 'bytes'
+            return resp
+        return HttpResponse("Fichier audio local introuvable.", status=404)
+
+    try:
+        upstream = requests.get(
+            url,
+            stream=True,
+            timeout=30,
+            headers={'User-Agent': 'Mozilla/5.0 (compatible; SDMMouride/2.0)'},
+        )
+        upstream.raise_for_status()
+        content_type = upstream.headers.get('Content-Type') or 'audio/mpeg'
+        resp = StreamingHttpResponse(
+            upstream.iter_content(chunk_size=32768),
+            content_type=content_type,
+        )
+        if upstream.headers.get('Content-Length'):
+            resp['Content-Length'] = upstream.headers['Content-Length']
+        resp['Access-Control-Allow-Origin'] = '*'
+        resp['Cache-Control'] = 'public, max-age=604800'
+        return resp
+    except Exception as e:
+        return HttpResponse(f"Erreur proxy audio : {e}", status=502)
 
 # --- AUTHENTIFICATION & PROFIL ---
 

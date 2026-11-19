@@ -339,6 +339,92 @@
             color: #040B08; border: none; font-size: 16px;
         }
         .qp-btn.active { border-color: var(--gold-lt); color: var(--gold-lt); }
+
+        /* ── ORGANISATION PAR ONGLETS EN HAUT DU SAINT CORAN (ZERO SCROLL) ── */
+        .coran-org-tabs {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border-g);
+            border-radius: 18px; padding: 5px; margin-bottom: 14px;
+        }
+        .coran-tab-btn {
+            padding: 9px 4px; border-radius: 13px; border: none; cursor: pointer;
+            background: transparent; color: var(--dim);
+            font-size: 10.5px; font-weight: 800; text-decoration: none;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+            transition: all 0.2s ease; text-align: center;
+        }
+        .coran-tab-btn i { font-size: 14px; }
+        .coran-tab-btn.active {
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+            color: #040B08;
+            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+        }
+        .coran-panel { display: none; }
+        .coran-panel.active { display: block; }
+
+        /* ── RECHERCHE RAPIDE JUKKI / SOURATE ── */
+        .quick-search-box {
+            position: relative; margin-bottom: 12px;
+        }
+        .quick-search-box i {
+            position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+            color: var(--gold); font-size: 13px; pointer-events: none;
+        }
+        .quick-search-box input {
+            width: 100%; background: rgba(0,0,0,0.45);
+            border: 1px solid var(--border-g); border-radius: 14px;
+            padding: 11px 14px 11px 38px; color: #fff; font-size: 12.5px; font-weight: 600; outline: none;
+        }
+        .quick-search-box input:focus { border-color: var(--gold-lt); }
+
+        /* ── GRILLE DES 30 JUKKIS (1 À 30) ── */
+        .jukki-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 10px;
+        }
+        .jukki-card {
+            background: var(--surface); border: 1px solid var(--border-g);
+            border-radius: 18px; padding: 13px;
+            display: flex; flex-direction: column; gap: 9px;
+            transition: border-color 0.2s ease;
+        }
+        .jukki-card:hover { border-color: var(--gold-lt); }
+        .jukki-head {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .jukki-num-badge {
+            width: 42px; height: 42px; border-radius: 13px; flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(212,175,55,0.28), rgba(16,185,129,0.22));
+            border: 1.5px solid var(--gold);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--gold-lt); font-weight: 900; font-size: 15px; line-height: 1;
+        }
+        .jukki-num-badge small { font-size: 7.5px; text-transform: uppercase; color: #fff; opacity: 0.8; margin-bottom: 2px; }
+        .jukki-meta { flex: 1; min-width: 0; }
+        .jukki-title-row {
+            display: flex; align-items: center; justify-content: space-between; gap: 6px;
+        }
+        .jukki-fr-name { font-size: 13px; font-weight: 800; color: #fff; }
+        .jukki-ar-name { font-family: 'Amiri', serif; font-size: 15px; color: var(--gold-lt); font-weight: 700; }
+        .jukki-sub { font-size: 10.5px; color: var(--dim); font-weight: 600; margin-top: 2px; }
+        .jukki-actions {
+            display: flex; gap: 6px;
+        }
+        .j-btn {
+            flex: 1; padding: 8px 8px; border-radius: 11px; font-size: 11px; font-weight: 800;
+            text-decoration: none; border: none; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        .j-btn-gold {
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold)); color: #040B08;
+        }
+        .j-btn-emerald {
+            background: rgba(16,185,129,0.18); border: 1px solid rgba(16,185,129,0.45); color: #6EE7B7;
+        }
+        .j-btn-dl {
+            flex: 0 0 36px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--gold-lt);
+        }
     </style>
 </head>
 <body>
@@ -350,8 +436,11 @@
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div class="topbar-title">
-                <h1>Le Noble Coran · 4 Langues & 6 Récitants</h1>
-                <p>Arabe · Phonétique · Français · Anglais · Cliquez sur un verset pour écouter</p>
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                    <h1>Le Saint Coran · Jukkis & Sourates</h1>
+                    <span class="sdm-name-audio-widget"></span>
+                </div>
+                <p>30 Jukkis (Juz 1–30) · 114 Sourates · 4 Langues & 6 Récitants</p>
             </div>
             <button type="button" onclick="adjustFontSize(-2)" class="icon-btn" title="Réduire la taille du texte" style="font-size:11px; font-weight:800;">A-</button>
             <button type="button" onclick="adjustFontSize(2)" class="icon-btn" title="Agrandir la taille du texte" style="font-size:13px; font-weight:800;">A+</button>
@@ -360,157 +449,256 @@
 
     <div class="container">
 
-        <!-- 1. STUDIO DE LECTURE & RÉCITATION -->
-        <section class="control-card">
-            <!-- A. Choix parmi les 6 Grands Récitants Open-Source -->
-            <div class="ctrl-label">
-                <span>🎙️ Choisir un Récitant (6 Voix Open-Source HD)</span>
-                <span id="active-reciter-lbl">Mishary Rashid Alafasy</span>
-            </div>
-            <div class="reciters-scroll" id="reciters-list">
-                <button type="button" class="reciter-pill active" data-reciter="ar.alafasy" data-name="Mishary Rashid Alafasy" onclick="selectReciter(this)">
-                    <div class="reciter-avatar"><i class="fa-solid fa-microphone-lines"></i></div>
-                    <div style="text-align:left;">
-                        <span class="reciter-name">Mishary Alafasy</span>
-                        <span class="reciter-style">Koweït · Murattal HD</span>
-                    </div>
-                </button>
-                <button type="button" class="reciter-pill" data-reciter="ar.abdulbasitmurattal" data-name="Abdul Basit Abdus Samad" onclick="selectReciter(this)">
-                    <div class="reciter-avatar"><i class="fa-solid fa-microphone-lines"></i></div>
-                    <div style="text-align:left;">
-                        <span class="reciter-name">Abdul Basit</span>
-                        <span class="reciter-style">Égypte · Murattal Classique</span>
-                    </div>
-                </button>
-                <button type="button" class="reciter-pill" data-reciter="ar.abdurrahmaansudais" data-name="Abdurrahmaan As-Sudais" onclick="selectReciter(this)">
-                    <div class="reciter-avatar"><i class="fa-solid fa-kaaba"></i></div>
-                    <div style="text-align:left;">
-                        <span class="reciter-name">Cheikh As-Sudais</span>
-                        <span class="reciter-style">Imam Masjid Al-Haram</span>
-                    </div>
-                </button>
-                <button type="button" class="reciter-pill" data-reciter="ar.mahermuaiqly" data-name="Maher Al-Muaiqly" onclick="selectReciter(this)">
-                    <div class="reciter-avatar"><i class="fa-solid fa-kaaba"></i></div>
-                    <div style="text-align:left;">
-                        <span class="reciter-name">Maher Al-Muaiqly</span>
-                        <span class="reciter-style">La Mecque · Voix Apaisante</span>
-                    </div>
-                </button>
-                <button type="button" class="reciter-pill" data-reciter="ar.husary" data-name="Mahmoud Khalil Al-Husary" onclick="selectReciter(this)">
-                    <div class="reciter-avatar"><i class="fa-solid fa-book-quran"></i></div>
-                    <div style="text-align:left;">
-                        <span class="reciter-name">Cheikh Al-Husary</span>
-                        <span class="reciter-style">Tajwid & Apprentissage</span>
-                    </div>
-                </button>
-                <button type="button" class="reciter-pill" data-reciter="ar.minshawi" data-name="Mohamed Siddiq Al-Minshawi" onclick="selectReciter(this)">
-                    <div class="reciter-avatar"><i class="fa-solid fa-star-and-crescent"></i></div>
-                    <div style="text-align:left;">
-                        <span class="reciter-name">Al-Minshawi</span>
-                        <span class="reciter-style">Égypte · Récitation Émouvante</span>
-                    </div>
-                </button>
+        <!-- BARRE D'ORGANISATION DU SAINT CORAN (4 ONGLETS CLAIRS DÈS LE HAUT) -->
+        <nav class="coran-org-tabs">
+            <button type="button" class="coran-tab-btn active" id="tabBtn-jukkis" onclick="switchCoranTab('jukkis')">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>30 Jukkis</span>
+            </button>
+            <button type="button" class="coran-tab-btn" id="tabBtn-sourates" onclick="switchCoranTab('sourates')">
+                <i class="fa-solid fa-book-quran"></i>
+                <span>114 Sourates</span>
+            </button>
+            <button type="button" class="coran-tab-btn" id="tabBtn-mushafs" onclick="switchCoranTab('mushafs')">
+                <i class="fa-solid fa-scroll"></i>
+                <span>Kamil & PDF</span>
+            </button>
+            <a href="{% url 'kaamil_list' %}" class="coran-tab-btn">
+                <i class="fa-solid fa-users"></i>
+                <span>Kaamil Groupe</span>
+            </a>
+        </nav>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             ONGLET 1 : LES 30 JUKKIS (JUZ 1 À 30 — ACCESSIBLES IMMÉDIATEMENT)
+        ══════════════════════════════════════════════════════════════════ -->
+        <section class="coran-panel active" id="panel-jukkis">
+            <div class="quick-search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="jukkiSearchInput" oninput="filterJukkis(this.value)"
+                       placeholder="Rechercher un Jukki ou Hizb (ex: Jukki 1, Jukki 15, Jukki 30, Yâ-Sîn, Hizb 60)...">
             </div>
 
-            <!-- B. Choix des Langues & Traductions à Afficher -->
-            <div class="ctrl-label">
-                <span>🌍 Traductions & Textes à afficher (cumulables)</span>
-                <span>1 Clic pour activer/masquer</span>
-            </div>
-            <div class="lang-toggles">
-                <button type="button" class="lang-btn active" id="btn-lang-ar" onclick="toggleLang('ar')">
-                    <i class="fa-solid fa-check"></i>
-                    <span>Arabe (العربية)</span>
-                </button>
-                <button type="button" class="lang-btn active" id="btn-lang-phonetic" onclick="toggleLang('phonetic')">
-                    <i class="fa-solid fa-check"></i>
-                    <span>Phonétique</span>
-                </button>
-                <button type="button" class="lang-btn active" id="btn-lang-fr" onclick="toggleLang('fr')">
-                    <i class="fa-solid fa-check"></i>
-                    <span>Français</span>
-                </button>
-                <button type="button" class="lang-btn active" id="btn-lang-en" onclick="toggleLang('en')">
-                    <i class="fa-solid fa-check"></i>
-                    <span>English</span>
-                </button>
-            </div>
-
-            <!-- C. Choix de la Sourate (114 Sourates) -->
-            <div class="ctrl-label">
-                <span>📖 Choisir parmi les 114 Sourates</span>
-                <span id="offline-surah-status" style="color:#6EE7B7; display:none;">✓ Sourate en cache hors-ligne</span>
-            </div>
-            <div class="surah-selector-row">
-                <select id="surah-select" class="surah-select" onchange="loadSurah(parseInt(this.value))">
-                    <option value="1">1. Al-Fâtiha (L'Ouverture) — 7 versets</option>
-                </select>
-                <button type="button" onclick="playEntireSurah()" class="icon-btn active" style="width:auto; padding:0 14px; font-size:12px; font-weight:800; gap:6px; background:linear-gradient(135deg, var(--gold-lt), var(--gold)); color:#040B08; border:none;">
-                    <i class="fa-solid fa-play"></i>
-                    <span>Écouter la Sourate</span>
-                </button>
-            </div>
-
-            <!-- Raccourcis Sourates les plus lues -->
-            <div class="popular-surahs">
-                <button type="button" class="surah-chip active" data-s="1" onclick="loadSurah(1)">1. Al-Fâtiha</button>
-                <button type="button" class="surah-chip" data-s="2" onclick="loadSurah(2)">2. Al-Baqara</button>
-                <button type="button" class="surah-chip" data-s="18" onclick="loadSurah(18)">18. Al-Kahf</button>
-                <button type="button" class="surah-chip" data-s="36" onclick="loadSurah(36)">36. Yâ-Sîn</button>
-                <button type="button" class="surah-chip" data-s="55" onclick="loadSurah(55)">55. Ar-Rahmân</button>
-                <button type="button" class="surah-chip" data-s="56" onclick="loadSurah(56)">56. Al-Wâqi'a</button>
-                <button type="button" class="surah-chip" data-s="67" onclick="loadSurah(67)">67. Al-Mulk</button>
-                <button type="button" class="surah-chip" data-s="112" onclick="loadSurah(112)">112. Al-Ikhlâs</button>
-                <button type="button" class="surah-chip" data-s="113" onclick="loadSurah(113)">113. Al-Falaq</button>
-                <button type="button" class="surah-chip" data-s="114" onclick="loadSurah(114)">114. An-Nâs</button>
-            </div>
-        </section>
-
-        <!-- 2. BANNIÈRE DE LA SOURATE ACTIVE -->
-        <section class="surah-banner" id="surah-banner">
-            <div class="surah-ar-name" id="banner-ar">سُورَةُ ٱلْفَاتِحَةِ</div>
-            <div class="surah-fr-title" id="banner-title">1. Sourate Al-Fâtiha (L'Ouverture)</div>
-            <div class="surah-meta-badges">
-                <span id="banner-type">Mecquoise</span>
-                <span>•</span>
-                <span id="banner-count">7 Versets</span>
-                <span>•</span>
-                <span style="color:var(--gold-lt);">Touchez un verset pour lancer la récitation</span>
-            </div>
-            <div class="bismillah-banner" id="banner-bismillah">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
-        </section>
-
-        <!-- 3. CONTENEUR DES VERSETS (ARABE + PHONÉTIQUE + FRANÇAIS + ANGLAIS) -->
-        <main id="ayahs-container" class="ayah-list">
-            <div style="text-align:center; padding:45px 20px;">
-                <i class="fa-solid fa-circle-notch fa-spin" style="font-size:28px; color:var(--gold); margin-bottom:12px;"></i>
-                <p style="font-size:13px; font-weight:700;">Chargement des versets (Arabe, Phonétique, Français, Anglais)...</p>
-            </div>
-        </main>
-
-        {% if coran_pdfs %}
-        <!-- 4. MANUSCRITS PDF DU CORAN (SI PRÉSENTS EN BASE) -->
-        <section class="control-card" style="margin-top:24px;">
-            <div class="ctrl-label">
-                <span>📜 Manuscrits PDF du Saint Coran ({{ coran_pdfs|length }})</span>
-            </div>
-            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:10px;">
-                {% for c in coran_pdfs %}
-                <a href="{% url 'lire_pdf' 'coran' c.id %}" style="display:flex; align-items:center; gap:10px; padding:10px; border-radius:14px; background:rgba(0,0,0,0.3); border:1px solid var(--border-g); color:var(--text); text-decoration:none;">
-                    <i class="fa-solid fa-file-pdf" style="color:var(--gold); font-size:18px;"></i>
-                    <div style="min-width:0; flex:1;">
-                        <div style="font-size:12px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ c.titre }}</div>
-                        <div style="font-size:10px; color:var(--dim);">Ouvrir en PDF</div>
+            <div class="jukki-grid" id="jukkiGrid">
+                {% for j in jukkis_list %}
+                <div class="jukki-card"
+                     data-search="jukki {{ j.numero }} juz {{ j.numero }} {{ j.hizb_range|lower }} {{ j.fr_range|lower }} {{ j.ar_label }}">
+                    <div class="jukki-head">
+                        <div class="jukki-num-badge">
+                            <small>Jukki</small>
+                            <span>{{ j.numero }}</span>
+                        </div>
+                        <div class="jukki-meta">
+                            <div class="jukki-title-row">
+                                <span class="jukki-fr-name">Jukki {{ j.numero }} <span style="font-size:10px; color:var(--dim); font-weight:700;">({{ j.hizb_range }})</span></span>
+                                <span class="jukki-ar-name" dir="rtl">{{ j.ar_label }}</span>
+                            </div>
+                            <div class="jukki-sub">{{ j.fr_range }}</div>
+                        </div>
                     </div>
-                </a>
+
+                    <div class="jukki-actions">
+                        {% if j.pdf_id %}
+                        <a href="{% url 'lire_pdf' 'coran' j.pdf_id %}" class="j-btn j-btn-gold">
+                            <i class="fa-solid fa-file-pdf"></i> Lire PDF
+                        </a>
+                        {% endif %}
+                        <button type="button" class="j-btn j-btn-emerald" onclick="openJukkiInteractive({{ j.start_surah }})">
+                            <i class="fa-solid fa-headphones"></i> 4 Langues
+                        </button>
+                        {% if j.pdf_id %}
+                        <button type="button" class="j-btn j-btn-dl btn-coran-dl" data-offline-key="coran_{{ j.pdf_id }}"
+                                onclick="saveCoranPdfOffline(event, {{ j.pdf_id }}, 'Jukki {{ j.numero }} (Juz {{ j.numero }})', 'Coran — Les 30 Jukkis', this)"
+                                title="Télécharger Jukki {{ j.numero }} hors-ligne">
+                            <i class="fa-solid fa-cloud-arrow-down"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
                 {% endfor %}
             </div>
         </section>
-        {% endif %}
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             ONGLET 2 : LES 114 SOURATES (ARABE, PHONÉTIQUE, FRANÇAIS, ANGLAIS & 6 RÉCITANTS)
+        ══════════════════════════════════════════════════════════════════ -->
+        <section class="coran-panel" id="panel-sourates">
+            <section class="control-card">
+                <!-- A. Choix parmi les 6 Grands Récitants Open-Source -->
+                <div class="ctrl-label">
+                    <span>🎙️ Choisir un Récitant (6 Voix Open-Source HD)</span>
+                    <span id="active-reciter-lbl">Mishary Rashid Alafasy</span>
+                </div>
+                <div class="reciters-scroll" id="reciters-list">
+                    <button type="button" class="reciter-pill active" data-reciter="ar.alafasy" data-name="Mishary Rashid Alafasy" onclick="selectReciter(this)">
+                        <div class="reciter-avatar"><i class="fa-solid fa-microphone-lines"></i></div>
+                        <div style="text-align:left;">
+                            <span class="reciter-name">Mishary Alafasy</span>
+                            <span class="reciter-style">Koweït · Murattal HD</span>
+                        </div>
+                    </button>
+                    <button type="button" class="reciter-pill" data-reciter="ar.abdulbasitmurattal" data-name="Abdul Basit Abdus Samad" onclick="selectReciter(this)">
+                        <div class="reciter-avatar"><i class="fa-solid fa-microphone-lines"></i></div>
+                        <div style="text-align:left;">
+                            <span class="reciter-name">Abdul Basit</span>
+                            <span class="reciter-style">Égypte · Murattal Classique</span>
+                        </div>
+                    </button>
+                    <button type="button" class="reciter-pill" data-reciter="ar.abdurrahmaansudais" data-name="Abdurrahmaan As-Sudais" onclick="selectReciter(this)">
+                        <div class="reciter-avatar"><i class="fa-solid fa-kaaba"></i></div>
+                        <div style="text-align:left;">
+                            <span class="reciter-name">Cheikh As-Sudais</span>
+                            <span class="reciter-style">Imam Masjid Al-Haram</span>
+                        </div>
+                    </button>
+                    <button type="button" class="reciter-pill" data-reciter="ar.mahermuaiqly" data-name="Maher Al-Muaiqly" onclick="selectReciter(this)">
+                        <div class="reciter-avatar"><i class="fa-solid fa-kaaba"></i></div>
+                        <div style="text-align:left;">
+                            <span class="reciter-name">Maher Al-Muaiqly</span>
+                            <span class="reciter-style">La Mecque · Voix Apaisante</span>
+                        </div>
+                    </button>
+                    <button type="button" class="reciter-pill" data-reciter="ar.husary" data-name="Mahmoud Khalil Al-Husary" onclick="selectReciter(this)">
+                        <div class="reciter-avatar"><i class="fa-solid fa-book-quran"></i></div>
+                        <div style="text-align:left;">
+                            <span class="reciter-name">Cheikh Al-Husary</span>
+                            <span class="reciter-style">Tajwid & Apprentissage</span>
+                        </div>
+                    </button>
+                    <button type="button" class="reciter-pill" data-reciter="ar.minshawi" data-name="Mohamed Siddiq Al-Minshawi" onclick="selectReciter(this)">
+                        <div class="reciter-avatar"><i class="fa-solid fa-star-and-crescent"></i></div>
+                        <div style="text-align:left;">
+                            <span class="reciter-name">Al-Minshawi</span>
+                            <span class="reciter-style">Égypte · Récitation Émouvante</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- B. Choix des Langues & Traductions à Afficher -->
+                <div class="ctrl-label">
+                    <span>🌍 Traductions & Textes à afficher (cumulables)</span>
+                    <span>1 Clic pour activer/masquer</span>
+                </div>
+                <div class="lang-toggles">
+                    <button type="button" class="lang-btn active" id="btn-lang-ar" onclick="toggleLang('ar')">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Arabe (العربية)</span>
+                    </button>
+                    <button type="button" class="lang-btn active" id="btn-lang-phonetic" onclick="toggleLang('phonetic')">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Phonétique</span>
+                    </button>
+                    <button type="button" class="lang-btn active" id="btn-lang-fr" onclick="toggleLang('fr')">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Français</span>
+                    </button>
+                    <button type="button" class="lang-btn active" id="btn-lang-en" onclick="toggleLang('en')">
+                        <i class="fa-solid fa-check"></i>
+                        <span>English</span>
+                    </button>
+                </div>
+
+                <!-- C. Recherche + Sélecteur des 114 Sourates -->
+                <div class="ctrl-label">
+                    <span>📖 Choisir parmi les 114 Sourates</span>
+                    <span id="offline-surah-status" style="color:#6EE7B7; display:none;">✓ Sourate en cache hors-ligne</span>
+                </div>
+                <div class="quick-search-box" style="margin-bottom:8px;">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="surahFilterInput" oninput="filterSurahDropdown(this.value)"
+                           placeholder="Filtrer les 114 Sourates (ex: 36, Yasin, Mulk, Baqara, Kahf)...">
+                </div>
+                <div class="surah-selector-row">
+                    <select id="surah-select" class="surah-select" onchange="loadSurah(parseInt(this.value))">
+                        <option value="1">1. Al-Fâtiha (L'Ouverture) — 7 versets</option>
+                    </select>
+                    <button type="button" onclick="playEntireSurah()" class="icon-btn active" style="width:auto; padding:0 14px; font-size:12px; font-weight:800; gap:6px; background:linear-gradient(135deg, var(--gold-lt), var(--gold)); color:#040B08; border:none;">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Écouter la Sourate</span>
+                    </button>
+                </div>
+
+                <!-- Raccourcis Sourates les plus lues -->
+                <div class="popular-surahs">
+                    <button type="button" class="surah-chip active" data-s="1" onclick="loadSurah(1)">1. Al-Fâtiha</button>
+                    <button type="button" class="surah-chip" data-s="2" onclick="loadSurah(2)">2. Al-Baqara</button>
+                    <button type="button" class="surah-chip" data-s="18" onclick="loadSurah(18)">18. Al-Kahf</button>
+                    <button type="button" class="surah-chip" data-s="36" onclick="loadSurah(36)">36. Yâ-Sîn</button>
+                    <button type="button" class="surah-chip" data-s="55" onclick="loadSurah(55)">55. Ar-Rahmân</button>
+                    <button type="button" class="surah-chip" data-s="56" onclick="loadSurah(56)">56. Al-Wâqi'a</button>
+                    <button type="button" class="surah-chip" data-s="67" onclick="loadSurah(67)">67. Al-Mulk</button>
+                    <button type="button" class="surah-chip" data-s="112" onclick="loadSurah(112)">112. Al-Ikhlâs</button>
+                    <button type="button" class="surah-chip" data-s="113" onclick="loadSurah(113)">113. Al-Falaq</button>
+                    <button type="button" class="surah-chip" data-s="114" onclick="loadSurah(114)">114. An-Nâs</button>
+                </div>
+            </section>
+
+            <!-- 2. BANNIÈRE DE LA SOURATE ACTIVE -->
+            <section class="surah-banner" id="surah-banner">
+                <div class="surah-ar-name" id="banner-ar">سُورَةُ ٱلْفَاتِحَةِ</div>
+                <div class="surah-fr-title" id="banner-title">1. Sourate Al-Fâtiha (L'Ouverture)</div>
+                <div class="surah-meta-badges">
+                    <span id="banner-type">Mecquoise</span>
+                    <span>•</span>
+                    <span id="banner-count">7 Versets</span>
+                    <span>•</span>
+                    <span style="color:var(--gold-lt);">Touchez un verset pour lancer la récitation</span>
+                </div>
+                <div class="bismillah-banner" id="banner-bismillah">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+            </section>
+
+            <!-- 3. CONTENEUR DES VERSETS (ARABE + PHONÉTIQUE + FRANÇAIS + ANGLAIS) -->
+            <main id="ayahs-container" class="ayah-list">
+                <div style="text-align:center; padding:45px 20px;">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size:28px; color:var(--gold); margin-bottom:12px;"></i>
+                    <p style="font-size:13px; font-weight:700;">Chargement des versets (Arabe, Phonétique, Français, Anglais)...</p>
+                </div>
+            </main>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             ONGLET 3 : KAMIL COMPLET & MUSHAFS PDF (DAROU MINANE, CORAN WOLOF...)
+        ══════════════════════════════════════════════════════════════════ -->
+        <section class="coran-panel" id="panel-mushafs">
+            <section class="control-card">
+                <div class="ctrl-label">
+                    <span>📜 Kamil Complets & Traductions PDF ({{ mushafs_pdfs|length }})</span>
+                    <span>Lecture & Hors-Ligne</span>
+                </div>
+                <div class="jukki-grid">
+                    {% for c in mushafs_pdfs %}
+                    <div class="jukki-card">
+                        <div class="jukki-head">
+                            <div style="width:46px; height:60px; border-radius:9px; background:#F6E9CE; border:1.5px solid var(--gold); overflow:hidden; flex-shrink:0; position:relative; display:flex; align-items:center; justify-content:center; color:#4A2E05; font-size:9px; font-weight:800;">
+                                <span>PDF</span>
+                                <img src="{% url 'thumb_pdf' 'coran' c.id %}" alt="{{ c.titre }}" loading="lazy" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center;" onerror="this.remove()">
+                            </div>
+                            <div class="jukki-meta">
+                                <div class="jukki-fr-name">{{ c.titre }}</div>
+                                <div class="jukki-sub">Manuscrit PDF · Lecture rapide</div>
+                            </div>
+                        </div>
+                        <div class="jukki-actions">
+                            <a href="{% url 'lire_pdf' 'coran' c.id %}" class="j-btn j-btn-gold">
+                                <i class="fa-solid fa-book-open"></i> Ouvrir le PDF
+                            </a>
+                            <button type="button" class="j-btn j-btn-dl btn-coran-dl" data-offline-key="coran_{{ c.id }}"
+                                    onclick="saveCoranPdfOffline(event, {{ c.id }}, '{{ c.titre|escapejs }}', 'Coran — Kamil & Mushafs', this)"
+                                    title="Télécharger hors-ligne">
+                                <i class="fa-solid fa-cloud-arrow-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="font-size:12px; color:var(--dim); padding:16px;">Aucun Mushaf PDF supplémentaire trouvé.</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </section>
     </div>
 
-    <!-- DOCK AUDIO FLOTTANT EN BAS POUR CONTRÔLER LA RÉCITATION -->
-    <footer class="quran-player-dock">
+    <!-- DOCK AUDIO FLOTTANT EN BAS (VISIBLE EN MODE 114 SOURATES) -->
+    <footer class="quran-player-dock" id="quranPlayerDock" style="display:none;">
         <div class="qp-info">
             <div class="qp-title" id="qp-verse-lbl">Touchez n'importe quel verset pour réciter</div>
             <div class="qp-sub" id="qp-reciter-lbl">Récitant : Mishary Rashid Alafasy</div>
@@ -883,8 +1071,100 @@
             }
         });
 
-        // Charger Al-Fâtiha par défaut au démarrage
-        loadSurah(1);
+        // ── 4. ORGANISATION PAR ONGLETS (30 JUKKIS · 114 SOURATES · KAMIL & PDF) ──
+        let surahLoadedOnce = false;
+
+        function switchCoranTab(tabName) {
+            ['jukkis', 'sourates', 'mushafs'].forEach(t => {
+                const p = document.getElementById('panel-' + t);
+                const b = document.getElementById('tabBtn-' + t);
+                if (p) p.classList.toggle('active', t === tabName);
+                if (b) b.classList.toggle('active', t === tabName);
+            });
+            const dock = document.getElementById('quranPlayerDock');
+            if (dock) dock.style.display = (tabName === 'sourates') ? 'flex' : 'none';
+
+            if (tabName === 'sourates' && !surahLoadedOnce) {
+                surahLoadedOnce = true;
+                loadSurah(currentSurah || 1);
+            }
+        }
+
+        function filterJukkis(rawQuery) {
+            const q = (rawQuery || '').trim().toLowerCase();
+            document.querySelectorAll('#jukkiGrid .jukki-card').forEach(card => {
+                const haystack = (card.dataset.search || '').toLowerCase();
+                card.style.display = (!q || haystack.includes(q)) ? '' : 'none';
+            });
+        }
+
+        function filterSurahDropdown(rawQuery) {
+            const q = (rawQuery || '').trim().toLowerCase();
+            const sel = document.getElementById('surah-select');
+            const matches = SURAHS_META.filter(s => {
+                const hay = `${s[0]} ${s[1]} ${s[2]} ${s[3]}`.toLowerCase();
+                return !q || hay.includes(q);
+            });
+            sel.innerHTML = matches.map(s =>
+                `<option value="${s[0]}">${s[0]}. ${s[1]} (${s[2]}) — ${s[3]} (${s[4]} v.)</option>`
+            ).join('');
+            if (matches.length === 1) {
+                loadSurah(matches[0][0]);
+            }
+        }
+
+        function openJukkiInteractive(startSurahNum) {
+            switchCoranTab('sourates');
+            surahLoadedOnce = true;
+            loadSurah(startSurahNum || 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function saveCoranPdfOffline(e, coranId, titre, dossier, btnEl) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!window.SDMOfflineVault) return;
+            btnEl.disabled = true;
+            btnEl.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+            try {
+                await window.SDMOfflineVault.saveItem({
+                    categorie: 'coran',
+                    sousCategorie: 'CORAN_PDF',
+                    dossier: dossier || 'Coran — Les 30 Jukkis',
+                    id: coranId,
+                    titre: titre,
+                    auteur: 'Le Saint Coran',
+                    pdfUrl: `/proxy-pdf/coran/${coranId}/`,
+                    readUrl: `/lire/coran/${coranId}/`,
+                    thumbUrl: `/thumb-pdf/coran/${coranId}/`
+                });
+                btnEl.style.color = '#10B981';
+                btnEl.style.borderColor = '#10B981';
+                btnEl.innerHTML = '<i class="fa-solid fa-check"></i>';
+                window.SDMOfflineVault.showToast(`Enregistré hors-ligne → Dossier « ${dossier} » ✓`);
+            } catch (err) {
+                btnEl.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i>';
+                window.SDMOfflineVault.showToast('Erreur de téléchargement hors-ligne', false);
+            } finally {
+                btnEl.disabled = false;
+            }
+        }
+
+        // Marquer en vert les Jukkis / Mushafs déjà téléchargés hors-ligne
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (!window.SDMOfflineVault) return;
+            try {
+                const savedSet = await window.SDMOfflineVault.getSavedKeysSet();
+                document.querySelectorAll('.btn-coran-dl[data-offline-key]').forEach(btn => {
+                    if (savedSet.has(btn.dataset.offlineKey)) {
+                        btn.style.color = '#10B981';
+                        btn.style.borderColor = '#10B981';
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    }
+                });
+            } catch (e) {}
+        });
     </script>
+    <script src="{% static 'js/sdm_audio_engine.js' %}"></script>
 </body>
 </html>

@@ -384,15 +384,20 @@
         {% for code, label in categories %}
         <a href="?cat={{ code }}" class="cat-profile {% if active_cat == code %}active{% endif %}">
             <div class="cat-avatar">
-                {% if code == 'coran' %}
-                <img src="/static/images/categories/coran.jpg" alt="Coran" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                <i class="fa-solid fa-book-quran" style="display:none"></i>
-                {% elif code == 'khassida' %}
-                <img src="/static/images/categories/khassida.jpg" alt="Khassida" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                <i class="fa-solid fa-feather-pointed" style="display:none"></i>
-                {% elif code == 'zikr' %}
-                <img src="/static/images/categories/zikr.jpg" alt="Zikr" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                <i class="fa-solid fa-hands-praying" style="display:none"></i>
+                {% if code == 'CORAN' %}
+                <i class="fa-solid fa-book-quran"></i>
+                {% elif code == 'KHASSIDA' %}
+                <i class="fa-solid fa-feather-pointed"></i>
+                {% elif code == 'ZIKR' %}
+                <i class="fa-solid fa-hands-praying"></i>
+                {% elif code == 'XAM_XAM' %}
+                <i class="fa-solid fa-graduation-cap"></i>
+                {% elif code == 'WAKHTANE' %}
+                <i class="fa-solid fa-microphone-lines"></i>
+                {% elif code == 'RAJASS' %}
+                <i class="fa-solid fa-music"></i>
+                {% elif code == 'ADHAN' %}
+                <i class="fa-solid fa-mosque"></i>
                 {% else %}
                 <i class="fa-solid fa-folder-open"></i>
                 {% endif %}
@@ -444,9 +449,9 @@
                         title="Favori">
                     <i class="fa-{% if s.id in favoris_ids %}solid{% else %}regular{% endif %} fa-heart"></i>
                 </button>
-                <button type="button" class="track-btn"
-                        onclick="saveAudioOffline(event, {{ s.id }}, '{{ s.titre|escapejs }}', '{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}', '{% if s.lien_audio_externe %}{{ s.lien_audio_externe|escapejs }}{% else %}{{ s.fichier_audio.url|escapejs }}{% endif %}', this)"
-                        title="Enregistrer hors-ligne dans l'application">
+                <button type="button" class="track-btn btn-offline-dl" data-offline-key="son_{{ s.id }}"
+                        onclick="saveAudioOffline(event, {{ s.id }}, '{{ s.titre|escapejs }}', '{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}', '{% if s.lien_audio_externe %}{{ s.lien_audio_externe|escapejs }}{% else %}{{ s.fichier_audio.url|escapejs }}{% endif %}', '{{ s.categorie|escapejs }}', this)"
+                        title="Télécharger hors-ligne dans le dossier {{ s.get_categorie_display }}">
                     <i class="fa-solid fa-cloud-arrow-down"></i>
                 </button>
                 {% if user.is_staff or user.is_superuser %}
@@ -741,15 +746,16 @@ function applyCover(url){
     document.getElementById('player-bg').style.backgroundImage = 'none';
 }
 
-/* ══ SAUVEGARDE HORS-LIGNE D'UN AUDIO DANS L'APPLICATION (INDEXEDDB) ══ */
-window.saveAudioOffline = async function(e, id, titre, auteur, url, btnEl) {
+/* ══ SAUVEGARDE HORS-LIGNE D'UN AUDIO PAR CATÉGORIE & DOSSIER (INDEXEDDB) ══ */
+window.saveAudioOffline = async function(e, id, titre, auteur, url, sousCategorie, btnEl) {
     e.stopPropagation();
     if (!window.SDMOfflineVault) return;
     btnEl.disabled = true;
     btnEl.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
     try {
-        await window.SDMOfflineVault.saveItem({
+        const rec = await window.SDMOfflineVault.saveItem({
             categorie: 'son',
+            sousCategorie: sousCategorie || 'KHASSIDA',
             id: id,
             titre: titre,
             auteur: auteur,
@@ -758,7 +764,7 @@ window.saveAudioOffline = async function(e, id, titre, auteur, url, btnEl) {
         });
         btnEl.style.color = '#10B981';
         btnEl.innerHTML = '<i class="fa-solid fa-check"></i>';
-        showToast('Enregistré hors-ligne dans l\'application ✓');
+        showToast(`Téléchargé hors-ligne → Dossier « ${rec.dossier} » ✓`);
     } catch (err) {
         btnEl.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i>';
         showToast('Erreur de sauvegarde hors-ligne');
@@ -766,6 +772,21 @@ window.saveAudioOffline = async function(e, id, titre, auteur, url, btnEl) {
         btnEl.disabled = false;
     }
 };
+
+// Marquer en vert les sons déjà disponibles hors-ligne sur l'appareil
+window.addEventListener('DOMContentLoaded', async () => {
+    if (!window.SDMOfflineVault) return;
+    try {
+        const savedSet = await window.SDMOfflineVault.getSavedKeysSet();
+        document.querySelectorAll('.btn-offline-dl[data-offline-key]').forEach(btn => {
+            if (savedSet.has(btn.dataset.offlineKey)) {
+                btn.style.color = '#10B981';
+                btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                btn.title = 'Déjà téléchargé hors-ligne sur cet appareil ✓';
+            }
+        });
+    } catch (e) {}
+});
 
 /* ══ PLAYBACK ══ */
 function updateActive(idx){
