@@ -4,306 +4,305 @@
 {% block title %}SDM Mouride — Accueil Organisé{% endblock %}
 
 {% block content %}
-    <!-- AUDIO PLAYER (Adhan) -->
-    <audio id="adhan-player" preload="auto" crossorigin="anonymous">
-        <source src="{% if config and config.fichier_adhan %}{{ config.fichier_adhan.url }}{% else %}https://archive.org/download/MakkahAzan/Makkah-Azan.mp3{% endif %}" type="audio/mpeg">
+    <!-- AUDIO PLAYER (Adhan — repli fonctionnel si non configuré) -->
+    <audio id="adhan-player" preload="none">
+        {% if config and config.fichier_adhan %}
+        <source src="{{ config.fichier_adhan.url }}" type="audio/mpeg">
+        {% else %}
+        <source src="https://server8.mp3quran.net/afs/001.mp3" type="audio/mpeg">
+        {% endif %}
     </audio>
 
     <style>
-        .ph-slot { transition: all 0.25s ease !important; cursor: pointer; }
+        .ph-slot { transition: all 0.22s ease !important; cursor: pointer; }
         .ph-slot.active {
-            background: rgba(212, 175, 55, 0.2) !important;
-            border-color: rgba(212, 175, 55, 0.55) !important;
-            box-shadow: 0 0 14px rgba(212, 175, 55, 0.25) !important;
+            background: rgba(212, 175, 55, 0.22) !important;
+            border-color: rgba(253, 224, 71, 0.65) !important;
+            box-shadow: 0 0 14px rgba(212, 175, 55, 0.28) !important;
         }
+        /* Barre de recherche pilule iOS/Android */
+        .m-search-pill {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 999px; padding: 9px 14px;
+            margin-bottom: 12px;
+        }
+        .m-search-pill input {
+            flex: 1; background: transparent; border: none; outline: none;
+            color: #fff; font-size: 14px; font-weight: 600; min-width: 0;
+        }
+        .m-search-pill input::placeholder { color: rgba(255,255,255,0.45); font-size: 13px; }
+
+        /* Icônes d'application natives (Squircles 2x4) */
         .app-launcher-tile {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 10px 4px; border-radius: 18px;
-            background: rgba(12, 34, 25, 0.72);
-            border: 1px solid rgba(212, 175, 55, 0.22);
-            text-decoration: none; transition: all 0.2s ease;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            text-align: center; padding: 8px 4px; border-radius: 18px;
+            text-decoration: none; transition: transform 0.16s cubic-bezier(0.22,1,0.36,1);
         }
-        .app-launcher-tile:active { transform: scale(0.94); }
-        .app-launcher-tile:hover { border-color: rgba(212, 175, 55, 0.65); }
+        .app-launcher-tile:active { transform: scale(0.9); }
         .tile-icon {
-            width: 40px; height: 40px; border-radius: 13px;
+            width: 52px; height: 52px; border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 17px; margin-bottom: 5px;
+            font-size: 20px; margin-bottom: 6px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.18);
         }
         .tile-title {
             font-size: 11px; font-weight: 800; color: #FFFFFF;
             line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
         }
         .tile-sub {
-            font-size: 9px; font-weight: 600; color: rgba(255, 255, 255, 0.5);
+            font-size: 9px; font-weight: 600; color: rgba(255, 255, 255, 0.48);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+            margin-top: 1px;
+        }
+
+        /* Contrôle segmenté natif mobile */
+        .m-home-segmented {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px;
+            background: rgba(0, 0, 0, 0.42);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 3px; margin-bottom: 14px;
         }
         .home-tab-btn {
-            flex: 1; padding: 9px 6px; border-radius: 13px;
-            background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.65); font-size: 11px; font-weight: 800;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+            padding: 8px 4px; border-radius: 11px;
+            background: transparent; border: none;
+            color: rgba(255, 255, 255, 0.58); font-size: 10.5px; font-weight: 800;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;
             white-space: nowrap; transition: all 0.2s ease;
         }
         .home-tab-btn.active {
             background: linear-gradient(135deg, #FDE047, #D4AF37);
-            color: #040B08; border-color: transparent;
-            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+            color: #040B08;
+            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.35);
         }
         .home-tab-panel { display: none; }
-        .home-tab-panel.active { display: block; }
-        @keyframes prayerSlideIn { from { opacity:0; transform:translateX(-50%) translateY(-30px) scale(0.92); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
-        @keyframes prayerPulse { 0%,100% { box-shadow:0 0 20px rgba(212,175,55,0.4); } 50% { box-shadow:0 0 35px rgba(212,175,55,0.7); transform:scale(1.05); } }
+        .home-tab-panel.active { display: block; animation: appPageEnter 0.2s ease; }
+
+        /* Cartes Dossiers Audio sur l'accueil */
+        .home-folder-card {
+            flex-shrink: 0; width: 148px; text-decoration: none;
+            background: linear-gradient(155deg, rgba(14,38,28,0.88), rgba(6,17,12,0.96));
+            border: 1px solid rgba(212,175,55,0.28); border-radius: 18px;
+            padding: 11px; display: flex; flex-direction: column; gap: 7px;
+        }
+        .home-profile-mini {
+            width: 24px; height: 24px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 8.5px; font-weight: 900; color: #fff;
+            border: 1.5px solid #06140E; margin-left: -7px;
+        }
+        .home-profile-mini:first-child { margin-left: 0; }
     </style>
 
-    <!-- ══════════════════════════════════════════════════════════════════
-         1. EN-TÊTE COMPACT + RECHERCHE INSTANTANÉE (SANS PERTE D'ESPACE)
-    ══════════════════════════════════════════════════════════════════ -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-        <div class="flex items-center justify-between gap-2">
-            <div class="min-w-0">
-                {% if user.is_authenticated %}
-                <p class="text-[9px] font-extrabold tracking-widest text-gold-500 uppercase">Assalamou Alaykoum · Niveau {{ niveau_spirituel }}</p>
-                <div class="flex items-center gap-2 flex-wrap">
-                    <h1 class="text-lg md:text-2xl font-black text-white capitalize truncate">{{ user.username }}</h1>
-                    <!-- Micro-widget très petit à côté du nom affichant le son en cours d'écoute -->
-                    <span class="sdm-name-audio-widget"></span>
-                </div>
-                {% else %}
-                <div class="flex items-center gap-2 flex-wrap">
-                    <h1 class="text-lg md:text-2xl font-black text-gradient-gold truncate">SDM Mouride</h1>
-                    <span class="sdm-name-audio-widget"></span>
-                </div>
-                <p class="text-[9px] font-bold tracking-widest text-white/55 uppercase">Sopey Dialibatoul Marakhib</p>
-                {% endif %}
-            </div>
-            {% if not user.is_authenticated %}
-            <a href="{% url 'login' %}" class="sm:hidden px-3 py-1.5 rounded-xl bg-gold-500/20 border border-gold-500/40 text-gold-400 text-[11px] font-extrabold" style="text-decoration:none;">
-                Connexion
-            </a>
-            {% endif %}
-        </div>
+    <!-- 1. BARRE DE RECHERCHE NATIVE (PILULE — SANS BOUTON WEB) -->
+    <form action="{% url 'recherche_globale' %}" method="GET" class="m-search-pill">
+        <i class="fa-solid fa-magnifying-glass text-gold-400 text-sm"></i>
+        <input type="search" name="q" placeholder="Chercher Khassida, Sourate, Kourel, Zikr…">
+        {% if not user.is_authenticated %}
+        <a href="{% url 'login' %}" class="px-2.5 py-1 rounded-full bg-gold-500/20 border border-gold-500/40 text-gold-400 text-[10px] font-extrabold flex-shrink-0" style="text-decoration:none;">
+            Connexion
+        </a>
+        {% endif %}
+    </form>
 
-        <form action="{% url 'recherche_globale' %}" method="GET" class="relative flex-1 max-w-md">
-            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gold-400 text-xs pointer-events-none"></i>
-            <input type="text" name="q" placeholder="Rechercher un Khassida, une Sourate, un Audio, un Zikr..."
-                   class="w-full glass bg-white/5 border border-gold-500/30 rounded-xl py-2.5 pl-9 pr-14 text-xs text-white placeholder-white/45 focus:outline-none focus:border-gold-400">
-            <button type="submit" class="absolute right-1.5 top-1/2 -translate-y-1/2 bg-gradient-to-r from-gold-400 to-gold-600 text-black text-[10px] font-black px-3 py-1.5 rounded-lg">
-                OK
-            </button>
-        </form>
-    </div>
-
-    <!-- ══════════════════════════════════════════════════════════════════
-         2. BANDEAU HORAIRES DE PRIÈRE & ADHAN COMPACT (TOUT VISIBLE D'UN COUP D'ŒIL)
-    ══════════════════════════════════════════════════════════════════ -->
-    <section class="relative w-full rounded-2xl overflow-hidden shadow-xl mb-3.5 border border-gold-500/30">
-        <div class="absolute inset-0 z-0 bg-cover bg-center" style="background-image: url('https://www.leral.net/photo/art/grande/89764721-63418109.jpg'); filter: brightness(0.45) contrast(1.1);"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-[#040B08]/90 via-[#040B08]/75 to-[#040B08]/90 z-0"></div>
+    <!-- 2. WIDGET HORAIRES DE PRIÈRE & ADHAN (STYLE WIDGET iOS) -->
+    <section class="relative w-full rounded-[22px] overflow-hidden shadow-xl mb-4 border border-gold-500/30">
+        <div class="absolute inset-0 z-0 bg-cover bg-center" style="background-image: url('https://www.leral.net/photo/art/grande/89764721-63418109.jpg'); filter: brightness(0.4) contrast(1.1);"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-[#040B08]/92 via-[#061810]/78 to-[#040B08]/94 z-0"></div>
 
         <div class="relative z-10 p-3.5">
-            <!-- Ligne supérieure : Ville + Prochaine prière + Compte à rebours + Boutons Qibla/Adhan -->
-            <div class="flex items-center justify-between gap-2 mb-2.5">
-                <div class="flex items-center gap-2 min-w-0">
-                    <div class="w-7 h-7 rounded-lg bg-gold-500/20 border border-gold-500/40 flex items-center justify-center flex-shrink-0">
-                        <i class="fa-solid fa-mosque text-[11px] text-gold-400"></i>
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-2xl bg-gold-500/20 border border-gold-500/40 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-mosque text-sm text-gold-400"></i>
                     </div>
                     <div class="min-w-0">
                         <div class="flex items-center gap-1.5">
-                            <span class="text-xs font-extrabold text-white truncate" id="loc-city">Touba</span>
-                            <span class="text-[10px] text-white/45 tabular-nums" id="clock">--:--</span>
+                            <span class="text-[13px] font-black text-white truncate" id="loc-city">Touba</span>
+                            <span class="text-[10.5px] text-white/50 font-bold tabular-nums" id="clock">--:--</span>
                         </div>
-                        <p class="text-[10px] font-bold text-gold-400">
-                            Prochaine : <span id="next-name" class="font-black text-white">Maghrib</span> dans
-                            <span id="countdown" class="font-black text-gold-300 tabular-nums">--:--</span><span id="countdown-sec" class="text-[9px] text-white/60">--</span>
+                        <p class="text-[10.5px] font-bold text-gold-400 leading-tight mt-0.5">
+                            <span id="next-name" class="font-black text-white">Maghrib</span> dans
+                            <span id="countdown" class="font-black text-gold-300 tabular-nums">--:--</span><span id="countdown-sec" class="text-[9.5px] text-white/60">--</span>
                         </p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-1.5 flex-shrink-0">
                     <button type="button" onclick="updateQibla()" title="Direction Qibla"
-                            class="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center">
+                            class="w-8 h-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center tap-card">
                         <i id="compass" class="fa-solid fa-location-arrow text-gold-400 text-xs transition-transform duration-700" style="transform: rotate(45deg);"></i>
                     </button>
                     <button type="button" id="adhan-toggle" onclick="toggleAdhan()" title="Activer/Désactiver l'Adhan"
-                            class="w-8 h-8 rounded-xl border flex items-center justify-center">
+                            class="w-8 h-8 rounded-full border flex items-center justify-center tap-card">
                         <i id="adhan-icon" class="fa-solid fa-bell text-xs"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Ligne inférieure : Les 5 Prières en 1 rangée compacte -->
             <div class="grid grid-cols-5 gap-1.5">
-                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/40 border border-white/10" data-prayer="Fajr">
-                    <span class="text-[8px] font-extrabold uppercase text-white/55">Fajr</span>
+                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/45 border border-white/10" data-prayer="Fajr">
+                    <span class="text-[8.5px] font-extrabold uppercase text-white/55">Fajr</span>
                     <span class="text-[11px] font-black text-white tabular-nums slot-time">--:--</span>
                 </div>
-                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/40 border border-white/10" data-prayer="Dhuhr">
-                    <span class="text-[8px] font-extrabold uppercase text-white/55">Dhuhr</span>
+                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/45 border border-white/10" data-prayer="Dhuhr">
+                    <span class="text-[8.5px] font-extrabold uppercase text-white/55">Dhuhr</span>
                     <span class="text-[11px] font-black text-white tabular-nums slot-time">--:--</span>
                 </div>
-                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/40 border border-white/10" data-prayer="Asr">
-                    <span class="text-[8px] font-extrabold uppercase text-white/55">Asr</span>
+                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/45 border border-white/10" data-prayer="Asr">
+                    <span class="text-[8.5px] font-extrabold uppercase text-white/55">Asr</span>
                     <span class="text-[11px] font-black text-white tabular-nums slot-time">--:--</span>
                 </div>
-                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/40 border border-white/10" data-prayer="Maghrib">
-                    <span class="text-[8px] font-extrabold uppercase text-white/55">Maghrib</span>
+                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/45 border border-white/10" data-prayer="Maghrib">
+                    <span class="text-[8.5px] font-extrabold uppercase text-white/55">Maghrib</span>
                     <span class="text-[11px] font-black text-white tabular-nums slot-time">--:--</span>
                 </div>
-                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/40 border border-white/10" data-prayer="Isha">
-                    <span class="text-[8px] font-extrabold uppercase text-white/55">Isha</span>
+                <div class="ph-slot flex flex-col items-center py-1.5 rounded-xl bg-black/45 border border-white/10" data-prayer="Isha">
+                    <span class="text-[8.5px] font-extrabold uppercase text-white/55">Isha</span>
                     <span class="text-[11px] font-black text-white tabular-nums slot-time">--:--</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════════════════════════════
-         3. TABLEAU DE BORD « TOUTES LES RUBRIQUES » (12 ICÔNES EN HAUT — 0 SCROLL !)
-    ══════════════════════════════════════════════════════════════════ -->
-    <section class="mb-4">
-        <div class="flex items-center justify-between mb-2 px-1">
-            <h2 class="text-[10px] font-extrabold tracking-widest text-gold-400 uppercase flex items-center gap-1.5">
-                <i class="fa-solid fa-table-cells"></i> Accès Direct — Toutes les Rubriques
-            </h2>
-            <span class="text-[10px] text-white/50 font-semibold">Touchez pour ouvrir</span>
-        </div>
+    <!-- 3. GRILLE D'APPLICATIONS NATIVE (2 RANGÉES ÉPURÉES DE 4 ICÔNES SQUIRCLE) -->
+    <section class="mb-3">
+        <div class="grid grid-cols-4 gap-1.5">
+            <a href="{% url 'liste_sons' %}" class="app-launcher-tile">
+                <div class="tile-icon" style="background:linear-gradient(135deg,#0D9488,#064E3B); color:#FDE047;">
+                    <i class="fa-solid fa-headphones"></i>
+                </div>
+                <span class="tile-title">Audios</span>
+                <span class="tile-sub">{{ total_sons }} sons</span>
+            </a>
 
-        <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
-            <!-- 1. Khassidas -->
             <a href="{% url 'liste' 'khassida' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-amber-500/20 text-amber-400 border border-amber-500/35">
+                <div class="tile-icon" style="background:linear-gradient(135deg,#D4AF37,#78350F); color:#FFFBEB;">
                     <i class="fa-solid fa-book-open"></i>
                 </div>
                 <span class="tile-title">Khassidas</span>
                 <span class="tile-sub">{{ total_khassidas }} PDF</span>
             </a>
 
-            <!-- 2. Noble Coran (30 Jukkis, 114 Sourates, 4 Langues & 6 Récitants) -->
             <a href="{% url 'coran_interactif' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-emerald-500/20 text-emerald-400 border border-emerald-500/35">
+                <div class="tile-icon" style="background:linear-gradient(135deg,#10B981,#064E3B); color:#ECFDF5;">
                     <i class="fa-solid fa-book-quran"></i>
                 </div>
                 <span class="tile-title">Saint Coran</span>
-                <span class="tile-sub">30 Jukkis & 114 S.</span>
+                <span class="tile-sub">30 Jukkis</span>
             </a>
 
-            <!-- 3. Zikr & Chapelet -->
             <a href="{% url 'zikr_compteur_default' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-yellow-500/20 text-yellow-300 border border-yellow-500/35">
+                <div class="tile-icon" style="background:linear-gradient(135deg,#EAB308,#854D0E); color:#FEF9C3;">
                     <i class="fa-solid fa-fingerprint"></i>
                 </div>
-                <span class="tile-title">Zikr & Objectifs</span>
-                <span class="tile-sub">Chapelet Digital</span>
+                <span class="tile-title">Zikr</span>
+                <span class="tile-sub">Chapelet</span>
             </a>
 
-            <!-- 4. Audios & Kourels -->
-            <a href="{% url 'liste_sons' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-teal-500/20 text-teal-300 border border-teal-500/35">
-                    <i class="fa-solid fa-headphones"></i>
-                </div>
-                <span class="tile-title">Audiothèque</span>
-                <span class="tile-sub">{{ total_sons }} Audios</span>
-            </a>
-
-            <!-- 5. Tazawwudu-ç-Çighâr -->
             <a href="{% url 'tazawwud_home' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-amber-600/25 text-amber-300 border border-amber-400/40">
+                <div class="tile-icon" style="background:linear-gradient(135deg,#F59E0B,#9A3412); color:#FFF7ED;">
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
                 <span class="tile-title">Tazawwud</span>
                 <span class="tile-sub">31 Leçons</span>
             </a>
 
-            <!-- 6. Quizz Islamique -->
             <a href="{% url 'quiz_home' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-emerald-600/25 text-emerald-300 border border-emerald-400/40">
+                <div class="tile-icon" style="background:linear-gradient(135deg,#059669,#065F46); color:#A7F3D0;">
                     <i class="fa-solid fa-trophy"></i>
                 </div>
                 <span class="tile-title">Quizz</span>
-                <span class="tile-sub">Défis & Niveaux</span>
+                <span class="tile-sub">Défis</span>
             </a>
 
-            <!-- 7. Zikr Communautaire -->
-            <a href="{% url 'zikr_communaute_list' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-purple-500/20 text-purple-300 border border-purple-500/35">
-                    <i class="fa-solid fa-users"></i>
-                </div>
-                <span class="tile-title">Communauté</span>
-                <span class="tile-sub">Zikr Collectif</span>
-            </a>
-
-            <!-- 8. Kaamil Bi -->
             <a href="{% url 'kaamil_list' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-sky-500/20 text-sky-300 border border-sky-500/35">
+                <div class="tile-icon" style="background:linear-gradient(135deg,#0284C7,#1E3A8A); color:#E0F2FE;">
                     <i class="fa-solid fa-kaaba"></i>
                 </div>
                 <span class="tile-title">Kaamil Bi</span>
-                <span class="tile-sub">Khatm en Groupe</span>
+                <span class="tile-sub">Collectif</span>
             </a>
 
-            <!-- 9. Mes Wirds -->
-            <a href="{% url 'liste' 'wird' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-indigo-500/20 text-indigo-300 border border-indigo-500/35">
-                    <i class="fa-solid fa-hands-praying"></i>
-                </div>
-                <span class="tile-title">Wirds</span>
-                <span class="tile-sub">Pratiques</span>
-            </a>
-
-            <!-- 10. Coffre Hors-Ligne -->
             <a href="{% url 'telechargements' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-emerald-500/20 text-emerald-300 border border-emerald-500/35">
+                <div class="tile-icon" style="background:linear-gradient(135deg,#14B8A6,#134E4A); color:#CCFBF1;">
                     <i class="fa-solid fa-cloud-arrow-down"></i>
                 </div>
                 <span class="tile-title">Hors-Ligne</span>
-                <span class="tile-sub">Dans l'App</span>
+                <span class="tile-sub">Dossiers</span>
             </a>
+        </div>
 
-            <!-- 11. Historique & Stats -->
-            <a href="{% url 'voir_historique' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-rose-500/20 text-rose-300 border border-rose-500/35">
-                    <i class="fa-solid fa-chart-simple"></i>
-                </div>
-                <span class="tile-title">Historique</span>
-                <span class="tile-sub">{{ total_zikr_user }} grains</span>
+        <!-- Raccourcis secondaires glissants au pouce -->
+        <div class="m-snap-row mt-2 px-0.5">
+            <a href="{% url 'zikr_communaute_list' %}" class="tap-card flex-shrink-0 px-3 py-1.5 rounded-full bg-purple-500/15 border border-purple-400/30 text-purple-200 text-[10.5px] font-extrabold flex items-center gap-1.5" style="text-decoration:none;">
+                <i class="fa-solid fa-users text-[11px]"></i> Zikr Communautaire
             </a>
-
-            <!-- 12. SDM Premium -->
-            <a href="{% url 'abonnement' %}" class="app-launcher-tile">
-                <div class="tile-icon bg-gold-500/20 text-gold-400 border border-gold-500/40">
-                    <i class="fa-solid fa-crown"></i>
-                </div>
-                <span class="tile-title">SDM Premium</span>
-                <span class="tile-sub">Accès Intégral</span>
+            <a href="{% url 'liste' 'wird' %}" class="tap-card flex-shrink-0 px-3 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-400/30 text-indigo-200 text-[10.5px] font-extrabold flex items-center gap-1.5" style="text-decoration:none;">
+                <i class="fa-solid fa-hands-praying text-[11px]"></i> Wirds
+            </a>
+            <a href="{% url 'voir_historique' %}" class="tap-card flex-shrink-0 px-3 py-1.5 rounded-full bg-rose-500/15 border border-rose-400/30 text-rose-200 text-[10.5px] font-extrabold flex items-center gap-1.5" style="text-decoration:none;">
+                <i class="fa-solid fa-chart-simple text-[11px]"></i> Historique ({{ total_zikr_user }})
+            </a>
+            <a href="{% url 'abonnement' %}" class="tap-card flex-shrink-0 px-3 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/35 text-amber-200 text-[10.5px] font-extrabold flex items-center gap-1.5" style="text-decoration:none;">
+                <i class="fa-solid fa-crown text-[11px]"></i> SDM Premium
             </a>
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════════════════════════════
-         4. BARRE DE 4 ONGLETS THÉMATIQUES (ZÉRO SCROLL INTERMINABLE)
-    ══════════════════════════════════════════════════════════════════ -->
-    <div class="flex gap-1.5 overflow-x-auto pb-1 mb-3.5 no-scrollbar">
+    <!-- 4. CONTRÔLE SEGMENTÉ MOBILE (STYLE iOS) -->
+    <div class="m-home-segmented">
         <button type="button" class="home-tab-btn active" data-htab="essentiel" onclick="switchHomeTab('essentiel')">
-            <i class="fa-solid fa-scroll"></i>
-            <span>1res Pages & Parcours</span>
+            <i class="fa-solid fa-compass"></i> Découvrir
         </button>
         <button type="button" class="home-tab-btn" data-htab="zikr" onclick="switchHomeTab('zikr')">
-            <i class="fa-solid fa-fingerprint"></i>
-            <span>Mon Zikr & Quotidien</span>
+            <i class="fa-solid fa-fingerprint"></i> Zikr
         </button>
         <button type="button" class="home-tab-btn" data-htab="spirit" onclick="switchHomeTab('spirit')">
-            <i class="fa-solid fa-moon"></i>
-            <span>Verset & Beuyitt</span>
+            <i class="fa-solid fa-moon"></i> Rappels
         </button>
         <button type="button" class="home-tab-btn" data-htab="app" onclick="switchHomeTab('app')">
-            <i class="fa-solid fa-crown"></i>
-            <span>Premium & Don</span>
+            <i class="fa-solid fa-crown"></i> Premium
         </button>
     </div>
 
-    <!-- ─── ONGLET 1 : PREMIÈRES PAGES DES KHASSIDAS & PARCOURS INTERACTIFS ─── -->
-    <div id="htab-panel-essentiel" class="home-tab-panel active space-y-4">
+    <!-- ─── ONGLET 1 : DÉCOUVRIR (DOSSIERS AUDIO & PROFILS + 1RES PAGES KHASSIDAS) ─── -->
+    <div id="htab-panel-essentiel" class="home-tab-panel active space-y-3.5">
+
+        <!-- Dossiers Audio existants avec leurs profils Kourels -->
+        {% if audio_folders %}
+        <div>
+            <div class="flex items-center justify-between mb-2 px-0.5">
+                <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-gold-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-folder-open"></i> Dossiers Audio & Kourels
+                </h3>
+                <a href="{% url 'liste_sons' %}" class="text-[11px] font-extrabold text-emerald-300 flex items-center gap-1" style="text-decoration:none;">
+                    Tout voir <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                </a>
+            </div>
+            <div class="m-snap-row">
+                {% for f in audio_folders %}
+                <a href="{% url 'liste_sons' %}?cat={{ f.code }}" class="home-folder-card tap-card">
+                    <div class="flex items-center justify-between">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm" style="background:{{ f.gradient }};">
+                            <i class="fa-solid {{ f.icon }}"></i>
+                        </div>
+                        <div class="flex items-center">
+                            {% for p in f.preview_profiles %}
+                            <span class="home-profile-mini" style="background:{{ p.gradient }};">{{ p.initials }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-[12px] font-extrabold text-white leading-tight truncate">{{ f.label }}</div>
+                        <div class="text-[10px] font-bold text-gold-400 mt-0.5">{{ f.total_profiles }} profil{{ f.total_profiles|pluralize }} · {{ f.total_tracks }} titres</div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
 
         <!-- Reprendre lecture / écoute si existant -->
         {% if derniere_lecture or dernier_son %}

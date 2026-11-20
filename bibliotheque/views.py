@@ -66,6 +66,152 @@ def _check_premium_access(request, content_obj):
     return None
 
 
+# --- HELPER : DOSSIERS EXISTANTS & PROFILS DE KOURELS / MAÎTRES ---
+
+AUDIO_FOLDER_META = {
+    'KHASSIDA': {
+        'label': 'Khassidas & Kourels',
+        'subtitle': 'Kourels Hizbut Tarqiyyah, Touba & Maîtres',
+        'icon': 'fa-feather-pointed',
+        'gradient': 'linear-gradient(135deg, #D4AF37, #78350F)',
+        'order': 1,
+    },
+    'WAKHTANE': {
+        'label': 'Wakhtane & Wolofals',
+        'subtitle': 'Wolofals sacrés, récits & enseignements',
+        'icon': 'fa-microphone-lines',
+        'gradient': 'linear-gradient(135deg, #F59E0B, #9A3412)',
+        'order': 2,
+    },
+    'XAM_XAM': {
+        'label': 'Xam Xam & Daara',
+        'subtitle': 'Sciences religieuses & explications',
+        'icon': 'fa-graduation-cap',
+        'gradient': 'linear-gradient(135deg, #38BDF8, #1E3A8A)',
+        'order': 3,
+    },
+    'CORAN': {
+        'label': 'Saint Coran (Audio)',
+        'subtitle': 'Les 114 Sourates complètes',
+        'icon': 'fa-book-quran',
+        'gradient': 'linear-gradient(135deg, #10B981, #064E3B)',
+        'order': 4,
+    },
+    'ZIKR': {
+        'label': 'Zikr & Invocations',
+        'subtitle': 'Litanies et pratiques spirituelles',
+        'icon': 'fa-hands-praying',
+        'gradient': 'linear-gradient(135deg, #A855F7, #4C1D95)',
+        'order': 5,
+    },
+    'RAJASS': {
+        'label': 'Rajass & Chants',
+        'subtitle': 'Chants mourides traditionnels',
+        'icon': 'fa-music',
+        'gradient': 'linear-gradient(135deg, #F43F5E, #881337)',
+        'order': 6,
+    },
+    'ADHAN': {
+        'label': 'Adhan & Appels',
+        'subtitle': 'Appels à la prière',
+        'icon': 'fa-mosque',
+        'gradient': 'linear-gradient(135deg, #14B8A6, #134E4A)',
+        'order': 7,
+    },
+}
+
+PROFILE_PALETTES = [
+    'linear-gradient(135deg, #D4AF37, #78350F)',
+    'linear-gradient(135deg, #10B981, #064E3B)',
+    'linear-gradient(135deg, #38BDF8, #1E3A8A)',
+    'linear-gradient(135deg, #F59E0B, #9A3412)',
+    'linear-gradient(135deg, #A855F7, #4C1D95)',
+    'linear-gradient(135deg, #F43F5E, #881337)',
+    'linear-gradient(135deg, #14B8A6, #134E4A)',
+]
+
+
+def _build_audio_folders_and_profiles(queryset):
+    """
+    Regroupe les profils existants (Kourels, Maîtres, Récitants) directement à l'intérieur
+    de leurs dossiers/catégories existants (Khassidas, Wakhtane, Xam Xam, Coran, etc.).
+    """
+    cat_labels = dict(Son.CATEGORIES)
+    folder_map = {}
+    flat_profiles = {}
+
+    rows = queryset.values('categorie', 'auteur_voix').annotate(total=Count('id')).order_by('-total')
+    for row in rows:
+        cat = (row['categorie'] or 'KHASSIDA').upper()
+        name = (row['auteur_voix'] or '').strip() or cat_labels.get(cat, 'Collection SDM')
+        words = [w for w in name.replace('—', ' ').replace('-', ' ').split() if w]
+        initials = (words[0][0] + (words[1][0] if len(words) > 1 else '')).upper() if words else 'SD'
+        gradient = PROFILE_PALETTES[sum(ord(c) for c in name) % len(PROFILE_PALETTES)]
+
+        if cat not in folder_map:
+            meta = AUDIO_FOLDER_META.get(cat, {
+                'label': cat_labels.get(cat, cat),
+                'subtitle': 'Collection audio',
+                'icon': 'fa-folder',
+                'gradient': 'linear-gradient(135deg, #D4AF37, #065F46)',
+                'order': 99,
+            })
+            folder_map[cat] = {
+                'code': cat,
+                'label': meta['label'],
+                'subtitle': meta['subtitle'],
+                'icon': meta['icon'],
+                'gradient': meta['gradient'],
+                'order': meta['order'],
+                'total_tracks': 0,
+                'profiles_dict': {},
+            }
+
+        f_entry = folder_map[cat]
+        f_entry['total_tracks'] += row['total']
+        pkey = name.lower()
+        if pkey not in f_entry['profiles_dict']:
+            f_entry['profiles_dict'][pkey] = {
+                'nom': name,
+                'initials': initials,
+                'categorie': cat,
+                'categorie_label': f_entry['label'],
+                'count': 0,
+                'gradient': gradient,
+            }
+        f_entry['profiles_dict'][pkey]['count'] += row['total']
+
+        # Profil à plat (pour recherche / banner profil actif)
+        if pkey not in flat_profiles:
+            flat_profiles[pkey] = {
+                'nom': name,
+                'initials': initials,
+                'categorie': cat,
+                'categorie_label': f_entry['label'],
+                'count': 0,
+                'gradient': gradient,
+            }
+        flat_profiles[pkey]['count'] += row['total']
+
+    folders_tree = []
+    for f in sorted(folder_map.values(), key=lambda x: (x['order'], -x['total_tracks'])):
+        profs = sorted(f['profiles_dict'].values(), key=lambda x: (-x['count'], x['nom']))
+        folders_tree.append({
+            'code': f['code'],
+            'label': f['label'],
+            'subtitle': f['subtitle'],
+            'icon': f['icon'],
+            'gradient': f['gradient'],
+            'total_tracks': f['total_tracks'],
+            'total_profiles': len(profs),
+            'profiles': profs,
+            'preview_profiles': profs[:4],
+        })
+
+    collections_profiles = sorted(flat_profiles.values(), key=lambda x: (-x['count'], x['nom']))
+    return folders_tree, collections_profiles, flat_profiles
+
+
 # --- VUES PRINCIPALES ---
 
 def home(request):
@@ -152,6 +298,7 @@ def home(request):
     total_corans = Coran.objects.count()
     total_sons = Son.objects.count()
     total_zikrs = Zikr.objects.count()
+    audio_folders, top_audio_profiles, _ = _build_audio_folders_and_profiles(Son.objects.all())
 
     context = {
         'contenu': contenu,
@@ -170,6 +317,8 @@ def home(request):
         'total_corans': total_corans,
         'total_sons': total_sons,
         'total_zikrs': total_zikrs,
+        'audio_folders': audio_folders,
+        'top_audio_profiles': top_audio_profiles[:10],
     }
     return render(request, 'bibliotheque/index.html', context)
 
@@ -831,7 +980,7 @@ def enregistrer_seance(request):
 # --- GESTION DES SONS ---
 
 def liste_sons(request):
-    """Audiothèque organisée par Catégories, Collections & Profils de Kourels / Maîtres."""
+    """Audiothèque mobile organisée par Dossiers existants contenant leurs Profils de Kourels / Maîtres."""
     categorie_filter = (request.GET.get('cat') or '').strip().upper() or None
     profil_filter = (request.GET.get('profil') or '').strip() or None
 
@@ -839,37 +988,9 @@ def liste_sons(request):
     if categorie_filter:
         base_qs = base_qs.filter(categorie=categorie_filter)
 
-    # Construire les Profils & Collections de Kourels / Maîtres dans la catégorie active
-    cat_labels = dict(Son.CATEGORIES)
-    profile_buckets = {}
-    palettes = [
-        'linear-gradient(135deg, #D4AF37, #78350F)',
-        'linear-gradient(135deg, #10B981, #064E3B)',
-        'linear-gradient(135deg, #38BDF8, #1E3A8A)',
-        'linear-gradient(135deg, #F59E0B, #9A3412)',
-        'linear-gradient(135deg, #A855F7, #4C1D95)',
-        'linear-gradient(135deg, #F43F5E, #881337)',
-        'linear-gradient(135deg, #14B8A6, #134E4A)',
-    ]
-    for row in base_qs.values('auteur_voix', 'categorie').annotate(total=Count('id')).order_by('-total'):
-        name = (row['auteur_voix'] or '').strip() or cat_labels.get(row['categorie'], 'Collection SDM')
-        key = name.lower()
-        if key not in profile_buckets:
-            words = [w for w in name.replace('—', ' ').replace('-', ' ').split() if w]
-            initials = (words[0][0] + (words[1][0] if len(words) > 1 else '')).upper() if words else 'SD'
-            color_idx = sum(ord(c) for c in name) % len(palettes)
-            profile_buckets[key] = {
-                'nom': name,
-                'initials': initials,
-                'categorie': row['categorie'],
-                'categorie_label': cat_labels.get(row['categorie'], row['categorie']),
-                'count': 0,
-                'gradient': palettes[color_idx],
-            }
-        profile_buckets[key]['count'] += row['total']
-
-    collections_profiles = sorted(profile_buckets.values(), key=lambda x: (-x['count'], x['nom']))
+    folders_tree, collections_profiles, profile_buckets = _build_audio_folders_and_profiles(base_qs)
     active_profil_obj = profile_buckets.get(profil_filter.lower()) if profil_filter else None
+    active_folder_meta = AUDIO_FOLDER_META.get(categorie_filter) if categorie_filter else None
 
     if profil_filter:
         sons = base_qs.filter(auteur_voix__iexact=profil_filter).order_by('titre')
@@ -882,7 +1003,8 @@ def liste_sons(request):
     total_all_sons = sum(counts_map.values())
     categories = Son.CATEGORIES
     categories_with_counts = [
-        (code, label, counts_map.get(code, 0)) for code, label in Son.CATEGORIES
+        (code, AUDIO_FOLDER_META.get(code, {}).get('label', label), counts_map.get(code, 0))
+        for code, label in Son.CATEGORIES
     ]
 
     favoris_ids = []
@@ -897,6 +1019,8 @@ def liste_sons(request):
         'sons': sons,
         'categories': categories,
         'categories_with_counts': categories_with_counts,
+        'folders_tree': folders_tree,
+        'active_folder_meta': active_folder_meta,
         'collections_profiles': collections_profiles,
         'active_profil': profil_filter,
         'active_profil_obj': active_profil_obj,
@@ -1608,8 +1732,10 @@ def view_telechargements(request):
             elif model_name == 'son':
                 telechargements_by_type['Son'].append(tc.content_object)
 
+    audio_folders, _, _ = _build_audio_folders_and_profiles(Son.objects.all())
     context = {
-        'telechargements_by_type': telechargements_by_type
+        'telechargements_by_type': telechargements_by_type,
+        'audio_folders': audio_folders,
     }
 
     return render(request, 'bibliotheque/telechargements.html', context)

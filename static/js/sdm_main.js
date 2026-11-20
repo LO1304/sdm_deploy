@@ -14,62 +14,86 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 2. Initialiser le Canvas Etoilé (Cosmos)
+    // 2. Initialiser le Canvas Etoilé (allégé mobile & en pause en arrière-plan)
     initCosmos();
 
     // 3. Gérer les Toast Messages
     initToasts();
+
+    // 4. Micro-retour haptique natif Android sur la barre de navigation
+    document.querySelectorAll('.nav-island .nav-item, .m-icon-pill').forEach(el => {
+        el.addEventListener('click', () => {
+            try { if (navigator.vibrate) navigator.vibrate(6); } catch (e) {}
+        });
+    });
 });
 
-/* ── CANVAS ÉTOILES ── */
+/* ── CANVAS ÉTOILES (OPTIMISÉ BATTERIE & FLUIDITÉ MOBILE) ── */
 function initCosmos() {
     const c = document.getElementById('sdm-cosmos');
     if (!c) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        c.style.display = 'none';
+        return;
+    }
     const ctx = c.getContext('2d');
     let W, H, P = [];
-    
-    function resize() { 
-        W = c.width = window.innerWidth; 
-        H = c.height = window.innerHeight; 
+    let rafId = null;
+
+    function resize() {
+        W = c.width = window.innerWidth;
+        H = c.height = window.innerHeight;
     }
-    
+
     function mk() {
         return {
-            x: Math.random() * W, 
+            x: Math.random() * W,
             y: Math.random() * H,
-            r: Math.random() * 1.1 + 0.25,
-            a: Math.random() * 0.55 + 0.04,
-            da: (Math.random() * 0.004 + 0.001) * (Math.random() > .5 ? 1 : -1),
-            vx: (Math.random() - .5) * .07,
-            vy: (Math.random() - .5) * .07,
-            gold: Math.random() > .82
+            r: Math.random() * 1.05 + 0.25,
+            a: Math.random() * 0.45 + 0.04,
+            da: (Math.random() * 0.003 + 0.001) * (Math.random() > 0.5 ? 1 : -1),
+            vx: (Math.random() - 0.5) * 0.05,
+            vy: (Math.random() - 0.5) * 0.05,
+            gold: Math.random() > 0.8
         };
     }
-    
-    function init() { 
-        resize(); 
-        P = Array.from({ length: 200 }, mk); 
+
+    function init() {
+        resize();
+        const count = window.innerWidth < 768 ? 36 : 90;
+        P = Array.from({ length: count }, mk);
     }
-    
+
     function draw() {
+        if (document.hidden) {
+            rafId = null;
+            return;
+        }
         ctx.clearRect(0, 0, W, H);
-        P.forEach(p => {
-            p.a = Math.max(.04, Math.min(.6, p.a + p.da));
-            if (p.a >= .6 || p.a <= .04) p.da *= -1;
+        for (let i = 0; i < P.length; i++) {
+            const p = P[i];
+            p.a = Math.max(0.04, Math.min(0.55, p.a + p.da));
+            if (p.a >= 0.55 || p.a <= 0.04) p.da *= -1;
             p.x = (p.x + p.vx + W) % W;
             p.y = (p.y + p.vy + H) % H;
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             ctx.fillStyle = p.gold
-                ? `rgba(212,175,55,${p.a * .7})`
-                : `rgba(255,255,255,${p.a * .45})`;
+                ? `rgba(212,175,55,${p.a * 0.65})`
+                : `rgba(255,255,255,${p.a * 0.4})`;
             ctx.fill();
-        });
-        requestAnimationFrame(draw);
+        }
+        rafId = requestAnimationFrame(draw);
     }
-    
-    init(); 
-    draw();
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && !rafId) {
+            rafId = requestAnimationFrame(draw);
+        }
+    });
+
+    init();
+    rafId = requestAnimationFrame(draw);
     window.addEventListener('resize', resize);
 }
 

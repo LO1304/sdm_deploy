@@ -17,46 +17,114 @@
         --dim: rgba(255, 255, 255, 0.55);
     }
 
-    body { padding-bottom: 135px; }
-    .wrapper { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 0 14px; }
+    body { padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important; }
+    .wrapper { position: relative; z-index: 1; max-width: 540px; margin: 0 auto; padding: 0 12px; }
 
-    /* ── HEADER ── */
+    /* ── HEADER MOBILE COMPACT ── */
     .page-header {
         display: flex; align-items: center; justify-content: space-between; gap: 10px;
-        padding: 14px 0 12px;
+        padding: 10px 0 10px;
     }
     .back-btn {
-        width: 40px; height: 40px; border-radius: 13px;
+        width: 36px; height: 36px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        background: var(--surface); border: 1px solid var(--border);
-        color: var(--text); text-decoration: none;
+        background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+        color: var(--text); text-decoration: none; flex-shrink: 0;
     }
-    .header-center { text-align: center; flex: 1; min-width: 0; }
+    .back-btn:active { transform: scale(0.9); }
+    .header-center { flex: 1; min-width: 0; }
     .header-tag {
-        font-family: 'Cinzel Decorative', cursive;
-        font-size: 12px; letter-spacing: 0.16em; color: var(--gold-lt);
-        text-transform: uppercase; display: block;
+        font-size: 18px; font-weight: 900; letter-spacing: -0.02em; color: #fff;
+        display: block; line-height: 1.15;
     }
     .header-count {
-        font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
-        text-transform: uppercase; color: var(--dim);
+        font-size: 11px; font-weight: 700; color: var(--gold-lt);
     }
 
-    /* ── SEARCH ── */
-    .search-wrap { position: relative; margin-bottom: 14px; }
+    /* ── SEARCH PILL NATIVE ── */
+    .search-wrap { position: relative; margin-bottom: 12px; }
     .search-wrap i {
         position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
         color: var(--gold); font-size: 13px; pointer-events: none;
     }
     .search-input {
-        width: 100%; background: rgba(0,0,0,0.45); border: 1px solid var(--border-g);
-        border-radius: 15px; padding: 12px 62px 12px 40px;
-        font-size: 12.5px; color: var(--text); outline: none; font-weight: 600;
+        width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 999px; padding: 10px 64px 10px 38px;
+        font-size: 14px; color: var(--text); outline: none; font-weight: 600;
     }
-    .search-input::placeholder { color: var(--dim); }
+    .search-input:focus { border-color: var(--gold); background: rgba(0,0,0,0.45); }
+    .search-input::placeholder { color: var(--dim); font-size: 13px; }
     #search-count {
         position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
         font-size: 10px; font-weight: 800; color: var(--gold-lt);
+    }
+
+    /* ── SEGMENTED CONTROL MOBILE (DOSSIERS / TITRES) ── */
+    .m-segmented {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+        background: rgba(0,0,0,0.45); border: 1px solid var(--border);
+        border-radius: 14px; padding: 4px; margin-bottom: 12px;
+    }
+    .m-seg-btn {
+        padding: 9px 10px; border-radius: 10px; border: none; cursor: pointer;
+        background: transparent; color: var(--dim); font-size: 12px; font-weight: 800;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        transition: all 0.2s ease;
+    }
+    .m-seg-btn.active {
+        background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+        color: #040B08; box-shadow: 0 3px 12px rgba(212,175,55,0.3);
+    }
+
+    /* ── CARTES DOSSIERS EXISTANTS CONTENANT LEURS PROFILS ── */
+    .folders-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+    .folder-box {
+        background: linear-gradient(160deg, rgba(14, 38, 28, 0.85), rgba(6, 17, 12, 0.94));
+        border: 1px solid var(--border-g); border-radius: 22px;
+        padding: 13px; overflow: hidden;
+        box-shadow: 0 10px 26px rgba(0,0,0,0.4);
+    }
+    .folder-box-head {
+        display: flex; align-items: center; gap: 11px; text-decoration: none;
+        margin-bottom: 10px;
+    }
+    .folder-box-icon {
+        width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 18px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+    .folder-box-meta { flex: 1; min-width: 0; }
+    .folder-box-title { font-size: 14px; font-weight: 900; color: #fff; line-height: 1.2; }
+    .folder-box-sub { font-size: 10.5px; font-weight: 700; color: var(--gold-lt); margin-top: 2px; }
+    .folder-open-pill {
+        padding: 6px 10px; border-radius: 999px; flex-shrink: 0;
+        background: rgba(212,175,55,0.14); border: 1px solid rgba(212,175,55,0.35);
+        color: var(--gold-lt); font-size: 10px; font-weight: 800;
+        display: inline-flex; align-items: center; gap: 4px;
+    }
+    .folder-profiles-shelf {
+        display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 4px;
+        scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .folder-profiles-shelf::-webkit-scrollbar { display: none; }
+    .folder-profiles-shelf.expanded {
+        display: grid; grid-template-columns: repeat(3, 1fr); overflow-x: visible;
+    }
+    .folder-expand-btn {
+        width: 100%; margin-top: 8px; padding: 7px 10px; border-radius: 11px;
+        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+        color: rgba(255,255,255,0.8); font-size: 10.5px; font-weight: 800;
+        cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .folder-expand-btn:active { transform: scale(0.98); background: rgba(212,175,55,0.12); }
+
+    /* ── FIL D'ARIANE NATIF QUAND UN DOSSIER EST OUVERT ── */
+    .folder-active-bar {
+        display: flex; align-items: center; gap: 10px;
+        background: linear-gradient(135deg, rgba(20,52,38,0.9), rgba(6,17,12,0.95));
+        border: 1px solid var(--border-g); border-radius: 18px;
+        padding: 11px 12px; margin-bottom: 12px;
     }
 
     /* ── CATEGORIES PILLS ── */
@@ -213,14 +281,14 @@
     .track-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
     .track-btn.liked { color: var(--gold-lt); }
 
-    /* ── MINI BARRE FLOTTANTE DE RAPPEL (QUAND LE PLEIN-ÉCRAN EST RÉDUIT) ── */
+    /* ── MINI BARRE FLOTTANTE DE RAPPEL (AU-DESSUS DE LA BARRE MOBILE NATIVE) ── */
     #mini-dock {
-        position: fixed; bottom: 86px; left: 50%; transform: translateX(-50%) translateY(150%);
-        width: calc(100% - 24px); max-width: 520px; z-index: 950;
-        background: rgba(7, 21, 15, 0.96); backdrop-filter: blur(18px);
-        border: 1px solid var(--gold); border-radius: 18px; padding: 8px 12px;
+        position: fixed; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%) translateY(180%);
+        width: calc(100% - 20px); max-width: 516px; z-index: 950;
+        background: rgba(7, 21, 15, 0.96); backdrop-filter: blur(22px);
+        border: 1px solid var(--gold); border-radius: 18px; padding: 8px 11px;
         display: flex; align-items: center; gap: 10px;
-        box-shadow: 0 14px 36px rgba(0,0,0,0.85);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.85);
         transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
         cursor: pointer;
     }
@@ -426,39 +494,38 @@
 <div id="toast">Message</div>
 
 <div class="wrapper">
-    <!-- HEADER -->
+    <!-- HEADER MOBILE COMPACT -->
     <header class="page-header">
-        <a href="{% url 'home' %}" class="back-btn"><i class="fa-solid fa-arrow-left" style="font-size:14px"></i></a>
         <div class="header-center">
-            <span class="header-tag">Audiothèque SDM</span>
+            <span class="header-tag">
+                {% if active_profil %}{{ active_profil }}
+                {% elif active_folder_meta %}{{ active_folder_meta.label }}
+                {% else %}Audiothèque{% endif %}
+            </span>
             <span class="header-count" id="totalTracksCount">
-                {{ sons|length }} titre{{ sons|length|pluralize }} · {{ collections_profiles|length }} collection{{ collections_profiles|length|pluralize }}
+                {{ sons|length }} titre{{ sons|length|pluralize }} · {{ collections_profiles|length }} profil{{ collections_profiles|length|pluralize }}{% if not active_cat %} · {{ folders_tree|length }} dossiers{% endif %}
             </span>
         </div>
         {% if user.is_staff or user.is_superuser %}
         <button type="button" onclick="openTelegramAudioModal()"
-                style="height:36px; padding:0 10px; border-radius:11px; background:rgba(212,175,55,0.16); color:#FDE047; border:1px solid rgba(212,175,55,0.45); font-size:10px; font-weight:800; cursor:pointer;">
-            <i class="fa-solid fa-shield-halved"></i> + Admin
+                style="height:34px; padding:0 11px; border-radius:999px; background:rgba(212,175,55,0.16); color:#FDE047; border:1px solid rgba(212,175,55,0.45); font-size:10.5px; font-weight:800; cursor:pointer; flex-shrink:0;">
+            <i class="fa-solid fa-plus"></i> Admin
         </button>
-        {% else %}
-        <a href="{% url 'telechargements' %}" class="back-btn" title="Mes Audios Hors-Ligne" style="color:#6EE7B7; border-color:rgba(16,185,129,0.35);">
-            <i class="fa-solid fa-cloud-arrow-down" style="font-size:14px;"></i>
-        </a>
         {% endif %}
     </header>
 
-    <!-- RECHERCHE INSTANTANÉE -->
+    <!-- RECHERCHE INSTANTANÉE (TITRES, KOURELS, DOSSIERS) -->
     <div class="search-wrap">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un Khassida, un Kourel, une Sourate, un Maître…">
+        <input type="text" id="searchInput" class="search-input" placeholder="Chercher un Khassida, un Kourel, un dossier…">
         <span id="search-count"></span>
     </div>
 
-    <!-- ONGLETS PAR CATÉGORIE AVEC COMPTEURS RÉELS -->
+    <!-- PILULES DE DOSSIERS EXISTANTS -->
     <div class="cats-row">
         <a href="?" class="cat-pill {% if not active_cat %}active{% endif %}">
-            <i class="fa-solid fa-layer-group"></i>
-            <span>Tout ({{ total_all_sons }})</span>
+            <i class="fa-solid fa-folder-tree"></i>
+            <span>Dossiers ({{ total_all_sons }})</span>
         </a>
         {% for code, label, cnt in categories_with_counts %}
         {% if cnt > 0 %}
@@ -476,45 +543,60 @@
         {% endfor %}
     </div>
 
-    <!-- PROFIL DE COLLECTION SÉLECTIONNÉ (SI ?profil=... EST ACTIF) -->
+    <!-- NIVEAU 3 : PROFIL DE KOUREL / MAÎTRE OUVERT (?profil=...) -->
     {% if active_profil %}
     <div class="active-profile-banner">
-        <div class="profile-avatar" style="width:66px; height:66px; font-size:21px; background:{% if active_profil_obj %}{{ active_profil_obj.gradient }}{% else %}linear-gradient(135deg, #D4AF37, #065F46){% endif %};">
+        <div class="profile-avatar" style="width:64px; height:64px; font-size:20px; background:{% if active_profil_obj %}{{ active_profil_obj.gradient }}{% else %}linear-gradient(135deg, #D4AF37, #065F46){% endif %};">
             {% if active_profil_obj %}<span>{{ active_profil_obj.initials }}</span>{% else %}<i class="fa-solid fa-microphone-lines"></i>{% endif %}
         </div>
         <div style="flex:1; min-width:0;">
-            <span style="font-size:9.5px; font-weight:800; text-transform:uppercase; color:var(--gold-lt); letter-spacing:0.12em;">
-                Collection / Profil Kourel{% if active_profil_obj %} · {{ active_profil_obj.categorie_label }}{% endif %}
+            <span style="font-size:9.5px; font-weight:800; text-transform:uppercase; color:var(--gold-lt); letter-spacing:0.1em;">
+                📁 {% if active_profil_obj %}{{ active_profil_obj.categorie_label }}{% elif active_folder_meta %}{{ active_folder_meta.label }}{% else %}Dossier Audio{% endif %}
             </span>
-            <h2 style="font-size:17px; font-weight:900; color:#fff; margin-top:2px;">{{ active_profil }}</h2>
-            <p style="font-size:11px; color:var(--dim);">{{ sons|length }} œuvre{{ sons|length|pluralize }} disponible{{ sons|length|pluralize }}</p>
+            <h2 style="font-size:17px; font-weight:900; color:#fff; margin-top:2px; line-height:1.2;">{{ active_profil }}</h2>
+            <p style="font-size:11px; color:var(--dim);">{{ sons|length }} œuvre{{ sons|length|pluralize }} vérifiée{{ sons|length|pluralize }}</p>
             <div class="ap-actions">
-                <button type="button" class="ap-btn ap-btn-gold" onclick="playFirstVisible()">
+                <button type="button" class="ap-btn ap-btn-gold tap-card" onclick="playFirstVisible()">
                     <i class="fa-solid fa-play"></i> Tout Lire
                 </button>
-                <button type="button" class="ap-btn ap-btn-glass" onclick="playRandomVisible()">
+                <button type="button" class="ap-btn ap-btn-glass tap-card" onclick="playRandomVisible()">
                     <i class="fa-solid fa-shuffle"></i> Aléatoire
                 </button>
-                <a href="{% if active_cat %}?cat={{ active_cat }}{% else %}?{% endif %}" class="ap-btn ap-btn-glass">
-                    <i class="fa-solid fa-arrow-left"></i> Toutes les collections
+                <a href="{% if active_cat %}?cat={{ active_cat }}{% elif active_profil_obj %}?cat={{ active_profil_obj.categorie }}{% else %}?{% endif %}" class="ap-btn ap-btn-glass tap-card">
+                    <i class="fa-solid fa-folder-open"></i> Retour Dossier
                 </a>
             </div>
         </div>
     </div>
-    {% else %}
-    <!-- SECTION PROFILS & COLLECTIONS DE KOURELS / MAÎTRES -->
+
+    <!-- NIVEAU 2 : DOSSIER EXISTANT OUVERT (?cat=KHASSIDA, WAKHTANE, etc.) -->
+    {% elif active_cat %}
+    <div class="folder-active-bar">
+        <a href="?" class="back-btn" title="Retour aux dossiers"><i class="fa-solid fa-arrow-left" style="font-size:13px;"></i></a>
+        <div class="folder-box-icon" style="width:40px; height:40px; font-size:16px; background:{% if active_folder_meta %}{{ active_folder_meta.gradient }}{% else %}linear-gradient(135deg,#D4AF37,#065F46){% endif %};">
+            <i class="fa-solid {% if active_folder_meta %}{{ active_folder_meta.icon }}{% else %}fa-folder-open{% endif %}"></i>
+        </div>
+        <div style="flex:1; min-width:0;">
+            <div style="font-size:14px; font-weight:900; color:#fff;">{% if active_folder_meta %}{{ active_folder_meta.label }}{% else %}{{ active_cat }}{% endif %}</div>
+            <div style="font-size:10.5px; font-weight:700; color:var(--gold-lt);">{{ collections_profiles|length }} profil{{ collections_profiles|length|pluralize }} · {{ sons|length }} titres</div>
+        </div>
+        <button type="button" class="ap-btn ap-btn-gold tap-card" style="padding:7px 11px;" onclick="playFirstVisible()">
+            <i class="fa-solid fa-play"></i> Lire
+        </button>
+    </div>
+
+    <!-- PROFILS EXISTANTS À L'INTÉRIEUR DE CE DOSSIER -->
     <div class="section-bar">
-        <span class="section-title"><i class="fa-solid fa-users-viewfinder"></i> Collections & Profils ({{ collections_profiles|length }})</span>
+        <span class="section-title"><i class="fa-solid fa-users-viewfinder"></i> Profils dans ce dossier ({{ collections_profiles|length }})</span>
         <div class="view-pills">
-            <button type="button" id="btnViewTracks" class="view-pill-btn active" onclick="setAudioView('tracks')">Titres</button>
-            <button type="button" id="btnViewCollections" class="view-pill-btn" onclick="setAudioView('collections')">Toutes Collections</button>
+            <button type="button" id="btnViewTracks" class="view-pill-btn active" onclick="setAudioView('tracks')">Liste</button>
+            <button type="button" id="btnViewCollections" class="view-pill-btn" onclick="setAudioView('collections')">Grille Profils</button>
         </div>
     </div>
 
-    <!-- CARROUSEL HORIZONTAL DES PROFILS KOURELS -->
     <div class="profiles-carousel" id="profilesCarousel">
         {% for p in collections_profiles %}
-        <a href="?{% if active_cat %}cat={{ active_cat }}&{% endif %}profil={{ p.nom|urlencode }}" class="profile-chip-card" data-profile-name="{{ p.nom|lower }}">
+        <a href="?cat={{ active_cat }}&profil={{ p.nom|urlencode }}" class="profile-chip-card tap-card" data-profile-name="{{ p.nom|lower }}">
             <div class="profile-avatar" style="background:{{ p.gradient }};">
                 <span>{{ p.initials }}</span>
                 <span class="profile-badge-cnt">{{ p.count }}</span>
@@ -524,23 +606,71 @@
         {% endfor %}
     </div>
 
-    <!-- GRILLE COMPLÈTE DES COLLECTIONS (MODE COLLECTIONS) -->
     <div class="collections-grid" id="collectionsGrid">
         {% for p in collections_profiles %}
-        <a href="?{% if active_cat %}cat={{ active_cat }}&{% endif %}profil={{ p.nom|urlencode }}" class="collection-card" data-profile-name="{{ p.nom|lower }}">
-            <div class="profile-avatar" style="width:62px; height:62px; font-size:20px; background:{{ p.gradient }};">
+        <a href="?cat={{ active_cat }}&profil={{ p.nom|urlencode }}" class="collection-card tap-card" data-profile-name="{{ p.nom|lower }}">
+            <div class="profile-avatar" style="width:58px; height:58px; font-size:19px; background:{{ p.gradient }};">
                 <span>{{ p.initials }}</span>
                 <span class="profile-badge-cnt">{{ p.count }}</span>
             </div>
-            <div style="font-size:12px; font-weight:800; color:#fff; line-height:1.25;">{{ p.nom }}</div>
-            <div style="font-size:10px; font-weight:700; color:var(--gold-lt);">{{ p.categorie_label }} · {{ p.count }} titre{{ p.count|pluralize }}</div>
+            <div style="font-size:11.5px; font-weight:800; color:#fff; line-height:1.25;">{{ p.nom }}</div>
+            <div style="font-size:10px; font-weight:700; color:var(--gold-lt);">{{ p.count }} titre{{ p.count|pluralize }}</div>
         </a>
+        {% endfor %}
+    </div>
+
+    <!-- NIVEAU 1 : ACCUEIL AUDIOTHÈQUE — DOSSIERS EXISTANTS AVEC LEURS PROFILS DEDANS -->
+    {% else %}
+    <div class="m-segmented">
+        <button type="button" id="btnSegFolders" class="m-seg-btn active" onclick="setMainAudioTab('folders')">
+            <i class="fa-solid fa-folder-tree"></i> Dossiers ({{ folders_tree|length }})
+        </button>
+        <button type="button" id="btnSegTracks" class="m-seg-btn" onclick="setMainAudioTab('tracks')">
+            <i class="fa-solid fa-music"></i> Tous les Titres ({{ sons|length }})
+        </button>
+    </div>
+
+    <!-- VUE DOSSIERS : CHAQUE DOSSIER EXISTANT CONTIENT SES PROFILS EXISTANTS -->
+    <div class="folders-stack" id="foldersStackView">
+        {% for folder in folders_tree %}
+        <div class="folder-box" data-folder-name="{{ folder.label|lower }}">
+            <a href="?cat={{ folder.code }}" class="folder-box-head tap-card">
+                <div class="folder-box-icon" style="background:{{ folder.gradient }};">
+                    <i class="fa-solid {{ folder.icon }}"></i>
+                </div>
+                <div class="folder-box-meta">
+                    <div class="folder-box-title">{{ folder.label }}</div>
+                    <div class="folder-box-sub">{{ folder.total_profiles }} profil{{ folder.total_profiles|pluralize }} · {{ folder.total_tracks }} titre{{ folder.total_tracks|pluralize }}</div>
+                </div>
+                <span class="folder-open-pill">Ouvrir <i class="fa-solid fa-chevron-right" style="font-size:9px;"></i></span>
+            </a>
+
+            <!-- PROFILS EXISTANTS RANGÉS DIRECTEMENT DANS CE DOSSIER -->
+            <div class="folder-profiles-shelf" id="shelf-{{ folder.code }}">
+                {% for p in folder.profiles %}
+                <a href="?cat={{ folder.code }}&profil={{ p.nom|urlencode }}" class="profile-chip-card tap-card" style="width:92px;" data-profile-name="{{ p.nom|lower }}">
+                    <div class="profile-avatar" style="width:48px; height:48px; font-size:15px; background:{{ p.gradient }};">
+                        <span>{{ p.initials }}</span>
+                        <span class="profile-badge-cnt">{{ p.count }}</span>
+                    </div>
+                    <span class="profile-chip-name">{{ p.nom }}</span>
+                </a>
+                {% endfor %}
+            </div>
+
+            {% if folder.total_profiles > 4 %}
+            <button type="button" class="folder-expand-btn" onclick="toggleFolderShelf('{{ folder.code }}', this, {{ folder.total_profiles }})">
+                <span>Voir les {{ folder.total_profiles }} profils de ce dossier</span>
+                <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+            </button>
+            {% endif %}
+        </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <!-- LISTE DES PISTES -->
-    <div id="sonList">
+    <!-- LISTE DES PISTES (Masquée par défaut sur l'onglet Dossiers, visible dans un Dossier/Profil ou onglet Tous les Titres) -->
+    <div id="sonList" {% if not active_cat and not active_profil %}style="display:none;"{% endif %}>
         {% for s in sons %}
         {% if s.lien_audio_externe or s.fichier_audio %}
         <div class="track-item"
@@ -833,7 +963,28 @@ function showToast(msg) {
     clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-/* ── BASCULE VUE TITRES / TOUTES COLLECTIONS ── */
+/* ── BASCULE VUE DOSSIERS / TITRES & DÉPLIAGE PROFILS DANS UN DOSSIER ── */
+window.setMainAudioTab = function(tab) {
+    const foldersView = document.getElementById('foldersStackView');
+    const list = document.getElementById('sonList');
+    document.getElementById('btnSegFolders')?.classList.toggle('active', tab === 'folders');
+    document.getElementById('btnSegTracks')?.classList.toggle('active', tab === 'tracks');
+    if (foldersView) foldersView.style.display = tab === 'folders' ? 'flex' : 'none';
+    if (list) list.style.display = tab === 'tracks' ? 'flex' : 'none';
+};
+
+window.toggleFolderShelf = function(code, btn, totalCount) {
+    const shelf = document.getElementById('shelf-' + code);
+    if (!shelf) return;
+    const isExp = shelf.classList.toggle('expanded');
+    shelf.querySelectorAll('.profile-chip-card').forEach(c => {
+        c.style.width = isExp ? '100%' : '92px';
+    });
+    btn.innerHTML = isExp
+        ? `<span>Réduire le dossier</span> <i class="fa-solid fa-chevron-up" style="font-size:10px;"></i>`
+        : `<span>Voir les ${totalCount} profils de ce dossier</span> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
+};
+
 window.setAudioView = function(mode) {
     const list = document.getElementById('sonList');
     const grid = document.getElementById('collectionsGrid');
@@ -1217,6 +1368,14 @@ document.getElementById('searchInput').addEventListener('input', function() {
     const q = this.value.trim().toLowerCase();
     let n = 0;
     bindTrackClicks();
+    const list = document.getElementById('sonList');
+    const foldersView = document.getElementById('foldersStackView');
+    if (q && foldersView && list) {
+        // Lors d'une recherche, on affiche instantanément les profils correspondants ET les pistes correspondantes
+        list.style.display = 'flex';
+    } else if (!q && foldersView && list && document.getElementById('btnSegFolders')?.classList.contains('active')) {
+        list.style.display = 'none';
+    }
     items.forEach(it => {
         const ok = !q || it.dataset.titre.toLowerCase().includes(q) || it.dataset.auteur.toLowerCase().includes(q);
         it.style.display = ok ? '' : 'none';
@@ -1225,6 +1384,11 @@ document.getElementById('searchInput').addEventListener('input', function() {
     document.querySelectorAll('[data-profile-name]').forEach(card => {
         const match = !q || (card.dataset.profileName || '').includes(q);
         card.style.display = match ? '' : 'none';
+    });
+    document.querySelectorAll('[data-folder-name]').forEach(fbox => {
+        const hasVisibleChild = [...fbox.querySelectorAll('[data-profile-name]')].some(c => c.style.display !== 'none');
+        const matchFolder = !q || (fbox.dataset.folderName || '').includes(q) || hasVisibleChild;
+        fbox.style.display = matchFolder ? '' : 'none';
     });
     document.getElementById('search-count').textContent = q ? `${n} titre${n > 1 ? 's' : ''}` : '';
 });

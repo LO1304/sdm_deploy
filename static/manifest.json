@@ -1,23 +1,53 @@
 {
-  "name": "SDM Premium",
+  "name": "SDM Mouride",
   "short_name": "SDM",
-  "description": "La bibliothèque spirituelle Mouride interactive et complète.",
+  "description": "L'application mobile spirituelle Mouride : Khassidas, 789 Audios Kourels, Saint Coran, Zikr & Tazawwudu-ç-Çighâr.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#03040a",
-  "theme_color": "#03040a",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#040B08",
+  "theme_color": "#040B08",
   "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/static/images/icons/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/static/images/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["education", "lifestyle"]
+  "shortcuts": [
+    {
+      "name": "Audiothèque & Kourels",
+      "short_name": "Audios",
+      "url": "/collection/son/",
+      "icons": [{ "src": "/static/images/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Saint Coran (30 Jukkis)",
+      "short_name": "Coran",
+      "url": "/coran/",
+      "icons": [{ "src": "/static/images/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Khassidas PDF",
+      "short_name": "Khassidas",
+      "url": "/collection/khassida/",
+      "icons": [{ "src": "/static/images/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Chapelet Zikr",
+      "short_name": "Zikr",
+      "url": "/zikr/",
+      "icons": [{ "src": "/static/images/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["books", "education", "music", "lifestyle"]
 }

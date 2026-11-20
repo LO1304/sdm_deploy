@@ -5,7 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#040B08">
-    <title>{% block title %}SDM Premium{% endblock %}</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SDM Mouride">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <title>{% block title %}SDM Mouride{% endblock %}</title>
     
     <!-- PWA -->
     <link rel="manifest" href="{% static 'manifest.json' %}">
@@ -66,46 +71,37 @@
     <!-- FOND ÉTOILÉ (Global) -->
     <canvas id="sdm-cosmos"></canvas>
 
-    <!-- BARRE SUPÉRIEURE MOBILE PROPRE (ACCÈS DIRECT SANS SCROLL) -->
-    <div class="sticky top-0 z-50 w-full bg-[#040B08]/95 backdrop-blur-md border-b border-white/10 px-3 py-2">
-        <div class="max-w-6xl mx-auto flex items-center justify-between gap-1.5">
-            <div class="flex items-center gap-1.5 min-w-0">
-                <a href="/" class="flex items-center gap-1.5 min-w-0" style="text-decoration:none;">
-                    <div class="w-7 h-7 rounded-xl bg-gold-500/15 border border-gold-500/35 flex items-center justify-center text-gold-400 font-black text-xs flex-shrink-0">
-                        ۞
+    <!-- BARRE D'APPLICATION NATIVE MOBILE (iOS / ANDROID) -->
+    <header class="m-appbar">
+        <div class="m-appbar-inner">
+            <div class="flex items-center gap-2 min-w-0">
+                <a href="/" class="flex items-center gap-2 min-w-0 tap-card" style="text-decoration:none;">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-300/25 to-emerald-600/30 border border-gold-500/45 flex items-center justify-center text-gold-400 font-black text-xs flex-shrink-0 shadow-sm">
+                        {% if user.is_authenticated %}{{ user.username|slice:":1"|upper }}{% else %}۞{% endif %}
                     </div>
-                    <span class="text-[11px] font-black tracking-wider text-gradient-gold block truncate">
-                        {% if user.is_authenticated %}{{ user.username }}{% else %}SDM MOURIDE{% endif %}
-                    </span>
+                    <div class="min-w-0">
+                        <span class="text-[12.5px] font-extrabold tracking-tight text-white block truncate leading-tight">
+                            {% if user.is_authenticated %}{{ user.username|title }}{% else %}SDM Mouride{% endif %}
+                        </span>
+                    </div>
                 </a>
-                <!-- Micro-widget très petit à côté du nom (présent sur toutes les pages) -->
+                <!-- Micro-widget ultra-compact à côté du nom (synchronisé en continu sur toutes les pages) -->
                 <span class="sdm-name-audio-widget"></span>
             </div>
 
-            <div class="flex items-center gap-1 flex-shrink-0">
-                <a href="{% url 'liste_sons' %}" class="glass px-2 h-7 rounded-xl flex items-center gap-1 border border-white/15 text-white/90 text-[10px] font-bold" style="text-decoration:none;" title="Audiothèque">
-                    <i class="fa-solid fa-headphones text-gold-400 text-[11px]"></i>
-                    <span class="hidden sm:inline">Audios</span>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+                <a href="{% url 'telechargements' %}" class="m-icon-pill" style="color:#6EE7B7; border-color:rgba(16,185,129,0.28);" title="Hors-Ligne">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
                 </a>
-
-                <a href="{% url 'telechargements' %}" class="glass px-2 h-7 rounded-xl flex items-center gap-1 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold" style="text-decoration:none;" title="Bibliothèque Hors-Ligne">
-                    <i class="fa-solid fa-cloud-arrow-down text-[11px]"></i>
-                    <span class="hidden sm:inline">Hors-Ligne</span>
-                </a>
-
-                <button type="button" onclick="openSdmModelPicker()"
-                        class="glass px-2 h-7 rounded-xl flex items-center gap-1 border border-gold-500/40 hover:border-gold-400 transition-all active:scale-95"
-                        title="Choisir un Modèle Visuel">
-                    <i class="fa-solid fa-palette text-gold-400 text-[11px]"></i>
-                    <span class="text-[10px] font-extrabold text-white/95 hidden sm:inline">Modèles</span>
+                <button type="button" onclick="openSdmModelPicker()" class="m-icon-pill" style="color:#FDE047; border-color:rgba(212,175,55,0.3);" title="Thèmes">
+                    <i class="fa-solid fa-palette"></i>
                 </button>
-
-                <a href="{% url 'profile' %}" class="glass w-7 h-7 rounded-xl flex items-center justify-center border border-gold-500/35 text-gold-400" style="text-decoration:none;" title="Mon Profil">
-                    <i class="fa-solid fa-user text-[11px]"></i>
+                <a href="{% url 'profile' %}" class="m-icon-pill" style="color:#FDE047; border-color:rgba(212,175,55,0.3);" title="Mon Profil">
+                    <i class="fa-solid fa-user"></i>
                 </a>
             </div>
         </div>
-    </div>
+    </header>
 
     <!-- STUDIO DE SÉLECTION DES 8 MODÈLES VISUELS (ANDROID BOTTOM-SHEET & MODAL) -->
     <div id="sdm-model-modal" class="fixed inset-0 z-[1200] hidden items-end sm:items-center justify-center bg-black/75 backdrop-blur-md p-0 sm:p-4" onclick="if(event.target===this) closeSdmModelPicker()">
@@ -252,33 +248,33 @@
     </div>
     {% endif %}
 
-    <!-- Contenu Principal -->
-    <div class="site-wrapper pb-28 {% block wrapper_classes %}max-w-5xl mx-auto pt-3 px-3.5 md:px-8{% endblock %}">
+    <!-- Contenu Principal (Cadre Application Mobile Natif) -->
+    <div class="site-wrapper pb-24 {% block wrapper_classes %}max-w-[540px] mx-auto pt-3 px-3.5{% endblock %}">
         {% block content %}{% endblock %}
     </div>
 
-    <!-- BOTTOM FLOATING NAVIGATION (5 RUBRIQUES PRINCIPALES AVEC LIBELLÉS) -->
+    <!-- BARRE DE NAVIGATION NATIVE MOBILE (5 ONGLETS ESSENTIELS) -->
     {% block bottom_nav %}
-    <nav class="nav-island">
-        <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}" style="text-decoration:none;">
-            <i class="fa-solid fa-house-chimney text-base"></i>
-            <span class="text-[9px] font-bold mt-0.5">Accueil</span>
+    <nav class="nav-island" aria-label="Navigation principale">
+        <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}">
+            <span class="nav-icon-pill"><i class="fa-solid fa-house"></i></span>
+            <span>Accueil</span>
         </a>
-        <a href="{% url 'liste' 'khassida' %}" class="nav-item {% if 'khassida' in request.path %}active{% endif %}" style="text-decoration:none;">
-            <i class="fa-solid fa-book-open text-base"></i>
-            <span class="text-[9px] font-bold mt-0.5">Khassidas</span>
+        <a href="{% url 'liste_sons' %}" class="nav-item {% if '/son' in request.path %}active{% endif %}">
+            <span class="nav-icon-pill"><i class="fa-solid fa-headphones"></i></span>
+            <span>Audios</span>
         </a>
-        <a href="{% url 'coran_interactif' %}" class="nav-item {% if 'coran' in request.path %}active{% endif %}" style="text-decoration:none;">
-            <i class="fa-solid fa-book-quran text-base"></i>
-            <span class="text-[9px] font-bold mt-0.5">Coran</span>
+        <a href="{% url 'liste' 'khassida' %}" class="nav-item {% if 'khassida' in request.path %}active{% endif %}">
+            <span class="nav-icon-pill"><i class="fa-solid fa-book-open"></i></span>
+            <span>Khassidas</span>
         </a>
-        <a href="{% url 'zikr_compteur_default' %}" class="nav-item {% if 'zikr' in request.path or 'historique' in request.path %}active{% endif %}" style="text-decoration:none;">
-            <i class="fa-solid fa-fingerprint text-base"></i>
-            <span class="text-[9px] font-bold mt-0.5">Zikr</span>
+        <a href="{% url 'coran_interactif' %}" class="nav-item {% if 'coran' in request.path %}active{% endif %}">
+            <span class="nav-icon-pill"><i class="fa-solid fa-book-quran"></i></span>
+            <span>Coran</span>
         </a>
-        <a href="{% url 'tazawwud_home' %}" class="nav-item {% if 'tazawwud' in request.path %}active{% endif %}" style="text-decoration:none;">
-            <i class="fa-solid fa-graduation-cap text-base"></i>
-            <span class="text-[9px] font-bold mt-0.5">Tazawwud</span>
+        <a href="{% url 'zikr_compteur_default' %}" class="nav-item {% if 'zikr' in request.path or 'historique' in request.path %}active{% endif %}">
+            <span class="nav-icon-pill"><i class="fa-solid fa-fingerprint"></i></span>
+            <span>Zikr</span>
         </a>
     </nav>
     {% endblock %}
