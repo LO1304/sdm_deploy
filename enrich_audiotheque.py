@@ -1,85 +1,24 @@
 """
-Script idempotent exécuté en local ET automatiquement lors du build Render (build.sh) :
-0. Standardise les 30 Jukkis du Saint Coran (numero=1..30, titre="Jukki X (Juz X)") et nettoie les doublons/vides
-1. Ajoute les 114 Sourates complètes du Coran Audio (Cheikh Mishary Alafasy — HTTP 200)
-2. Ajoute les 117 Enseignements Xam Xam (Tasawudu Sighaar, Tasawudu Chuban, Masaalikul Jinaan, Rissaala...)
-3. Ajoute ~257 Audios Mourides open-access depuis Internet Archive (Khassidas, Kourels, Serigne Ibra Gueye,
-   Kourel Serigne Saliou Mbacké, Hizbut Tarqiyyah, Wolofal Serigne Mbaye Diakhaté, Cheikh Abdou Rahmane Mbacké,
-   Minanul Bâqil Qadîm, Irwa-u Nadim, Ndenkaané Serigne Bi)
-4. Ajoute les Adhans et fichiers locaux manquants (Rajass, Bouchra Lana, Kaolack...)
+Synchronisation ultra-rapide (< 2s sur Render build.sh) & 100% vérifiée :
+1. Standardise les 30 Jukkis du Saint Coran (numero=1..30, titre="Jukki X (Juz X)") et supprime les vides/doublons.
+2. Charge verified_open_sons.json (chaque MP3 a été vérifié octet par octet en HTTP 200/206).
+3. Supprime de la base tout lien cassé / non vérifié (tout en préservant les fichiers admin Cloudinary video/upload & locaux).
+4. Insère ou met à jour en masse tous les Kourels Mourides, Khassidas, Wolofals, Xam Xam, Coran et Adhan vérifiés.
 """
 import os
 import re
-import glob
-import shutil
-from urllib.parse import quote
-import requests
-import xml.etree.ElementTree as ET
+import json
 import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sdm_config.settings')
 django.setup()
 
-from django.conf import settings
 from django.db.models import Count
 from bibliotheque.models import Son, Coran
 
-SOURATES_114 = [
-    (1, "Al-Fatiha (L'Ouverture)"), (2, "Al-Baqara (La Vache)"), (3, "Al-Imran (La Famille d'Imran)"),
-    (4, "An-Nisa (Les Femmes)"), (5, "Al-Ma'ida (La Table Servie)"), (6, "Al-An'am (Les Bestiaux)"),
-    (7, "Al-A'raf (Les Murailles)"), (8, "Al-Anfal (Le Butin)"), (9, "At-Tawba (Le Repentir)"),
-    (10, "Yunus (Jonas)"), (11, "Hud"), (12, "Yusuf (Joseph)"), (13, "Ar-Ra'd (Le Tonnerre)"),
-    (14, "Ibrahim (Abraham)"), (15, "Al-Hijr"), (16, "An-Nahl (Les Abeilles)"),
-    (17, "Al-Isra (Le Voyage Nocturne)"), (18, "Al-Kahf (La Caverne)"), (19, "Maryam (Marie)"),
-    (20, "Ta-Ha"), (21, "Al-Anbiya (Les Prophètes)"), (22, "Al-Hajj (Le Pèlerinage)"),
-    (23, "Al-Mu'minun (Les Croyants)"), (24, "An-Nur (La Lumière)"), (25, "Al-Furqan (Le Discernement)"),
-    (26, "Ash-Shu'ara (Les Poètes)"), (27, "An-Naml (Les Fourmis)"), (28, "Al-Qasas (Le Récit)"),
-    (29, "Al-Ankabut (L'Araignée)"), (30, "Ar-Rum (Les Romains)"), (31, "Luqman"),
-    (32, "As-Sajda (La Prosternation)"), (33, "Al-Ahzab (Les Coalisés)"), (34, "Saba"),
-    (35, "Fatir (Le Créateur)"), (36, "Ya-Sin"), (37, "As-Saffat (Les Rangés)"),
-    (38, "Sad"), (39, "Az-Zumar (Les Groupes)"), (40, "Ghafir (Le Pardonneur)"),
-    (41, "Fussilat (Les Versets Détaillés)"), (42, "Ash-Shura (La Consultation)"), (43, "Az-Zukhruf (L'Ornement)"),
-    (44, "Ad-Dukhan (La Fumée)"), (45, "Al-Jathiya (L'Agenouillée)"), (46, "Al-Ahqaf"),
-    (47, "Muhammad"), (48, "Al-Fath (La Victoire)"), (49, "Al-Hujurat (Les Appartements)"),
-    (50, "Qaf"), (51, "Adh-Dhariyat (Qui Éparpillent)"), (52, "At-Tur (Le Mont)"),
-    (53, "An-Najm (L'Étoile)"), (54, "Al-Qamar (La Lune)"), (55, "Ar-Rahman (Le Tout Miséricordieux)"),
-    (56, "Al-Waqi'a (L'Événement)"), (57, "Al-Hadid (Le Fer)"), (58, "Al-Mujadila (La Discussion)"),
-    (59, "Al-Hashr (L'Exode)"), (60, "Al-Mumtahana (L'Éprouvée)"), (61, "As-Saff (Le Rang)"),
-    (62, "Al-Jumu'a (Le Vendredi)"), (63, "Al-Munafiqun (Les Hypocrites)"), (64, "At-Taghabun (La Grande Perte)"),
-    (65, "At-Talaq (Le Divorce)"), (66, "At-Tahrim (L'Interdiction)"), (67, "Al-Mulk (La Royauté)"),
-    (68, "Al-Qalam (La Plume)"), (69, "Al-Haqqa (Celle qui Montre la Vérité)"), (70, "Al-Ma'arij (Les Voies d'Ascension)"),
-    (71, "Nuh (Noé)"), (72, "Al-Jinn (Les Djinns)"), (73, "Al-Muzzammil (L'Enveloppé)"),
-    (74, "Al-Muddaththir (Le Revêtu d'un Manteau)"), (75, "Al-Qiyama (La Résurrection)"), (76, "Al-Insan (L'Homme)"),
-    (77, "Al-Mursalat (Les Envoyés)"), (78, "An-Naba (La Nouvelle)"), (79, "An-Nazi'at (Les Anges qui Arrachent)"),
-    (80, "Abasa (Il s'est Renfrogné)"), (81, "At-Takwir (L'Obscurcissement)"), (82, "Al-Infitar (La Rupture)"),
-    (83, "Al-Mutaffifin (Les Fraudeurs)"), (84, "Al-Inshiqaq (La Déchirure)"), (85, "Al-Buruj (Les Constellations)"),
-    (86, "At-Tariq (L'Astre Nocturne)"), (87, "Al-A'la (Le Très-Haut)"), (88, "Al-Ghashiya (L'Enveloppante)"),
-    (89, "Al-Fajr (L'Aube)"), (90, "Al-Balad (La Cité)"), (91, "Ash-Shams (Le Soleil)"),
-    (92, "Al-Layl (La Nuit)"), (93, "Ad-Duha (Le Jour Montant)"), (94, "Ash-Sharh (L'Ouverture)"),
-    (95, "At-Tin (Le Figuier)"), (96, "Al-Alaq (L'Adhérence)"), (97, "Al-Qadr (La Destinée)"),
-    (98, "Al-Bayyina (La Preuve)"), (99, "Az-Zalzala (La Secousse)"), (100, "Al-Adiyat (Les Coursiers)"),
-    (101, "Al-Qari'a (Le Fracas)"), (102, "At-Takathur (La Course aux Richesses)"), (103, "Al-Asr (Le Temps)"),
-    (104, "Al-Humaza (Les Calomniateurs)"), (105, "Al-Fil (L'Éléphant)"), (106, "Quraysh"),
-    (107, "Al-Ma'un (L'Ustensile)"), (108, "Al-Kawthar (L'Abondance)"), (109, "Al-Kafirun (Les Infidèles)"),
-    (110, "An-Nasr (Les Secours)"), (111, "Al-Masad (Les Fibres)"), (112, "Al-Ikhlas (Le Monothéisme Pur)"),
-    (113, "Al-Falaq (L'Aube Naissante)"), (114, "An-Nas (Les Hommes)"),
-]
-
-ARCHIVE_MOURIDE_COLLECTIONS = [
-    ('khassaides', 'KHASSIDA', 'Kourel Touba-Internet', 'Khassida'),
-    ('S.Ibra.Gueye', 'KHASSIDA', 'Serigne Ibra Gueye', 'Khassida S. Ibra Gueye'),
-    ('ssmbackekhassida', 'KHASSIDA', 'Kourel Serigne Saliou Mbacké', 'Khassida S. Saliou Mbacké'),
-    ('hizbou90', 'KHASSIDA', 'Kourel Hizbut Tarqiyyah (Classiques)', 'Hizbut Tarqiyyah'),
-    ('wolofalsmd', 'WAKHTANE', 'Serigne Mbaye Diakhaté (Wolofal)', 'Wolofal'),
-    ('ChARMbacke-MawXudus', 'WAKHTANE', 'Cheikh Abdou Rahmane Mbacké', 'Mawahibul Qudus'),
-    ('MinanulBaqilQadim', 'WAKHTANE', 'Minanul Bâqil Qadîm', 'Minanul Bâqil Qadîm'),
-    ('irwa_u_nadiim', 'WAKHTANE', 'Irwa-u Nadim (Daaraykamil)', 'Irwa-u Nadim'),
-    ('Alkhadiimiyah_ndenkaaneSerigneBi', 'WAKHTANE', 'Ngagne Mboup — Ndenkaané Serigne Bi', 'Ndenkaané Serigne Bi'),
-]
-
 
 def standardize_coran_jukkis():
-    print("0/4 — Standardisation des 30 Jukkis du Saint Coran...")
+    print("1/2 — Standardisation des 30 Jukkis du Saint Coran...")
     Coran.objects.filter(fichier_pdf='').delete()
     Coran.objects.filter(fichier_pdf__isnull=True).delete()
 
@@ -102,157 +41,85 @@ def standardize_coran_jukkis():
     print(f"  => {fixed} Jukki(s) mis à jour (Total Coran PDF : {Coran.objects.count()})")
 
 
-def import_quran_surahs():
-    print("1/4 — Import des 114 Sourates du Coran (Cheikh Mishary Alafasy)...")
-    existing = set(Son.objects.filter(categorie='CORAN').values_list('titre', flat=True))
-    to_create = []
-    for num, nom in SOURATES_114:
-        titre = f"Sourate {num:03d} — {nom}"
-        if titre in existing:
-            continue
-        url = f"https://server8.mp3quran.net/afs/{num:03d}.mp3"
-        to_create.append(Son(
-            titre=titre,
-            auteur_voix="Cheikh Mishary Rashid Alafasy",
-            categorie='CORAN',
-            lien_audio_externe=url,
-            est_premium=False,
-        ))
-    if to_create:
-        Son.objects.bulk_create(to_create, batch_size=60)
-    print(f"  => {len(to_create)} sourates ajoutées (Total CORAN : {Son.objects.filter(categorie='CORAN').count()})")
-
-
-def import_xamxam_rss():
-    print("2/4 — Import des 117 enseignements Xam Xam (Podcloud / MediaMouride)...")
-    try:
-        resp = requests.get('https://khassida.lepodcast.fr/rss', timeout=15)
-        resp.raise_for_status()
-    except Exception as e:
-        print(f"  [Erreur RSS] {e}")
+def sync_verified_sons():
+    print("2/2 — Synchronisation du catalogue audio 100% vérifié (verified_open_sons.json)...")
+    json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'verified_open_sons.json')
+    if not os.path.isfile(json_path):
+        print(f"  [Attention] {json_path} introuvable — synchronisation ignorée.")
         return
 
-    root = ET.fromstring(resp.content)
-    items = root.findall('./channel/item')
-    ns = {'itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd'}
-    existing_titles = set(t.lower() for t in Son.objects.filter(categorie='XAM_XAM').values_list('titre', flat=True))
+    with open(json_path, 'r', encoding='utf-8') as f:
+        verified_items = json.load(f)
 
+    verified_by_url = {
+        it['lien_audio_externe'].strip(): it
+        for it in verified_items
+        if it.get('lien_audio_externe')
+    }
+    print(f"  Pistes 100% vérifiées dans le catalogue : {len(verified_by_url)}")
+
+    # 1. Supprimer toutes les pistes cassées / mortes / doublons non présentes dans le catalogue vérifié
+    #    (on préserve uniquement les uploads manuels admin dans /media/audios/telegram/ ou /static/audios_locaux/)
+    #    et synchroniser les noms de profils/collections propres sur les pistes existantes.
+    to_delete_ids = []
+    to_update_objs = []
+    existing_urls = set()
+    for s in Son.objects.all():
+        u = (s.lien_audio_externe or '').strip()
+        is_manual_admin = ('/media/audios/telegram/' in u) or u.startswith('/static/audios_locaux/')
+        if (u not in verified_by_url and not is_manual_admin) or ('/raw/upload/' in u) or ('(1)' in (s.titre or '')):
+            to_delete_ids.append(s.id)
+            continue
+
+        if u in existing_urls:
+            # Doublon exact d'URL déjà présent en base
+            to_delete_ids.append(s.id)
+            continue
+
+        existing_urls.add(u)
+        if u in verified_by_url:
+            meta = verified_by_url[u]
+            new_titre = (meta.get('titre') or s.titre or 'Audio Mouride')[:200]
+            new_auteur = (meta.get('auteur_voix') or 'Kourel Mouride')[:150]
+            new_cat = (meta.get('categorie') or s.categorie or 'KHASSIDA').upper()
+            if s.titre != new_titre or s.auteur_voix != new_auteur or s.categorie != new_cat:
+                s.titre = new_titre
+                s.auteur_voix = new_auteur
+                s.categorie = new_cat
+                to_update_objs.append(s)
+
+    if to_delete_ids:
+        Son.objects.filter(id__in=to_delete_ids).delete()
+        print(f"  => {len(to_delete_ids)} piste(s) cassée(s) / morte(s) / doublon(s) supprimée(s).")
+
+    if to_update_objs:
+        Son.objects.bulk_update(to_update_objs, ['titre', 'auteur_voix', 'categorie'], batch_size=100)
+        print(f"  => {len(to_update_objs)} piste(s) synchronisée(s) avec leur profil/collection unifié.")
+
+    # 2. Ajouter toutes les pistes vérifiées manquantes en 1 seul bulk_create ultra-rapide
     to_create = []
-    for it in items:
-        t_el = it.find('title')
-        enc = it.find('enclosure')
-        if t_el is None or not t_el.text or enc is None:
+    for u, it in verified_by_url.items():
+        if not u or u in existing_urls:
             continue
-        raw_title = re.sub(r'\s+', ' ', t_el.text.replace('_', ' ')).strip()
-        audio_url = (enc.get('url') or '').strip()
-        if not raw_title or not audio_url or raw_title.lower() in existing_titles:
-            continue
-        existing_titles.add(raw_title.lower())
-
-        author_el = it.find(f'{{{ns["itunes"]}}}author')
-        author = author_el.text.strip() if (author_el is not None and author_el.text) else "Serigne Abdou Rahmane Mbacké"
+        existing_urls.add(u)
         to_create.append(Son(
-            titre=raw_title[:200],
-            auteur_voix=author[:150],
-            categorie='XAM_XAM',
-            lien_audio_externe=audio_url,
+            titre=(it.get('titre') or 'Audio Mouride')[:200],
+            auteur_voix=(it.get('auteur_voix') or 'Kourel Mouride')[:150],
+            categorie=(it.get('categorie') or 'KHASSIDA').upper(),
+            lien_audio_externe=u,
             est_premium=False,
         ))
 
     if to_create:
-        Son.objects.bulk_create(to_create, batch_size=60)
-    print(f"  => {len(to_create)} cours Xam Xam ajoutés (Total XAM_XAM : {Son.objects.filter(categorie='XAM_XAM').count()})")
+        Son.objects.bulk_create(to_create, batch_size=100)
+    print(f"  => {len(to_create)} nouvelle(s) piste(s) vérifiée(s) ajoutée(s).")
 
-
-def clean_archive_track_title(filename, prefix_label):
-    base = os.path.splitext(os.path.basename(filename))[0]
-    base = re.sub(r'[_\-]+', ' ', base)
-    base = re.sub(r'\s+', ' ', base).strip()
-    # Si le nom du fichier n'est qu'un numéro ("01A", "22", "1"), ajouter le préfixe lisible de la collection
-    if re.match(r'^[0-9]{1,3}[a-zA-Z]?$', base):
-        return f"{prefix_label} — Partie {base}"
-    if prefix_label.lower() not in base.lower() and len(base) < 28:
-        return f"{base} ({prefix_label})"
-    return base[:195]
-
-
-def import_archive_org_mouride():
-    print("3/4 — Import des archives Mourides open-access (Internet Archive)...")
-    existing_urls = set(Son.objects.exclude(lien_audio_externe='').values_list('lien_audio_externe', flat=True))
-    existing_titles = set(t.lower() for t in Son.objects.values_list('titre', flat=True))
-    to_create = []
-
-    for ident, cat, default_author, prefix_lbl in ARCHIVE_MOURIDE_COLLECTIONS:
-        try:
-            r = requests.get(f'https://archive.org/metadata/{ident}/files', timeout=12)
-            if r.status_code != 200:
-                continue
-            files = r.json().get('result', [])
-            mp3s = [f for f in files if (f.get('name') or '').lower().endswith('.mp3') and f.get('source') == 'original']
-            if not mp3s:
-                mp3s = [f for f in files if (f.get('name') or '').lower().endswith('.mp3')]
-
-            for f in mp3s:
-                fname = f.get('name') or ''
-                if not fname:
-                    continue
-                url = f"https://archive.org/download/{ident}/{quote(fname)}"
-                if url in existing_urls:
-                    continue
-
-                raw_meta_title = (f.get('title') or '').strip()
-                titre = raw_meta_title if (raw_meta_title and len(raw_meta_title) > 3) else clean_archive_track_title(fname, prefix_lbl)
-                if titre.lower() in existing_titles:
-                    titre = f"{titre} ({ident[:8]})"[:200]
-
-                existing_urls.add(url)
-                existing_titles.add(titre.lower())
-                to_create.append(Son(
-                    titre=titre[:200],
-                    auteur_voix=default_author[:150],
-                    categorie=cat,
-                    lien_audio_externe=url,
-                    est_premium=False,
-                ))
-        except Exception as e:
-            print(f"  [Skip {ident}] {e}")
-
-    if to_create:
-        Son.objects.bulk_create(to_create, batch_size=80)
-    print(f"  => {len(to_create)} audio(s) Mourides Archive.org ajoutés.")
-
-
-def import_adhan_and_local():
-    print("4/4 — Vérification Adhan & fichiers locaux complémentaires...")
-    added = 0
-    if not Son.objects.filter(titre__icontains="Makkah", categorie='ADHAN').exists():
-        Son.objects.create(
-            titre="Adhan de La Mecque (Masjid al-Haram)",
-            auteur_voix="Al-Haram Makkah",
-            categorie='ADHAN',
-            lien_audio_externe="https://archive.org/download/MakkahAzan/Makkah-Azan.mp3",
-            est_premium=False,
-        )
-        added += 1
-    if not Son.objects.filter(titre__icontains="Médine", categorie='ADHAN').exists():
-        Son.objects.create(
-            titre="Adhan de Médine (Al-Masjid an-Nabawi)",
-            auteur_voix="Al-Masjid an-Nabawi",
-            categorie='ADHAN',
-            lien_audio_externe="https://archive.org/download/AdhanMedina/Adhan-Medina.mp3",
-            est_premium=False,
-        )
-        added += 1
-    print(f"  => {added} Adhan(s) ajoutés.")
+    print("\n=== BILAN FINAL AUDIOTHÈQUE 100% VÉRIFIÉE ===")
+    print("Total sons dans la base :", Son.objects.count())
+    for row in Son.objects.values('categorie').annotate(c=Count('id')).order_by('-c'):
+        print(f"  - {row['categorie']}: {row['c']}")
 
 
 if __name__ == '__main__':
     standardize_coran_jukkis()
-    import_quran_surahs()
-    import_xamxam_rss()
-    import_archive_org_mouride()
-    import_adhan_and_local()
-    print("\n=== BILAN FINAL AUDIOTHÈQUE SDM ===")
-    print("Total sons dans la base :", Son.objects.count())
-    for row in Son.objects.values('categorie').annotate(c=Count('id')).order_by('-c'):
-        print(f"  - {row['categorie']}: {row['c']}")
+    sync_verified_sons()

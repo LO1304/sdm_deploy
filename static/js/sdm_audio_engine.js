@@ -1,8 +1,9 @@
 /**
- * SDM MOURIDE — MOTEUR AUDIO GLOBAL PERSISTANT & MICRO-WIDGET À CÔTÉ DU NOM
- * - Continue la musique même lorsqu'on change de page ou qu'on sort de l'application (arrière-plan / écran verrouillé)
- * - Pilote le micro-widget ultra-compact placé à côté du nom de l'utilisateur
- * - Synchronise l'Audiothèque (liste_sons.html) avec toutes les pages de l'application
+ * SDM MOURIDE — MOTEUR AUDIO GLOBAL STABLE (ZÉRO CRASH, ZÉRO GRÉSILLEMENT, ZÉRO DOUBLE-LECTURE)
+ * - Coordination inter-onglets via BroadcastChannel : 1 seul onglet lit l'audio à la fois
+ * - Aucun spam localStorage / MediaSession (écriture espacée toutes les 5 secondes max)
+ * - Aucune boucle pause/play agressive qui fait grésiller le décodeur audio mobile
+ * - Micro-widget ultra-compact à côté du nom synchronisé sur toutes les pages et onglets
  */
 (function () {
     'use strict';
@@ -12,8 +13,19 @@
     const STATE_KEY = 'sdm_now_playing_v2';
     const PLAYLIST_KEY = 'sdm_audio_playlist_v2';
     const LEGACY_KEY = 'sdm_last_audio';
+    const TAB_PLAYING_KEY = 'sdm_this_tab_was_playing';
+    const TAB_ID = 'tab_' + Math.random().toString(36).slice(2) + '_' + Date.now();
 
-    // Injecter les styles du micro-widget ultra-compact ("très, très, très petit à côté de mon nom")
+    // Canal inter-onglets pour empêcher 2 onglets de jouer du son en même temps (cause n°1 des crashs / échos)
+    let bus = null;
+    let anotherTabIsPlaying = false;
+    try {
+        if ('BroadcastChannel' in window) {
+            bus = new BroadcastChannel('sdm_audio_single_owner_v2');
+        }
+    } catch (e) {}
+
+    // Injecter les styles du micro-widget ultra-compact à côté du nom
     const styleEl = document.createElement('style');
     styleEl.textContent = `
         .sdm-name-audio-widget {
@@ -26,14 +38,12 @@
             border-radius: 999px;
             background: linear-gradient(135deg, rgba(12, 34, 25, 0.94), rgba(4, 11, 8, 0.96));
             border: 1px solid rgba(212, 175, 55, 0.48);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45), 0 0 8px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
             vertical-align: middle;
             user-select: none;
             flex-shrink: 0;
         }
-        .sdm-name-audio-widget.visible {
-            display: inline-flex;
-        }
+        .sdm-name-audio-widget.visible { display: inline-flex; }
         .sdm-mini-eq {
             display: inline-flex;
             align-items: flex-end;
@@ -46,11 +56,11 @@
             width: 2px;
             background: #FDE047;
             border-radius: 1px;
-            animation: sdmMiniEqBounce 0.55s ease-in-out infinite alternate;
+            animation: sdmMiniEqBounce 0.65s ease-in-out infinite alternate;
         }
         .sdm-mini-eq span:nth-child(1) { height: 45%; animation-delay: 0s; }
-        .sdm-mini-eq span:nth-child(2) { height: 100%; animation-delay: 0.16s; }
-        .sdm-mini-eq span:nth-child(3) { height: 65%; animation-delay: 0.32s; }
+        .sdm-mini-eq span:nth-child(2) { height: 100%; animation-delay: 0.18s; }
+        .sdm-mini-eq span:nth-child(3) { height: 65%; animation-delay: 0.36s; }
         .sdm-name-audio-widget.is-paused .sdm-mini-eq span {
             animation-play-state: paused;
             height: 35% !important;
@@ -71,10 +81,6 @@
             text-decoration: none;
             line-height: 1;
             cursor: pointer;
-            letter-spacing: 0.01em;
-        }
-        .sdm-mini-track-link:hover {
-            text-decoration: underline;
         }
         .sdm-mini-btn {
             width: 15px;
@@ -90,53 +96,48 @@
             cursor: pointer;
             padding: 0;
             flex-shrink: 0;
-            transition: transform 0.15s ease, background 0.15s ease;
-        }
-        .sdm-mini-btn:active {
-            transform: scale(0.86);
-        }
-        .sdm-mini-btn:hover {
-            background: rgba(212, 175, 55, 0.45);
-            color: #040B08;
         }
     `;
     document.head.appendChild(styleEl);
 
-    // Créer ou récupérer l'élément <audio> global unique
     function getOrCreateGlobalAudio() {
-        let aud = document.getElementById('sdm-global-audio') || document.getElementById('aud');
-        if (!aud) {
-            aud = document.createElement('audio');
-            aud.id = 'sdm-global-audio';
-            aud.preload = 'auto';
-            aud.setAttribute('playsinline', '');
-            aud.setAttribute('webkit-playsinline', '');
-            document.body.appendChild(aud);
+        let el = document.getElementById('sdm-global-audio') || document.getElementById('aud');
+        if (!el) {
+            el = document.createElement('audio');
+            el.id = 'sdm-global-audio';
+            el.preload = 'none';
+            el.setAttribute('playsinline', '');
+            el.setAttribute('webkit-playsinline', '');
+            document.body.appendChild(el);
         } else {
-            aud.preload = 'auto';
-            aud.setAttribute('playsinline', '');
-            aud.setAttribute('webkit-playsinline', '');
+            el.setAttribute('playsinline', '');
+            el.setAttribute('webkit-playsinline', '');
         }
-        return aud;
+        return el;
     }
 
     let aud = null;
-    let userExplicitlyPaused = true;
-    let lastBackgroundTimestamp = 0;
-    let lockResolver = null;
     let playlist = [];
     let currentTrack = null;
+    let lastPersistMs = 0;
+    let lastPosStateMs = 0;
+    let activeBlobUrl = null;
 
     function loadSavedState() {
         try {
             const raw = localStorage.getItem(STATE_KEY);
-            if (raw) return JSON.parse(raw);
-        } catch (e) {}
-        return null;
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+            return null;
+        }
     }
 
-    function saveState(override = {}) {
+    function saveState(override = {}, force = false) {
         if (!currentTrack && !override.id) return;
+        const now = Date.now();
+        if (!force && now - lastPersistMs < 4500) return;
+        lastPersistMs = now;
+
         const base = currentTrack || {};
         const state = {
             id: override.id !== undefined ? override.id : base.id,
@@ -148,7 +149,8 @@
             isPlaying: override.isPlaying !== undefined ? override.isPlaying : (aud ? !aud.paused : false),
             isLoop: override.isLoop !== undefined ? override.isLoop : (aud ? !!aud.loop : false),
             playbackRate: override.playbackRate !== undefined ? override.playbackRate : (aud ? aud.playbackRate || 1 : 1),
-            updatedAt: Date.now()
+            ownerTabId: TAB_ID,
+            updatedAt: now
         };
         currentTrack = state;
         try {
@@ -166,13 +168,10 @@
             const raw = localStorage.getItem(PLAYLIST_KEY);
             if (raw) {
                 const parsed = JSON.parse(raw);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    playlist = parsed;
-                }
+                if (Array.isArray(parsed) && parsed.length > 0) playlist = parsed;
             }
         } catch (e) {}
 
-        // Si on est sur liste_sons.html, synchroniser immédiatement à partir du DOM
         const domItems = document.querySelectorAll('.track-item[data-url]');
         if (domItems.length > 0) {
             const list = [];
@@ -186,12 +185,11 @@
             });
             if (list.length > 0) {
                 playlist = list;
-                try { localStorage.setItem(PLAYLIST_KEY, JSON.stringify(list)); } catch (e) {}
+                try { localStorage.setItem(PLAYLIST_KEY, JSON.stringify(list.slice(0, 650))); } catch (e) {}
                 return;
             }
         }
 
-        // Sinon charger la playlist en arrière-plan si vide
         if (playlist.length === 0) {
             fetch('/sons-api/liste/')
                 .then(r => r.json())
@@ -203,32 +201,13 @@
                             auteur: item.auteur,
                             url: item.url
                         }));
-                        try { localStorage.setItem(PLAYLIST_KEY, JSON.stringify(playlist)); } catch (e) {}
+                        try { localStorage.setItem(PLAYLIST_KEY, JSON.stringify(playlist.slice(0, 650))); } catch (e) {}
                     }
                 })
                 .catch(() => {});
         }
     }
 
-    // Maintenir un verrou Web Lock pendant la lecture pour empêcher l'OS mobile de geler l'onglet en arrière-plan
-    function acquireBackgroundLock() {
-        if ('locks' in navigator && !lockResolver) {
-            navigator.locks.request('sdm_persistent_audio_lock', () => {
-                return new Promise(resolve => {
-                    lockResolver = resolve;
-                });
-            }).catch(() => {});
-        }
-    }
-
-    function releaseBackgroundLock() {
-        if (lockResolver) {
-            lockResolver();
-            lockResolver = null;
-        }
-    }
-
-    // Mettre à jour MediaSession (Écran de verrouillage Android / iOS & Centre de contrôle)
     function updateMediaSession() {
         if (!('mediaSession' in navigator) || !currentTrack) return;
         try {
@@ -242,30 +221,24 @@
                 ]
             });
             navigator.mediaSession.playbackState = (aud && !aud.paused) ? 'playing' : 'paused';
-
-            navigator.mediaSession.setActionHandler('play', () => {
-                window.SDMAudioEngine.play();
-            });
-            navigator.mediaSession.setActionHandler('pause', () => {
-                window.SDMAudioEngine.pause();
-            });
-            navigator.mediaSession.setActionHandler('previoustrack', () => {
-                window.SDMAudioEngine.prev();
-            });
-            navigator.mediaSession.setActionHandler('nexttrack', () => {
-                window.SDMAudioEngine.next();
-            });
+            navigator.mediaSession.setActionHandler('play', () => window.SDMAudioEngine.play());
+            navigator.mediaSession.setActionHandler('pause', () => window.SDMAudioEngine.pause());
+            navigator.mediaSession.setActionHandler('previoustrack', () => window.SDMAudioEngine.prev());
+            navigator.mediaSession.setActionHandler('nexttrack', () => window.SDMAudioEngine.next());
             navigator.mediaSession.setActionHandler('seekto', (details) => {
-                if (aud && details.seekTime !== undefined) {
+                if (aud && details.seekTime !== undefined && isFinite(details.seekTime)) {
                     aud.currentTime = details.seekTime;
-                    updatePositionState();
+                    updatePositionState(true);
                 }
             });
         } catch (e) {}
     }
 
-    function updatePositionState() {
+    function updatePositionState(force = false) {
         if (!('mediaSession' in navigator) || !aud) return;
+        const now = Date.now();
+        if (!force && now - lastPosStateMs < 5000) return;
+        lastPosStateMs = now;
         if ('setPositionState' in navigator.mediaSession && isFinite(aud.duration) && aud.duration > 0) {
             try {
                 navigator.mediaSession.setPositionState({
@@ -277,33 +250,25 @@
         }
     }
 
-    // Rendu et mise à jour de tous les micro-widgets à côté du nom (.sdm-name-audio-widget)
-    function renderMiniWidgets() {
+    function renderMiniWidgets(remotePlaying = null) {
         const widgets = document.querySelectorAll('.sdm-name-audio-widget');
         if (!widgets.length) return;
 
         const hasTrack = currentTrack && currentTrack.titre && currentTrack.url;
-        const isPlaying = aud && !aud.paused;
+        const isPlaying = remotePlaying !== null ? remotePlaying : Boolean(aud && !aud.paused);
 
         widgets.forEach(w => {
             if (!hasTrack) {
                 w.classList.remove('visible');
                 return;
             }
-
             if (!w.dataset.hydrated) {
                 w.dataset.hydrated = '1';
                 w.innerHTML = `
-                    <span class="sdm-mini-eq" title="En cours d'écoute">
-                        <span></span><span></span><span></span>
-                    </span>
+                    <span class="sdm-mini-eq" title="En cours d'écoute"><span></span><span></span><span></span></span>
                     <a href="/collection/son/" class="sdm-mini-track-link" title="Ouvrir l'Audiothèque"></a>
-                    <button type="button" class="sdm-mini-btn sdm-mini-toggle" title="Lecture / Pause">
-                        <i class="fa-solid fa-play"></i>
-                    </button>
-                    <button type="button" class="sdm-mini-btn sdm-mini-next" title="Son suivant">
-                        <i class="fa-solid fa-forward-step"></i>
-                    </button>
+                    <button type="button" class="sdm-mini-btn sdm-mini-toggle" title="Lecture / Pause"><i class="fa-solid fa-play"></i></button>
+                    <button type="button" class="sdm-mini-btn sdm-mini-next" title="Son suivant"><i class="fa-solid fa-forward-step"></i></button>
                 `;
                 w.querySelector('.sdm-mini-toggle').addEventListener('click', (e) => {
                     e.preventDefault();
@@ -316,21 +281,51 @@
                     window.SDMAudioEngine.next();
                 });
             }
-
             w.classList.add('visible');
             w.classList.toggle('is-paused', !isPlaying);
-
             const titleEl = w.querySelector('.sdm-mini-track-link');
             if (titleEl) {
                 titleEl.textContent = currentTrack.titre;
                 titleEl.title = `${currentTrack.titre} (${currentTrack.auteur || 'SDM'})`;
             }
-
             const iconEl = w.querySelector('.sdm-mini-toggle i');
-            if (iconEl) {
-                iconEl.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
-            }
+            if (iconEl) iconEl.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
         });
+    }
+
+    // Coordination propre entre onglets (empêche les doubles sons / crash audio quand un autre onglet est ouvert)
+    if (bus) {
+        bus.onmessage = (event) => {
+            const msg = event.data || {};
+            if (msg.tabId === TAB_ID) return;
+
+            if (msg.type === 'CLAIM_PLAYBACK') {
+                // Un autre onglet prend la main sur la lecture : on met en pause localement proprement (sans crash!)
+                anotherTabIsPlaying = true;
+                try { sessionStorage.removeItem(TAB_PLAYING_KEY); } catch (e) {}
+                if (aud && !aud.paused) {
+                    aud.pause();
+                }
+                if (msg.track) currentTrack = msg.track;
+                renderMiniWidgets(true);
+            } else if (msg.type === 'REMOTE_PAUSED') {
+                anotherTabIsPlaying = false;
+                if (msg.track) currentTrack = msg.track;
+                renderMiniWidgets(false);
+            } else if (msg.type === 'WHO_IS_PLAYING') {
+                if (aud && !aud.paused && currentTrack) {
+                    bus.postMessage({ type: 'I_AM_PLAYING', tabId: TAB_ID, track: currentTrack });
+                }
+            } else if (msg.type === 'I_AM_PLAYING') {
+                anotherTabIsPlaying = true;
+                if (msg.track) currentTrack = msg.track;
+                renderMiniWidgets(true);
+            } else if (msg.type === 'CMD_PAUSE') {
+                if (aud && !aud.paused) aud.pause();
+            } else if (msg.type === 'CMD_NEXT') {
+                if (aud && !aud.paused) window.SDMAudioEngine.next();
+            }
+        };
     }
 
     async function resolveOfflineOrRemoteUrl(track) {
@@ -339,7 +334,11 @@
             try {
                 const item = await window.SDMOfflineVault.getItem('son', track.id);
                 if (item && item.blob) {
-                    return URL.createObjectURL(item.blob);
+                    if (activeBlobUrl) {
+                        try { URL.revokeObjectURL(activeBlobUrl); } catch (e) {}
+                    }
+                    activeBlobUrl = URL.createObjectURL(item.blob);
+                    return activeBlobUrl;
                 }
             } catch (e) {}
         }
@@ -351,47 +350,34 @@
         aud.dataset.sdmEngineBound = '1';
 
         aud.addEventListener('play', () => {
-            acquireBackgroundLock();
-            saveState({ isPlaying: true });
+            anotherTabIsPlaying = false;
+            try { sessionStorage.setItem(TAB_PLAYING_KEY, '1'); } catch (e) {}
+            saveState({ isPlaying: true }, true);
             updateMediaSession();
-            renderMiniWidgets();
+            updatePositionState(true);
+            renderMiniWidgets(true);
+            if (bus) bus.postMessage({ type: 'CLAIM_PLAYBACK', tabId: TAB_ID, track: currentTrack });
             window.dispatchEvent(new CustomEvent('sdm-audio-state', { detail: { isPlaying: true, track: currentTrack } }));
         });
 
         aud.addEventListener('pause', () => {
-            // Si la mise en pause survient exactement au moment où l'utilisateur quitte l'application
-            // ou verrouille l'écran (sans avoir appuyé sur Pause), on relance immédiatement la lecture !
-            const now = Date.now();
-            const isBackgroundTransition = document.visibilityState === 'hidden' || (now - lastBackgroundTimestamp < 1500);
-            if (!userExplicitlyPaused && !aud.ended && isBackgroundTransition) {
-                setTimeout(() => {
-                    if (!userExplicitlyPaused && aud.paused) {
-                        aud.play().catch(() => {});
-                    }
-                }, 30);
-                return;
-            }
-            saveState({ isPlaying: false });
+            try { sessionStorage.removeItem(TAB_PLAYING_KEY); } catch (e) {}
+            saveState({ isPlaying: false }, true);
             updateMediaSession();
-            renderMiniWidgets();
+            renderMiniWidgets(false);
+            if (bus) bus.postMessage({ type: 'REMOTE_PAUSED', tabId: TAB_ID, track: currentTrack });
             window.dispatchEvent(new CustomEvent('sdm-audio-state', { detail: { isPlaying: false, track: currentTrack } }));
         });
 
         aud.addEventListener('loadedmetadata', () => {
-            saveState({ duration: aud.duration });
-            updatePositionState();
+            saveState({ duration: aud.duration }, true);
+            updatePositionState(true);
         });
 
         aud.addEventListener('timeupdate', () => {
-            if (!aud.duration) return;
-            if (Math.floor(aud.currentTime) % 2 === 0) {
-                saveState({
-                    currentTime: aud.currentTime,
-                    duration: aud.duration,
-                    isPlaying: !aud.paused
-                });
-                updatePositionState();
-            }
+            if (!aud.duration || document.hidden) return;
+            saveState({ currentTime: aud.currentTime, duration: aud.duration, isPlaying: !aud.paused }, false);
+            updatePositionState(false);
         });
 
         aud.addEventListener('ended', () => {
@@ -401,32 +387,15 @@
         });
     }
 
-    // Protection quand l'utilisateur sort de l'application ou change de page
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-            lastBackgroundTimestamp = Date.now();
-            if (aud && !aud.paused) {
-                userExplicitlyPaused = false;
-                saveState({ isPlaying: true, currentTime: aud.currentTime });
-            }
-        }
-    });
-
+    // Sauvegarder la position exacte uniquement au moment de quitter la page dans CET onglet
     window.addEventListener('pagehide', () => {
         if (aud && currentTrack) {
-            saveState({
-                currentTime: aud.currentTime,
-                isPlaying: !aud.paused && !userExplicitlyPaused
-            });
-        }
-    });
-
-    window.addEventListener('beforeunload', () => {
-        if (aud && currentTrack) {
-            saveState({
-                currentTime: aud.currentTime,
-                isPlaying: !aud.paused && !userExplicitlyPaused
-            });
+            const wasPlaying = !aud.paused;
+            try {
+                if (wasPlaying) sessionStorage.setItem(TAB_PLAYING_KEY, '1');
+                else sessionStorage.removeItem(TAB_PLAYING_KEY);
+            } catch (e) {}
+            saveState({ currentTime: aud.currentTime, isPlaying: wasPlaying }, true);
         }
     });
 
@@ -437,47 +406,42 @@
             bindAudioEvents();
             loadPlaylist();
 
+            // Vérifier d'abord si un autre onglet joue déjà (évite 100% des doubles sons / crashs entre onglets)
+            if (bus) bus.postMessage({ type: 'WHO_IS_PLAYING', tabId: TAB_ID });
+
             const saved = loadSavedState();
-            if (saved && saved.url) {
-                currentTrack = saved;
-                renderMiniWidgets();
+            if (!saved || !saved.url) return;
+            currentTrack = saved;
+            renderMiniWidgets(false);
 
-                // Si la page n'a pas encore chargé la source dans <audio>
-                if (!aud.src || aud.src === window.location.href) {
-                    const elapsedSec = saved.isPlaying && saved.updatedAt
-                        ? Math.max(0, Math.min(4, (Date.now() - saved.updatedAt) / 1000))
-                        : 0;
-                    const resumeTime = Math.max(0, (saved.currentTime || 0) + elapsedSec);
+            // Reprendre automatiquement UNIQUEMENT si c'est CE MÊME ONGLET qui venait de changer de page
+            let thisTabWasPlaying = false;
+            try { thisTabWasPlaying = sessionStorage.getItem(TAB_PLAYING_KEY) === '1'; } catch (e) {}
 
-                    resolveOfflineOrRemoteUrl(saved).then(playUrl => {
-                        aud.src = playUrl;
-                        aud.playbackRate = saved.playbackRate || 1;
-                        aud.loop = !!saved.isLoop;
-                        aud.addEventListener('loadedmetadata', function onMeta() {
-                            aud.removeEventListener('loadedmetadata', onMeta);
-                            if (resumeTime > 0 && (!aud.duration || resumeTime < aud.duration - 1)) {
-                                try { aud.currentTime = resumeTime; } catch (e) {}
-                            }
-                        });
+            if (thisTabWasPlaying && saved.isPlaying && !anotherTabIsPlaying) {
+                const elapsedSec = saved.updatedAt ? Math.max(0, Math.min(3, (Date.now() - saved.updatedAt) / 1000)) : 0;
+                const resumeTime = Math.max(0, (saved.currentTime || 0) + elapsedSec);
 
-                        if (saved.isPlaying) {
-                            userExplicitlyPaused = false;
-                            aud.play().then(() => {
-                                renderMiniWidgets();
-                                updateMediaSession();
-                            }).catch(() => {
-                                // Si le navigateur attend un geste tactile, reprendre dès le premier toucher sur l'écran
-                                const resumeOnTap = () => {
-                                    document.removeEventListener('pointerdown', resumeOnTap);
-                                    if (!userExplicitlyPaused && aud.paused) {
-                                        aud.play().catch(() => {});
-                                    }
-                                };
-                                document.addEventListener('pointerdown', resumeOnTap, { once: true });
-                            });
+                resolveOfflineOrRemoteUrl(saved).then(playUrl => {
+                    if (anotherTabIsPlaying) return;
+                    aud.src = playUrl;
+                    aud.playbackRate = saved.playbackRate || 1;
+                    aud.loop = !!saved.isLoop;
+                    const seekAndPlay = () => {
+                        if (resumeTime > 0 && isFinite(aud.duration) && resumeTime < aud.duration - 1) {
+                            try { aud.currentTime = resumeTime; } catch (e) {}
                         }
-                    });
-                }
+                        aud.play().catch(() => {
+                            renderMiniWidgets(false);
+                        });
+                    };
+                    if (aud.readyState >= 1) {
+                        seekAndPlay();
+                    } else {
+                        aud.addEventListener('loadedmetadata', seekAndPlay, { once: true });
+                        aud.load();
+                    }
+                });
             }
         },
 
@@ -494,7 +458,7 @@
         async loadAndPlay(trackObj) {
             if (!aud) aud = getOrCreateGlobalAudio();
             bindAudioEvents();
-            userExplicitlyPaused = false;
+            anotherTabIsPlaying = false;
 
             currentTrack = {
                 id: String(trackObj.id || ''),
@@ -505,49 +469,50 @@
                 duration: 0,
                 isPlaying: true
             };
-            saveState(currentTrack);
-            renderMiniWidgets();
+            saveState(currentTrack, true);
+            renderMiniWidgets(true);
 
             const playUrl = await resolveOfflineOrRemoteUrl(currentTrack);
             aud.src = playUrl;
             return aud.play().then(() => {
                 updateMediaSession();
-                renderMiniWidgets();
+                renderMiniWidgets(true);
             });
         },
 
         play() {
             if (!aud) aud = getOrCreateGlobalAudio();
-            userExplicitlyPaused = false;
+            anotherTabIsPlaying = false;
             if (!aud.src && currentTrack && currentTrack.url) {
                 return this.loadAndPlay(currentTrack);
             }
-            return aud.play().then(() => {
-                saveState({ isPlaying: true });
-                renderMiniWidgets();
-            }).catch(() => {});
+            return aud.play().catch(() => {});
         },
 
         pause() {
-            userExplicitlyPaused = true;
-            releaseBackgroundLock();
-            if (aud) {
-                aud.pause();
-                saveState({ isPlaying: false });
+            if (anotherTabIsPlaying && bus) {
+                bus.postMessage({ type: 'CMD_PAUSE', tabId: TAB_ID });
+                anotherTabIsPlaying = false;
+                renderMiniWidgets(false);
+                return;
             }
-            renderMiniWidgets();
+            if (aud) aud.pause();
         },
 
         toggle() {
-            if (!aud || aud.paused) {
-                this.play();
-            } else {
+            if (anotherTabIsPlaying) {
                 this.pause();
+                return;
             }
+            if (!aud || aud.paused) this.play();
+            else this.pause();
         },
 
         next() {
-            // Si la page liste_sons.html possède sa propre fonction playNext avec la liste filtrée, l'utiliser
+            if (anotherTabIsPlaying && bus) {
+                bus.postMessage({ type: 'CMD_NEXT', tabId: TAB_ID });
+                return;
+            }
             if (typeof window._sdmPagePlayNext === 'function') {
                 window._sdmPagePlayNext();
                 return;
@@ -561,12 +526,12 @@
         },
 
         prev() {
-            if (typeof window._sdmPagePlayPrev === 'function') {
-                window._sdmPagePlayPrev();
-                return;
-            }
             if (aud && aud.currentTime > 4) {
                 aud.currentTime = 0;
+                return;
+            }
+            if (typeof window._sdmPagePlayPrev === 'function') {
+                window._sdmPagePlayPrev();
                 return;
             }
             if (!playlist.length) loadPlaylist();
@@ -578,7 +543,7 @@
         },
 
         syncFromPageTrack(trackObj, isPlaying = true) {
-            userExplicitlyPaused = !isPlaying;
+            anotherTabIsPlaying = false;
             saveState({
                 id: String(trackObj.id || ''),
                 titre: trackObj.titre || 'Audio SDM',
@@ -586,13 +551,13 @@
                 url: trackObj.url,
                 currentTime: aud ? aud.currentTime : 0,
                 isPlaying: isPlaying
-            });
+            }, true);
             updateMediaSession();
-            renderMiniWidgets();
+            renderMiniWidgets(isPlaying);
         },
 
         refreshWidgets() {
-            renderMiniWidgets();
+            renderMiniWidgets(anotherTabIsPlaying ? true : null);
         }
     };
 

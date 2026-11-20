@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sdm-premium-v7';
+const CACHE_NAME = 'sdm-premium-v8';
 const ASSETS_TO_CACHE = [
   '/',
   '/offline/',
@@ -69,6 +69,9 @@ self.addEventListener('fetch', (event) => {
     url.includes('cloudinary.com') ||
     url.includes('archive.org') ||
     url.includes('mp3quran.net') ||
+    url.includes('lepodcast.fr') ||
+    url.includes('podcloud.fr') ||
+    url.includes('mediamouride.org') ||
     url.includes('/api/') ||
     url.includes('/sons-api/') ||
     url.includes('/admin/')

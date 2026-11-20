@@ -831,12 +831,50 @@ def enregistrer_seance(request):
 # --- GESTION DES SONS ---
 
 def liste_sons(request):
-    """Liste audio filtrable avec compteurs par catégorie."""
-    categorie_filter = request.GET.get('cat')
+    """Audiothèque organisée par Catégories, Collections & Profils de Kourels / Maîtres."""
+    categorie_filter = (request.GET.get('cat') or '').strip().upper() or None
+    profil_filter = (request.GET.get('profil') or '').strip() or None
+
+    base_qs = Son.objects.all()
     if categorie_filter:
-        sons = Son.objects.filter(categorie=categorie_filter).order_by('-date_ajout', 'titre')
+        base_qs = base_qs.filter(categorie=categorie_filter)
+
+    # Construire les Profils & Collections de Kourels / Maîtres dans la catégorie active
+    cat_labels = dict(Son.CATEGORIES)
+    profile_buckets = {}
+    palettes = [
+        'linear-gradient(135deg, #D4AF37, #78350F)',
+        'linear-gradient(135deg, #10B981, #064E3B)',
+        'linear-gradient(135deg, #38BDF8, #1E3A8A)',
+        'linear-gradient(135deg, #F59E0B, #9A3412)',
+        'linear-gradient(135deg, #A855F7, #4C1D95)',
+        'linear-gradient(135deg, #F43F5E, #881337)',
+        'linear-gradient(135deg, #14B8A6, #134E4A)',
+    ]
+    for row in base_qs.values('auteur_voix', 'categorie').annotate(total=Count('id')).order_by('-total'):
+        name = (row['auteur_voix'] or '').strip() or cat_labels.get(row['categorie'], 'Collection SDM')
+        key = name.lower()
+        if key not in profile_buckets:
+            words = [w for w in name.replace('—', ' ').replace('-', ' ').split() if w]
+            initials = (words[0][0] + (words[1][0] if len(words) > 1 else '')).upper() if words else 'SD'
+            color_idx = sum(ord(c) for c in name) % len(palettes)
+            profile_buckets[key] = {
+                'nom': name,
+                'initials': initials,
+                'categorie': row['categorie'],
+                'categorie_label': cat_labels.get(row['categorie'], row['categorie']),
+                'count': 0,
+                'gradient': palettes[color_idx],
+            }
+        profile_buckets[key]['count'] += row['total']
+
+    collections_profiles = sorted(profile_buckets.values(), key=lambda x: (-x['count'], x['nom']))
+    active_profil_obj = profile_buckets.get(profil_filter.lower()) if profil_filter else None
+
+    if profil_filter:
+        sons = base_qs.filter(auteur_voix__iexact=profil_filter).order_by('titre')
     else:
-        sons = Son.objects.all().order_by('-date_ajout', 'titre')
+        sons = base_qs.order_by('-date_ajout', 'titre')
 
     counts_map = dict(
         Son.objects.values('categorie').annotate(c=Count('id')).values_list('categorie', 'c')
@@ -859,6 +897,9 @@ def liste_sons(request):
         'sons': sons,
         'categories': categories,
         'categories_with_counts': categories_with_counts,
+        'collections_profiles': collections_profiles,
+        'active_profil': profil_filter,
+        'active_profil_obj': active_profil_obj,
         'total_all_sons': total_all_sons,
         'active_cat': categorie_filter,
         'favoris_ids': favoris_ids,
