@@ -8,6 +8,7 @@ from bibliotheque import views, firebase_auth_view, tazawwud_views
 urlpatterns = [
     # Accueil et Authentification
     path('', views.home, name='home'),
+    path('offline/', views.offline_view, name='offline'),
     path('admin/run-import-xamxam/', views.run_import_xamxam, name='run_import_xamxam'),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
@@ -78,22 +79,26 @@ urlpatterns = [
     path('kaamil/jukki/<int:jukki_id>/liberer/', views.kaamil_liberer_jukki, name='kaamil_liberer_jukki'),
     path('kaamil/lire/<int:jukki_id>/', views.kaamil_lire_jukki, name='kaamil_lire_jukki'),
     
-    # QUIZZ ISLAMIQUE
+    # QUIZZ ISLAMIQUE (2000+ Questions Aléatoires & Défi Multijoueur Live)
     path('quiz/', views.quiz_home, name='quiz_home'),
+    path('quiz/aleatoire/<str:theme_slug>/', views.quiz_play_random, name='quiz_play_random'),
     path('quiz/jouer/<int:niveau_id>/', views.quiz_play, name='quiz_play'),
     path('quiz/jouer/theme/<int:categorie_id>/', views.quiz_play_theme, name='quiz_play_theme'),
     path('quiz/resultat/<int:score>/<int:total>/', views.quiz_result, name='quiz_result'),
     path('api/quiz/save-score/', views.api_quiz_save_score, name='api_quiz_save_score'),
     path('quiz/defi/creer/', views.defi_create, name='defi_create'),
+    path('quiz/defi/rejoindre/', views.defi_join_by_code, name='defi_join_by_code'),
     path('quiz/defi/<str:code>/', views.defi_detail, name='defi_detail'),
     path('quiz/defi/<str:code>/jouer/', views.defi_play, name='defi_play'),
+    path('api/defi/<str:code>/lobby/', views.api_defi_lobby, name='api_defi_lobby'),
     path('api/defi/save-score/', views.api_defi_save_score, name='api_defi_save_score'),
     
     # Tâches quotidiennes (Cron Gratuit)
     path('api/trigger-daily-tasks/', views.trigger_daily_tasks, name='trigger_daily_tasks'),
     
-    # Notifications
+    # Notifications & Flux intelligent
     path('notifications/', views.notifications_list, name='notifications'),
+    path('api/notifications/sync-feed/', views.api_notifications_sync_feed, name='api_notifications_sync_feed'),
     path('api/notifications/read/', views.mark_notifications_read, name='mark_notifications_read'),
     path('api/profil/update-notif-pref/', views.update_notif_pref, name='update_notif_pref'),
     path('api/profil/update-location/', views.update_location, name='update_location'),

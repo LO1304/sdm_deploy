@@ -1,77 +1,227 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Leaderboard - Defi {{ defi.code_partage }}{% endblock %}
+{% block title %}Salle de Défi {{ defi.code_partage }} — En Direct{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto pb-8">
+<div class="max-w-xl mx-auto pb-10 space-y-4">
 
-    <!-- Header -->
-    <div class="glass rounded-[28px] overflow-hidden border border-white/5 shadow-2xl mb-6">
-        <div class="bg-gradient-to-r from-yellow-600/80 to-amber-700/80 p-6 md:p-8 relative overflow-hidden">
-            <div class="absolute -top-16 -right-16 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
-            <div class="relative z-10 flex justify-between items-center">
+    <!-- EN-TÊTE SALLE LIVE -->
+    <div class="glass rounded-3xl overflow-hidden border border-gold-500/35 shadow-2xl">
+        <div class="p-5 relative" style="background:linear-gradient(135deg, #B45309 0%, #78350F 55%, #07150F 100%);">
+            <div class="flex items-center justify-between gap-3">
                 <div>
-                    <p class="text-yellow-200/80 text-[10px] font-bold uppercase tracking-widest mb-1">Defi Multijoueur</p>
-                    <h1 class="text-3xl md:text-4xl font-black text-white">{{ defi.code_partage }}</h1>
-                    <p class="text-yellow-100/60 text-sm mt-1">Niveau {{ defi.niveau_choisi.numero }} — {{ defi.niveau_choisi.nom }}</p>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/40 border border-gold-400/40 text-gold-300 text-[10px] font-extrabold uppercase tracking-wider">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Salle Live · <span id="lobby-online-cnt">1</span> connecté(s)
+                    </span>
+                    <h1 class="text-3xl font-black text-white tracking-wider mt-1.5">{{ defi.code_partage }}</h1>
+                    <p class="text-[11px] text-amber-100/80">{{ theme_nom }} · {{ defi.niveau_choisi.nom }}</p>
                 </div>
-                <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20">
-                    <i class="fa-solid fa-bolt text-3xl text-yellow-300"></i>
-                </div>
+                <button type="button" onclick="copyDefiLink()" class="px-3 py-2 rounded-xl bg-black/45 border border-gold-400/40 text-gold-300 text-xs font-extrabold tap-card">
+                    <i class="fa-regular fa-copy mr-1"></i> Copier
+                </button>
             </div>
         </div>
 
-        <!-- Share -->
-        <div class="p-5 border-b border-white/5">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3">Partager le defi</p>
-            <a href="https://wa.me/?text={{ whatsapp_text|urlencode }}" target="_blank" 
-               class="w-full flex items-center justify-center gap-2 py-3 bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold rounded-2xl transition-all active:scale-95 text-sm shadow-lg shadow-[#25D366]/20">
-                <i class="fa-brands fa-whatsapp text-lg"></i>
-                Envoyer via WhatsApp
-            </a>
+        {% if needs_name %}
+        <!-- ENTRÉE RAPIDE DE L'AMI INVITÉ (SANS PERDRE LE LIEN NI REDIRECTION LOGIN!) -->
+        <form method="POST" class="p-5 space-y-3 bg-emerald-950/35 border-b border-white/10">
+            {% csrf_token %}
+            <p class="text-sm font-black text-white">👋 Votre ami vous attend dans cette salle !</p>
+            <p class="text-xs text-white/65">Entrez votre prénom pour apparaître immédiatement à ses côtés et jouer ensemble :</p>
+            <div class="flex gap-2">
+                <input type="text" name="guest_name" required maxlength="28" placeholder="Votre prénom (ex: Awa, Modou…)"
+                       class="flex-1 bg-black/55 border border-gold-400/45 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white outline-none">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black text-xs tap-card">
+                    Entrer
+                </button>
+            </div>
+        </form>
+        {% else %}
+
+        <!-- BOUTONS DE PARTAGE RAPIDE À UN AMI -->
+        <div class="p-4 border-b border-white/10 space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+                <a href="https://wa.me/?text={{ whatsapp_text|urlencode }}" target="_blank"
+                   class="py-2.5 px-3 rounded-xl bg-[#25D366] text-white font-black text-xs flex items-center justify-center gap-1.5 tap-card" style="text-decoration:none;">
+                    <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp
+                </a>
+                <button type="button" onclick="nativeShareDefi()" class="py-2.5 px-3 rounded-xl bg-white/10 border border-white/15 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 tap-card">
+                    <i class="fa-solid fa-share-nodes text-gold-300"></i> Partager Lien
+                </button>
+            </div>
+            <p id="copy-feedback" class="text-[10.5px] text-center text-emerald-400 font-bold hidden">Lien de la salle copié ✓ Envoyez-le à votre ami !</p>
         </div>
 
-        <!-- Leaderboard -->
-        <div class="p-5">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-ranking-star text-yellow-400 text-xs"></i> Classement
-            </p>
-            
-            {% if participations %}
-            <div class="space-y-2">
-                {% for p in participations %}
-                <div class="glass rounded-xl p-4 border {% if forloop.first %}border-yellow-500/30 bg-yellow-500/5{% else %}border-white/5{% endif %} flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full {% if forloop.first %}bg-yellow-500/20 text-yellow-400{% elif forloop.counter == 2 %}bg-gray-400/20 text-gray-400{% elif forloop.counter == 3 %}bg-amber-700/20 text-amber-600{% else %}bg-white/5 text-white/40{% endif %} flex items-center justify-center font-black text-sm">
-                            {% if forloop.first %}<i class="fa-solid fa-crown text-xs"></i>{% else %}{{ forloop.counter }}{% endif %}
-                        </div>
-                        <span class="font-semibold text-white/80 text-sm">{{ p.utilisateur.username }}</span>
-                    </div>
-                    <span class="font-bold text-emerald-400 tabular-nums">{{ p.score }} pts</span>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="text-center py-8">
-                <i class="fa-solid fa-users text-white/10 text-4xl mb-3"></i>
-                <p class="text-white/30 text-sm">Aucun participant pour le moment. Partagez le lien !</p>
-            </div>
-            {% endif %}
+        <!-- COMPTE À REBOURS SYNCHRONISÉ (3-2-1 GO!) -->
+        <div id="sync-countdown-box" class="hidden p-5 bg-emerald-600/20 border-b border-emerald-400/40 text-center">
+            <p class="text-xs font-extrabold uppercase tracking-widest text-emerald-300">La partie démarre ensemble dans…</p>
+            <p id="sync-countdown-num" class="text-5xl font-black text-gold-300 mt-1">3</p>
         </div>
+
+        <!-- JOUEURS EN DIRECT DANS LA SALLE & CLASSEMENT LIVE -->
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-[10.5px] font-extrabold uppercase tracking-wider text-gold-300">
+                    <i class="fa-solid fa-users mr-1"></i> Joueurs dans la salle (Synchronisé en direct)
+                </p>
+                <span class="text-[10px] text-white/45" id="lobby-round-lbl">Manche 1</span>
+            </div>
+            <div id="lobby-players-list" class="space-y-2">
+                <div class="text-center py-6 text-xs text-white/45">Connexion à la salle…</div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
-    <!-- Play button if not played yet -->
-    {% if not a_deja_joue %}
-    <a href="{% url 'defi_play' defi.code_partage %}" class="block w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white text-center font-bold rounded-2xl shadow-lg shadow-emerald-600/20 transition-all active:scale-95 text-sm mb-4">
-        <i class="fa-solid fa-play mr-2"></i> Participer au Defi
-    </a>
+    {% if not needs_name %}
+    <!-- ACTIONS DE LANCEMENT SYNCHRONISÉ -->
+    <div class="space-y-2.5">
+        <button type="button" onclick="launchTogether()"
+                class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-black text-sm shadow-xl flex items-center justify-center gap-2 tap-card">
+            <i class="fa-solid fa-play"></i>
+            <span>Lancer la partie ENSEMBLE (10 questions identiques)</span>
+        </button>
+
+        {% if a_deja_joue %}
+        <button type="button" onclick="launchNewRound()"
+                class="w-full py-3 rounded-2xl bg-gold-500/20 border border-gold-400/45 text-gold-300 font-extrabold text-xs flex items-center justify-center gap-2 tap-card">
+            <i class="fa-solid fa-rotate"></i>
+            <span>Rejouer une nouvelle manche ensemble (10 nouvelles questions)</span>
+        </button>
+        {% endif %}
+    </div>
     {% endif %}
 
-    <div class="text-center">
-        <a href="{% url 'quiz_home' %}" class="text-sm text-white/40 hover:text-white/60 transition-colors">
-            <i class="fa-solid fa-arrow-left mr-1"></i> Retour au Quizz
-        </a>
+    <div class="text-center pt-1">
+        <a href="{% url 'quiz_home' %}" class="text-xs font-bold text-white/50">← Retour au Quizz Islamique</a>
     </div>
 </div>
+
+{% if not needs_name %}
+<script>
+const DEFI_CODE = '{{ defi.code_partage|escapejs }}';
+const SHARE_URL = '{{ share_url|escapejs }}';
+const SHARE_TEXT = '{{ whatsapp_text|escapejs }}';
+const PLAY_URL = '{% url "defi_play" defi.code_partage %}';
+const LOBBY_API = '{% url "api_defi_lobby" defi.code_partage %}';
+const CSRF = '{{ csrf_token }}';
+
+let initialStartedAt = null;
+let launchingNow = false;
+
+function copyDefiLink() {
+    const fb = document.getElementById('copy-feedback');
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(SHARE_URL).then(() => {
+            if (fb) { fb.classList.remove('hidden'); setTimeout(() => fb.classList.add('hidden'), 3000); }
+        });
+    }
+}
+
+function nativeShareDefi() {
+    if (navigator.share) {
+        navigator.share({ title: 'Défi Quizz Islamique SDM', text: SHARE_TEXT, url: SHARE_URL }).catch(() => copyDefiLink());
+    } else {
+        copyDefiLink();
+    }
+}
+
+function triggerSyncedStart() {
+    if (launchingNow) return;
+    launchingNow = true;
+    const box = document.getElementById('sync-countdown-box');
+    const numEl = document.getElementById('sync-countdown-num');
+    if (box) box.classList.remove('hidden');
+    let n = 3;
+    const iv = setInterval(() => {
+        n--;
+        if (numEl) numEl.textContent = n > 0 ? String(n) : 'GO !';
+        if (n <= 0) {
+            clearInterval(iv);
+            window.location.href = PLAY_URL;
+        }
+    }, 650);
+}
+
+async function launchTogether() {
+    try {
+        await fetch(LOBBY_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+            body: JSON.stringify({ action: 'start_all' })
+        });
+    } catch (e) {}
+    triggerSyncedStart();
+}
+
+async function launchNewRound() {
+    try {
+        await fetch(LOBBY_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+            body: JSON.stringify({ action: 'new_round' })
+        });
+    } catch (e) {}
+    triggerSyncedStart();
+}
+
+function renderPlayers(players) {
+    const list = document.getElementById('lobby-players-list');
+    if (!list) return;
+    if (!players || !players.length) {
+        list.innerHTML = '<div class="text-center py-6 text-xs text-white/45">Partagez le lien à votre ami pour qu\'il apparaisse ici en direct !</div>';
+        return;
+    }
+    list.innerHTML = players.map((p, i) => {
+        let statusHtml = '<span class="text-emerald-300">Prêt à jouer</span>';
+        if (p.status === 'EN_COURS') statusHtml = `<span class="text-gold-300">En train de jouer (Q${p.q_num}/10)</span>`;
+        else if (p.status === 'TERMINE') statusHtml = '<span class="text-sky-300">Terminé ✓</span>';
+        const dot = p.online
+            ? '<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block mr-1.5"></span>'
+            : '<span class="w-2.5 h-2.5 rounded-full bg-white/25 inline-block mr-1.5"></span>';
+        return `
+            <div class="p-3 rounded-2xl bg-white/[0.05] border ${p.is_me ? 'border-gold-400/50' : 'border-white/10'} flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full ${i === 0 && p.score > 0 ? 'bg-gold-500/25 text-gold-300' : 'bg-white/10 text-white/70'} font-black text-xs flex items-center justify-center flex-shrink-0">
+                        ${i === 0 && p.score > 0 ? '👑' : (i + 1)}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-black text-white truncate">${dot}${String(p.name).replace(/</g,'&lt;')}${p.is_me ? ' <span class="text-gold-300">(Vous)</span>' : ''}</p>
+                        <p class="text-[10px] font-bold mt-0.5">${statusHtml}</p>
+                    </div>
+                </div>
+                <span class="text-sm font-black text-emerald-400 tabular-nums">${p.score} pts</span>
+            </div>
+        `;
+    }).join('');
+}
+
+async function pollLobby() {
+    try {
+        const res = await fetch(LOBBY_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+            body: JSON.stringify({ action: 'ping' })
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        document.getElementById('lobby-online-cnt').textContent = String(data.online_count || 1);
+        document.getElementById('lobby-round-lbl').textContent = 'Manche ' + (data.round || 1);
+        renderPlayers(data.players || []);
+
+        // Si votre ami lance la partie pendant que vous êtes dans la salle -> démarrage synchronisé auto !
+        if (initialStartedAt === null) {
+            initialStartedAt = data.started_at || 0;
+        } else if (data.started_at && data.started_at > initialStartedAt && !launchingNow) {
+            triggerSyncedStart();
+        }
+    } catch (e) {}
+}
+
+pollLobby();
+setInterval(pollLobby, 2500);
+</script>
+{% endif %}
 {% endblock %}

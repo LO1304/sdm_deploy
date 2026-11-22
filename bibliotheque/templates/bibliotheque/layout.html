@@ -92,6 +92,12 @@
             </div>
 
             <div class="flex items-center gap-1.5 flex-shrink-0">
+                <a href="{% url 'notifications' %}" class="m-icon-pill relative" style="color:#FDE047; border-color:rgba(212,175,55,0.32);" title="Notifications & Rappels">
+                    <i class="fa-solid fa-bell"></i>
+                    {% if unread_notifications_count > 0 %}
+                    <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center">{{ unread_notifications_count }}</span>
+                    {% endif %}
+                </a>
                 <a href="{% url 'telechargements' %}" class="m-icon-pill" style="color:#6EE7B7; border-color:rgba(16,185,129,0.28);" title="Hors-Ligne">
                     <i class="fa-solid fa-cloud-arrow-down"></i>
                 </a>
@@ -284,8 +290,9 @@
     <!-- Lecteur Audio Global Persistant (Ne s'arrête pas entre les pages ni en arrière-plan) -->
     <audio id="sdm-global-audio" preload="auto" playsinline webkit-playsinline></audio>
 
-    <!-- Scripts Globaux (Optimisés Mobile : zéro blocage AOS, navigation instantanée) -->
+    <!-- Scripts Globaux (Optimisés Mobile : zéro blocage AOS, navigation instantanée, notifications intelligentes) -->
     <script src="{% static 'js/sdm_instant_nav.js' %}" defer></script>
+    <script src="{% static 'js/sdm_notifications.js' %}" defer></script>
     <script src="{% static 'js/sdm_offline_vault.js' %}"></script>
     <script src="{% static 'js/sdm_audio_engine.js' %}"></script>
     <script src="{% static 'js/sdm_main.js' %}" defer></script>

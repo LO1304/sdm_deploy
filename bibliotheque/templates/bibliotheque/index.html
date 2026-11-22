@@ -505,17 +505,26 @@
                         {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.source }}{% else %}SDM · Sagesse{% endif %}
                     </span>
                 </div>
+                <span id="sdm-custom-watermark" class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3 py-0.5 rounded-full bg-black/55 border border-gold-400/55 text-gold-300 text-[10px] font-black tracking-widest">
+                    ۞ SDM ۞
+                </span>
             </div>
 
-            <!-- BARRE DE PERSONNALISATION (6 DÉCORS NANO BANANA SDM + PHOTO PERSO + TAILLE + EXPORT PNG HD) -->
+            <!-- INPUT GALERIE HORS-FLUX (100% FIABLE ANDROID & IOS) -->
+            <input type="file" id="sdm-rappel-gallery-input" accept="image/*"
+                   style="position:fixed;top:-9999px;left:-9999px;opacity:0;width:1px;height:1px;"
+                   onchange="setSdmCustomBg(this)">
+
+            <!-- BARRE DE PERSONNALISATION (6 DÉCORS NANO BANANA SDM + PHOTO GALERIE + TAILLE + EXPORT PNG HD) -->
             <div class="p-3 bg-black/55 border-t border-white/10 space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-[10px] font-extrabold uppercase tracking-wider text-white/60">Décor SDM :</span>
                     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                        <label class="sdm-theme-swatch h-8 px-2.5 rounded-full bg-gold-500/20 border border-dashed border-gold-400/70 text-gold-300 text-[10px] font-extrabold flex items-center gap-1 cursor-pointer flex-shrink-0 tap-card" title="Choisir ma propre image">
-                            <i class="fa-solid fa-image"></i> Photo
-                            <input type="file" accept="image/*" class="hidden" onchange="setSdmCustomBg(this)">
-                        </label>
+                        <button type="button" id="btn-sdm-gallery" onclick="openSdmGalleryPicker()"
+                                class="sdm-theme-swatch h-8 px-2.5 rounded-full bg-gold-500/20 border border-dashed border-gold-400/70 text-gold-300 text-[10px] font-extrabold flex items-center gap-1 cursor-pointer flex-shrink-0 tap-card"
+                                title="Choisir une photo de ma galerie">
+                            <i class="fa-solid fa-image"></i> Ma Galerie
+                        </button>
                         {% for th in sdm_card_themes %}
                         <button type="button" onclick="setSdmCardBg('{{ th.src }}', this)"
                                 class="sdm-theme-swatch w-8 h-8 rounded-full overflow-hidden border-2 {% if forloop.first %}border-gold-400 scale-105{% else %}border-white/20{% endif %} flex-shrink-0 tap-card"
@@ -793,11 +802,22 @@
         renderSdmRappelCard();
     };
 
+    let sdmCustomBlobUrl = null;
+
+    window.openSdmGalleryPicker = function() {
+        const inp = document.getElementById('sdm-rappel-gallery-input');
+        if (inp) {
+            inp.value = '';
+            inp.click();
+        }
+    };
+
     window.setSdmCardBg = function(src, btn) {
         sdmCustomBgActive = false;
         sdmCurrentBg = src;
         const img = document.getElementById('sdm-rappel-bg-img');
         if (img) img.src = src;
+        document.getElementById('sdm-custom-watermark')?.classList.add('hidden');
         document.querySelectorAll('.sdm-theme-swatch').forEach(b => {
             b.classList.remove('border-gold-400', 'scale-105');
             b.classList.add('border-white/20');
@@ -811,14 +831,24 @@
     window.setSdmCustomBg = function(input) {
         const file = input && input.files && input.files[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            sdmCustomBgActive = true;
-            sdmCurrentBg = e.target.result;
-            const img = document.getElementById('sdm-rappel-bg-img');
-            if (img) img.src = sdmCurrentBg;
-        };
-        reader.readAsDataURL(file);
+        if (sdmCustomBlobUrl) {
+            try { URL.revokeObjectURL(sdmCustomBlobUrl); } catch (e) {}
+        }
+        sdmCustomBlobUrl = URL.createObjectURL(file);
+        sdmCustomBgActive = true;
+        sdmCurrentBg = sdmCustomBlobUrl;
+        const img = document.getElementById('sdm-rappel-bg-img');
+        if (img) img.src = sdmCurrentBg;
+        document.getElementById('sdm-custom-watermark')?.classList.remove('hidden');
+        document.querySelectorAll('.sdm-theme-swatch').forEach(b => {
+            b.classList.remove('border-gold-400', 'scale-105');
+            b.classList.add('border-white/20');
+        });
+        const gBtn = document.getElementById('btn-sdm-gallery');
+        if (gBtn) {
+            gBtn.classList.remove('border-white/20');
+            gBtn.classList.add('border-gold-400', 'scale-105');
+        }
     };
 
     window.adjustSdmFont = function(dir) {
@@ -841,7 +871,10 @@
         const ctx = canvas.getContext('2d');
 
         const bg = new Image();
-        bg.crossOrigin = 'anonymous';
+        // IMPORTANT mobile : ne pas mettre crossOrigin sur une image blob:/data: issue de la galerie
+        if (sdmCurrentBg && !sdmCurrentBg.startsWith('blob:') && !sdmCurrentBg.startsWith('data:')) {
+            bg.crossOrigin = 'anonymous';
+        }
         bg.src = sdmCurrentBg;
         await new Promise(res => { bg.onload = res; bg.onerror = res; });
 
@@ -854,7 +887,7 @@
             ctx.fillStyle = '#04140D';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        ctx.fillStyle = 'rgba(0,0,0,0.34)';
+        ctx.fillStyle = sdmCustomBgActive ? 'rgba(0,0,0,0.46)' : 'rgba(0,0,0,0.34)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Dessiner les lignes enveloppées proprement au centre de la carte Nano Banana SDM

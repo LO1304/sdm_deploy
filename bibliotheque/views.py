@@ -2421,15 +2421,122 @@ def kaamil_lire_jukki(request, jukki_id):
         'jukki': jukki
     })
 
-# ── NOTIFICATIONS ──
+# ── MODE HORS-LIGNE & NOTIFICATIONS INTELLIGENTES ──
 
-@login_required
+def offline_view(request):
+    """Page de secours hors-ligne intégrée au Service Worker PWA."""
+    return render(request, 'bibliotheque/offline.html')
+
+
 def notifications_list(request):
-    """Affiche la liste des notifications de l'utilisateur."""
-    notifications = Notification.objects.filter(user=request.user).order_by('-date_creation')
+    """Centre de notifications & réglages horaires personnalisés (Prières, Verset, Citation, Khassidas, Coach Duolingo)."""
+    notifications = []
+    if request.user.is_authenticated:
+        notifications = Notification.objects.filter(user=request.user).order_by('-date_creation')[:50]
     return render(request, 'bibliotheque/notifications.html', {
         'notifications': notifications
     })
+
+
+def api_notifications_sync_feed(request):
+    """Flux léger JSON pour les notifications locales programmées (nouveau Khassida, verset, citation, prières, streak Tazawwud)."""
+    import datetime as dt
+    feed_pub = cache.get('sdm_notif_pub_feed_v1')
+    if feed_pub is None:
+        latest_kh = Khassida.objects.only('id', 'titre').order_by('-id').first()
+        latest_kh_data = {'id': latest_kh.id, 'titre': latest_kh.titre} if latest_kh else None
+
+        # Citation du jour (depuis nos 318 citations SDM)
+        citation_data = {
+            'texte': "La meilleure parure dont l'homme puisse se parer, est la bonne conduite partout où il passe.",
+            'source': "Masaalikul Jinaan · Cheikh Ahmadou Bamba",
+            'badge': "Masaalikul Jinaan"
+        }
+        rappels_path = os.path.join(settings.BASE_DIR, 'daily_rappels_sdm.json')
+        if os.path.isfile(rappels_path):
+            try:
+                with open(rappels_path, 'r', encoding='utf-8') as rf:
+                    cits = json.load(rf)
+                if cits:
+                    c = cits[dt.date.today().toordinal() % len(cits)]
+                    citation_data = {
+                        'texte': (c.get('texte') or '')[:220],
+                        'source': c.get('source') or 'Cheikh Ahmadou Bamba',
+                        'badge': c.get('badge') or 'Citation SDM',
+                    }
+            except Exception:
+                pass
+
+        # Verset du jour
+        verset_data = {
+            'ar': 'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',
+            'fr': "N'est-ce point par l'évocation d'Allah que se tranquillisent les cœurs ?",
+            'ref': "Sourate Ar-Ra'd (13:28)"
+        }
+        cnt_jour = ContenuDuJour.objects.order_by('id')
+        if cnt_jour.exists():
+            raw_c = cnt_jour[dt.date.today().timetuple().tm_yday % cnt_jour.count()]
+            parts = (raw_c.verset_du_jour or '').split('\n— ')
+            ref = parts[1] if len(parts) > 1 else 'Saint Coran'
+            subs = parts[0].split('\n\n')
+            verset_data = {
+                'ar': subs[0] if len(subs) > 1 else '',
+                'fr': subs[1] if len(subs) > 1 else subs[0],
+                'ref': ref,
+            }
+
+        # Horaires de prière (ParametresPriere ou Dakar par défaut)
+        prayers = [
+            {'name': 'Fajr (Subh)', 'time': '05:45'},
+            {'name': 'Tisbar (Dhuhr)', 'time': '13:15'},
+            {'name': 'Takussan (Asr)', 'time': '16:35'},
+            {'name': 'Timiss (Maghrib)', 'time': '18:55'},
+            {'name': 'Guéwé (Isha)', 'time': '20:05'},
+        ]
+        cfg = ParametresPriere.objects.first()
+        if cfg:
+            def _fmt_t(val, fb):
+                try:
+                    return val.strftime('%H:%M') if val else fb
+                except Exception:
+                    return str(val)[:5] if val else fb
+            prayers = [
+                {'name': 'Fajr (Subh)', 'time': _fmt_t(getattr(cfg, 'fajr', None), '05:45')},
+                {'name': 'Tisbar (Dhuhr)', 'time': _fmt_t(getattr(cfg, 'tisbar', None), '13:15')},
+                {'name': 'Takussan (Asr)', 'time': _fmt_t(getattr(cfg, 'takussan', None), '16:35')},
+                {'name': 'Timiss (Maghrib)', 'time': _fmt_t(getattr(cfg, 'timiss', None), '18:55')},
+                {'name': 'Guéwé (Isha)', 'time': _fmt_t(getattr(cfg, 'guewe', None), '20:05')},
+            ]
+
+        feed_pub = {
+            'latest_khassida': latest_kh_data,
+            'citation_du_jour': citation_data,
+            'verset_du_jour': verset_data,
+            'prayers': prayers,
+        }
+        cache.set('sdm_notif_pub_feed_v1', feed_pub, 180)
+
+    # État Tazawwud "Mode Duolingo" personnel
+    tazawwud_state = {'done_today': False, 'missed_yesterday': False, 'streak': 0, 'score_total': 0}
+    if request.user.is_authenticated:
+        try:
+            from .models import TazawwudProgression, TazawwudReponseHistorique
+            prog = TazawwudProgression.objects.filter(user=request.user).first()
+            today_d = timezone.now().date()
+            yest_d = today_d - datetime.timedelta(days=1)
+            done_today = TazawwudReponseHistorique.objects.filter(user=request.user, date_tentative__date=today_d).exists()
+            done_yest = TazawwudReponseHistorique.objects.filter(user=request.user, date_tentative__date=yest_d).exists()
+            has_any = TazawwudReponseHistorique.objects.filter(user=request.user).exists()
+            tazawwud_state = {
+                'done_today': done_today,
+                'missed_yesterday': (has_any and not done_yest and not done_today),
+                'streak': prog.serie_jours if prog else 0,
+                'score_total': prog.score_total if prog else 0,
+            }
+        except Exception:
+            pass
+
+    return JsonResponse({**feed_pub, 'tazawwud': tazawwud_state})
 
 @login_required
 @require_POST
@@ -2476,179 +2583,386 @@ def update_location(request):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 
-# ── QUIZZ ISLAMIQUE ──
+# ── QUIZZ ISLAMIQUE (2 000+ QUESTIONS ALÉATOIRES & DÉFI MULTIJOUEUR LIVE) ──
 from django.db.models import Sum
+from django.urls import reverse
 from .models import CategorieQuiz, NiveauQuiz, Question, Choix, ScoreJoueur, DefiMultijoueur, ParticipationDefi
-import json
+from .quiz_bank import sample_quiz_questions, get_quiz_bank_stats, QUIZ_THEMES
 
-@login_required(login_url='login')
+
+def _get_player_identity(request):
+    """Identifie le joueur (utilisateur connecté OU ami invité par prénom dans la salle de défi)."""
+    if request.user.is_authenticated:
+        return f"u:{request.user.id}", request.user.username
+    guest = (request.session.get('sdm_guest_name') or '').strip()
+    gid = request.session.get('sdm_guest_id')
+    if not gid:
+        import uuid
+        gid = uuid.uuid4().hex[:8]
+        request.session['sdm_guest_id'] = gid
+    return f"g:{gid}", guest
+
+
+def _get_lobby_state(code):
+    key = f"sdm_defi_lobby_{code.upper()}"
+    state = cache.get(key)
+    if not state:
+        state = {'players': {}, 'started_at': None, 'theme': 'mixte', 'round': 1}
+    return key, state
+
+
 def quiz_home(request):
-    score, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
-    score.verifier_niveau()
+    score = None
+    defis_recents = []
+    if request.user.is_authenticated:
+        score, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
+        score.verifier_niveau()
+        defis_recents = ParticipationDefi.objects.filter(utilisateur=request.user).select_related('defi', 'defi__niveau_choisi').order_by('-date_participation')[:6]
+    else:
+        class _GuestScore:
+            points_totaux = int(request.session.get('sdm_guest_quiz_pts', 0))
+            niveau_actuel = None
+        score = _GuestScore()
+
     niveaux = NiveauQuiz.objects.all().order_by('numero')
-    categories = CategorieQuiz.objects.all()
-    
+    total_bank_q, theme_counts = get_quiz_bank_stats()
+    themes_cards = []
+    for t in QUIZ_THEMES:
+        cnt = total_bank_q if t['slug'] == 'mixte' else theme_counts.get(t['slug'], 0)
+        themes_cards.append({**t, 'count': cnt})
+
     context = {
         'score': score,
         'niveaux': niveaux,
-        'categories': categories,
-        'defis_recents': ParticipationDefi.objects.filter(utilisateur=request.user).order_by('-date_participation')[:5]
+        'themes_cards': themes_cards,
+        'total_bank_q': total_bank_q,
+        'defis_recents': defis_recents,
     }
     return render(request, 'bibliotheque/quiz/quiz_home.html', context)
 
-@login_required(login_url='login')
+
+def quiz_play_random(request, theme_slug='mixte'):
+    """Lance une manche aléatoire de 10 questions uniques (sans répétition) depuis la banque massive."""
+    diff_param = request.GET.get('diff')
+    diff = int(diff_param) if diff_param in ('1', '2', '3') else None
+    seen = request.session.get('sdm_quiz_seen_ids', [])
+    if len(seen) > 400:
+        seen = seen[-150:]
+
+    questions_data = sample_quiz_questions(theme_slug=theme_slug, difficulty=diff, count=10, exclude_ids=seen)
+    seen.extend([q['id'] for q in questions_data])
+    request.session['sdm_quiz_seen_ids'] = seen
+
+    theme_meta = next((t for t in QUIZ_THEMES if t['slug'] == theme_slug), QUIZ_THEMES[0])
+    total_bank_q, _ = get_quiz_bank_stats()
+    return render(request, 'bibliotheque/quiz/quiz_play.html', {
+        'theme': {'nom': theme_meta['nom'], 'slug': theme_slug},
+        'total_bank_q': total_bank_q,
+        'questions_json': json.dumps(questions_data, ensure_ascii=False),
+        'replay_url': request.get_full_path(),
+    })
+
+
 def quiz_play(request, niveau_id):
     niveau = get_object_or_404(NiveauQuiz, id=niveau_id)
-    score = ScoreJoueur.objects.get(utilisateur=request.user)
-    
-    if score.points_totaux < niveau.points_requis:
-        messages.error(request, "Vous n'avez pas assez de points pour débloquer ce niveau.")
-        return redirect('quiz_home')
-        
-    questions = list(niveau.questions.all())
-    import random
-    random.shuffle(questions)
-    # On prend max 10 questions pour la partie
-    questions = questions[:10]
-    
-    questions_data = []
-    for q in questions:
-        choix = list(q.choix.all())
-        random.shuffle(choix)
-        questions_data.append({
-            'id': q.id,
-            'texte': q.texte,
-            'points': q.points,
-            'choix': [{'id': c.id, 'texte': c.texte, 'est_correct': c.est_correct} for c in choix]
-        })
-        
-    context = {
-        'niveau': niveau,
-        'questions_json': json.dumps(questions_data)
-    }
-    return render(request, 'bibliotheque/quiz/quiz_play.html', context)
+    if request.user.is_authenticated:
+        score, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
+        if score.points_totaux < niveau.points_requis:
+            messages.error(request, "Vous n'avez pas assez de points pour débloquer ce niveau.")
+            return redirect('quiz_home')
 
-@login_required(login_url='login')
+    diff = min(3, max(1, int(getattr(niveau, 'numero', 1) or 1)))
+    seen = request.session.get('sdm_quiz_seen_ids', [])
+    questions_data = sample_quiz_questions(theme_slug='mixte', difficulty=diff, count=10, exclude_ids=seen)
+    seen.extend([q['id'] for q in questions_data])
+    request.session['sdm_quiz_seen_ids'] = seen[-400:]
+
+    total_bank_q, _ = get_quiz_bank_stats()
+    return render(request, 'bibliotheque/quiz/quiz_play.html', {
+        'niveau': niveau,
+        'total_bank_q': total_bank_q,
+        'questions_json': json.dumps(questions_data, ensure_ascii=False),
+        'replay_url': request.get_full_path(),
+    })
+
+
 def quiz_play_theme(request, categorie_id):
     categorie = get_object_or_404(CategorieQuiz, id=categorie_id)
-    
-    questions = list(categorie.questions.all())
-    import random
-    random.shuffle(questions)
-    questions = questions[:10]
-    
-    questions_data = []
-    for q in questions:
-        choix = list(q.choix.all())
-        random.shuffle(choix)
-        questions_data.append({
-            'id': q.id,
-            'texte': q.texte,
-            'points': q.points,
-            'explication': q.explication,
-            'choix': [{'id': c.id, 'texte': c.texte, 'est_correct': c.est_correct} for c in choix]
-        })
-        
-    context = {
-        'theme': categorie,
-        'questions_json': json.dumps(questions_data)
-    }
-    return render(request, 'bibliotheque/quiz/quiz_play.html', context)
+    cn = (categorie.nom or '').lower()
+    slug = 'mouridisme' if 'mourid' in cn else ('coran' if 'coran' in cn else ('prophetes' if 'proph' in cn else 'fiqh'))
+    return redirect('quiz_play_random', theme_slug=slug)
+
 
 @csrf_exempt
-@login_required
 def api_quiz_save_score(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             points_gagnes = int(data.get('score', 0))
-            score, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
-            score.points_totaux += points_gagnes
-            score.verifier_niveau()
-            return JsonResponse({'status': 'success', 'nouveau_total': score.points_totaux})
+            if request.user.is_authenticated:
+                score, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
+                score.points_totaux += points_gagnes
+                score.verifier_niveau()
+                return JsonResponse({'status': 'success', 'nouveau_total': score.points_totaux})
+            cur = int(request.session.get('sdm_guest_quiz_pts', 0)) + points_gagnes
+            request.session['sdm_guest_quiz_pts'] = cur
+            return JsonResponse({'status': 'success', 'nouveau_total': cur})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error'}, status=400)
 
-@login_required
+
 def quiz_result(request, score, total):
     return render(request, 'bibliotheque/quiz/quiz_result.html', {'score': score, 'total': total})
 
-@login_required
+
 def defi_create(request):
+    """Crée une salle de Défi Multijoueur en temps réel avec code partagé et questions identiques."""
+    niveaux = NiveauQuiz.objects.all().order_by('numero')
     if request.method == 'POST':
         niveau_id = request.POST.get('niveau_id')
-        niveau = get_object_or_404(NiveauQuiz, id=niveau_id)
-        defi = DefiMultijoueur.objects.create(createur=request.user, niveau_choisi=niveau)
-        return redirect('defi_detail', code=defi.code_partage)
-        
-    niveaux = NiveauQuiz.objects.all().order_by('numero')
-    return render(request, 'bibliotheque/quiz/defi_create.html', {'niveaux': niveaux})
+        theme_slug = (request.POST.get('theme_slug') or 'mixte').strip()
+        guest_name = (request.POST.get('guest_name') or '').strip()
+        if not request.user.is_authenticated:
+            if guest_name:
+                request.session['sdm_guest_name'] = guest_name[:28]
+            elif not request.session.get('sdm_guest_name'):
+                request.session['sdm_guest_name'] = 'Joueur SDM'
+        niveau = NiveauQuiz.objects.filter(id=niveau_id).first() or niveaux.first()
+        if not niveau:
+            niveau, _ = NiveauQuiz.objects.get_or_create(numero=1, defaults={'nom': 'Débutant', 'points_requis': 0})
 
-@login_required
+        from django.contrib.auth.models import User as AuthUser
+        creator = request.user if request.user.is_authenticated else (AuthUser.objects.filter(is_superuser=True).first() or AuthUser.objects.first())
+        defi = DefiMultijoueur.objects.create(createur=creator, niveau_choisi=niveau)
+        key, lobby = _get_lobby_state(defi.code_partage)
+        lobby['theme'] = theme_slug
+        pid, pname = _get_player_identity(request)
+        lobby['host_pid'] = pid
+        lobby['players'][pid] = {
+            'name': pname or 'Créateur',
+            'status': 'PRET',
+            'score': 0,
+            'q_num': 0,
+            'seen_at': timezone.now().timestamp(),
+        }
+        cache.set(key, lobby, 3600)
+        return redirect('defi_detail', code=defi.code_partage)
+
+    return render(request, 'bibliotheque/quiz/defi_create.html', {
+        'niveaux': niveaux,
+        'themes_cards': QUIZ_THEMES,
+    })
+
+
+def defi_join_by_code(request):
+    """Permet à un ami de rejoindre directement une salle en saisissant son code de défi."""
+    code = (request.POST.get('code') or request.GET.get('code') or '').strip().upper()
+    if not code:
+        messages.error(request, "Veuillez saisir le code du défi de votre ami.")
+        return redirect('quiz_home')
+    defi = DefiMultijoueur.objects.filter(code_partage__iexact=code).first()
+    if not defi:
+        messages.error(request, f"Aucun défi trouvé avec le code « {code} ». Vérifiez le code envoyé par votre ami.")
+        return redirect('quiz_home')
+    return redirect('defi_detail', code=defi.code_partage)
+
+
 def defi_detail(request, code):
-    defi = get_object_or_404(DefiMultijoueur, code_partage=code)
-    participations = defi.participations.all().order_by('-score')
-    
-    a_deja_joue = participations.filter(utilisateur=request.user).exists()
-    
-    # URL de partage WhatsApp
-    share_url = request.build_absolute_import_url(f"/quiz/defi/{code}/") if hasattr(request, 'build_absolute_import_url') else request.build_absolute_uri()
-    whatsapp_text = f"Viens me défier au Quizz Islamique ! Clique ici : {share_url}"
-    
+    """Salle d'attente & classement EN DIRECT : les deux amis se voient instantanément sans perdre le lien."""
+    defi = get_object_or_404(DefiMultijoueur, code_partage__iexact=code)
+
+    # Permettre à l'ami invité d'entrer son prénom en 1 clic sans redirection bloquante vers /login/
+    if request.method == 'POST' and request.POST.get('guest_name'):
+        request.session['sdm_guest_name'] = request.POST.get('guest_name').strip()[:28]
+        return redirect('defi_detail', code=defi.code_partage)
+
+    pid, pname = _get_player_identity(request)
+    needs_name = (not request.user.is_authenticated and not pname)
+
+    key, lobby = _get_lobby_state(defi.code_partage)
+    if not needs_name:
+        existing = lobby['players'].get(pid, {})
+        lobby['players'][pid] = {
+            'name': pname,
+            'status': existing.get('status') or 'PRET',
+            'score': existing.get('score', 0),
+            'q_num': existing.get('q_num', 0),
+            'seen_at': timezone.now().timestamp(),
+        }
+        cache.set(key, lobby, 3600)
+
+    participations = defi.participations.select_related('utilisateur').all().order_by('-score')
+    a_deja_joue = (request.user.is_authenticated and participations.filter(utilisateur=request.user).exists()) or (
+        lobby['players'].get(pid, {}).get('status') == 'TERMINE'
+    )
+    est_hote = (lobby.get('host_pid') == pid) or (request.user.is_authenticated and defi.createur_id == request.user.id)
+
+    share_url = request.build_absolute_uri(reverse('defi_detail', args=[defi.code_partage]))
+    whatsapp_text = f"⚡ Je te défie au Quizz Islamique SDM ! Rejoins ma salle (Code : {defi.code_partage}) ici : {share_url}"
+    theme_meta = next((t for t in QUIZ_THEMES if t['slug'] == lobby.get('theme', 'mixte')), QUIZ_THEMES[0])
+
     return render(request, 'bibliotheque/quiz/defi_detail.html', {
-        'defi': defi, 
+        'defi': defi,
         'participations': participations,
         'a_deja_joue': a_deja_joue,
-        'whatsapp_text': whatsapp_text
+        'est_hote': est_hote,
+        'needs_name': needs_name,
+        'player_name': pname,
+        'player_pid': pid,
+        'share_url': share_url,
+        'whatsapp_text': whatsapp_text,
+        'theme_nom': theme_meta['nom'],
     })
 
-@login_required
-def defi_play(request, code):
-    defi = get_object_or_404(DefiMultijoueur, code_partage=code)
-    
-    if ParticipationDefi.objects.filter(defi=defi, utilisateur=request.user).exists():
-        messages.error(request, "Vous avez déjà participé à ce défi.")
-        return redirect('defi_detail', code=code)
-        
-    questions = list(defi.niveau_choisi.questions.all())
-    import random
-    random.shuffle(questions)
-    questions = questions[:10]
-    
-    questions_data = []
-    for q in questions:
-        choix = list(q.choix.all())
-        random.shuffle(choix)
-        questions_data.append({
-            'id': q.id,
-            'texte': q.texte,
-            'points': q.points,
-            'choix': [{'id': c.id, 'texte': c.texte, 'est_correct': c.est_correct} for c in choix]
-        })
-        
-    return render(request, 'bibliotheque/quiz/defi_play.html', {
-        'defi': defi,
-        'questions_json': json.dumps(questions_data)
-    })
 
 @csrf_exempt
-@login_required
+def api_defi_lobby(request, code):
+    """Synchronisation temps réel (toutes les 2,5s) de la salle de défi entre amis : présence, lancement synchronisé & scores."""
+    defi = get_object_or_404(DefiMultijoueur, code_partage__iexact=code)
+    pid, pname = _get_player_identity(request)
+    key, lobby = _get_lobby_state(defi.code_partage)
+    now_ts = timezone.now().timestamp()
+
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body or '{}')
+        except Exception:
+            body = {}
+        action = body.get('action', 'ping')
+        if pname:
+            cur = lobby['players'].get(pid, {'name': pname, 'status': 'PRET', 'score': 0, 'q_num': 0})
+            cur['name'] = pname
+            cur['seen_at'] = now_ts
+            if action == 'progress':
+                cur['status'] = 'EN_COURS'
+                cur['score'] = int(body.get('score', cur.get('score', 0)))
+                cur['q_num'] = int(body.get('q_num', cur.get('q_num', 0)))
+            elif action == 'finish':
+                cur['status'] = 'TERMINE'
+                cur['score'] = int(body.get('score', cur.get('score', 0)))
+                cur['q_num'] = 10
+            elif action == 'start_all':
+                lobby['started_at'] = now_ts
+                cur['status'] = 'EN_COURS'
+            elif action == 'new_round':
+                lobby['round'] = int(lobby.get('round', 1)) + 1
+                lobby['started_at'] = now_ts
+                for p in lobby['players'].values():
+                    p['status'] = 'PRET'
+                    p['score'] = 0
+                    p['q_num'] = 0
+            lobby['players'][pid] = cur
+            cache.set(key, lobby, 3600)
+
+    # Construire la liste unifiée (joueurs live dans la salle + participations DB)
+    players_out = []
+    seen_names = set()
+    for p_id, info in lobby['players'].items():
+        online = (now_ts - info.get('seen_at', 0)) < 25
+        players_out.append({
+            'pid': p_id,
+            'name': info.get('name', 'Joueur'),
+            'status': info.get('status', 'PRET'),
+            'score': int(info.get('score', 0)),
+            'q_num': int(info.get('q_num', 0)),
+            'online': online,
+            'is_me': (p_id == pid),
+        })
+        seen_names.add(info.get('name', '').lower())
+
+    for part in defi.participations.select_related('utilisateur').all().order_by('-score'):
+        uname = part.utilisateur.username
+        if uname.lower() not in seen_names:
+            players_out.append({
+                'pid': f'u:{part.utilisateur_id}',
+                'name': uname,
+                'status': 'TERMINE',
+                'score': part.score,
+                'q_num': 10,
+                'online': False,
+                'is_me': (request.user.is_authenticated and part.utilisateur_id == request.user.id),
+            })
+
+    players_out.sort(key=lambda x: (-x['score'], not x['online'], x['name'].lower()))
+    return JsonResponse({
+        'code': defi.code_partage,
+        'started_at': lobby.get('started_at'),
+        'round': lobby.get('round', 1),
+        'players': players_out,
+        'online_count': sum(1 for p in players_out if p['online']),
+    })
+
+
+def defi_play(request, code):
+    """Lance exactement les MÊMES 10 questions aléatoires pour tous les amis de la salle."""
+    defi = get_object_or_404(DefiMultijoueur, code_partage__iexact=code)
+    pid, pname = _get_player_identity(request)
+    if not pname:
+        return redirect('defi_detail', code=defi.code_partage)
+
+    key, lobby = _get_lobby_state(defi.code_partage)
+    theme_slug = lobby.get('theme', 'mixte')
+    round_num = int(lobby.get('round', 1))
+    diff = min(3, max(1, int(getattr(defi.niveau_choisi, 'numero', 1) or 1))) if defi.niveau_choisi else None
+
+    # Tirage DÉTERMINISTE par code + numéro de manche -> TOUS les amis ont exactement les mêmes questions !
+    questions_data = sample_quiz_questions(
+        theme_slug=theme_slug,
+        difficulty=diff,
+        count=10,
+        seed=f"sdm_defi_{defi.code_partage}_r{round_num}",
+    )
+
+    lobby['players'][pid] = {
+        'name': pname,
+        'status': 'EN_COURS',
+        'score': 0,
+        'q_num': 1,
+        'seen_at': timezone.now().timestamp(),
+    }
+    cache.set(key, lobby, 3600)
+
+    return render(request, 'bibliotheque/quiz/defi_play.html', {
+        'defi': defi,
+        'player_name': pname,
+        'round_num': round_num,
+        'questions_json': json.dumps(questions_data, ensure_ascii=False),
+    })
+
+
+@csrf_exempt
 def api_defi_save_score(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             points_gagnes = int(data.get('score', 0))
-            code = data.get('code')
-            
-            defi = get_object_or_404(DefiMultijoueur, code_partage=code)
-            ParticipationDefi.objects.get_or_create(defi=defi, utilisateur=request.user, defaults={'score': points_gagnes})
-            
-            # Update global score too
-            score_joueur, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
-            score_joueur.points_totaux += points_gagnes
-            score_joueur.verifier_niveau()
-            
+            code = (data.get('code') or '').strip().upper()
+            defi = get_object_or_404(DefiMultijoueur, code_partage__iexact=code)
+            pid, pname = _get_player_identity(request)
+
+            key, lobby = _get_lobby_state(defi.code_partage)
+            lobby['players'][pid] = {
+                'name': pname or 'Joueur SDM',
+                'status': 'TERMINE',
+                'score': points_gagnes,
+                'q_num': 10,
+                'seen_at': timezone.now().timestamp(),
+            }
+            cache.set(key, lobby, 3600)
+
+            if request.user.is_authenticated:
+                part, created = ParticipationDefi.objects.get_or_create(
+                    defi=defi, utilisateur=request.user, defaults={'score': points_gagnes}
+                )
+                if not created and points_gagnes > part.score:
+                    part.score = points_gagnes
+                    part.save(update_fields=['score'])
+
+                score_joueur, _ = ScoreJoueur.objects.get_or_create(utilisateur=request.user)
+                score_joueur.points_totaux += points_gagnes
+                score_joueur.verifier_niveau()
+
             return JsonResponse({'status': 'success'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)

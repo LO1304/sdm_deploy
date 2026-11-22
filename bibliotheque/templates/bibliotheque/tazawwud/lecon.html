@@ -1,274 +1,365 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}{{ lecon.titre }} - Tazawwudu-ç-Çighâr{% endblock %}
+{% block title %}{{ lecon.titre }} — Tazawwudu-ç-Çighâr{% endblock %}
+
+{% block bottom_nav %}{% endblock %}
 
 {% block content %}
 <style>
-    .step-content { display: none; animation: fadeIn 0.4s ease-in-out; }
-    .step-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .duo-stage {
+        min-height: calc(100dvh - 155px);
+        display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .duo-card-enter { animation: duoSlideIn 0.28s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes duoSlideIn {
+        from { opacity: 0; transform: translateX(22px) scale(0.98); }
+        to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    .duo-choice {
+        width: 100%; text-align: left; padding: 13px 15px; border-radius: 18px;
+        background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.12);
+        border-bottom-width: 4px; color: #fff; font-size: 13px; font-weight: 700;
+        display: flex; align-items: center; gap: 11px; transition: all 0.15s ease; cursor: pointer;
+    }
+    .duo-choice:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
+    .duo-choice.selected {
+        background: rgba(212,175,55,0.16); border-color: #FDE047; color: #FEF08A;
+    }
+    .duo-choice.correct {
+        background: rgba(16,185,129,0.22) !important; border-color: #10B981 !important; color: #A7F3D0 !important;
+    }
+    .duo-choice.wrong {
+        background: rgba(239,68,68,0.2) !important; border-color: #EF4444 !important; color: #FCA5A5 !important;
+    }
+    .duo-cta {
+        width: 100%; padding: 14px 18px; border-radius: 18px; font-weight: 900;
+        font-size: 13.5px; letter-spacing: 0.04em; text-transform: uppercase;
+        border: none; border-bottom: 4px solid rgba(0,0,0,0.28); cursor: pointer;
+        transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+    .duo-cta:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
+    .duo-cta:disabled { opacity: 0.42; cursor: not-allowed; }
+    .duo-cta-gold { background: linear-gradient(135deg, #FDE047, #D4AF37); color: #040B08; }
+    .duo-cta-green { background: linear-gradient(135deg, #34D399, #10B981); color: #040B08; }
+    .duo-cta-red { background: linear-gradient(135deg, #F87171, #EF4444); color: #fff; }
+
+    .book-parchment {
+        background: linear-gradient(160deg, #FDF6E3, #F5E6C4) !important;
+        color: #1F160A !important;
+        border-color: #C89B2B !important;
+    }
+    .book-parchment .book-body-txt { color: #1F160A !important; }
+    .book-parchment .book-foot-txt { color: #6B4F1D !important; }
 </style>
 
-<div class="max-w-2xl mx-auto pb-28 px-4">
+<div class="max-w-md mx-auto pb-6 duo-stage">
 
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- BARRE SUPÉRIEURE : ÉTAPES DE LECTURE, CŒURS & RETOUR               -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <div class="flex items-center justify-between mb-3 pt-2">
-        <a href="{% url 'tazawwud_module' lecon.module.id %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-xs border border-white/10 transition-colors">
-            <i class="fas fa-arrow-left text-[10px]"></i>
-            <span>Chapitre {{ lecon.module.numero }}</span>
+    <!-- ══ BARRE SUPÉRIEURE DUOLINGO (RETOUR · PROGRESSION · CŒURS) ══ -->
+    <div class="flex items-center gap-3 py-2">
+        <a href="{% url 'tazawwud_module' lecon.module.id %}"
+           class="w-9 h-9 rounded-full bg-white/8 border border-white/15 text-white/75 flex items-center justify-center flex-shrink-0 tap-card"
+           style="text-decoration:none;" title="Quitter la leçon">
+            <i class="fa-solid fa-xmark text-sm"></i>
         </a>
 
-        <div class="flex items-center gap-2">
-            {% if lecon.est_revision_finale %}
-            <a href="{% url 'tazawwud_revision' lecon.id %}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-[11px] shadow-md hover:scale-105 transition-transform">
-                <i class="fas fa-award"></i>
-                <span>Passer l'Examen Intensif</span>
-            </a>
-            {% endif %}
-            <!-- Cœurs de Persévérance -->
-            <div class="flex items-center gap-1 bg-black/50 px-3 py-1 rounded-full border border-amber-500/20 text-xs">
-                {% if progression.vies_actuelles >= 3 %}
-                    <span class="text-red-500">❤️</span><span class="text-red-500">❤️</span><span class="text-red-500">❤️</span>
-                {% elif progression.vies_actuelles == 2 %}
-                    <span class="text-red-500">❤️</span><span class="text-red-500">❤️</span><span class="text-white/20">🤍</span>
-                {% elif progression.vies_actuelles == 1 %}
-                    <span class="text-red-500">❤️</span><span class="text-white/20">🤍</span><span class="text-white/20">🤍</span>
-                {% else %}
-                    <span class="text-white/20">🤍</span><span class="text-white/20">🤍</span><span class="text-white/20">🤍</span>
+        <div class="flex-1">
+            <div class="h-3.5 rounded-full bg-white/10 overflow-hidden border border-white/10 p-0.5">
+                <div id="duo-progress-fill" class="h-full rounded-full bg-gradient-to-r from-emerald-400 via-gold-400 to-amber-300 transition-all duration-300" style="width: 6%;"></div>
+            </div>
+            <div class="flex items-center justify-between text-[10px] font-extrabold text-white/55 mt-1 px-0.5">
+                <span class="truncate max-w-[180px]">{{ lecon.titre }}</span>
+                <span id="duo-step-label">1 / {{ total_steps }}</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-red-500/15 border border-red-400/30 text-xs font-black text-red-300 flex-shrink-0">
+            <span>❤️</span>
+            <span id="duo-hearts">{{ progression.vies_actuelles }}</span>
+        </div>
+    </div>
+
+    <!-- ══ SCÈNE CENTRALE (1 CARTE PAR PETIT ÉCRAN — ZÉRO PAVÉ DE TEXTE) ══ -->
+    <div id="duo-card-stage" class="my-auto py-3">
+        <!-- Injecté dynamiquement par JS étape par étape -->
+    </div>
+
+    <!-- ══ ÉCRAN DE VICTOIRE FIN DE LEÇON (STYLE DUOLINGO) ══ -->
+    <div id="duo-victory-screen" class="hidden my-auto py-4 text-center space-y-4 duo-card-enter">
+        <div class="glass rounded-3xl p-6 border border-gold-400/45 shadow-2xl space-y-4">
+            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gold-400 to-amber-600 text-black text-4xl flex items-center justify-center mx-auto shadow-xl">
+                🏆
+            </div>
+            <div>
+                <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[10px] font-black uppercase tracking-widest">
+                    Leçon Validée · Flamme Préservée 🔥
+                </span>
+                <h2 class="text-2xl font-black text-white mt-2">Mâshâ'Allâh !</h2>
+                <p class="text-xs text-white/65 mt-1">Vous avez terminé « {{ lecon.titre }} » étape par étape.</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+                <div class="p-3 rounded-2xl bg-gold-500/15 border border-gold-400/35">
+                    <span class="text-[9.5px] font-extrabold uppercase text-gold-300 block">XP Gagnés</span>
+                    <span id="vic-xp" class="text-xl font-black text-white">+0</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-emerald-500/15 border border-emerald-400/35">
+                    <span class="text-[9.5px] font-extrabold uppercase text-emerald-300 block">Précision</span>
+                    <span id="vic-acc" class="text-xl font-black text-white">100%</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-orange-500/15 border border-orange-400/35">
+                    <span class="text-[9.5px] font-extrabold uppercase text-orange-300 block">Série</span>
+                    <span class="text-xl font-black text-white">🔥 Actif</span>
+                </div>
+            </div>
+
+            <div class="space-y-2.5 pt-2">
+                {% if next_lecon %}
+                <a href="{% url 'tazawwud_lecon' next_lecon.id %}" class="duo-cta duo-cta-green block text-center" style="text-decoration:none;">
+                    Leçon Suivante : {{ next_lecon.titre|truncatechars:26 }} →
+                </a>
                 {% endif %}
-                <span class="text-[11px] font-bold text-white ml-1">{{ progression.vies_actuelles }}/3</span>
+                <a href="{% url 'tazawwud_home' %}" class="block w-full py-3 rounded-2xl bg-white/10 border border-white/15 text-white font-extrabold text-xs" style="text-decoration:none;">
+                    Retour au Parcours Tazawwud
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Onglets des 4 Étapes Spirituelles d'Apprentissage -->
-    <div class="grid grid-cols-4 gap-1.5 mb-5 bg-black/40 p-1.5 rounded-2xl border border-white/10">
-        <button type="button" onclick="goToStep(1)" id="tab-1" class="py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center bg-amber-500 text-black shadow">
-            1. Iftitâh<br><span class="text-[9px] opacity-80 font-normal">Découverte</span>
-        </button>
-        <button type="button" onclick="goToStep(2)" id="tab-2" class="py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center text-white/50 hover:text-white">
-            2. Al-Matn<br><span class="text-[9px] opacity-80 font-normal">Manuscrit</span>
-        </button>
-        <button type="button" onclick="goToStep(3)" id="tab-3" class="py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center text-white/50 hover:text-white">
-            3. Al-Fahm<br><span class="text-[9px] opacity-80 font-normal">Sens & Fiqh</span>
-        </button>
-        <button type="button" onclick="goToStep(4)" id="tab-4" class="py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center text-white/50 hover:text-white">
-            4. Khulâsah<br><span class="text-[9px] opacity-80 font-normal">À Retenir</span>
-        </button>
-    </div>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- CARTE MIHRAB PRINCIPALE DE LA LEÇON                                -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <div class="glass mihrab-card islamic-geo-bg p-6 md:p-9 border border-amber-500/25 shadow-2xl min-h-[440px] flex flex-col justify-between">
-        
-        <!-- STEP 1 : Iftitâh / Découverte (Intro) -->
-        <div id="step-1" class="step-content active flex-1 flex flex-col justify-center text-center py-4">
-            <div class="rub-el-hizb-badge text-amber-400 text-xl mx-auto mb-4 shadow-lg shadow-amber-500/15">
-                <span>۞</span>
-            </div>
-            <p class="arabic-calligraphy text-xl text-amber-400/90 mb-1" dir="rtl">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
-            <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300 bg-amber-500/10 px-3.5 py-1 rounded-full border border-amber-500/25 inline-block mx-auto mb-4">
-                Leçon {{ lecon.numero }} · Porte de la Connaissance
-            </span>
-            <h1 class="text-2xl md:text-3xl font-black text-white mb-4 leading-tight">{{ lecon.titre }}</h1>
-            <p class="text-white/70 text-xs md:text-sm max-w-md mx-auto leading-relaxed">{{ lecon.description }}</p>
-
-            <div class="ornament-divider max-w-xs mx-auto mt-6">
-                <span>۞</span>
-            </div>
-        </div>
-
-        <!-- STEP 2 : Al-Matn / Le Manuscrit Source Enluminé -->
-        <div id="step-2" class="step-content flex-1">
-            <!-- Barre d'outils du Lecteur Mushaf -->
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                <div class="flex items-center gap-2">
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
-                        <i class="fas fa-feather-pointed"></i> Al-Matn · Texte Authentique
-                    </span>
-                </div>
-
-                <!-- Contrôles : Mode Parchemin & Taille de Police -->
-                <div class="flex items-center gap-1.5">
-                    <button type="button" onclick="toggleParchmentMode()" id="btn-parchment"
-                            class="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-[10px] font-bold flex items-center gap-1 transition-all"
-                            title="Basculer entre le Mode Parchemin et le Mode Nuit Émeraude">
-                        <i class="fas fa-scroll"></i>
-                        <span id="parchment-label">Mode Parchemin</span>
-                    </button>
-                    <button type="button" onclick="changeFontSize(-2)" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[10px] font-bold">
-                        A-
-                    </button>
-                    <button type="button" onclick="changeFontSize(2)" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[10px] font-bold">
-                        A+
-                    </button>
+    <!-- ══ BANDEAU DE FEEDBACK INSTANTANÉ + BOUTON PRINCIPAL EN BAS ══ -->
+    <div id="duo-bottom-bar" class="space-y-2.5 pt-2">
+        <div id="duo-feedback-sheet" class="hidden rounded-2xl p-3.5 border text-xs leading-relaxed">
+            <div class="flex items-start gap-2.5">
+                <span id="duo-fb-icon" class="text-lg flex-shrink-0">✅</span>
+                <div class="flex-1 min-w-0">
+                    <p id="duo-fb-title" class="font-black text-sm"></p>
+                    <p id="duo-fb-expl" class="text-white/85 mt-0.5"></p>
                 </div>
             </div>
-
-            <!-- Cadre Mushaf Enluminé -->
-            <div id="mushaf-reader" class="mushaf-frame p-6 md:p-8 mb-3 max-h-80 overflow-y-auto shadow-inner">
-                <div class="text-center mb-3 pb-2 border-b border-amber-500/20">
-                    <span class="arabic-calligraphy text-lg text-amber-500" dir="rtl">۞ قَالَ الشَّيْخُ أَحْمَدُ بَمْبَ رَضِيَ اللَّهُ عَنْهُ ۞</span>
-                </div>
-                <p id="mushaf-text" class="mushaf-text text-base md:text-lg text-white/95 leading-loose font-serif whitespace-pre-line">{{ lecon.texte_source }}</p>
-                <div class="text-center mt-4 pt-2 border-t border-amber-500/20">
-                    <span class="text-xs text-amber-500/80">─── ۞ ───</span>
-                </div>
-            </div>
-
-            <p class="text-[11px] text-amber-400/70 text-right italic">
-                — Cheikh Ahmadou Bamba Khâdimu-r-Rasûl · Tazawwudu-ç-Çighâr
-            </p>
         </div>
 
-        <!-- STEP 3 : Al-Fahm / Comprendre l'Enseignement (Fiqh & Sens) -->
-        <div id="step-3" class="step-content flex-1">
-            <div class="flex items-center justify-between mb-3">
-                <p class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-                    <i class="fas fa-lantern"></i> Al-Fahm · Explication & Sagesse
-                </p>
-                <span class="arabic-calligraphy text-sm text-emerald-400/80" dir="rtl">الفَهْمُ وَالشَّرْحُ</span>
-            </div>
-            <h3 class="text-lg md:text-xl font-bold text-white mb-3">Méditation et sens des vers</h3>
-            <div class="p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/20 text-white/85 text-xs md:text-sm leading-relaxed space-y-3 max-h-72 overflow-y-auto">
-                {{ lecon.explication|linebreaks }}
-            </div>
-        </div>
-
-        <!-- STEP 4 : Khulâsah / Cartes de Rappel Interactives à Ancrer -->
-        <div id="step-4" class="step-content flex-1">
-            <div class="flex items-center justify-between mb-2">
-                <p class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
-                    <i class="fas fa-bell bell-ring-anim"></i> Al-Khulâsah · Rappels Vivants à Ancrer
-                </p>
-                <span class="arabic-calligraphy text-sm text-amber-400/80" dir="rtl">الخُلَاصَةُ وَالتَّذْكِرَةُ</span>
-            </div>
-            <p class="text-[11px] text-white/55 mb-3">
-                Touchez chaque rappel pour l'illuminer et l'ancrer dans votre mémoire avant le quiz :
-            </p>
-
-            <!-- Conteneur dynamique de cartes de rappel animées -->
-            <div id="interactive-rappels-list" class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-                <!-- Généré automatiquement à partir de lecon.a_retenir -->
-            </div>
-            <div id="raw-a-retenir" class="hidden">{{ lecon.a_retenir }}</div>
-        </div>
-
-        <!-- ACTION BUTTONS -->
-        <div class="mt-7 pt-5 border-t border-white/10 flex items-center justify-between gap-3">
-            <button id="btn-prev" class="hidden px-5 py-2.5 rounded-xl border border-white/15 text-white/70 font-semibold hover:bg-white/5 transition-colors text-xs">
-                <i class="fas fa-arrow-left mr-1.5"></i> Précédent
-            </button>
-            <div class="flex-1"></div>
-            <button id="btn-next" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold text-xs shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-2">
-                <span>Ouvrir le Manuscrit</span> <i class="fas fa-arrow-right"></i>
-            </button>
-            <a id="btn-quiz" href="{% if lecon.est_revision_finale %}{% url 'tazawwud_revision' lecon.id %}{% else %}{% url 'tazawwud_quiz' lecon.id %}{% endif %}" class="hidden px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/25 transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-2">
-                <i class="fas {% if lecon.est_revision_finale %}fa-award{% else %}fa-feather{% endif %}"></i>
-                <span>{% if lecon.est_revision_finale %}Lancer l'Examen Intensif Certifiant{% else %}Évaluer mes Connaissances (Quiz){% endif %}</span>
-                <i class="fas fa-arrow-right"></i>
-            </a>
-        </div>
+        <button type="button" id="duo-main-btn" onclick="handleMainAction()" class="duo-cta duo-cta-gold">
+            Continuer →
+        </button>
     </div>
 </div>
 
+<script id="sdm-tazawwud-deck" type="application/json">{{ deck_json|safe }}</script>
 <script>
-    let currentStep = 1;
-    const totalSteps = 4;
-    let currentFontSize = 17;
-    
-    const btnPrev = document.getElementById('btn-prev');
-    const btnNext = document.getElementById('btn-next');
-    const btnQuiz = document.getElementById('btn-quiz');
-    const mushafReader = document.getElementById('mushaf-reader');
-    const mushafText = document.getElementById('mushaf-text');
-    const parchmentLabel = document.getElementById('parchment-label');
-    
-    function goToStep(stepNumber) {
-        currentStep = stepNumber;
-        updateUI();
+const DECK = (() => {
+    try { return JSON.parse(document.getElementById('sdm-tazawwud-deck')?.textContent || '[]'); }
+    catch (e) { return []; }
+})();
+const LECON_ID = {{ lecon.id }};
+const CSRF = '{{ csrf_token }}';
+
+let stepIdx = 0;
+let hearts = {{ progression.vies_actuelles|default:3 }};
+let xpEarned = 0;
+let qTotal = 0;
+let qCorrect = 0;
+let selectedChoiceIdx = -1;
+let questionChecked = false;
+let parchmentOn = false;
+let bookFontPx = 16;
+
+function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toggleBookParchment() {
+    parchmentOn = !parchmentOn;
+    const card = document.getElementById('duo-book-box');
+    if (card) card.classList.toggle('book-parchment', parchmentOn);
+}
+
+function stepFontSize(delta) {
+    bookFontPx = Math.max(13, Math.min(22, bookFontPx + delta));
+    const el = document.querySelector('.book-body-txt');
+    if (el) el.style.fontSize = bookFontPx + 'px';
+}
+
+function renderStep() {
+    if (!DECK.length || stepIdx >= DECK.length) {
+        finishLesson();
+        return;
     }
 
-    function updateUI() {
-        for(let i = 1; i <= totalSteps; i++) {
-            document.getElementById('step-' + i).classList.remove('active');
-            const tab = document.getElementById('tab-' + i);
-            if(i === currentStep) {
-                tab.className = "py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center bg-amber-500 text-black shadow";
-            } else if(i < currentStep) {
-                tab.className = "py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center bg-amber-500/15 text-amber-300 border border-amber-500/30";
-            } else {
-                tab.className = "py-2 px-1 rounded-xl text-[10px] md:text-xs font-bold transition-all text-center text-white/50 hover:text-white";
-            }
-        }
-        document.getElementById('step-' + currentStep).classList.add('active');
-        
-        btnPrev.classList.toggle('hidden', currentStep === 1);
-        
-        if(currentStep === totalSteps) {
-            btnNext.classList.add('hidden');
-            btnQuiz.classList.remove('hidden');
-        } else {
-            btnNext.classList.remove('hidden');
-            btnQuiz.classList.add('hidden');
-            if(currentStep === 1) btnNext.innerHTML = '<span>Ouvrir le Manuscrit</span> <i class="fas fa-arrow-right"></i>';
-            if(currentStep === 2) btnNext.innerHTML = '<span>Méditer l\'Explication</span> <i class="fas fa-arrow-right"></i>';
-            if(currentStep === 3) btnNext.innerHTML = '<span>Points Essentiels</span> <i class="fas fa-arrow-right"></i>';
-        }
-    }
-    
-    function toggleParchmentMode() {
-        mushafReader.classList.toggle('parchment-mode');
-        const isParchment = mushafReader.classList.contains('parchment-mode');
-        parchmentLabel.innerText = isParchment ? 'Mode Nuit' : 'Mode Parchemin';
-    }
+    selectedChoiceIdx = -1;
+    questionChecked = false;
 
-    function changeFontSize(delta) {
-        currentFontSize = Math.min(26, Math.max(13, currentFontSize + delta));
-        mushafText.style.fontSize = currentFontSize + 'px';
-    }
+    const item = DECK[stepIdx];
+    const pct = Math.max(6, Math.round(((stepIdx + 1) / DECK.length) * 100));
+    document.getElementById('duo-progress-fill').style.width = pct + '%';
+    document.getElementById('duo-step-label').textContent = `${stepIdx + 1} / ${DECK.length}`;
 
-    // Transformation de a_retenir en Cartes de Rappel Interactives animées
-    (function buildInteractiveRappels() {
-        const rawEl = document.getElementById('raw-a-retenir');
-        const listEl = document.getElementById('interactive-rappels-list');
-        if (!rawEl || !listEl) return;
-        const lines = rawEl.innerText.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
-        lines.forEach((line, idx) => {
-            const card = document.createElement('div');
-            card.className = "p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-[#07150F] to-black/50 border border-amber-500/25 hover:border-amber-400/60 cursor-pointer transition-all duration-300 flex items-start gap-3 group aurora-shimmer-card";
-            card.style.animationDelay = `${idx * 90}ms`;
-            card.innerHTML = `
-                <div class="rappel-check w-7 h-7 rounded-xl bg-amber-500/15 border border-amber-500/35 text-amber-300 flex items-center justify-center text-xs font-extrabold flex-shrink-0 mt-0.5 transition-all">
-                    ${idx + 1}
+    const fb = document.getElementById('duo-feedback-sheet');
+    fb.classList.add('hidden');
+
+    const btn = document.getElementById('duo-main-btn');
+    const stage = document.getElementById('duo-card-stage');
+
+    if (item.kind === 'book' || item.kind === 'summary') {
+        const isBook = item.kind === 'book';
+        stage.innerHTML = `
+            <div id="duo-book-box" class="duo-card-enter glass rounded-3xl p-5 border ${isBook ? 'border-gold-500/40' : 'border-emerald-400/35'} shadow-2xl space-y-4 ${isBook && parchmentOn ? 'book-parchment' : ''}">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="px-3 py-1 rounded-full ${isBook ? 'bg-gold-500/20 text-gold-300 border border-gold-400/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40'} text-[10px] font-black uppercase tracking-wider">
+                        ${isBook ? '📖' : '۞'} ${esc(item.badge)}
+                    </span>
+                    <div class="flex items-center gap-1">
+                        ${isBook ? `<button type="button" onclick="toggleBookParchment()" class="px-2 py-1 rounded-lg bg-white/10 text-[10px] font-bold text-gold-300" title="Mode Parchemin"><i class="fa-solid fa-scroll"></i></button>` : ''}
+                        <button type="button" onclick="stepFontSize(-1)" class="w-6 h-6 rounded-lg bg-white/10 text-[10px] font-bold text-white">A-</button>
+                        <button type="button" onclick="stepFontSize(1)" class="w-6 h-6 rounded-lg bg-white/10 text-[10px] font-bold text-white">A+</button>
+                    </div>
                 </div>
-                <div class="flex-1">
-                    <p class="text-xs md:text-sm text-white/90 font-medium leading-relaxed">${line}</p>
-                    <span class="rappel-status text-[10px] text-amber-400/70 mt-1 inline-block">Toucher pour ancrer ce rappel ۞</span>
+
+                ${isBook ? `<div class="text-center font-arabic text-lg text-gold-400/90" dir="rtl">۞ تَزَوُّدُ الصِّغَارِ ۞</div>` : ''}
+
+                <div class="book-body-txt text-white leading-relaxed whitespace-pre-line font-medium ${isBook ? 'font-serif' : ''}" style="font-size:${bookFontPx}px;">
+                    ${esc(item.texte)}
                 </div>
-            `;
-            card.onclick = () => {
-                const check = card.querySelector('.rappel-check');
-                const st = card.querySelector('.rappel-status');
-                card.className = "p-4 rounded-2xl bg-gradient-to-r from-emerald-500/20 via-emerald-950/40 to-amber-950/30 border-2 border-emerald-400/60 cursor-pointer transition-all duration-300 flex items-start gap-3 shadow-[0_0_20px_rgba(16,185,129,0.2)] scale-[1.01]";
-                if (check) {
-                    check.className = "rappel-check w-7 h-7 rounded-xl bg-emerald-500 text-black flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5";
-                    check.innerHTML = '<i class="fas fa-check"></i>';
-                }
-                if (st) {
-                    st.className = "rappel-status text-[10px] text-emerald-300 font-bold mt-1 inline-block";
-                    st.innerHTML = "✨ Rappel médité et ancré dans le cœur · Al-Ḥamdulillāh";
-                }
-            };
-            listEl.appendChild(card);
+
+                <div class="pt-3 border-t border-white/10 flex items-center justify-between text-[10.5px] book-foot-txt text-white/55 font-bold">
+                    <span>${esc(item.footer || '')}</span>
+                    <span>Étape ${stepIdx + 1}/${DECK.length}</span>
+                </div>
+            </div>
+        `;
+        btn.disabled = false;
+        btn.className = 'duo-cta duo-cta-gold';
+        btn.textContent = stepIdx === DECK.length - 1 ? 'Terminer la leçon 🏆' : 'J\'ai lu · Continuer →';
+    } else {
+        // Carte Question Intermédiaire (façon Duolingo)
+        const choicesHtml = (item.choix || []).map((c, idx) => `
+            <button type="button" class="duo-choice" id="duo-opt-${idx}" onclick="selectChoice(${idx})">
+                <span class="w-7 h-7 rounded-xl bg-white/10 text-gold-300 font-black text-xs flex items-center justify-center flex-shrink-0">${String.fromCharCode(65 + idx)}</span>
+                <span class="flex-1 leading-snug">${esc(c.texte)}</span>
+            </button>
+        `).join('');
+
+        stage.innerHTML = `
+            <div class="duo-card-enter space-y-4">
+                <div class="glass rounded-3xl p-4 border border-gold-400/35">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-500/20 border border-gold-400/40 text-gold-300 text-[10px] font-black uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-bolt"></i> ${esc(item.badge || 'Question Intermédiaire')}
+                    </span>
+                    <h2 class="text-[15px] font-extrabold text-white leading-snug whitespace-pre-line">${esc(item.texte)}</h2>
+                </div>
+                <div class="space-y-2.5">${choicesHtml}</div>
+            </div>
+        `;
+        btn.disabled = true;
+        btn.className = 'duo-cta duo-cta-green';
+        btn.textContent = 'Vérifier ma réponse';
+    }
+}
+
+window.selectChoice = function(idx) {
+    if (questionChecked) return;
+    selectedChoiceIdx = idx;
+    document.querySelectorAll('.duo-choice').forEach((el, i) => {
+        el.classList.toggle('selected', i === idx);
+    });
+    document.getElementById('duo-main-btn').disabled = false;
+    try { if (navigator.vibrate) navigator.vibrate(8); } catch (e) {}
+};
+
+window.handleMainAction = async function() {
+    const item = DECK[stepIdx];
+    if (!item) { finishLesson(); return; }
+
+    if (item.kind !== 'question') {
+        xpEarned += 5;
+        stepIdx++;
+        renderStep();
+        return;
+    }
+
+    if (!questionChecked) {
+        if (selectedChoiceIdx < 0) return;
+        questionChecked = true;
+        qTotal++;
+        const chosen = item.choix[selectedChoiceIdx];
+        const isRight = Boolean(chosen && chosen.est_correct);
+
+        document.querySelectorAll('.duo-choice').forEach((el, i) => {
+            el.disabled = true;
+            if (item.choix[i] && item.choix[i].est_correct) el.classList.add('correct');
+            else if (i === selectedChoiceIdx && !isRight) el.classList.add('wrong');
         });
-    })();
 
-    btnNext.addEventListener('click', () => { if(currentStep < totalSteps) { currentStep++; updateUI(); } });
-    btnPrev.addEventListener('click', () => { if(currentStep > 1) { currentStep--; updateUI(); } });
+        const fb = document.getElementById('duo-feedback-sheet');
+        const fbIcon = document.getElementById('duo-fb-icon');
+        const fbTitle = document.getElementById('duo-fb-title');
+        const fbExpl = document.getElementById('duo-fb-expl');
+        const btn = document.getElementById('duo-main-btn');
+
+        if (isRight) {
+            qCorrect++;
+            xpEarned += (item.points || 15);
+            fb.className = 'rounded-2xl p-3.5 border border-emerald-400/50 bg-emerald-950/75 text-xs leading-relaxed';
+            fbIcon.textContent = '🎉';
+            fbTitle.textContent = `Excellent ! +${item.points || 15} XP`;
+            fbTitle.className = 'font-black text-sm text-emerald-300';
+            btn.className = 'duo-cta duo-cta-green';
+            try { if (navigator.vibrate) navigator.vibrate([12, 30, 12]); } catch (e) {}
+        } else {
+            hearts = Math.max(0, hearts - 1);
+            document.getElementById('duo-hearts').textContent = String(hearts);
+            fb.className = 'rounded-2xl p-3.5 border border-red-400/50 bg-red-950/75 text-xs leading-relaxed';
+            fbIcon.textContent = '💡';
+            const correctTxt = (item.choix.find(c => c.est_correct) || {}).texte || '';
+            fbTitle.textContent = `Réponse fidèle au livre : ${correctTxt}`;
+            fbTitle.className = 'font-black text-sm text-red-300';
+            btn.className = 'duo-cta duo-cta-red';
+            try { if (navigator.vibrate) navigator.vibrate(45); } catch (e) {}
+        }
+        fbExpl.textContent = item.explication || '';
+        fb.classList.remove('hidden');
+        btn.textContent = stepIdx === DECK.length - 1 ? 'Voir mes résultats 🏆' : 'Continuer →';
+
+        // Enregistrer dans l'historique Django si c'est une question DB
+        if (item.db_id) {
+            fetch('/api/tazawwud/reponse/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+                body: JSON.stringify({
+                    question_id: item.db_id,
+                    reponse: chosen.id || chosen.texte,
+                    mode_entrainement: false
+                })
+            }).catch(() => {});
+        }
+    } else {
+        stepIdx++;
+        renderStep();
+    }
+};
+
+async function finishLesson() {
+    document.getElementById('duo-progress-fill').style.width = '100%';
+    document.getElementById('duo-card-stage').classList.add('hidden');
+    document.getElementById('duo-bottom-bar').classList.add('hidden');
+    document.getElementById('duo-victory-screen').classList.remove('hidden');
+
+    const acc = qTotal > 0 ? Math.round((qCorrect / qTotal) * 100) : 100;
+    document.getElementById('vic-xp').textContent = '+' + Math.max(20, xpEarned);
+    document.getElementById('vic-acc').textContent = acc + '%';
+
+    try {
+        await fetch('/api/tazawwud/save_score/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+            body: JSON.stringify({
+                lecon_id: LECON_ID,
+                score: Math.max(20, xpEarned),
+                mode_entrainement: false
+            })
+        });
+    } catch (e) {}
+}
+
+renderStep();
 </script>
 {% endblock %}

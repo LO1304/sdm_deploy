@@ -1,72 +1,239 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Notifications - SDM Premium{% endblock %}
+{% block title %}Notifications & Rappels — SDM Mouride{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto" data-aos="fade-up">
-    <div class="flex items-center justify-between mb-8">
-        <h1 class="text-2xl md:text-3xl font-bold">
-            <span class="text-gradient-gold">Notifications</span>
-        </h1>
-        <button onclick="markAllAsRead()" class="text-sm font-medium text-white/50 hover:text-gold-400 transition-colors">
-            <i class="fa-solid fa-check-double mr-1"></i> Tout marquer comme lu
+<div class="max-w-xl mx-auto pb-10 space-y-4">
+
+    <!-- EN-TÊTE MOBILE -->
+    <div class="flex items-center justify-between pt-1">
+        <div>
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-gold-400">Rappels Personnalisés</span>
+            <h1 class="text-xl font-black text-white leading-tight">Notifications SDM</h1>
+        </div>
+        {% if user.is_authenticated and notifications %}
+        <button type="button" onclick="markAllAsRead()" class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-white/75 tap-card">
+            <i class="fa-solid fa-check-double mr-1 text-gold-400"></i> Tout lire
         </button>
+        {% endif %}
     </div>
 
-    <div class="space-y-4">
-        {% for notif in notifications %}
-        <div class="glass p-5 rounded-2xl flex gap-4 transition-all {% if not notif.est_lue %}border-l-4 border-l-gold-500 bg-white/[0.08]{% else %}border border-white/5 opacity-70{% endif %}">
-            <div class="flex-shrink-0 mt-1">
-                {% if notif.type_notif == 'PRIERE' %}
-                    <i class="fa-solid fa-mosque text-emerald-400 text-2xl"></i>
-                {% elif notif.type_notif == 'WIRD' %}
-                    <i class="fa-solid fa-book-open text-blue-400 text-2xl"></i>
-                {% elif notif.type_notif == 'ZIKR' %}
-                    <i class="fa-solid fa-hands-praying text-yellow-400 text-2xl"></i>
-                {% elif notif.type_notif == 'NOUVEAU' %}
-                    <i class="fa-solid fa-bell-concierge text-purple-400 text-2xl"></i>
-                {% else %}
-                    <i class="fa-solid fa-star-and-crescent text-gold-500 text-2xl"></i>
-                {% endif %}
-            </div>
-            <div class="flex-1">
-                <div class="flex items-start justify-between gap-4">
-                    <h3 class="font-bold text-white mb-1">{{ notif.titre }}</h3>
-                    <span class="text-xs text-white/40 whitespace-nowrap">{{ notif.date_creation|timesince }}</span>
+    <!-- CARTE D'ACTIVATION PERMISSION SYSTÈME -->
+    <div class="glass rounded-3xl p-4 border border-gold-500/35 shadow-xl">
+        <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-gold-400 to-gold-600 text-black flex items-center justify-center text-lg flex-shrink-0">
+                    <i class="fa-solid fa-bell"></i>
                 </div>
-                <p class="text-sm text-white/70 mb-2">{{ notif.message }}</p>
+                <div class="min-w-0">
+                    <p class="text-sm font-black text-white">Alertes sur votre téléphone</p>
+                    <p id="notif-perm-status" class="text-[11px] text-white/60">Prières, Versets, Citations, Khassidas & Coach Tazawwud</p>
+                </div>
+            </div>
+            <button type="button" id="btn-enable-notif" onclick="enableSdmNotifications()"
+                    class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black text-xs flex-shrink-0 tap-card">
+                Activer
+            </button>
+        </div>
+    </div>
+
+    <!-- RÉGLAGES D'HEURES PRÉCISES PAR L'UTILISATEUR -->
+    <div class="glass rounded-3xl p-4 border border-white/10 space-y-3.5">
+        <div class="flex items-center justify-between pb-2 border-b border-white/10">
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-gold-400">
+                <i class="fa-solid fa-sliders mr-1.5"></i> Mes Heures de Rappels
+            </h2>
+            <span id="notif-saved-toast" class="text-[10px] font-bold text-emerald-400 hidden">Enregistré ✓</span>
+        </div>
+
+        <!-- 1. Heures de Prière -->
+        <div class="flex items-center justify-between gap-3 p-3 rounded-2xl bg-white/[0.04] border border-white/5">
+            <div class="flex items-center gap-3 min-w-0">
+                <span class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-mosque"></i></span>
+                <div class="min-w-0">
+                    <p class="text-xs font-extrabold text-white">Heures de Prière</p>
+                    <p class="text-[10px] text-white/55">Fajr, Tisbar, Takussan, Timiss, Guéwé</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <select id="pref-prayerLeadMin" onchange="saveNotifUiPrefs()" class="bg-black/50 border border-white/15 rounded-lg px-2 py-1 text-[11px] text-white font-bold">
+                    <option value="0">À l'heure</option>
+                    <option value="5">-5 min</option>
+                    <option value="10">-10 min</option>
+                </select>
+                <input type="checkbox" id="pref-prayerEnabled" onchange="saveNotifUiPrefs()" class="w-5 h-5 accent-emerald-500">
+            </div>
+        </div>
+
+        <!-- 2. Verset du Jour à heure précise -->
+        <div class="flex items-center justify-between gap-3 p-3 rounded-2xl bg-white/[0.04] border border-white/5">
+            <div class="flex items-center gap-3 min-w-0">
+                <span class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-300 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-book-quran"></i></span>
+                <div class="min-w-0">
+                    <p class="text-xs font-extrabold text-white">Verset du Jour (Coran)</p>
+                    <p class="text-[10px] text-white/55">Un verset chaque jour à votre heure</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <input type="time" id="pref-verseTime" onchange="saveNotifUiPrefs()" class="bg-black/50 border border-gold-500/35 rounded-lg px-2 py-1 text-xs text-gold-300 font-extrabold">
+                <input type="checkbox" id="pref-verseEnabled" onchange="saveNotifUiPrefs()" class="w-5 h-5 accent-amber-400">
+            </div>
+        </div>
+
+        <!-- 3. Citation de Cheikh Ahmadou Bamba à heure précise -->
+        <div class="flex items-center justify-between gap-3 p-3 rounded-2xl bg-white/[0.04] border border-white/5">
+            <div class="flex items-center gap-3 min-w-0">
+                <span class="w-9 h-9 rounded-xl bg-gold-500/15 text-gold-400 flex items-center justify-center flex-shrink-0">۞</span>
+                <div class="min-w-0">
+                    <p class="text-xs font-extrabold text-white">Citation Cheikh Ahmadou Bamba</p>
+                    <p class="text-[10px] text-white/55">318 paroles authentiques (1 / jour)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <input type="time" id="pref-citationTime" onchange="saveNotifUiPrefs()" class="bg-black/50 border border-gold-500/35 rounded-lg px-2 py-1 text-xs text-gold-300 font-extrabold">
+                <input type="checkbox" id="pref-citationEnabled" onchange="saveNotifUiPrefs()" class="w-5 h-5 accent-amber-400">
+            </div>
+        </div>
+
+        <!-- 4. Nouveaux Khassidas ajoutés -->
+        <div class="flex items-center justify-between gap-3 p-3 rounded-2xl bg-white/[0.04] border border-white/5">
+            <div class="flex items-center gap-3 min-w-0">
+                <span class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-300 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-book-open"></i></span>
+                <div class="min-w-0">
+                    <p class="text-xs font-extrabold text-white">Nouveaux Khassidas ajoutés</p>
+                    <p class="text-[10px] text-white/55">Alerte avec le nom exact du Khassida</p>
+                </div>
+            </div>
+            <input type="checkbox" id="pref-khassidaEnabled" onchange="saveNotifUiPrefs()" class="w-5 h-5 accent-purple-400 flex-shrink-0">
+        </div>
+
+        <!-- 5. Coach Tazawwud Mode Duolingo -->
+        <div class="flex items-center justify-between gap-3 p-3 rounded-2xl bg-gradient-to-r from-orange-500/10 to-amber-500/5 border border-orange-400/25">
+            <div class="flex items-center gap-3 min-w-0">
+                <span class="w-9 h-9 rounded-xl bg-orange-500/20 text-orange-300 flex items-center justify-center flex-shrink-0 text-base">🔥</span>
+                <div class="min-w-0">
+                    <p class="text-xs font-extrabold text-white">Coach Tazawwud (Mode Duolingo)</p>
+                    <p class="text-[10px] text-orange-200/80">Relance motivante si cours sauté aujourd'hui</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <input type="time" id="pref-duolingoTime" onchange="saveNotifUiPrefs()" class="bg-black/50 border border-orange-400/40 rounded-lg px-2 py-1 text-xs text-orange-300 font-extrabold">
+                <input type="checkbox" id="pref-duolingoEnabled" onchange="saveNotifUiPrefs()" class="w-5 h-5 accent-orange-400">
+            </div>
+        </div>
+
+        <!-- Boutons de test immédiat -->
+        <div class="pt-1 flex flex-wrap gap-2">
+            <button type="button" onclick="window.SDMNotifications?.testNow('citation')" class="flex-1 py-2 px-2.5 rounded-xl bg-white/5 border border-white/10 text-[10.5px] font-bold text-white/80 tap-card">
+                Tester Citation
+            </button>
+            <button type="button" onclick="window.SDMNotifications?.testNow('khassida')" class="flex-1 py-2 px-2.5 rounded-xl bg-white/5 border border-white/10 text-[10.5px] font-bold text-white/80 tap-card">
+                Tester Khassida
+            </button>
+            <button type="button" onclick="window.SDMNotifications?.testNow('duolingo')" class="flex-1 py-2 px-2.5 rounded-xl bg-orange-500/15 border border-orange-400/30 text-[10.5px] font-bold text-orange-200 tap-card">
+                Tester Coach 🔥
+            </button>
+        </div>
+    </div>
+
+    <!-- HISTORIQUE DES NOTIFICATIONS -->
+    <div class="space-y-2.5">
+        <h2 class="text-[11px] font-extrabold uppercase tracking-wider text-white/50 px-1">Historique Récent</h2>
+        {% for notif in notifications %}
+        <div class="glass p-4 rounded-2xl flex gap-3.5 transition-all {% if not notif.est_lue %}border-l-4 border-l-gold-500 bg-white/[0.08]{% else %}border border-white/5 opacity-75{% endif %}">
+            <div class="flex-shrink-0 mt-0.5">
+                {% if notif.type_notif == 'PRIERE' %}<i class="fa-solid fa-mosque text-emerald-400 text-xl"></i>
+                {% elif notif.type_notif == 'WIRD' %}<i class="fa-solid fa-book-open text-blue-400 text-xl"></i>
+                {% elif notif.type_notif == 'ZIKR' %}<i class="fa-solid fa-hands-praying text-yellow-400 text-xl"></i>
+                {% elif notif.type_notif == 'NOUVEAU' %}<i class="fa-solid fa-sparkles text-purple-400 text-xl"></i>
+                {% else %}<i class="fa-solid fa-star-and-crescent text-gold-500 text-xl"></i>{% endif %}
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-2">
+                    <h3 class="font-extrabold text-white text-xs">{{ notif.titre }}</h3>
+                    <span class="text-[10px] text-white/40 whitespace-nowrap">{{ notif.date_creation|timesince }}</span>
+                </div>
+                <p class="text-xs text-white/75 mt-1 leading-relaxed">{{ notif.message }}</p>
                 {% if notif.url_action %}
-                <a href="{{ notif.url_action }}" class="inline-block mt-2 text-xs font-bold text-gold-400 hover:text-gold-300">
+                <a href="{{ notif.url_action }}" class="inline-block mt-2 text-[11px] font-extrabold text-gold-400">
                     Ouvrir <i class="fa-solid fa-arrow-right ml-1"></i>
                 </a>
                 {% endif %}
             </div>
         </div>
         {% empty %}
-        <div class="glass p-12 rounded-3xl text-center border border-white/5">
-            <i class="fa-regular fa-bell-slash text-5xl text-white/20 mb-4 block"></i>
-            <h3 class="text-lg font-bold text-white mb-2">Aucune notification</h3>
-            <p class="text-sm text-white/50">Vous êtes à jour ! Vos rappels spirituels apparaîtront ici.</p>
+        <div class="glass p-8 rounded-3xl text-center border border-white/5">
+            <i class="fa-regular fa-bell text-3xl text-gold-400/40 mb-2 block"></i>
+            <p class="text-xs font-bold text-white/70">Vos rappels quotidiens sont programmés !</p>
+            <p class="text-[11px] text-white/45 mt-1">Prières, versets, citations et nouveaux Khassidas s'afficheront ici.</p>
         </div>
         {% endfor %}
     </div>
 </div>
 
 <script>
+function loadNotifUiPrefs() {
+    if (!window.SDMNotifications) return;
+    const p = window.SDMNotifications.getPrefs();
+    document.getElementById('pref-prayerEnabled').checked = !!p.prayerEnabled;
+    document.getElementById('pref-prayerLeadMin').value = String(p.prayerLeadMin ?? 5);
+    document.getElementById('pref-verseEnabled').checked = !!p.verseEnabled;
+    document.getElementById('pref-verseTime').value = p.verseTime || '07:30';
+    document.getElementById('pref-citationEnabled').checked = !!p.citationEnabled;
+    document.getElementById('pref-citationTime').value = p.citationTime || '13:30';
+    document.getElementById('pref-khassidaEnabled').checked = !!p.khassidaEnabled;
+    document.getElementById('pref-duolingoEnabled').checked = !!p.duolingoEnabled;
+    document.getElementById('pref-duolingoTime').value = p.duolingoTime || '19:30';
+
+    const st = document.getElementById('notif-perm-status');
+    const btn = document.getElementById('btn-enable-notif');
+    if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+            st.textContent = 'Notifications système activées sur ce téléphone ✓';
+            st.className = 'text-[11px] text-emerald-400 font-bold';
+            btn.textContent = 'Actif ✓';
+        } else if (Notification.permission === 'denied') {
+            st.textContent = 'Autorisez les notifications dans les réglages du navigateur';
+        }
+    }
+}
+
+function saveNotifUiPrefs() {
+    if (!window.SDMNotifications) return;
+    window.SDMNotifications.savePrefs({
+        enabled: true,
+        prayerEnabled: document.getElementById('pref-prayerEnabled').checked,
+        prayerLeadMin: parseInt(document.getElementById('pref-prayerLeadMin').value, 10),
+        verseEnabled: document.getElementById('pref-verseEnabled').checked,
+        verseTime: document.getElementById('pref-verseTime').value || '07:30',
+        citationEnabled: document.getElementById('pref-citationEnabled').checked,
+        citationTime: document.getElementById('pref-citationTime').value || '13:30',
+        khassidaEnabled: document.getElementById('pref-khassidaEnabled').checked,
+        duolingoEnabled: document.getElementById('pref-duolingoEnabled').checked,
+        duolingoTime: document.getElementById('pref-duolingoTime').value || '19:30'
+    });
+    const toast = document.getElementById('notif-saved-toast');
+    if (toast) {
+        toast.classList.remove('hidden');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => toast.classList.add('hidden'), 1800);
+    }
+}
+
+async function enableSdmNotifications() {
+    if (!window.SDMNotifications) return;
+    await window.SDMNotifications.requestPermission();
+    loadNotifUiPrefs();
+}
+
 function markAllAsRead() {
     fetch('{% url "mark_notifications_read" %}', {
         method: 'POST',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-            'Content-Type': 'application/json'
-        }
-    }).then(response => response.json())
-      .then(data => {
-          if(data.status === 'success') {
-              window.location.reload();
-          }
-      });
+        headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' }
+    }).then(r => r.json()).then(d => { if (d.status === 'success') window.location.reload(); });
 }
+
+window.addEventListener('DOMContentLoaded', loadNotifUiPrefs);
 </script>
 {% endblock %}

@@ -179,6 +179,52 @@ def tazawwud_home(request):
     rappels_list = get_rappels_tazawwud()
     rappel_du_jour = rappels_list[timezone.now().day % len(rappels_list)] if rappels_list else None
 
+    # ── ÉVOLUTION 7 JOURS & COACH "MODE DUOLINGO" (série, jours faits vs jours sautés) ──
+    today_d = timezone.now().date()
+    day_names_fr = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+    jours_7 = []
+    for i in range(6, -1, -1):
+        jd = today_d - timedelta(days=i)
+        done_day = TazawwudReponseHistorique.objects.filter(
+            user=request.user, date_tentative__date=jd
+        ).exists()
+        jours_7.append({
+            'label': day_names_fr[jd.weekday()],
+            'num': jd.day,
+            'done': done_day,
+            'is_today': (jd == today_d),
+            'missed': (not done_day and jd < today_d),
+        })
+
+    done_today = jours_7[-1]['done']
+    missed_yesterday = jours_7[-2]['missed'] if len(jours_7) >= 2 else False
+    missed_days_count = sum(1 for j in jours_7[:-1] if j['missed'])
+
+    # Calcul de la série active réelle (consécutive jusqu'à aujourd'hui ou hier)
+    streak_live = progression.serie_jours or 0
+    if done_today and streak_live == 0:
+        streak_live = 1
+
+    # Prochaine leçon recommandée (première leçon non terminée)
+    next_lecon = TazawwudLecon.objects.filter(est_revision_finale=False).exclude(
+        id__in=terminees_ids
+    ).order_by('module__numero', 'numero').first() or TazawwudLecon.objects.filter(
+        est_revision_finale=False
+    ).order_by('module__numero', 'numero').first()
+
+    if done_today:
+        coach_mode = 'done_today'
+        coach_title = f"Bravo ! Journée validée · Série {streak_live} jour(s) 🔥"
+        coach_msg = "Tu as nourri ton âme aujourd'hui avec Tazawwudu-ç-Çighâr. Reviens demain ou continue une étape bonus !"
+    elif missed_yesterday:
+        coach_mode = 'missed'
+        coach_title = "🦉 Alerte Duolingo : Tu as sauté hier !"
+        coach_msg = f"Attention ! {missed_days_count} jour(s) manqué(s) cette semaine. Cheikh Ahmadou Bamba t'attend : fais juste 2 minutes maintenant pour rallumer ta flamme !"
+    else:
+        coach_mode = 'todo_today'
+        coach_title = f"🔥 Ta flamme de {streak_live} jour(s) attend ta leçon du jour !" if streak_live > 0 else "🔥 Lance ta série quotidienne Tazawwudu-ç-Çighâr !"
+        coach_msg = "Ne laisse pas passer la journée sans lire 3 petites cartes du livre et répondre aux questions intermédiaires (2 min) !"
+
     context = {
         'modules_data': modules_data,
         'terminees_ids': terminees_ids,
@@ -188,6 +234,13 @@ def tazawwud_home(request):
         'nb_erreurs': nb_erreurs,
         'rappel_du_jour': rappel_du_jour,
         'rappels_json': json.dumps(rappels_list),
+        'jours_7': jours_7,
+        'streak_live': streak_live,
+        'done_today': done_today,
+        'coach_mode': coach_mode,
+        'coach_title': coach_title,
+        'coach_msg': coach_msg,
+        'next_lecon': next_lecon,
     }
     return render(request, 'bibliotheque/tazawwud/home.html', context)
 
@@ -327,9 +380,211 @@ def tazawwud_module(request, module_id):
     return render(request, 'bibliotheque/tazawwud/module.html', context)
 
 
+def _chunk_text_for_small_screen(raw_text, max_chars=230):
+    """
+    Découpe fidèlement le texte du livre en courtes cartes calibrées pour un petit écran mobile
+    (2 à 4 lignes max par écran, sans pavés à scroller, sans modifier le sens du livre).
+    """
+    import re
+    if not raw_text:
+        return []
+    paragraphs = [p.strip() for p in raw_text.replace('\r', '').split('\n') if p.strip()]
+    chunks = []
+    cur = ''
+    for para in paragraphs:
+        # Si le paragraphe est déjà court, on essaie de le regrouper ou de le garder seul
+        sentences = re.split(r'(?<=[.!?؛؟])\s+', para)
+        for sent in sentences:
+            sent = sent.strip()
+            if not sent:
+                continue
+            if not cur:
+                cur = sent
+            elif len(cur) + 1 + len(sent) <= max_chars:
+                cur = cur + '\n' + sent if len(sent) > 70 else cur + ' ' + sent
+            else:
+                chunks.append(cur)
+                cur = sent
+        if cur and len(cur) >= max_chars * 0.6:
+            chunks.append(cur)
+            cur = ''
+    if cur:
+        chunks.append(cur)
+    return chunks
+
+
+def _build_duolingo_lesson_deck(lecon):
+    """
+    Construit un parcours étape par étape façon Duolingo :
+    - Petites cartes de lecture fidèles au livre (calibrées petit écran)
+    - Cartes « Ce que dit le livre » (résumé objectif issu des points clés du texte)
+    - Questions intermédiaires riches (DB + questions objectives générées directement sur le texte du livre)
+      intercalées AU MILIEU de la leçon (6 à 10 questions par chapitre au lieu de 2–3 !).
+    """
+    import re
+    rng = random.Random(f"tazawwud_deck_{lecon.id}")
+
+    source_cards = _chunk_text_for_small_screen(lecon.texte_source or '', max_chars=225)
+    summary_lines = [
+        line.lstrip('•-*— \t').strip()
+        for line in (lecon.a_retenir or '').splitlines()
+        if len(line.lstrip('•-*— \t').strip()) >= 18
+    ]
+    explication_cards = _chunk_text_for_small_screen(lecon.explication or '', max_chars=220)
+
+    # 1. Collecter les questions existantes en base (QCM / Vrai-Faux)
+    db_questions = []
+    for q in lecon.questions.prefetch_related('choix').order_by('ordre', 'id'):
+        choix = [{'id': c.id, 'texte': c.texte, 'est_correct': c.est_correct} for c in q.choix.all()]
+        if len(choix) >= 2:
+            rng.shuffle(choix)
+            db_questions.append({
+                'kind': 'question',
+                'db_id': q.id,
+                'badge': 'Question du Chapitre',
+                'texte': q.texte,
+                'explication': q.explication_reponse or "Vérifié d'après le texte de Tazawwudu-ç-Çighâr.",
+                'points': q.points or 15,
+                'choix': choix,
+            })
+
+    # 2. Enrichir automatiquement avec des questions intermédiaires OBJECTIVES fidèles au livre
+    # (pour passer de 2-3 questions à 7-9 questions par leçon !)
+    other_points_pool = list(
+        TazawwudLecon.objects.exclude(id=lecon.id)
+        .values_list('a_retenir', flat=True)[:25]
+    )
+    distractor_sentences = []
+    for blob in other_points_pool:
+        for ln in (blob or '').splitlines():
+            cl = ln.lstrip('•-*— \t').strip()
+            if 22 <= len(cl) <= 135:
+                distractor_sentences.append(cl)
+
+    generated_qs = []
+
+    # 2a. Questions « Compléter la phrase du livre » à partir des points clés de cette leçon
+    for idx, pt in enumerate(summary_lines):
+        if len(db_questions) + len(generated_qs) >= 8:
+            break
+        words = [w for w in re.findall(r"[A-Za-zÀ-ÿ'\-]{5,}", pt) if w.lower() not in {'cette', 'celui', 'celle', 'dans', 'pour', 'avec', 'entre', 'comme', 'toute', 'toutes', 'leçon', 'livre', 'cheikh', 'bamba', 'selon', 'doit', 'être', 'aussi', 'notre', 'votre', 'leurs'}]
+        if not words:
+            continue
+        target_word = max(words, key=len)
+        blanked = re.sub(r'\b' + re.escape(target_word) + r'\b', '________', pt, count=1)
+        if blanked == pt:
+            continue
+        # Choisir 3 mots distracteurs plausibles issus d'autres phrases du livre
+        other_words = list({
+            w for s in distractor_sentences
+            for w in re.findall(r"[A-Za-zÀ-ÿ'\-]{5,}", s)
+            if w.lower() != target_word.lower() and w.lower() not in {'cette', 'celui', 'celle', 'toute', 'toutes', 'cheikh', 'bamba'}
+        })
+        if len(other_words) < 3:
+            other_words = ['Sincérité', 'Ablution', 'Patience', 'Obligation', 'Prophète', 'Prière']
+        wrongs = rng.sample([w for w in other_words if w.lower() != target_word.lower()], 3)
+        choix = [{'id': 0, 'texte': target_word, 'est_correct': True}] + [
+            {'id': 0, 'texte': w, 'est_correct': False} for w in wrongs
+        ]
+        rng.shuffle(choix)
+        generated_qs.append({
+            'kind': 'question',
+            'db_id': None,
+            'badge': 'Compléter le Texte du Livre',
+            'texte': f"Complétez cet enseignement fidèle au livre :\n« {blanked} »",
+            'explication': f"Phrase complète d'après le livre : « {pt} »",
+            'points': 10,
+            'choix': choix,
+        })
+
+    # 2b. Questions « Ce que dit le livre » (reconnaître l'enseignement exact de cette leçon parmi 4)
+    for pt in summary_lines[:3]:
+        if len(db_questions) + len(generated_qs) >= 9:
+            break
+        if len(pt) <= 135 and len(distractor_sentences) >= 3:
+            wrongs = rng.sample([s for s in distractor_sentences if s.lower() != pt.lower()], 3)
+            choix = [{'id': 0, 'texte': pt, 'est_correct': True}] + [
+                {'id': 0, 'texte': w, 'est_correct': False} for w in wrongs
+            ]
+            rng.shuffle(choix)
+            generated_qs.append({
+                'kind': 'question',
+                'db_id': None,
+                'badge': 'Vérification Fidèle au Livre',
+                'texte': f"Lequel de ces enseignements appartient directement au chapitre « {lecon.titre} » ?",
+                'explication': f"Exact ! Le livre enseigne dans « {lecon.titre} » : {pt}",
+                'points': 10,
+                'choix': choix,
+            })
+
+    # 2c. Question Vrai / Faux fidèle au texte
+    if summary_lines and (len(db_questions) + len(generated_qs)) < 8:
+        pt0 = summary_lines[0]
+        generated_qs.append({
+            'kind': 'question',
+            'db_id': None,
+            'badge': 'Vrai ou Faux · Texte du Livre',
+            'texte': f"D'après ce chapitre de Tazawwudu-ç-Çighâr :\n« {pt0} »",
+            'explication': f"Vrai ! C'est exactement ce qu'énonce ce passage de « {lecon.titre} ».",
+            'points': 10,
+            'choix': [
+                {'id': 0, 'texte': 'Vrai — C\'est enseigné dans ce passage', 'est_correct': True},
+                {'id': 0, 'texte': 'Faux — Le livre dit le contraire', 'est_correct': False},
+            ],
+        })
+
+    all_questions = db_questions + generated_qs
+
+    # 3. Construire la liste des cartes de lecture (courtes, fidèles au livre)
+    read_cards = []
+    for i, sc in enumerate(source_cards[:8], 1):
+        read_cards.append({
+            'kind': 'book',
+            'badge': f'Texte du Livre · Passage {i}/{min(len(source_cards), 8)}',
+            'title': lecon.titre,
+            'texte': sc,
+            'footer': 'Tazawwudu-ç-Çighâr · Cheikh Ahmadou Bamba',
+        })
+    for i, ec in enumerate(explication_cards[:4], 1):
+        read_cards.append({
+            'kind': 'summary',
+            'badge': f'Ce que dit le livre · Synthèse {i}',
+            'title': 'Résumé objectif du passage',
+            'texte': ec,
+            'footer': 'Résumé fidèle au texte sans interprétation subjective',
+        })
+    if summary_lines:
+        for i in range(0, min(len(summary_lines), 6), 2):
+            pair = summary_lines[i:i+2]
+            read_cards.append({
+                'kind': 'summary',
+                'badge': 'Points Clés du Livre',
+                'title': 'À ancrer dans votre mémoire',
+                'texte': '\n\n'.join(f'۞ {p}' for p in pair),
+                'footer': f'Chapitre : {lecon.titre}',
+            })
+
+    # 4. INTERCALER lecture courte (1-2 cartes) + question intermédiaire (façon Duolingo !)
+    deck = []
+    q_idx = 0
+    for idx_r, rcard in enumerate(read_cards):
+        deck.append(rcard)
+        # Après chaque 1 ou 2 cartes de lecture, insérer une question intermédiaire !
+        if q_idx < len(all_questions) and ((idx_r + 1) % 2 == 0 or idx_r == len(read_cards) - 1):
+            deck.append(all_questions[q_idx])
+            q_idx += 1
+
+    # Ajouter les questions restantes en fin de parcours (défi de validation du chapitre)
+    while q_idx < len(all_questions):
+        deck.append(all_questions[q_idx])
+        q_idx += 1
+
+    return deck, len(all_questions)
+
+
 @login_required
 def tazawwud_lecon(request, lecon_id):
-    """Lecture interactive en étapes (Découverte -> Source -> Comprendre -> À Retenir)."""
+    """Parcours étape par étape façon Duolingo : courtes cartes calibrées petit écran + questions intermédiaires riches."""
     lecon = get_object_or_404(TazawwudLecon, id=lecon_id)
     progression, _ = TazawwudProgression.objects.get_or_create(user=request.user)
 
@@ -339,11 +594,22 @@ def tazawwud_lecon(request, lecon_id):
         if not a_acces:
             return redirect('tazawwud_revision', lecon_id=lecon.id)
 
+    deck, total_questions = _build_duolingo_lesson_deck(lecon)
+    next_lecon = TazawwudLecon.objects.filter(
+        module=lecon.module, numero__gt=lecon.numero, est_revision_finale=False
+    ).order_by('numero').first() or TazawwudLecon.objects.filter(
+        module__numero__gt=lecon.module.numero, est_revision_finale=False
+    ).order_by('module__numero', 'numero').first()
+
     context = {
         'lecon': lecon,
         'progression': progression,
         'is_revision_dossier': lecon.est_revision_finale,
         'is_finale_livre': is_finale_livre,
+        'deck_json': json.dumps(deck, ensure_ascii=False),
+        'total_steps': len(deck),
+        'total_questions': total_questions,
+        'next_lecon': next_lecon,
     }
     return render(request, 'bibliotheque/tazawwud/lecon.html', context)
 

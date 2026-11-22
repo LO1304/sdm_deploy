@@ -95,6 +95,57 @@
     </div>
 
     <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!-- COACH DUOLINGO SDM & CALENDRIER D'ÉVOLUTION 7 JOURS                -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div class="glass rounded-3xl p-4 border {% if coach_mode == 'missed' %}border-orange-400/55 bg-gradient-to-br from-orange-950/60 to-red-950/35{% elif coach_mode == 'done_today' %}border-emerald-400/50 bg-gradient-to-br from-emerald-950/55 to-[#040B08]{% else %}border-gold-400/50 bg-gradient-to-br from-amber-950/55 to-[#040B08]{% endif %} shadow-2xl space-y-3.5">
+        <div class="flex items-start gap-3">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 shadow-lg {% if coach_mode == 'missed' %}bg-orange-500/25 border border-orange-400/50{% elif coach_mode == 'done_today' %}bg-emerald-500/25 border border-emerald-400/50{% else %}bg-gold-500/25 border border-gold-400/50{% endif %}">
+                {% if coach_mode == 'missed' %}🦉{% elif coach_mode == 'done_today' %}🏆{% else %}🔥{% endif %}
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[10px] font-black uppercase tracking-widest {% if coach_mode == 'missed' %}text-orange-300{% elif coach_mode == 'done_today' %}text-emerald-300{% else %}text-gold-300{% endif %}">
+                        Coach Tazawwud · Mode Duolingo
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full bg-black/50 border border-orange-400/40 text-[10px] font-black text-orange-300">
+                        🔥 {{ streak_live }} j
+                    </span>
+                </div>
+                <h2 class="text-sm font-black text-white mt-0.5 leading-snug">{{ coach_title }}</h2>
+                <p class="text-[11.5px] text-white/80 mt-1 leading-relaxed">{{ coach_msg }}</p>
+            </div>
+        </div>
+
+        <!-- Calendrier visuel des 7 derniers jours (Évolution quotidienne) -->
+        <div class="grid grid-cols-7 gap-1.5 pt-1">
+            {% for j in jours_7 %}
+            <div class="flex flex-col items-center gap-1 py-2 rounded-xl border {% if j.done %}bg-emerald-500/20 border-emerald-400/50{% elif j.is_today %}bg-gold-500/15 border-gold-400/60{% else %}bg-red-500/10 border-red-400/25{% endif %}">
+                <span class="text-[9px] font-extrabold uppercase {% if j.is_today %}text-gold-300{% else %}text-white/60{% endif %}">{{ j.label }}</span>
+                <span class="text-sm leading-none">
+                    {% if j.done %}🔥{% elif j.is_today %}⏳{% else %}❌{% endif %}
+                </span>
+                <span class="text-[9px] font-bold text-white/50">{{ j.num }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if next_lecon %}
+        <div class="flex items-center gap-2 pt-0.5">
+            <a href="{% url 'tazawwud_lecon' next_lecon.id %}"
+               class="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black text-xs text-center shadow-lg tap-card"
+               style="text-decoration:none;">
+                <i class="fa-solid fa-play mr-1.5"></i> Continuer : {{ next_lecon.titre|truncatechars:28 }}
+            </a>
+            <a href="{% url 'notifications' %}"
+               class="py-3 px-3 rounded-2xl bg-white/10 border border-white/15 text-gold-300 text-xs font-extrabold tap-card"
+               style="text-decoration:none;" title="Régler l'heure de rappel Duolingo">
+                <i class="fa-solid fa-bell"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════ -->
     <!-- SECTION ANIMÉE : LES RAPPELS VIVANTS DU VIATIQUE (CARROUSEL 3D)    -->
     <!-- ══════════════════════════════════════════════════════════════════ -->
     {% if rappel_du_jour %}

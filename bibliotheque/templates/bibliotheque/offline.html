@@ -1,0 +1,44 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}Mode Hors-Ligne — SDM Mouride{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-6 space-y-4 text-center">
+    <div class="glass rounded-3xl p-6 border border-emerald-500/30 shadow-2xl">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 flex items-center justify-center text-3xl mx-auto mb-3">
+            <i class="fa-solid fa-wifi"></i>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-[10px] font-extrabold uppercase tracking-widest">
+            Application Mobile · Hors-Ligne
+        </span>
+        <h1 class="text-xl font-black text-white mt-3">Vous êtes hors connexion</h1>
+        <p class="text-xs text-white/65 mt-1.5 leading-relaxed">
+            SDM Mouride reste utilisable même sans Internet ! Accédez à vos Khassidas PDF, Audios téléchargés, Zikr et pages déjà en mémoire.
+        </p>
+
+        <div class="grid grid-cols-2 gap-2.5 mt-5">
+            <a href="/" class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-white font-extrabold text-xs flex flex-col items-center gap-1.5 tap-card" style="text-decoration:none;">
+                <i class="fa-solid fa-house text-gold-400 text-lg"></i>
+                <span>Accueil</span>
+            </a>
+            <a href="/telechargements/" class="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-400/35 text-emerald-200 font-extrabold text-xs flex flex-col items-center gap-1.5 tap-card" style="text-decoration:none;">
+                <i class="fa-solid fa-cloud-arrow-down text-emerald-400 text-lg"></i>
+                <span>Mes Téléchargements</span>
+            </a>
+            <a href="/zikr-compteur/" class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-white font-extrabold text-xs flex flex-col items-center gap-1.5 tap-card" style="text-decoration:none;">
+                <i class="fa-solid fa-fingerprint text-gold-400 text-lg"></i>
+                <span>Chapelet Zikr</span>
+            </a>
+            <a href="/collection/son/" class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-white font-extrabold text-xs flex flex-col items-center gap-1.5 tap-card" style="text-decoration:none;">
+                <i class="fa-solid fa-headphones text-gold-400 text-lg"></i>
+                <span>Audios</span>
+            </a>
+        </div>
+
+        <button type="button" onclick="window.location.reload()" class="mt-4 w-full py-3 rounded-2xl bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black text-xs tap-card">
+            <i class="fa-solid fa-rotate-right mr-1.5"></i> Réessayer la connexion
+        </button>
+    </div>
+</div>
+{% endblock %}

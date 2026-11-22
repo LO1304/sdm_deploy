@@ -299,12 +299,17 @@ async def run_sync(args):
                 except OSError:
                     pass
 
+    active_plan = CHANNEL_PLAN
+    if getattr(args, 'channels', None):
+        wanted = {c.strip().lower().lstrip('@') for c in args.channels.split(',') if c.strip()}
+        active_plan = [row for row in CHANNEL_PLAN if row[0].lower() in wanted]
+
     # ══════════════════════════════════════════════════════════════
     # PHASE 1 : KHASSIDAS PDF & CORANS PDF (< 9.8 Mo Cloudinary Free)
     # ══════════════════════════════════════════════════════════════
     if args.mode in ('all', 'pdf'):
         print("\n═══════════════ PHASE 1 : KHASSIDAS & CORANS PDF ═══════════════", flush=True)
-        for ch_ref, _, _, _, pdf_quota in CHANNEL_PLAN:
+        for ch_ref, _, _, _, pdf_quota in active_plan:
             if state['uploaded_bytes'] >= max_bytes or (state['khassidas_pdf'] + state['corans_pdf']) >= args.max_pdfs:
                 break
             try:
@@ -413,7 +418,7 @@ async def run_sync(args):
     # ══════════════════════════════════════════════════════════════
     if args.mode in ('all', 'audio'):
         print("\n═══════════════ PHASE 2 : 1000+ AUDIOS MOURIDES ═══════════════", flush=True)
-        for ch_ref, default_cat, default_prof, audio_quota, _ in CHANNEL_PLAN:
+        for ch_ref, default_cat, default_prof, audio_quota, _ in active_plan:
             if state['uploaded_bytes'] >= max_bytes or state['audios'] >= args.max_audios:
                 break
             try:
@@ -546,5 +551,6 @@ if __name__ == '__main__':
     parser.add_argument('--max-gb', type=float, default=5.8)
     parser.add_argument('--max-audio-mb', type=float, default=14.0)
     parser.add_argument('--workers', type=int, default=4)
+    parser.add_argument('--channels', type=str, default='')
     args = parser.parse_args()
     asyncio.run(run_sync(args))

@@ -1,171 +1,203 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Jouer - Defi {{ defi.code_partage }}{% endblock %}
+{% block title %}Duel {{ defi.code_partage }} — Manche {{ round_num }}{% endblock %}
 
 {% block content %}
 <style>
-    .choice-btn { transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
-    .choice-btn:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(16,185,129,0.5) !important; background: rgba(16,185,129,0.08) !important; }
-    .choice-btn:active:not(:disabled) { transform: scale(0.97); }
-    .choice-btn.correct { background: rgba(16,185,129,0.2) !important; border-color: rgba(16,185,129,0.6) !important; color: #34d399 !important; }
-    .choice-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: rgba(239,68,68,0.5) !important; color: #f87171 !important; }
-    .choice-btn:disabled { cursor: not-allowed; opacity: 0.7; }
-    @keyframes slideIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .slide-in { animation: slideIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
-    .timer-ring { transition: stroke-dashoffset 1s linear; }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
-    .shake { animation: shake 0.3s ease; }
+    .choice-btn { transition: all 0.22s ease; }
+    .choice-btn.correct { background: rgba(16,185,129,0.22) !important; border-color: rgba(16,185,129,0.7) !important; color: #34d399 !important; }
+    .choice-btn.wrong { background: rgba(239,68,68,0.18) !important; border-color: rgba(239,68,68,0.6) !important; color: #f87171 !important; }
 </style>
 
-<div class="max-w-3xl mx-auto pb-8" id="quiz-app">
+<div class="max-w-xl mx-auto pb-10 space-y-3" id="quiz-app">
 
-    <div class="glass rounded-[28px] overflow-hidden border border-white/5 shadow-2xl">
-        
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-yellow-600/80 to-amber-700/80 p-5 md:p-6 flex justify-between items-center relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
-            <div class="relative z-10">
-                <p class="text-yellow-200/80 text-[10px] font-bold uppercase tracking-widest mb-1">Defi {{ defi.code_partage }}</p>
-                <h2 class="text-xl md:text-2xl font-black text-white">{{ defi.niveau_choisi.nom }}</h2>
+    <!-- SCOREBOARD LIVE DES AMIS PENDANT LA PARTIE -->
+    <div id="live-friends-bar" class="glass rounded-2xl px-3.5 py-2 border border-gold-500/30 flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px] font-extrabold text-white/85">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
+        <span id="live-friends-text" class="whitespace-nowrap">Salle {{ defi.code_partage }} · Synchronisé en direct</span>
+    </div>
+
+    <div class="glass rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+        <div class="p-4 flex justify-between items-center" style="background:linear-gradient(135deg,#B45309,#78350F);">
+            <div>
+                <p class="text-amber-200/80 text-[10px] font-extrabold uppercase tracking-widest">Défi {{ defi.code_partage }} · Manche {{ round_num }}</p>
+                <h2 class="text-base font-black text-white">Score : <span id="live-my-score">0</span> pts</h2>
             </div>
-            <div class="relative z-10 flex flex-col items-center">
-                <svg width="56" height="56" class="transform -rotate-90">
-                    <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="none"/>
-                    <circle id="timer-ring" cx="28" cy="28" r="24" stroke="#fbbf24" stroke-width="4" fill="none" 
-                            stroke-dasharray="150.8" stroke-dashoffset="0" stroke-linecap="round" class="timer-ring"/>
-                </svg>
-                <span id="timer" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-black text-white">15</span>
+            <div class="relative flex items-center justify-center w-12 h-12 rounded-full bg-black/40 border-2 border-gold-400">
+                <span id="timer" class="text-lg font-black text-white">15</span>
             </div>
         </div>
-        
-        <div class="h-1 bg-white/5 w-full">
-            <div id="progress-bar" class="h-full bg-gradient-to-r from-yellow-500 to-amber-400 transition-all duration-500" style="width: 0%"></div>
+
+        <div class="h-1.5 bg-white/10 w-full">
+            <div id="progress-bar" class="h-full bg-gradient-to-r from-gold-400 to-emerald-400 transition-all duration-300" style="width: 0%"></div>
         </div>
 
-        <div class="p-6 md:p-10" id="question-area">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-6 text-center">
+        <div class="p-5" id="question-area">
+            <p class="text-[10px] font-extrabold uppercase tracking-widest text-gold-300/80 mb-3 text-center">
                 Question <span id="current-q">1</span> / <span id="total-q">10</span>
             </p>
-            <p class="text-xl md:text-2xl font-bold text-white/90 mb-8 text-center leading-relaxed" id="question-text">Chargement...</p>
-            <div class="grid grid-cols-1 gap-3" id="choices-container"></div>
+            <p class="text-base font-extrabold text-white mb-5 text-center leading-relaxed" id="question-text">Chargement…</p>
+            <div class="space-y-2.5" id="choices-container"></div>
+
+            <div id="explication-box" class="hidden mt-4 p-3.5 rounded-2xl bg-emerald-950/50 border border-emerald-500/30 text-xs text-emerald-100 leading-relaxed"></div>
         </div>
 
-        <div class="p-5 bg-white/[0.02] border-t border-white/5 hidden text-center" id="action-area">
-            <p id="feedback-msg" class="text-lg font-bold mb-4"></p>
-            <button id="next-btn" class="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3.5 px-10 rounded-2xl shadow-lg transition-all active:scale-95 hidden text-sm">
-                Question Suivante <i class="fa-solid fa-arrow-right ml-2"></i>
+        <div class="p-4 bg-white/[0.03] border-t border-white/10 hidden text-center" id="action-area">
+            <p id="feedback-msg" class="text-sm font-black mb-3"></p>
+            <button id="next-btn" class="w-full py-3 rounded-2xl bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black text-xs hidden tap-card">
+                Question Suivante →
             </button>
-            <button id="finish-btn" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold py-3.5 px-10 rounded-2xl shadow-lg transition-all active:scale-95 hidden text-sm">
-                Terminer <i class="fa-solid fa-flag-checkered ml-2"></i>
+            <button id="finish-btn" class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-black text-xs hidden tap-card">
+                Voir le Classement Live 🏆
             </button>
         </div>
     </div>
 </div>
 
 <script>
-    const questions = JSON.parse('{{ questions_json|escapejs }}');
-    const csrfToken = '{{ csrf_token }}';
-    const defiCode = '{{ defi.code_partage }}';
-    const TOTAL_TIME = 15;
-    
-    let currentIdx = 0, score = 0, timerInterval, timeLeft = TOTAL_TIME;
-    const circumference = 2 * Math.PI * 24;
-    
-    const ui = {
-        question: document.getElementById('question-text'),
-        choices: document.getElementById('choices-container'),
-        currentQ: document.getElementById('current-q'),
-        totalQ: document.getElementById('total-q'),
-        timer: document.getElementById('timer'),
-        timerRing: document.getElementById('timer-ring'),
-        progress: document.getElementById('progress-bar'),
-        actionArea: document.getElementById('action-area'),
-        feedback: document.getElementById('feedback-msg'),
-        nextBtn: document.getElementById('next-btn'),
-        finishBtn: document.getElementById('finish-btn'),
-    };
-    
-    ui.totalQ.innerText = questions.length;
-    
-    function loadQuestion() {
-        if (currentIdx >= questions.length) { endGame(); return; }
-        ui.actionArea.classList.add('hidden');
-        ui.nextBtn.classList.add('hidden');
-        ui.finishBtn.classList.add('hidden');
-        const q = questions[currentIdx];
-        ui.question.innerText = q.texte;
-        ui.currentQ.innerText = currentIdx + 1;
-        ui.progress.style.width = ((currentIdx / questions.length) * 100) + '%';
-        ui.choices.innerHTML = '';
-        q.choix.forEach((c, idx) => {
-            const btn = document.createElement('button');
-            btn.className = "choice-btn w-full py-4 px-5 text-left rounded-2xl border border-white/10 bg-white/[0.03] font-semibold text-white/80 text-sm slide-in";
-            btn.style.animationDelay = (idx * 80) + 'ms';
-            btn.innerHTML = `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white/10 text-[11px] font-bold mr-3 text-white/50">${String.fromCharCode(65+idx)}</span>${c.texte}`;
-            btn.onclick = () => handleAnswer(c.est_correct, q.points, btn);
-            ui.choices.appendChild(btn);
+const questions = JSON.parse('{{ questions_json|escapejs }}');
+const csrfToken = '{{ csrf_token }}';
+const defiCode = '{{ defi.code_partage|escapejs }}';
+const LOBBY_API = '{% url "api_defi_lobby" defi.code_partage %}';
+const TOTAL_TIME = 15;
+
+let currentIdx = 0, score = 0, timerInterval, timeLeft = TOTAL_TIME;
+
+const ui = {
+    question: document.getElementById('question-text'),
+    choices: document.getElementById('choices-container'),
+    currentQ: document.getElementById('current-q'),
+    totalQ: document.getElementById('total-q'),
+    timer: document.getElementById('timer'),
+    progress: document.getElementById('progress-bar'),
+    actionArea: document.getElementById('action-area'),
+    feedback: document.getElementById('feedback-msg'),
+    nextBtn: document.getElementById('next-btn'),
+    finishBtn: document.getElementById('finish-btn'),
+    explication: document.getElementById('explication-box'),
+    myScore: document.getElementById('live-my-score'),
+};
+
+ui.totalQ.innerText = questions.length;
+
+async function syncProgress(action = 'progress') {
+    try {
+        const res = await fetch(LOBBY_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+            body: JSON.stringify({ action, score, q_num: currentIdx + 1 })
         });
-        startTimer();
-    }
-    
-    function startTimer() {
-        timeLeft = TOTAL_TIME;
-        ui.timer.innerText = timeLeft;
-        ui.timer.style.color = '#fff';
-        ui.timerRing.style.stroke = '#fbbf24';
-        ui.timerRing.style.strokeDashoffset = '0';
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            ui.timer.innerText = timeLeft;
-            ui.timerRing.style.strokeDashoffset = circumference * (1 - timeLeft / TOTAL_TIME);
-            if (timeLeft <= 5) { ui.timer.style.color = '#f87171'; ui.timerRing.style.stroke = '#ef4444'; }
-            if (timeLeft <= 0) { clearInterval(timerInterval); handleTimeOut(); }
-        }, 1000);
-    }
-    
-    function handleAnswer(isCorrect, points, selectedBtn) {
-        clearInterval(timerInterval);
-        disableAll();
-        if (isCorrect) {
-            score += points;
-            selectedBtn.classList.add('correct');
-            ui.feedback.innerText = `Bonne reponse ! +${points} pts`;
-            ui.feedback.className = "text-lg font-bold mb-4 text-emerald-400";
-        } else {
-            selectedBtn.classList.add('wrong', 'shake');
-            ui.feedback.innerText = "Mauvaise reponse !";
-            ui.feedback.className = "text-lg font-bold mb-4 text-red-400";
-            highlightCorrect();
+        if (res.ok) {
+            const data = await res.json();
+            const txt = (data.players || []).map(p => `${p.name}: ${p.score} pts`).join('  ·  ');
+            if (txt) document.getElementById('live-friends-text').textContent = txt;
         }
-        showNext();
+    } catch (e) {}
+}
+
+function loadQuestion() {
+    if (currentIdx >= questions.length) { endGame(); return; }
+    ui.actionArea.classList.add('hidden');
+    ui.nextBtn.classList.add('hidden');
+    ui.finishBtn.classList.add('hidden');
+    ui.explication.classList.add('hidden');
+
+    const q = questions[currentIdx];
+    ui.question.innerText = q.texte;
+    ui.currentQ.innerText = currentIdx + 1;
+    ui.progress.style.width = ((currentIdx / questions.length) * 100) + '%';
+    ui.choices.innerHTML = '';
+
+    q.choix.forEach((c, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "choice-btn w-full py-3.5 px-4 text-left rounded-2xl border border-white/15 bg-white/[0.04] font-bold text-white text-xs flex items-center gap-3 tap-card";
+        btn.innerHTML = `<span class="w-6 h-6 rounded-lg bg-white/10 text-[11px] font-black flex items-center justify-center flex-shrink-0 text-gold-300">${String.fromCharCode(65+idx)}</span><span class="flex-1">${c.texte}</span>`;
+        btn.onclick = () => handleAnswer(c.est_correct, q.points || 10, btn);
+        ui.choices.appendChild(btn);
+    });
+    syncProgress('progress');
+    startTimer();
+}
+
+function startTimer() {
+    timeLeft = TOTAL_TIME;
+    ui.timer.innerText = timeLeft;
+    ui.timer.style.color = '#fff';
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        ui.timer.innerText = timeLeft;
+        if (timeLeft <= 5) ui.timer.style.color = '#f87171';
+        if (timeLeft <= 0) { clearInterval(timerInterval); handleTimeOut(); }
+    }, 1000);
+}
+
+function handleAnswer(isCorrect, points, selectedBtn) {
+    clearInterval(timerInterval);
+    disableAll();
+    const q = questions[currentIdx];
+    if (isCorrect) {
+        const speedBonus = Math.min(5, Math.floor(timeLeft / 3));
+        const earned = points + speedBonus;
+        score += earned;
+        ui.myScore.textContent = String(score);
+        selectedBtn.classList.add('correct');
+        ui.feedback.innerText = `Bonne réponse ! +${earned} pts`;
+        ui.feedback.className = "text-sm font-black mb-3 text-emerald-400";
+    } else {
+        selectedBtn.classList.add('wrong');
+        ui.feedback.innerText = "Mauvaise réponse !";
+        ui.feedback.className = "text-sm font-black mb-3 text-red-400";
+        highlightCorrect();
     }
-    
-    function handleTimeOut() { disableAll(); ui.feedback.innerText = "Temps ecoule !"; ui.feedback.className = "text-lg font-bold mb-4 text-yellow-400"; highlightCorrect(); showNext(); }
-    function highlightCorrect() { const q = questions[currentIdx]; q.choix.forEach((c, i) => { if (c.est_correct) { ui.choices.children[i].classList.add('correct'); ui.choices.children[i].innerHTML += ' <i class="fa-solid fa-check text-emerald-400 float-right mt-1"></i>'; } }); }
-    function disableAll() { for (let b of ui.choices.children) b.disabled = true; }
-    function showNext() { ui.actionArea.classList.remove('hidden'); if (currentIdx < questions.length - 1) ui.nextBtn.classList.remove('hidden'); else ui.finishBtn.classList.remove('hidden'); }
-    
-    ui.nextBtn.onclick = () => { currentIdx++; loadQuestion(); };
-    ui.finishBtn.onclick = () => { endGame(); };
-    
-    function endGame() {
-        ui.progress.style.width = '100%';
-        ui.question.innerText = "Sauvegarde...";
-        ui.choices.innerHTML = '<div class="flex justify-center py-8"><div class="w-10 h-10 border-4 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin"></div></div>';
-        ui.actionArea.classList.add('hidden');
-        ui.timer.innerText = "-";
-        fetch("{% url 'api_defi_save_score' %}", {
+    if (q.explication) {
+        ui.explication.innerHTML = `<strong class="text-emerald-300">💡 Explication :</strong> ${q.explication}`;
+        ui.explication.classList.remove('hidden');
+    }
+    syncProgress('progress');
+    showNext();
+}
+
+function handleTimeOut() {
+    disableAll();
+    ui.feedback.innerText = "Temps écoulé !";
+    ui.feedback.className = "text-sm font-black mb-3 text-amber-400";
+    highlightCorrect();
+    showNext();
+}
+function highlightCorrect() {
+    const q = questions[currentIdx];
+    q.choix.forEach((c, i) => {
+        if (c.est_correct && ui.choices.children[i]) ui.choices.children[i].classList.add('correct');
+    });
+}
+function disableAll() { for (const b of ui.choices.children) b.disabled = true; }
+function showNext() {
+    ui.actionArea.classList.remove('hidden');
+    if (currentIdx < questions.length - 1) ui.nextBtn.classList.remove('hidden');
+    else ui.finishBtn.classList.remove('hidden');
+}
+
+ui.nextBtn.onclick = () => { currentIdx++; loadQuestion(); };
+ui.finishBtn.onclick = () => { endGame(); };
+
+async function endGame() {
+    ui.progress.style.width = '100%';
+    ui.question.innerText = 'Enregistrement de votre score…';
+    ui.choices.innerHTML = '';
+    ui.actionArea.classList.add('hidden');
+    try {
+        await fetch("{% url 'api_defi_save_score' %}", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
             body: JSON.stringify({ score: score, code: defiCode })
-        })
-        .then(r => r.json())
-        .then(() => { window.location.href = "{% url 'defi_detail' defi.code_partage %}"; })
-        .catch(() => { window.location.href = "{% url 'defi_detail' defi.code_partage %}"; });
-    }
-    
-    loadQuestion();
+        });
+    } catch (e) {}
+    window.location.href = "{% url 'defi_detail' defi.code_partage %}";
+}
+
+loadQuestion();
+setInterval(() => syncProgress('progress'), 4000);
 </script>
 {% endblock %}

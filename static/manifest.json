@@ -1,7 +1,7 @@
 {
   "name": "SDM Mouride",
   "short_name": "SDM",
-  "description": "L'application mobile spirituelle Mouride : Khassidas, 789 Audios Kourels, Saint Coran, Zikr & Tazawwudu-ç-Çighâr.",
+  "description": "Application mobile spirituelle Mouride (Hors-Ligne) : 947 Khassidas PDF, 1 814 Audios Kourels, Saint Coran, 318 Citations SDM, Zikr, Quiz & Tazawwudu-ç-Çighâr.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -45,7 +45,7 @@
     {
       "name": "Chapelet Zikr",
       "short_name": "Zikr",
-      "url": "/zikr/",
+      "url": "/zikr-compteur/",
       "icons": [{ "src": "/static/images/icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ],
