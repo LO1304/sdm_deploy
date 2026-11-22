@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sdm-premium-v13';
+const CACHE_NAME = 'sdm-premium-v14';
 const SHELL_ASSETS = [
   '/',
   '/collection/son/',

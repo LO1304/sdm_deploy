@@ -756,10 +756,13 @@
         if (navigator.share) navigator.share({ title: 'SDM Mouride', text: text, url: window.location.origin }).catch(()=>{});
     }
 
-    /* ═══ STUDIO RAPPEL QUOTIDIEN SDM (NANO BANANA + PERSONNALISATION + EXPORT PNG HD) ═══ */
+    /* ═══ STUDIO RAPPEL QUOTIDIEN SDM (NANO BANANA + GALERIE + SWIPE + EXPORT PNG HD) ═══ */
     const SDM_RAPPELS = {{ sdm_rappels_json|safe|default:"[]" }};
     let sdmRappelIdx = {{ rappel_du_jour_index|default:0 }};
     let sdmFontScale = 1.0;
+    let sdmCustomBgActive = false;
+    let sdmUserPickedBg = false;
+    let sdmCustomBlobUrl = null;
     let sdmCurrentBg = document.getElementById('sdm-rappel-bg-img')?.getAttribute('src') || '/static/images/sdm_rappels/sdm_touba_emerald.jpg';
 
     function renderSdmRappelCard() {
@@ -768,7 +771,7 @@
         const cntEl = document.getElementById('sdm-rappel-counter');
         if (cntEl) cntEl.textContent = `(${sdmRappelIdx + 1}/${SDM_RAPPELS.length})`;
         const bEl = document.getElementById('sdm-rappel-badge');
-        if (bEl) bEl.textContent = r.badge || 'Rappel Spirituel SDM';
+        if (bEl) bEl.textContent = r.badge || 'Citation SDM';
         const arEl = document.getElementById('sdm-rappel-ar');
         if (arEl) {
             arEl.textContent = r.arabe || '';
@@ -778,20 +781,18 @@
         if (txEl) txEl.textContent = r.texte || '';
         const srcEl = document.getElementById('sdm-rappel-source');
         if (srcEl) srcEl.textContent = r.source || 'SDM · Enseignements & Sagesse';
-        if (r.theme_image && !sdmCustomBgActive) {
+        if (r.theme_image && !sdmCustomBgActive && !sdmUserPickedBg) {
             sdmCurrentBg = r.theme_image;
             const img = document.getElementById('sdm-rappel-bg-img');
             if (img) img.src = r.theme_image;
         }
     }
-    if (SDM_RAPPELS.length) renderSdmRappelCard();
-
-    let sdmCustomBgActive = false;
 
     window.navSdmRappel = function(delta) {
         if (!SDM_RAPPELS.length) return;
         sdmRappelIdx = (sdmRappelIdx + delta + SDM_RAPPELS.length) % SDM_RAPPELS.length;
         renderSdmRappelCard();
+        try { if (navigator.vibrate) navigator.vibrate(6); } catch (e) {}
     };
 
     window.randomSdmRappel = function() {
@@ -800,9 +801,8 @@
         if (next === sdmRappelIdx) next = (next + 1) % SDM_RAPPELS.length;
         sdmRappelIdx = next;
         renderSdmRappelCard();
+        try { if (navigator.vibrate) navigator.vibrate(8); } catch (e) {}
     };
-
-    let sdmCustomBlobUrl = null;
 
     window.openSdmGalleryPicker = function() {
         const inp = document.getElementById('sdm-rappel-gallery-input');
@@ -814,6 +814,7 @@
 
     window.setSdmCardBg = function(src, btn) {
         sdmCustomBgActive = false;
+        sdmUserPickedBg = true;
         sdmCurrentBg = src;
         const img = document.getElementById('sdm-rappel-bg-img');
         if (img) img.src = src;
@@ -826,6 +827,7 @@
             btn.classList.remove('border-white/20');
             btn.classList.add('border-gold-400', 'scale-105');
         }
+        try { if (navigator.vibrate) navigator.vibrate(6); } catch (e) {}
     };
 
     window.setSdmCustomBg = function(input) {
@@ -836,6 +838,7 @@
         }
         sdmCustomBlobUrl = URL.createObjectURL(file);
         sdmCustomBgActive = true;
+        sdmUserPickedBg = true;
         sdmCurrentBg = sdmCustomBlobUrl;
         const img = document.getElementById('sdm-rappel-bg-img');
         if (img) img.src = sdmCurrentBg;
@@ -850,6 +853,23 @@
             gBtn.classList.add('border-gold-400', 'scale-105');
         }
     };
+
+    // Swipe tactile gauche / droite sur la carte pour parcourir les 318 citations au doigt
+    (function bindSdmRappelSwipe() {
+        const stage = document.getElementById('sdm-rappel-stage');
+        if (!stage) return;
+        let sx = 0;
+        stage.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches[0]) sx = e.touches[0].clientX;
+        }, { passive: true });
+        stage.addEventListener('touchend', (e) => {
+            if (!e.changedTouches || !e.changedTouches[0]) return;
+            const dx = e.changedTouches[0].clientX - sx;
+            if (Math.abs(dx) > 45) window.navSdmRappel(dx < 0 ? 1 : -1);
+        }, { passive: true });
+    })();
+
+    if (SDM_RAPPELS.length) renderSdmRappelCard();
 
     window.adjustSdmFont = function(dir) {
         sdmFontScale = Math.max(0.75, Math.min(1.4, sdmFontScale + dir * 0.1));
