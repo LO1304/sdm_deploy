@@ -15,3 +15,7 @@ coran_pdf/
 khassidas/
 sons/
 firebase-key.json
+*.session
+*.session-journal
+static/audios_locaux/
+telegram_downloads_tmp/

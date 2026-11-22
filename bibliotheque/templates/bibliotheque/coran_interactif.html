@@ -11,6 +11,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="{% static 'js/sdm_instant_nav.js' %}" defer></script>
     <script src="{% static 'js/sdm_offline_vault.js' %}"></script>
     <script>
         (function() {
@@ -304,6 +305,104 @@
         body.hide-phonetic .ayah-phonetic { display: none; }
         body.hide-fr .ayah-fr { display: none; }
         body.hide-en .ayah-en { display: none; }
+
+        /* ── STUDIO PARTAGE & IMAGE DE VERSET CORANIQUE SDM ── */
+        .ayah-actions-row {
+            display: flex; align-items: center; gap: 6px;
+        }
+        .ayah-share-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 10px; border-radius: 99px;
+            background: rgba(212, 175, 55, 0.14);
+            border: 1px solid rgba(212, 175, 55, 0.38);
+            color: var(--gold-lt); font-size: 10.5px; font-weight: 800;
+            cursor: pointer; transition: transform 0.15s ease, background 0.2s ease;
+        }
+        .ayah-share-btn:active { transform: scale(0.92); background: rgba(212,175,55,0.28); }
+
+        #verseStudioModal {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0, 0, 0, 0.84); backdrop-filter: blur(12px);
+            align-items: flex-end; justify-content: center;
+        }
+        #verseStudioModal.open { display: flex; }
+        .vs-sheet {
+            width: 100%; max-width: 520px; max-height: 92dvh;
+            background: #06140E; border-top: 1.5px solid var(--gold);
+            border-radius: 26px 26px 0 0; overflow-y: auto;
+            padding: 12px 16px calc(22px + env(safe-area-inset-bottom, 0px));
+            box-shadow: 0 -14px 40px rgba(0, 0, 0, 0.85);
+        }
+        .vs-handle {
+            width: 40px; height: 4px; border-radius: 99px;
+            background: rgba(255,255,255,0.22); margin: 0 auto 12px;
+        }
+        .vs-preview-wrap {
+            width: 100%; display: flex; justify-content: center; margin-bottom: 12px;
+            background: rgba(0,0,0,0.45); border-radius: 18px; padding: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        #vsPreviewCanvas {
+            max-width: 100%; max-height: 360px; width: auto; height: auto;
+            border-radius: 14px; box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+        }
+        .vs-row {
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;
+        }
+        .vs-label {
+            font-size: 10px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--gold-lt); display: block; margin-bottom: 6px;
+        }
+        .vs-chip {
+            padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border);
+            background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75);
+            font-size: 11px; font-weight: 800; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+        .vs-chip.active {
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+            color: #040B08; border-color: transparent;
+        }
+        .vs-bg-strip {
+            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;
+            margin-bottom: 10px; scrollbar-width: none;
+        }
+        .vs-bg-strip::-webkit-scrollbar { display: none; }
+        .vs-bg-btn {
+            flex-shrink: 0; width: 54px; height: 68px; border-radius: 12px;
+            overflow: hidden; border: 2px solid rgba(255,255,255,0.18);
+            background: #0B2016; cursor: pointer; position: relative; padding: 0;
+        }
+        .vs-bg-btn.active { border-color: var(--gold-lt); box-shadow: 0 0 12px rgba(253,224,71,0.5); }
+        .vs-bg-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .vs-upload-btn {
+            flex-shrink: 0; width: 66px; height: 68px; border-radius: 12px;
+            border: 1.5px dashed var(--gold); background: rgba(212,175,55,0.12);
+            color: var(--gold-lt); font-size: 9.5px; font-weight: 800;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+            cursor: pointer; text-align: center; padding: 4px;
+        }
+        .vs-actions {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;
+        }
+        .vs-btn-primary {
+            padding: 12px 10px; border-radius: 14px; border: none; cursor: pointer;
+            background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+            color: #040B08; font-size: 12px; font-weight: 900;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .vs-btn-share {
+            padding: 12px 10px; border-radius: 14px; border: 1px solid rgba(16,185,129,0.5);
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #fff; font-size: 12px; font-weight: 900; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .vs-btn-wa {
+            grid-column: 1 / -1; padding: 10px; border-radius: 13px;
+            background: rgba(255,255,255,0.07); border: 1px solid var(--border);
+            color: #fff; font-size: 11.5px; font-weight: 800; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
 
         /* LECTEUR AUDIO FLOTTANT EN BAS (RÉCITATION VERSET PAR VERSET) */
         .quran-player-dock {
@@ -721,6 +820,104 @@
 
     <audio id="quran-audio" preload="auto"></audio>
 
+    <!-- STUDIO PARTAGE & GÉNÉRATEUR D'IMAGE DE VERSET CORANIQUE SDM -->
+    <div id="verseStudioModal" onclick="if(event.target===this) closeVerseStudio()">
+        <div class="vs-sheet">
+            <div class="vs-handle"></div>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                <div>
+                    <span style="font-size:10px; font-weight:800; color:var(--gold-lt); text-transform:uppercase; letter-spacing:0.1em; display:block;">Studio Verset Coran SDM</span>
+                    <h3 id="vsModalTitle" style="font-size:15px; font-weight:900; color:#fff;">Partager & Créer une Image</h3>
+                </div>
+                <button type="button" onclick="closeVerseStudio()" style="width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.1); border:none; color:#fff; cursor:pointer;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Aperçu HD temps réel -->
+            <div class="vs-preview-wrap">
+                <canvas id="vsPreviewCanvas" width="1080" height="1440"></canvas>
+            </div>
+
+            <!-- Choix de l'arrière-plan (Photo galerie OU Décors Nano Banana SDM OU Mosquées) -->
+            <span class="vs-label"><i class="fa-solid fa-image"></i> Arrière-plan ou votre propre photo</span>
+            <input type="file" id="vsCustomBgInput" accept="image/*" style="display:none;" onchange="handleVerseCustomPhoto(this)">
+            <div class="vs-bg-strip" id="vsBgStrip">
+                <button type="button" class="vs-upload-btn" onclick="document.getElementById('vsCustomBgInput').click()" title="Choisir une image sur votre téléphone">
+                    <i class="fa-solid fa-camera" style="font-size:16px;"></i>
+                    <span>Ma Photo</span>
+                </button>
+                <button type="button" class="vs-bg-btn active" onclick="selectVerseBg('/static/images/sdm_rappels/sdm_touba_emerald.jpg', this, true)" title="Touba Émeraude SDM">
+                    <img src="/static/images/sdm_rappels/sdm_touba_emerald.jpg" alt="Touba">
+                </button>
+                <button type="button" class="vs-bg-btn" onclick="selectVerseBg('/static/images/sdm_rappels/sdm_parchemin_royal.jpg', this, true)" title="Parchemin Royal SDM">
+                    <img src="/static/images/sdm_rappels/sdm_parchemin_royal.jpg" alt="Parchemin">
+                </button>
+                <button type="button" class="vs-bg-btn" onclick="selectVerseBg('/static/images/sdm_rappels/sdm_nuit_medine.jpg', this, true)" title="Nuit de Médine SDM">
+                    <img src="/static/images/sdm_rappels/sdm_nuit_medine.jpg" alt="Médine">
+                </button>
+                <button type="button" class="vs-bg-btn" onclick="selectVerseBg('/static/images/sdm_rappels/sdm_kaaba_or.jpg', this, true)" title="Or Noir SDM">
+                    <img src="/static/images/sdm_rappels/sdm_kaaba_or.jpg" alt="Or Noir">
+                </button>
+                <button type="button" class="vs-bg-btn" onclick="selectVerseBg('/static/images/sdm_rappels/sdm_firdaws_jade.jpg', this, true)" title="Jade Firdaws SDM">
+                    <img src="/static/images/sdm_rappels/sdm_firdaws_jade.jpg" alt="Firdaws">
+                </button>
+                <button type="button" class="vs-bg-btn" onclick="selectVerseBg('/static/images/sdm_rappels/sdm_sufi_dawn.jpg', this, true)" title="Aurore Soufie SDM">
+                    <img src="/static/images/sdm_rappels/sdm_sufi_dawn.jpg" alt="Aurore">
+                </button>
+                <button type="button" class="vs-bg-btn" onclick="selectVerseBg('/static/images/mosque_touba.png', this, false)" title="Mosquée de Touba">
+                    <img src="/static/images/mosque_touba.png" alt="Mosquée Touba">
+                </button>
+                <button type="button" class="vs-bg-btn" onclick="selectVerseBg('/static/images/mosquee.jpg', this, false)" title="Mosquée">
+                    <img src="/static/images/mosquee.jpg" alt="Mosquée">
+                </button>
+                <button type="button" class="vs-bg-btn" onclick="selectVerseBg('/static/images/islamic_pattern.png', this, false)" title="Motif Sacré">
+                    <img src="/static/images/islamic_pattern.png" alt="Motif">
+                </button>
+            </div>
+
+            <!-- Format + Langues affichées sur l'image -->
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                <div class="vs-row" style="margin-bottom:0;">
+                    <button type="button" class="vs-chip active" data-vs-ratio="3:4" onclick="setVerseRatio('3:4', this)">3:4 Portrait</button>
+                    <button type="button" class="vs-chip" data-vs-ratio="1:1" onclick="setVerseRatio('1:1', this)">1:1 Carré</button>
+                    <button type="button" class="vs-chip" data-vs-ratio="9:16" onclick="setVerseRatio('9:16', this)">9:16 Story</button>
+                </div>
+                <div class="vs-row" style="margin-bottom:0;">
+                    <button type="button" class="vs-chip" onclick="adjustVerseScale(-0.1)">A-</button>
+                    <button type="button" class="vs-chip" onclick="adjustVerseScale(0.1)">A+</button>
+                </div>
+            </div>
+
+            <div class="vs-row">
+                <button type="button" class="vs-chip active" id="vsLangAr" onclick="toggleVerseField('ar', this)">العربية</button>
+                <button type="button" class="vs-chip active" id="vsLangFr" onclick="toggleVerseField('fr', this)">Français</button>
+                <button type="button" class="vs-chip" id="vsLangPh" onclick="toggleVerseField('ph', this)">Phonétique</button>
+                <button type="button" class="vs-chip" id="vsLangEn" onclick="toggleVerseField('en', this)">English</button>
+            </div>
+
+            <!-- Voile d'assombrissement pour lisibilité parfaite sur photo perso -->
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                <span style="font-size:10.5px; font-weight:700; color:var(--dim); white-space:nowrap;">Voile sombre</span>
+                <input type="range" id="vsDarkSlider" min="0" max="78" value="36" oninput="renderVerseCanvas()" style="flex:1; accent-color:var(--gold);">
+                <span id="vsDarkVal" style="font-size:10.5px; font-weight:800; color:var(--gold-lt); min-width:30px; text-align:right;">36%</span>
+            </div>
+
+            <!-- Boutons d'export & partage réseaux sociaux -->
+            <div class="vs-actions">
+                <button type="button" class="vs-btn-primary" onclick="downloadVerseImage(false)">
+                    <i class="fa-solid fa-download"></i> Enregistrer Image
+                </button>
+                <button type="button" class="vs-btn-share" onclick="downloadVerseImage(true)">
+                    <i class="fa-solid fa-share-nodes"></i> Partager Réseaux
+                </button>
+                <button type="button" class="vs-btn-wa" onclick="shareVerseTextWhatsApp()">
+                    <i class="fa-brands fa-whatsapp" style="color:#25D366; font-size:15px;"></i> Partager le verset en texte sur WhatsApp / Copier
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Catalogue complet des 114 Sourates (Nom Français + Arabe + Nombre de versets)
         const SURAHS_META = [
@@ -964,10 +1161,16 @@
                         <span class="ayah-num-badge">
                             <span>۞ Verset ${currentSurah}:${v.numInSurah}</span>
                         </span>
-                        <span class="ayah-play-pill" id="ayah-pill-${idx}">
-                            <i class="fa-solid fa-volume-high"></i>
-                            <span>Cliquer pour réciter</span>
-                        </span>
+                        <div class="ayah-actions-row">
+                            <button type="button" class="ayah-share-btn" onclick="event.stopPropagation(); openVerseStudio(${idx})" title="Créer une image ou partager ce verset">
+                                <i class="fa-solid fa-share-nodes"></i>
+                                <span>Image / Partager</span>
+                            </button>
+                            <span class="ayah-play-pill" id="ayah-pill-${idx}">
+                                <i class="fa-solid fa-volume-high"></i>
+                                <span>Réciter</span>
+                            </span>
+                        </div>
                     </div>
                     <div class="ayah-ar" dir="rtl">${v.ar} ﴿${v.numInSurah}﴾</div>
                     <div class="ayah-phonetic">
@@ -1150,6 +1353,284 @@
             }
         }
 
+        // ══════════════════════════════════════════════════════════════
+        // STUDIO PARTAGE & CRÉATION D'IMAGE DE VERSET CORANIQUE SDM
+        // ══════════════════════════════════════════════════════════════
+        const vsState = {
+            idx: -1,
+            bgSrc: '/static/images/sdm_rappels/sdm_touba_emerald.jpg',
+            bgHasBuiltInSeal: true,
+            bgImgObj: null,
+            ratio: '3:4',
+            scale: 1.0,
+            fields: { ar: true, fr: true, ph: false, en: false }
+        };
+
+        function loadVsBgImage(src, hasBuiltInSeal) {
+            vsState.bgSrc = src;
+            vsState.bgHasBuiltInSeal = hasBuiltInSeal;
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => { vsState.bgImgObj = img; renderVerseCanvas(); };
+            img.onerror = () => { vsState.bgImgObj = null; renderVerseCanvas(); };
+            img.src = src;
+        }
+
+        window.openVerseStudio = function(idx) {
+            if (!currentAyahs[idx]) return;
+            vsState.idx = idx;
+            const meta = SURAHS_META[currentSurah - 1];
+            const v = currentAyahs[idx];
+            document.getElementById('vsModalTitle').textContent = `${meta[1]} · Verset ${currentSurah}:${v.numInSurah}`;
+            document.getElementById('verseStudioModal').classList.add('open');
+            if (!vsState.bgImgObj) {
+                loadVsBgImage(vsState.bgSrc, vsState.bgHasBuiltInSeal);
+            } else {
+                renderVerseCanvas();
+            }
+        };
+
+        window.closeVerseStudio = function() {
+            document.getElementById('verseStudioModal').classList.remove('open');
+        };
+
+        window.selectVerseBg = function(src, btnEl, hasBuiltInSeal) {
+            document.querySelectorAll('#vsBgStrip .vs-bg-btn').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            loadVsBgImage(src, hasBuiltInSeal);
+        };
+
+        window.handleVerseCustomPhoto = function(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                document.querySelectorAll('#vsBgStrip .vs-bg-btn').forEach(b => b.classList.remove('active'));
+                loadVsBgImage(ev.target.result, false);
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.setVerseRatio = function(ratio, btnEl) {
+            vsState.ratio = ratio;
+            document.querySelectorAll('[data-vs-ratio]').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            renderVerseCanvas();
+        };
+
+        window.adjustVerseScale = function(delta) {
+            vsState.scale = Math.max(0.7, Math.min(1.45, vsState.scale + delta));
+            renderVerseCanvas();
+        };
+
+        window.toggleVerseField = function(field, btnEl) {
+            vsState.fields[field] = !vsState.fields[field];
+            if (!vsState.fields.ar && !vsState.fields.fr && !vsState.fields.ph && !vsState.fields.en) {
+                vsState.fields.ar = true;
+                document.getElementById('vsLangAr')?.classList.add('active');
+            }
+            if (btnEl) btnEl.classList.toggle('active', vsState.fields[field]);
+            renderVerseCanvas();
+        };
+
+        function drawCoverImage(ctx, img, w, h) {
+            const ir = img.naturalWidth / img.naturalHeight;
+            const cr = w / h;
+            let dw = w, dh = h, dx = 0, dy = 0;
+            if (ir > cr) {
+                dh = h; dw = h * ir; dx = (w - dw) / 2;
+            } else {
+                dw = w; dh = w / ir; dy = (h - dh) / 2;
+            }
+            ctx.drawImage(img, dx, dy, dw, dh);
+        }
+
+        function wrapCanvasLines(ctx, text, maxW) {
+            const lines = [];
+            for (const para of String(text || '').split('\n')) {
+                let line = '';
+                for (const word of para.split(' ')) {
+                    const test = line ? line + ' ' + word : word;
+                    if (ctx.measureText(test).width > maxW && line) {
+                        lines.push(line);
+                        line = word;
+                    } else {
+                        line = test;
+                    }
+                }
+                if (line) lines.push(line);
+            }
+            return lines;
+        }
+
+        window.renderVerseCanvas = function() {
+            const v = currentAyahs[vsState.idx];
+            if (!v) return;
+            const meta = SURAHS_META[currentSurah - 1];
+            const canvas = document.getElementById('vsPreviewCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const dims = vsState.ratio === '1:1' ? [1080, 1080]
+                       : vsState.ratio === '9:16' ? [1080, 1920]
+                       : [1080, 1440];
+            canvas.width = dims[0];
+            canvas.height = dims[1];
+            const W = canvas.width, H = canvas.height;
+
+            // 1. Arrière-plan (Image choisie ou Nano Banana SDM)
+            if (vsState.bgImgObj && vsState.bgImgObj.complete && vsState.bgImgObj.naturalWidth) {
+                drawCoverImage(ctx, vsState.bgImgObj, W, H);
+            } else {
+                const g = ctx.createLinearGradient(0, 0, W, H);
+                g.addColorStop(0, '#092418');
+                g.addColorStop(1, '#020805');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, W, H);
+            }
+
+            // 2. Voile sombre réglable pour un contraste parfait
+            const darkPct = parseInt(document.getElementById('vsDarkSlider')?.value || '36', 10);
+            const dvEl = document.getElementById('vsDarkVal');
+            if (dvEl) dvEl.textContent = darkPct + '%';
+            ctx.fillStyle = `rgba(3, 10, 7, ${(darkPct / 100).toFixed(2)})`;
+            ctx.fillRect(0, 0, W, H);
+
+            // 3. Cadre doré subtil si photo personnelle
+            if (!vsState.bgHasBuiltInSeal) {
+                ctx.strokeStyle = 'rgba(212, 175, 55, 0.55)';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(42, 42, W - 84, H - 84);
+            }
+
+            // 4. Mesurer et centrer les blocs de texte choisis
+            const maxW = W - 180;
+            const sc = vsState.scale;
+            const blocks = [];
+
+            if (vsState.fields.ar && v.ar) {
+                const fs = Math.round(54 * sc);
+                ctx.font = `700 ${fs}px Amiri, serif`;
+                blocks.push({
+                    lines: wrapCanvasLines(ctx, `${v.ar} ﴿${v.numInSurah}﴾`, maxW),
+                    font: `700 ${fs}px Amiri, serif`,
+                    color: '#FEF08A',
+                    lh: Math.round(fs * 1.48),
+                    gapAfter: 30
+                });
+            }
+            if (vsState.fields.ph && v.phonetic) {
+                const fs = Math.round(30 * sc);
+                ctx.font = `italic 600 ${fs}px Inter, sans-serif`;
+                blocks.push({
+                    lines: wrapCanvasLines(ctx, v.phonetic, maxW),
+                    font: `italic 600 ${fs}px Inter, sans-serif`,
+                    color: '#A7F3D0',
+                    lh: Math.round(fs * 1.4),
+                    gapAfter: 24
+                });
+            }
+            if (vsState.fields.fr && v.fr) {
+                const fs = Math.round(34 * sc);
+                ctx.font = `700 ${fs}px Inter, sans-serif`;
+                blocks.push({
+                    lines: wrapCanvasLines(ctx, `« ${v.fr} »`, maxW),
+                    font: `700 ${fs}px Inter, sans-serif`,
+                    color: '#FFFFFF',
+                    lh: Math.round(fs * 1.42),
+                    gapAfter: 24
+                });
+            }
+            if (vsState.fields.en && v.en) {
+                const fs = Math.round(28 * sc);
+                ctx.font = `600 ${fs}px Inter, sans-serif`;
+                blocks.push({
+                    lines: wrapCanvasLines(ctx, `"${v.en}"`, maxW),
+                    font: `600 ${fs}px Inter, sans-serif`,
+                    color: 'rgba(255,255,255,0.85)',
+                    lh: Math.round(fs * 1.38),
+                    gapAfter: 20
+                });
+            }
+
+            let contentH = 85; // Titre sourate en haut
+            blocks.forEach(b => { contentH += b.lines.length * b.lh + b.gapAfter; });
+            const safeBottom = vsState.bgHasBuiltInSeal ? 210 : 150;
+            let y = Math.max(150, (H - safeBottom - contentH) / 2 + 40);
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,0.88)';
+            ctx.shadowBlur = 16;
+
+            // En-tête Sourate
+            ctx.font = '800 28px Inter, sans-serif';
+            ctx.fillStyle = '#FDE047';
+            ctx.fillText(`۞  SOURATE ${meta[1].toUpperCase()} · VERSET ${currentSurah}:${v.numInSurah}  ۞`, W / 2, y);
+            y += 72;
+
+            // Rendu des blocs
+            for (const b of blocks) {
+                ctx.font = b.font;
+                ctx.fillStyle = b.color;
+                for (const ln of b.lines) {
+                    if (y > H - safeBottom) break;
+                    ctx.fillText(ln, W / 2, y);
+                    y += b.lh;
+                }
+                y += b.gapAfter;
+            }
+
+            // Sceau SDM discret en bas si photo personnelle / image sans sceau intégré
+            if (!vsState.bgHasBuiltInSeal) {
+                ctx.shadowBlur = 10;
+                ctx.font = '900 32px Inter, sans-serif';
+                ctx.fillStyle = '#FDE047';
+                ctx.fillText('۞  SDM MOURIDE  ۞', W / 2, H - 86);
+            }
+        };
+
+        window.downloadVerseImage = function(doShare = false) {
+            const v = currentAyahs[vsState.idx];
+            if (!v) return;
+            const meta = SURAHS_META[currentSurah - 1];
+            const canvas = document.getElementById('vsPreviewCanvas');
+            const fname = `SDM_Coran_${meta[1].replace(/[^a-zA-Z0-9]/g, '')}_${currentSurah}_${v.numInSurah}.png`;
+            const shareText = `${v.ar}\n\n« ${v.fr} »\n— Sourate ${meta[1]} (${currentSurah}:${v.numInSurah}) · SDM Mouride`;
+
+            canvas.toBlob(async (blob) => {
+                if (!blob) return;
+                const file = new File([blob], fname, { type: 'image/png' });
+                if (doShare && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({ title: `Coran ${meta[1]} ${currentSurah}:${v.numInSurah}`, text: shareText, files: [file] });
+                        return;
+                    } catch (e) {}
+                }
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fname;
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+                if (window.SDMOfflineVault?.showToast) {
+                    window.SDMOfflineVault.showToast(doShare ? 'Image téléchargée — prête à partager ✓' : 'Image du verset enregistrée ✓');
+                }
+            }, 'image/png');
+        };
+
+        window.shareVerseTextWhatsApp = function() {
+            const v = currentAyahs[vsState.idx];
+            if (!v) return;
+            const meta = SURAHS_META[currentSurah - 1];
+            const text = `۞ Sourate ${meta[1]} (${currentSurah}:${v.numInSurah})\n\n${v.ar}\n\n« ${v.fr} »\n\n— Partagé depuis SDM Mouride (${window.location.origin}/coran/)`;
+            if (navigator.share) {
+                navigator.share({ title: `Sourate ${meta[1]} (${currentSurah}:${v.numInSurah})`, text }).catch(() => {});
+            } else {
+                navigator.clipboard?.writeText(text).catch(() => {});
+                window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+            }
+        };
+
         // Marquer en vert les Jukkis / Mushafs déjà téléchargés hors-ligne
         window.addEventListener('DOMContentLoaded', async () => {
             if (!window.SDMOfflineVault) return;
@@ -1165,6 +1646,49 @@
             } catch (e) {}
         });
     </script>
+    <!-- NAVIGATION BAS NATIVE MOBILE UNIFIÉE (5 ONGLETS ESSENTIELS) -->
+    <style>
+        body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important; }
+        .coran-nav-island {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            width: 100%; height: calc(62px + env(safe-area-inset-bottom, 0px));
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: rgba(4, 11, 8, 0.96); backdrop-filter: blur(18px);
+            border-top: 1px solid rgba(212, 175, 55, 0.22);
+            display: flex; align-items: center; justify-content: space-around;
+            z-index: 880;
+        }
+        .coran-nav-island .nav-item {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 3px;
+            text-decoration: none; color: rgba(255, 255, 255, 0.48);
+            font-size: 9.5px; font-weight: 800; height: 100%;
+        }
+        .coran-nav-island .nav-item i { font-size: 18px; }
+        .coran-nav-island .nav-item.active { color: #FDE047; }
+    </style>
+    <nav class="coran-nav-island nav-island" aria-label="Navigation principale">
+        <a href="{% url 'home' %}" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="{% url 'liste_sons' %}" class="nav-item">
+            <i class="fa-solid fa-headphones"></i>
+            <span>Audios</span>
+        </a>
+        <a href="{% url 'liste' 'khassida' %}" class="nav-item">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Khassidas</span>
+        </a>
+        <a href="{% url 'coran_interactif' %}" class="nav-item active">
+            <i class="fa-solid fa-book-quran"></i>
+            <span>Coran</span>
+        </a>
+        <a href="{% url 'zikr_compteur_default' %}" class="nav-item">
+            <i class="fa-solid fa-fingerprint"></i>
+            <span>Zikr</span>
+        </a>
+    </nav>
     <script src="{% static 'js/sdm_audio_engine.js' %}"></script>
 </body>
 </html>

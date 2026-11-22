@@ -15,18 +15,20 @@
     <!-- PWA -->
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link rel="apple-touch-icon" href="{% static 'images/icons/icon-192x192.png' %}">
+
+    <!-- Preconnect CDN (accélère le premier chargement mobile) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Animations AOS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
-    
-    <!-- Tailwind CSS (via CDN comme existant) -->
+    <!-- Tailwind CSS (mis en cache Service Worker Cache-First) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -282,24 +284,11 @@
     <!-- Lecteur Audio Global Persistant (Ne s'arrête pas entre les pages ni en arrière-plan) -->
     <audio id="sdm-global-audio" preload="auto" playsinline webkit-playsinline></audio>
 
-    <!-- Scripts Globaux -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <!-- Scripts Globaux (Optimisés Mobile : zéro blocage AOS, navigation instantanée) -->
+    <script src="{% static 'js/sdm_instant_nav.js' %}" defer></script>
     <script src="{% static 'js/sdm_offline_vault.js' %}"></script>
     <script src="{% static 'js/sdm_audio_engine.js' %}"></script>
-    <script src="{% static 'js/sdm_main.js' %}"></script>
-    
-    <!-- FAILSAFE: Prevent Black Screen if AOS fails to load -->
-    <script>
-        setTimeout(function() {
-            if (typeof AOS === 'undefined' || !document.querySelector('.aos-animate')) {
-                document.querySelectorAll('[data-aos]').forEach(function(el) {
-                    el.style.opacity = '1';
-                    el.style.transform = 'none';
-                    el.style.visibility = 'visible';
-                });
-            }
-        }, 1000);
-    </script>
+    <script src="{% static 'js/sdm_main.js' %}" defer></script>
     
     {% block extra_js %}{% endblock %}
     <script>

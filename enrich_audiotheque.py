@@ -14,7 +14,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sdm_config.settings')
 django.setup()
 
 from django.db.models import Count
-from bibliotheque.models import Son, Coran
+from bibliotheque.models import Son, Coran, Khassida
 
 
 def standardize_coran_jukkis():
@@ -120,6 +120,55 @@ def sync_verified_sons():
         print(f"  - {row['categorie']}: {row['c']}")
 
 
+def sync_verified_pdfs():
+    print("3/3 — Synchronisation des Khassidas & Corans PDF (verified_open_pdfs.json)...")
+    json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'verified_open_pdfs.json')
+    if not os.path.isfile(json_path):
+        print("  Aucun verified_open_pdfs.json présent — étape ignorée.")
+        return
+
+    with open(json_path, 'r', encoding='utf-8') as f:
+        pdf_items = json.load(f)
+
+    existing_kh = {t.strip().lower() for t in Khassida.objects.values_list('titre', flat=True) if t}
+    existing_co = {t.strip().lower() for t in Coran.objects.values_list('titre', flat=True) if t}
+    existing_co_nums = set(Coran.objects.exclude(numero__isnull=True).values_list('numero', flat=True))
+
+    new_kh = []
+    new_co = []
+    for it in pdf_items:
+        kind = (it.get('kind') or 'KHASSIDA').upper()
+        titre = (it.get('titre') or '').strip()
+        pdf_field = (it.get('fichier_pdf') or '').strip()
+        if not titre or not pdf_field:
+            continue
+        if kind == 'CORAN':
+            num = it.get('numero')
+            if (num and num in existing_co_nums) or titre.lower() in existing_co:
+                continue
+            existing_co.add(titre.lower())
+            if num:
+                existing_co_nums.add(num)
+            new_co.append(Coran(titre=titre[:100], numero=num, fichier_pdf=pdf_field, est_premium=False))
+        else:
+            if titre.lower() in existing_kh:
+                continue
+            existing_kh.add(titre.lower())
+            new_kh.append(Khassida(
+                titre=titre[:255],
+                auteur=(it.get('auteur') or 'Cheikh Ahmadou Bamba')[:255],
+                fichier_pdf=pdf_field,
+                est_premium=False,
+            ))
+
+    if new_kh:
+        Khassida.objects.bulk_create(new_kh, batch_size=100)
+    if new_co:
+        Coran.objects.bulk_create(new_co, batch_size=50)
+    print(f"  => +{len(new_kh)} Khassida(s) PDF, +{len(new_co)} Coran(s) PDF ajoutés (Total Khassidas: {Khassida.objects.count()}, Corans: {Coran.objects.count()})")
+
+
 if __name__ == '__main__':
     standardize_coran_jukkis()
     sync_verified_sons()
+    sync_verified_pdfs()

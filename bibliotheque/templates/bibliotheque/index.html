@@ -267,8 +267,26 @@
         </button>
     </div>
 
-    <!-- ─── ONGLET 1 : DÉCOUVRIR (DOSSIERS AUDIO & PROFILS + 1RES PAGES KHASSIDAS) ─── -->
+    <!-- ─── ONGLET 1 : DÉCOUVRIR (RAPPEL DU JOUR SDM + DOSSIERS AUDIO & PROFILS + 1RES PAGES KHASSIDAS) ─── -->
     <div id="htab-panel-essentiel" class="home-tab-panel active space-y-3.5">
+
+        <!-- Aperçu Rappel du Jour SDM (1 toucher -> Studio Personnalisable Nano Banana SDM) -->
+        {% if rappel_du_jour_sdm %}
+        <div onclick="switchHomeTab('spirit')" class="relative rounded-2xl overflow-hidden border border-gold-500/40 p-3.5 flex items-center gap-3 cursor-pointer tap-card shadow-lg">
+            <img src="{{ rappel_du_jour_sdm.theme_image|default:'/static/images/sdm_rappels/sdm_touba_emerald.jpg' }}" alt="Rappel SDM" class="absolute inset-0 w-full h-full object-cover opacity-45 z-0">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#040B08]/92 via-[#040B08]/78 to-[#040B08]/65 z-0"></div>
+            <div class="relative z-10 w-11 h-11 rounded-xl border border-gold-400/50 overflow-hidden flex-shrink-0 shadow">
+                <img src="{{ rappel_du_jour_sdm.theme_image|default:'/static/images/sdm_rappels/sdm_touba_emerald.jpg' }}" alt="SDM" class="w-full h-full object-cover">
+            </div>
+            <div class="relative z-10 flex-1 min-w-0">
+                <span class="text-[9px] font-extrabold uppercase tracking-widest text-gold-400 block">۞ Rappel du Jour SDM · Personnalisable</span>
+                <p class="text-[11.5px] font-bold text-white line-clamp-2 leading-snug mt-0.5">{{ rappel_du_jour_sdm.texte }}</p>
+            </div>
+            <span class="relative z-10 px-2.5 py-1.5 rounded-full bg-gold-500/20 border border-gold-400/45 text-gold-300 text-[9.5px] font-extrabold flex-shrink-0">
+                Créer ›
+            </span>
+        </div>
+        {% endif %}
 
         <!-- Dossiers Audio existants avec leurs profils Kourels -->
         {% if audio_folders %}
@@ -440,41 +458,111 @@
         </div>
     </div>
 
-    <!-- ─── ONGLET 3 : SPIRITUALITÉ DU JOUR (VERSET, HADITH, BEUYITT) ─── -->
-    <div id="htab-panel-spirit" class="home-tab-panel space-y-3">
-        <div class="glass-gold rounded-2xl p-5 border border-gold-500/35 text-center">
-            <span class="px-3 py-1 rounded-full bg-gold-500/20 text-gold-400 text-[10px] font-extrabold uppercase tracking-wider inline-block mb-3">
+    <!-- ─── ONGLET 3 : RAPPEL DU JOUR SDM & STUDIO DE CARTES PERSONNALISABLES (NANO BANANA SDM) ─── -->
+    <div id="htab-panel-spirit" class="home-tab-panel space-y-3.5">
+
+        <!-- CARTE VISUELLE QUOTIDIENNE SDM PERSONNALISABLE -->
+        <div class="rounded-[24px] overflow-hidden border border-gold-500/40 bg-[#05120C] shadow-2xl">
+            <div class="flex items-center justify-between px-3.5 py-2.5 border-b border-white/10 bg-black/35">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></span>
+                    <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-gold-400">
+                        Rappel du Jour SDM <span id="sdm-rappel-counter" class="text-white/55"></span>
+                    </span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="navSdmRappel(-1)" class="w-7 h-7 rounded-full bg-white/10 text-white text-[11px] flex items-center justify-center tap-card" title="Rappel précédent">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button type="button" onclick="navSdmRappel(1)" class="w-7 h-7 rounded-full bg-white/10 text-white text-[11px] flex items-center justify-center tap-card" title="Rappel suivant">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- APERÇU CARTE 3:4 AVEC FOND NANO BANANA SDM -->
+            <div id="sdm-rappel-stage" class="relative w-full aspect-[3/4] overflow-hidden flex flex-col items-center justify-center px-7 py-12 text-center select-none">
+                <img id="sdm-rappel-bg-img"
+                     src="{% if rappel_du_jour_sdm and rappel_du_jour_sdm.theme_image %}{{ rappel_du_jour_sdm.theme_image }}{% else %}/static/images/sdm_rappels/sdm_touba_emerald.jpg{% endif %}"
+                     alt="Fond Rappel SDM"
+                     class="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-300">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/25 via-black/35 to-black/25 z-0 pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col items-center justify-center max-w-[88%] my-auto pb-8">
+                    <span id="sdm-rappel-badge" class="px-3 py-1 rounded-full bg-black/50 border border-gold-400/50 text-gold-300 text-[9.5px] font-extrabold uppercase tracking-widest mb-3 backdrop-blur-sm">
+                        {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.badge }}{% else %}Rappel Spirituel SDM{% endif %}
+                    </span>
+                    <div id="sdm-rappel-ar" dir="rtl" class="font-arabic text-xl text-amber-200 leading-relaxed mb-2.5 drop-shadow" style="text-shadow:0 2px 10px rgba(0,0,0,0.85);">
+                        {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.arabe }}{% endif %}
+                    </div>
+                    <p id="sdm-rappel-text" class="text-[13.5px] font-bold text-white leading-relaxed whitespace-pre-line drop-shadow" style="text-shadow:0 2px 12px rgba(0,0,0,0.92);">
+                        {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.texte }}{% else %}{{ contenu.rappel.francais|default:"La constance dans le souvenir d'Allah illumine le cœur." }}{% endif %}
+                    </p>
+                    <span id="sdm-rappel-source" class="mt-3 text-[10px] font-extrabold uppercase tracking-wider text-gold-300/90">
+                        {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.source }}{% else %}SDM · Sagesse{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- BARRE DE PERSONNALISATION (6 DÉCORS NANO BANANA SDM + TAILLE + EXPORT PNG HD) -->
+            <div class="p-3 bg-black/55 border-t border-white/10 space-y-2.5">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-white/60">Décor SDM :</span>
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                        {% for th in sdm_card_themes %}
+                        <button type="button" onclick="setSdmCardBg('{{ th.src }}', this)"
+                                class="sdm-theme-swatch w-8 h-8 rounded-full overflow-hidden border-2 {% if forloop.first %}border-gold-400 scale-105{% else %}border-white/20{% endif %} flex-shrink-0 tap-card"
+                                title="{{ th.label }}">
+                            <img src="{{ th.src }}" alt="{{ th.label }}" class="w-full h-full object-cover">
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="adjustSdmFont(-1)" class="px-2.5 py-2 rounded-xl bg-white/10 text-white text-[11px] font-black tap-card">A-</button>
+                    <button type="button" onclick="adjustSdmFont(1)" class="px-2.5 py-2 rounded-xl bg-white/10 text-white text-[11px] font-black tap-card">A+</button>
+                    <button type="button" onclick="exportSdmRappelImage(false)" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
+                        <i class="fa-solid fa-download"></i> Enregistrer PNG
+                    </button>
+                    <button type="button" onclick="exportSdmRappelImage(true)" class="px-3.5 py-2 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-extrabold flex items-center gap-1.5 tap-card">
+                        <i class="fa-solid fa-share-nodes"></i> Partager
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VERSET & BEUYITT COMPLÉMENTAIRES -->
+        <div class="glass-gold rounded-2xl p-4 border border-gold-500/35 text-center">
+            <span class="px-3 py-1 rounded-full bg-gold-500/20 text-gold-400 text-[10px] font-extrabold uppercase tracking-wider inline-block mb-2">
                 ۞ Verset du Jour
             </span>
             {% if contenu.verset.arabe %}
-            <div class="font-arabic text-2xl md:text-4xl text-white leading-loose py-1" dir="rtl">
+            <div class="font-arabic text-2xl text-white leading-loose py-1" dir="rtl">
                 {{ contenu.verset.arabe }}
             </div>
             {% endif %}
-            <p class="text-xs md:text-sm font-medium text-white/85 italic mt-2">
+            <p class="text-xs font-medium text-white/85 italic mt-1">
                 "{{ contenu.verset.francais|default:'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ' }}"
             </p>
             {% if contenu.verset.ref %}
-            <p class="mt-2 text-[10px] font-extrabold uppercase text-gold-400">{{ contenu.verset.ref }}</p>
+            <p class="mt-1.5 text-[10px] font-extrabold uppercase text-gold-400">{{ contenu.verset.ref }}</p>
             {% endif %}
-            <button type="button" onclick="shareDailyContent()" class="mt-3 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold uppercase text-white inline-flex items-center gap-1.5">
-                <i class="fa-solid fa-share-nodes"></i> Partager
-            </button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="glass rounded-2xl p-4 border border-white/10 text-center">
-                <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-1.5">Hadith du Jour</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div class="glass rounded-2xl p-3.5 border border-white/10 text-center">
+                <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-1">Hadith du Jour</span>
                 <p class="text-xs text-white/85 leading-relaxed">{{ contenu.rappel.francais|default:"La sagesse est une lumière..." }}</p>
                 {% if contenu.rappel.ref %}
-                <p class="mt-2 text-[10px] font-bold text-gold-400/80">{{ contenu.rappel.ref }}</p>
+                <p class="mt-1.5 text-[10px] font-bold text-gold-400/80">{{ contenu.rappel.ref }}</p>
                 {% endif %}
             </div>
-            <div class="glass rounded-2xl p-4 border border-white/10 text-center">
-                <span class="text-[9px] font-extrabold uppercase tracking-widest text-gold-400 block mb-1.5">Beuyitt du Jour</span>
+            <div class="glass rounded-2xl p-3.5 border border-white/10 text-center">
+                <span class="text-[9px] font-extrabold uppercase tracking-widest text-gold-400 block mb-1">Beuyitt du Jour</span>
                 <p class="text-xs italic text-white/85 leading-relaxed">"{{ contenu.beuyit.francais|default:'La poésie divine nourrit l\'âme...' }}"</p>
                 {% if contenu.beuyit.ref %}
-                <p class="mt-2 text-[10px] font-bold text-gold-400/80">{{ contenu.beuyit.ref }}</p>
+                <p class="mt-1.5 text-[10px] font-bold text-gold-400/80">{{ contenu.beuyit.ref }}</p>
                 {% endif %}
             </div>
         </div>
@@ -651,5 +739,172 @@
         const text = `"{{ contenu.verset.francais|default:'Assalamou Alaykoum'|escapejs }}" — SDM Mouride`;
         if (navigator.share) navigator.share({ title: 'SDM Mouride', text: text, url: window.location.origin }).catch(()=>{});
     }
+
+    /* ═══ STUDIO RAPPEL QUOTIDIEN SDM (NANO BANANA + PERSONNALISATION + EXPORT PNG HD) ═══ */
+    const SDM_RAPPELS = {{ sdm_rappels_json|safe|default:"[]" }};
+    let sdmRappelIdx = {{ rappel_du_jour_index|default:0 }};
+    let sdmFontScale = 1.0;
+    let sdmCurrentBg = document.getElementById('sdm-rappel-bg-img')?.getAttribute('src') || '/static/images/sdm_rappels/sdm_touba_emerald.jpg';
+
+    function renderSdmRappelCard() {
+        if (!SDM_RAPPELS || !SDM_RAPPELS.length) return;
+        const r = SDM_RAPPELS[sdmRappelIdx % SDM_RAPPELS.length];
+        const cntEl = document.getElementById('sdm-rappel-counter');
+        if (cntEl) cntEl.textContent = `(${sdmRappelIdx + 1}/${SDM_RAPPELS.length})`;
+        const bEl = document.getElementById('sdm-rappel-badge');
+        if (bEl) bEl.textContent = r.badge || 'Rappel Spirituel SDM';
+        const arEl = document.getElementById('sdm-rappel-ar');
+        if (arEl) {
+            arEl.textContent = r.arabe || '';
+            arEl.style.display = r.arabe ? 'block' : 'none';
+        }
+        const txEl = document.getElementById('sdm-rappel-text');
+        if (txEl) txEl.textContent = r.texte || '';
+        const srcEl = document.getElementById('sdm-rappel-source');
+        if (srcEl) srcEl.textContent = r.source || 'SDM · Enseignements & Sagesse';
+        if (r.theme_image) {
+            sdmCurrentBg = r.theme_image;
+            const img = document.getElementById('sdm-rappel-bg-img');
+            if (img) img.src = r.theme_image;
+        }
+    }
+    if (SDM_RAPPELS.length) renderSdmRappelCard();
+
+    window.navSdmRappel = function(delta) {
+        if (!SDM_RAPPELS.length) return;
+        sdmRappelIdx = (sdmRappelIdx + delta + SDM_RAPPELS.length) % SDM_RAPPELS.length;
+        renderSdmRappelCard();
+    };
+
+    window.setSdmCardBg = function(src, btn) {
+        sdmCurrentBg = src;
+        const img = document.getElementById('sdm-rappel-bg-img');
+        if (img) img.src = src;
+        document.querySelectorAll('.sdm-theme-swatch').forEach(b => {
+            b.classList.remove('border-gold-400', 'scale-105');
+            b.classList.add('border-white/20');
+        });
+        if (btn) {
+            btn.classList.remove('border-white/20');
+            btn.classList.add('border-gold-400', 'scale-105');
+        }
+    };
+
+    window.adjustSdmFont = function(dir) {
+        sdmFontScale = Math.max(0.75, Math.min(1.4, sdmFontScale + dir * 0.1));
+        const txEl = document.getElementById('sdm-rappel-text');
+        const arEl = document.getElementById('sdm-rappel-ar');
+        if (txEl) txEl.style.fontSize = (13.5 * sdmFontScale) + 'px';
+        if (arEl) arEl.style.fontSize = (20 * sdmFontScale) + 'px';
+    };
+
+    window.exportSdmRappelImage = async function(doShare = false) {
+        const badge = document.getElementById('sdm-rappel-badge')?.textContent || 'Rappel SDM';
+        const ar = document.getElementById('sdm-rappel-ar')?.textContent?.trim() || '';
+        const txt = document.getElementById('sdm-rappel-text')?.textContent?.trim() || '';
+        const srcTxt = document.getElementById('sdm-rappel-source')?.textContent || 'SDM Mouride';
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1440;
+        const ctx = canvas.getContext('2d');
+
+        const bg = new Image();
+        bg.crossOrigin = 'anonymous';
+        bg.src = sdmCurrentBg;
+        await new Promise(res => { bg.onload = res; bg.onerror = res; });
+
+        if (bg.complete && bg.naturalWidth) {
+            ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+        } else {
+            ctx.fillStyle = '#04140D';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        ctx.fillStyle = 'rgba(0,0,0,0.34)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Dessiner les lignes enveloppées proprement au centre de la carte Nano Banana SDM
+        function wrapLines(context, text, maxW) {
+            const out = [];
+            for (const para of text.split('\n')) {
+                let line = '';
+                for (const word of para.split(' ')) {
+                    const test = line ? line + ' ' + word : word;
+                    if (context.measureText(test).width > maxW && line) {
+                        out.push(line);
+                        line = word;
+                    } else {
+                        line = test;
+                    }
+                }
+                if (line) out.push(line);
+            }
+            return out;
+        }
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.85)';
+        ctx.shadowBlur = 14;
+
+        const maxW = 820;
+        const frFontSize = Math.round(38 * sdmFontScale);
+        const arFontSize = Math.round(52 * sdmFontScale);
+
+        ctx.font = `700 ${arFontSize}px Amiri, serif`;
+        const arLines = ar ? wrapLines(ctx, ar, maxW).slice(0, 5) : [];
+        ctx.font = `700 ${frFontSize}px Inter, sans-serif`;
+        const frLines = wrapLines(ctx, txt, maxW).slice(0, 14);
+
+        const totalH = 70 + (arLines.length * (arFontSize + 16)) + (arLines.length ? 30 : 0) + (frLines.length * (frFontSize + 18)) + 70;
+        let y = Math.max(240, (canvas.height - 160 - totalH) / 2);
+
+        // Badge haut
+        ctx.font = '800 24px Inter, sans-serif';
+        ctx.fillStyle = '#FDE047';
+        ctx.fillText('۞  ' + badge.toUpperCase() + '  ۞', canvas.width / 2, y);
+        y += 66;
+
+        // Texte Arabe
+        if (arLines.length) {
+            ctx.font = `700 ${arFontSize}px Amiri, serif`;
+            ctx.fillStyle = '#FEF08A';
+            for (const l of arLines) {
+                ctx.fillText(l, canvas.width / 2, y);
+                y += arFontSize + 16;
+            }
+            y += 28;
+        }
+
+        // Texte Français / Wolof
+        ctx.font = `700 ${frFontSize}px Inter, sans-serif`;
+        ctx.fillStyle = '#FFFFFF';
+        for (const l of frLines) {
+            ctx.fillText(l, canvas.width / 2, y);
+            y += frFontSize + 18;
+        }
+
+        // Signature source
+        y += 34;
+        ctx.font = '800 24px Inter, sans-serif';
+        ctx.fillStyle = '#FDE047';
+        ctx.fillText(srcTxt, canvas.width / 2, Math.min(y, 1140));
+
+        canvas.toBlob(async (blob) => {
+            if (!blob) return;
+            const file = new File([blob], 'rappel_sdm.png', { type: 'image/png' });
+            if (doShare && navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({ title: 'Rappel du Jour SDM', text: txt + '\n— SDM Mouride', files: [file] });
+                    return;
+                } catch (e) {}
+            }
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'rappel_sdm.png';
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+        }, 'image/png');
+    };
 </script>
 {% endblock %}

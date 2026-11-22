@@ -28,11 +28,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-/* ── CANVAS ÉTOILES (OPTIMISÉ BATTERIE & FLUIDITÉ MOBILE) ── */
+/* ── CANVAS ÉTOILES (DÉSACTIVÉ SUR MOBILE POUR 60FPS BATTERIE & FLUIDITÉ NATIVE) ── */
 function initCosmos() {
     const c = document.getElementById('sdm-cosmos');
     if (!c) return;
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (window.innerWidth < 768 || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
         c.style.display = 'none';
         return;
     }

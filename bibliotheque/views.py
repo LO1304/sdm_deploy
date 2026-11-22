@@ -20,6 +20,7 @@ from django.middleware.csrf import get_token
 
 # Import de tes modèles
 from django.core.management import call_command
+from django.core.cache import cache
 from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 
@@ -212,45 +213,269 @@ def _build_audio_folders_and_profiles(queryset):
     return folders_tree, collections_profiles, flat_profiles
 
 
+# --- HELPER : DOSSIERS PAR TITRE D'ŒUVRE AVEC IMAGES EXISTANTES ---
+
+TITLE_FOLDER_RULES = [
+    ('mawahibou-nafih', 'Mawahibou Nâfih', ['mawahib', 'mawaahib'], 'khassida.png'),
+    ('jazbul-qulub', 'Jazbul Qulûb', ['jazbu', 'jazbo', 'jusbu', 'djazbu'], 'mosque_touba.png'),
+    ('midaadi', 'Midaadi Wa Aqlâmî', ['midad', 'midaad'], 'mouride.jpg'),
+    ('farij', 'Farij (Ramadan)', ['farij', 'farji'], 'mosquee.jpg'),
+    ('lam-yabdu', 'Lam Yabdu', ['lamyabd', 'lam yabd'], 'islamic_pattern.png'),
+    ('matlabul-fawzayni', 'Matlabul Fawzayni & Chifâ\'', ['matlabu', 'matlabo'], 'mosque_touba.png'),
+    ('sindidi', 'Sindidi', ['sindid'], 'khassida.png'),
+    ('huqqal-bukau', 'Huqqal Bukâ\'u', ['huqqa', 'houqqa'], 'mouride.jpg'),
+    ('jaalibatul-marakhib', 'Jaalibatul Marakhib', ['jaalibat', 'jalibat', 'dialibat', 'djalibat'], 'mosque_touba.png'),
+    ('chahru-ramadan', 'Chahru Ramadan', ['chahru ramadan', 'bichahri', 'shahru ramadan'], 'mosquee.jpg'),
+    ('ya-khayra', 'Yâ Khayra Dayfin', ['yakhayra', 'ya khayra'], 'islamic_pattern.png'),
+    ('asmaul-husna', 'Asma\'ul Husna', ['asmaoul', 'asmaul', 'asmaa'], 'auth_bg.png'),
+    ('bismillahil-lazi', 'Bismillâhil Lazî', ['bismilah', 'bismillah'], 'khassida.png'),
+    ('ajabani', 'Ajabanî Rabbou Samâ', ['ajabani', 'adjabani'], 'mosque_touba.png'),
+    ('ahbabtu', 'Ahbabtu', ['ahbabtu'], 'mouride.jpg'),
+    ('taysirul-assir', 'Taysîrul Assîr', ['taysir'], 'mosquee.jpg'),
+    ('tawbatun-nasuh', 'Tawbatun Nasûh', ['tawbat'], 'islamic_pattern.png'),
+    ('wakana-haqqan', 'Wakâna Haqqan', ['wakana', 'wakaana'], 'mosque_touba.png'),
+    ('muqaddimatul-amdah', 'Muqaddimâtul Amdâh', ['moukhadimat', 'muqaddimat', 'mouxadimat', 'mukhadimat'], 'khassida.png'),
+    ('mimiya', 'Mîmiya', ['mimiya', 'miimiya'], 'mouride.jpg'),
+    ('minanul-baqil-qadim', 'Minanul Bâqil Qadîm', ['minan'], 'mosquee.jpg'),
+    ('irwaun-nadim', 'Irwâ\'un Nadîm', ['irwa', 'irwaa'], 'islamic_pattern.png'),
+    ('buchra-lana', 'Buchrâ Lanâ', ['buchra', 'bouchra'], 'mosque_touba.png'),
+    ('madal-khabiru', 'Madal Khabîru & Lissânu Chukr', ['madal', 'lissanu', 'lissanou'], 'khassida.png'),
+    ('astaghfirullaha-bihi', 'Astaghfirullâha Bihi', ['astahfir', 'astaghfir'], 'mouride.jpg'),
+    ('ya-mukrima', 'Yâ Mukrima Dayf', ['yaamoukrima', 'yamukrima', 'ya mukrima'], 'mosquee.jpg'),
+    ('walaqad-karamna', 'Walaqad Karamna', ['walaqad', 'walakhad'], 'islamic_pattern.png'),
+    ('tazawwudu-cighar', 'Tazawwudu-ç-Çighâr', ['tasawud', 'tazawwud', 'tazawud'], 'mosque_touba.png'),
+    ('nahju-qadail-haj', 'Nahju Qadâ\'il Hâj', ['nahju', 'nahjou'], 'khassida.png'),
+    ('fuzti', 'Fuzti / Fuztu', ['fuzti', 'fuztu', 'fouzti'], 'mouride.jpg'),
+    ('ila-nabiyyin', 'Ilâ Nabiyyin', ['ilaanabiyin', 'ilaa nabiyin', 'ila nabiy'], 'mosquee.jpg'),
+    ('ala-innani', 'Alâ Innanî', ['alaa inani', 'ala inani', 'ala innani'], 'islamic_pattern.png'),
+    ('wolofal-mouride', 'Wolofal Mouride', ['wolofal', 'wsmd', 'smdikhate', 'dajale'], 'mouride.jpg'),
+    ('sourates-coran', 'Sourates du Saint Coran', ['sourate', 'surah'], 'mosquee.jpg'),
+    ('xam-xam-cours', 'Xam Xam & Enseignements', ['xam xam', 'tafsir', 'imamul', 'hazali', 'ghazali', 'jeunesse', 'jataay', 'ndiguel'], 'auth_bg.png'),
+]
+
+EXISTING_FALLBACK_IMAGES = [
+    '/static/images/mosque_touba.png',
+    '/static/images/khassida.png',
+    '/static/images/mouride.jpg',
+    '/static/images/mosquee.jpg',
+    '/static/images/islamic_pattern.png',
+    '/static/images/auth_bg.png',
+]
+
+
+def _classify_title_folder(titre, categorie):
+    low = (titre or '').lower()
+    for slug, label, keywords, img_name in TITLE_FOLDER_RULES:
+        if any(k in low for k in keywords):
+            return slug, label, f'/static/images/{img_name}'
+    if categorie == 'CORAN':
+        return 'sourates-coran', 'Sourates du Saint Coran', '/static/images/mosquee.jpg'
+    if categorie == 'WAKHTANE':
+        return 'wolofal-mouride', 'Wolofal & Wakhtane', '/static/images/mouride.jpg'
+    if categorie == 'XAM_XAM':
+        return 'xam-xam-cours', 'Xam Xam & Enseignements', '/static/images/auth_bg.png'
+    return 'autres-khassidas', 'Autres Khassidas & Œuvres', '/static/images/khassida.png'
+
+
+def _build_audio_title_folders(sons_list):
+    """
+    Regroupe les sons par Dossier Titre d'Œuvre (Mawahibou, Jazbul Qulub, Midaadi, Farij, etc.)
+    en associant automatiquement les images existantes (miniatures Khassidas PDF ou images static/images).
+    """
+    # Index rapide des Khassidas PDF existants pour réutiliser leurs vraies images/couvertures
+    khassida_thumbs = []
+    try:
+        for kh in Khassida.objects.only('id', 'titre', 'image_couverture'):
+            t_low = (kh.titre or '').lower()
+            img_url = kh.image_couverture.url if kh.image_couverture else f'/thumb-pdf/khassida/{kh.id}/'
+            khassida_thumbs.append((t_low, img_url))
+    except Exception:
+        pass
+
+    buckets = {}
+    son_to_slug = {}
+    for s in sons_list:
+        slug, label, fallback_img = _classify_title_folder(s.titre, s.categorie)
+        son_to_slug[s.id] = slug
+        if slug not in buckets:
+            # Chercher une miniature de 1re page / couverture Khassida existante correspondante
+            thumb_img = fallback_img
+            matched_keywords = next((kws for sl, _, kws, _ in TITLE_FOLDER_RULES if sl == slug), [])
+            if matched_keywords and slug not in ('sourates-coran', 'wolofal-mouride', 'xam-xam-cours', 'farij'):
+                for kh_low, kh_img in khassida_thumbs:
+                    if any(k in kh_low for k in matched_keywords):
+                        thumb_img = kh_img
+                        break
+            buckets[slug] = {
+                'slug': slug,
+                'titre': label,
+                'image': thumb_img,
+                'fallback_image': fallback_img,
+                'count': 0,
+                'profiles': set(),
+            }
+        buckets[slug]['count'] += 1
+        if s.auteur_voix:
+            buckets[slug]['profiles'].add(s.auteur_voix)
+
+    title_folders = []
+    for b in sorted(buckets.values(), key=lambda x: (-x['count'], x['titre'])):
+        title_folders.append({
+            'slug': b['slug'],
+            'titre': b['titre'],
+            'image': b['image'],
+            'fallback_image': b['fallback_image'],
+            'count': b['count'],
+            'profiles_count': len(b['profiles']),
+        })
+    return title_folders, son_to_slug
+
+
+def _invalidate_catalog_cache():
+    cache.delete_many([
+        'sdm_audio_catalog_v1',
+        f'sdm_home_public_v1_{datetime.date.today().isoformat()}',
+    ])
+
+
+def _get_cached_audio_catalog():
+    """Construit et met en cache en mémoire le catalogue audio complet (dossiers, profils, titres, pistes compactes)."""
+    cached = cache.get('sdm_audio_catalog_v1')
+    if cached is not None:
+        return cached
+
+    cat_labels = dict(Son.CATEGORIES)
+    all_qs = Son.objects.all().order_by('-date_ajout', 'titre')
+    folders_tree, collections_profiles, profile_buckets = _build_audio_folders_and_profiles(all_qs)
+    all_sons_list = list(all_qs)
+    title_folders, son_to_slug = _build_audio_title_folders(all_sons_list)
+
+    counts_map = {}
+    compact_tracks = []
+    for s in all_sons_list:
+        audio_url = ''
+        if s.lien_audio_externe:
+            audio_url = s.lien_audio_externe
+        elif s.fichier_audio:
+            try:
+                audio_url = s.fichier_audio.url
+            except Exception:
+                audio_url = ''
+        if not audio_url:
+            continue
+        cat = (s.categorie or 'KHASSIDA').upper()
+        counts_map[cat] = counts_map.get(cat, 0) + 1
+        auteur = (s.auteur_voix or '').strip() or cat_labels.get(cat, 'Collection SDM')
+        compact_tracks.append([
+            s.id,
+            s.titre or 'Sans titre',
+            auteur,
+            cat,
+            audio_url,
+            son_to_slug.get(s.id, 'autres-khassidas'),
+        ])
+
+    data = {
+        'folders_tree': folders_tree,
+        'collections_profiles': collections_profiles,
+        'profile_buckets': profile_buckets,
+        'title_folders': title_folders,
+        'counts_map': counts_map,
+        'total_all_sons': len(compact_tracks),
+        'compact_tracks': compact_tracks,
+    }
+    cache.set('sdm_audio_catalog_v1', data, 300)
+    return data
+
+
 # --- VUES PRINCIPALES ---
 
 def home(request):
-    """Page d'accueil avec horaires de prières et contenus récents."""
+    """Page d'accueil mobile ultra-rapide avec cache mémoire des agrégats publics."""
     import datetime
-    
-    # Automatisation du contenu du jour : rotation quotidienne
-    tous_les_contenus = ContenuDuJour.objects.order_by('id')
-    contenu = None
-    if tous_les_contenus.exists():
-        jour_annee = datetime.date.today().timetuple().tm_yday
-        count = tous_les_contenus.count()
-        if count > 0:
-            index = jour_annee % count
-            raw_contenu = tous_les_contenus[index]
-            
-            # Helper pour parser les textes avec "\n\n" et "\n— "
-            def parse_text(text):
-                parts = text.split('\n— ')
-                main_text = parts[0]
-                ref = parts[1] if len(parts) > 1 else ""
-                
-                sub_parts = main_text.split('\n\n')
-                ar = sub_parts[0] if len(sub_parts) > 1 else ""
-                fr = sub_parts[1] if len(sub_parts) > 1 else sub_parts[0]
-                
-                return {'arabe': ar, 'francais': fr, 'ref': ref}
 
-            contenu = {
-                'verset': parse_text(raw_contenu.verset_du_jour),
-                'beuyit': parse_text(raw_contenu.beuyit_du_jour),
-                'rappel': parse_text(raw_contenu.rappel_dujour),
-            }
-    khassida = Khassida.objects.all()
-    zikrs = Zikr.objects.all()
-    recents_khassidas = Khassida.objects.order_by('-id')[:6]
+    today_key = datetime.date.today().isoformat()
+    pub_cache_key = f'sdm_home_public_v1_{today_key}'
+    pub = cache.get(pub_cache_key)
 
-    config = ParametresPriere.objects.first()
-    
+    if pub is None:
+        tous_les_contenus = ContenuDuJour.objects.order_by('id')
+        contenu = None
+        if tous_les_contenus.exists():
+            jour_annee = datetime.date.today().timetuple().tm_yday
+            count = tous_les_contenus.count()
+            if count > 0:
+                raw_contenu = tous_les_contenus[jour_annee % count]
+
+                def parse_text(text):
+                    parts = text.split('\n— ')
+                    main_text = parts[0]
+                    ref = parts[1] if len(parts) > 1 else ""
+                    sub_parts = main_text.split('\n\n')
+                    ar = sub_parts[0] if len(sub_parts) > 1 else ""
+                    fr = sub_parts[1] if len(sub_parts) > 1 else sub_parts[0]
+                    return {'arabe': ar, 'francais': fr, 'ref': ref}
+
+                contenu = {
+                    'verset': parse_text(raw_contenu.verset_du_jour),
+                    'beuyit': parse_text(raw_contenu.beuyit_du_jour),
+                    'rappel': parse_text(raw_contenu.rappel_dujour),
+                }
+
+        recents_khassidas = list(Khassida.objects.only('id', 'titre', 'auteur', 'image_couverture').order_by('-id')[:6])
+        config = ParametresPriere.objects.first()
+        total_khassidas = Khassida.objects.count()
+        total_corans = Coran.objects.count()
+        total_zikrs = Zikr.objects.count()
+
+        catalog = _get_cached_audio_catalog()
+        total_sons = catalog['total_all_sons']
+        audio_folders = catalog['folders_tree']
+        top_audio_profiles = catalog['collections_profiles'][:10]
+
+        sdm_rappels_all = []
+        rappels_json_path = os.path.join(settings.BASE_DIR, 'daily_rappels_sdm.json')
+        if os.path.isfile(rappels_json_path):
+            try:
+                with open(rappels_json_path, 'r', encoding='utf-8') as rf:
+                    sdm_rappels_all = json.load(rf)
+            except Exception:
+                sdm_rappels_all = []
+
+        if not sdm_rappels_all and contenu:
+            sdm_rappels_all = [{
+                'id': 'sdm_default_1',
+                'badge': 'Rappel Spirituel SDM',
+                'arabe': contenu.get('verset', {}).get('arabe', ''),
+                'texte': contenu.get('rappel', {}).get('francais', 'La constance dans le Zikr illumine le cœur.'),
+                'source': contenu.get('rappel', {}).get('ref', 'SDM · Sagesse'),
+                'theme_image': '/static/images/sdm_rappels/sdm_touba_emerald.jpg',
+            }]
+
+        rappel_du_jour_index = 0
+        rappel_du_jour_sdm = None
+        if sdm_rappels_all:
+            day_num = datetime.date.today().toordinal()
+            rappel_du_jour_index = day_num % len(sdm_rappels_all)
+            rappel_du_jour_sdm = sdm_rappels_all[rappel_du_jour_index]
+
+        pub = {
+            'contenu': contenu,
+            'recents': recents_khassidas,
+            'config': config,
+            'total_khassidas': total_khassidas,
+            'total_corans': total_corans,
+            'total_sons': total_sons,
+            'total_zikrs': total_zikrs,
+            'audio_folders': audio_folders,
+            'top_audio_profiles': top_audio_profiles,
+            'rappel_du_jour_sdm': rappel_du_jour_sdm,
+            'sdm_rappels_json': json.dumps(sdm_rappels_all[:120], ensure_ascii=False),
+            'rappel_du_jour_index': rappel_du_jour_index % max(1, min(len(sdm_rappels_all), 120)),
+            'sdm_rappels_total': len(sdm_rappels_all),
+        }
+        cache.set(pub_cache_key, pub, 300)
+
     # Données réservées aux utilisateurs connectés
     derniere_lecture = None
     dernier_son = None
@@ -259,9 +484,8 @@ def home(request):
     total_zikr_user = 0
     niveau_spirituel = 1
     total_ecoutes = 0
-    
+
     if request.user.is_authenticated:
-        # Récupérer la dernière lecture pour le bouton "Reprendre"
         derniere_progression = ProgressionLecture.objects.filter(user=request.user).order_by('-derniere_mise_a_jour').first()
         if derniere_progression and derniere_progression.content_object:
             derniere_lecture = {
@@ -270,42 +494,32 @@ def home(request):
                 'categorie': 'coran' if isinstance(derniere_progression.content_object, Coran) else 'khassida'
             }
 
-        # Récupérer le dernier son écouté depuis l'historique
         try:
             son_ct = ContentType.objects.get_for_model(Son)
             dernier_historique_son = Historique.objects.filter(user=request.user, content_type=son_ct).order_by('-date_lecture').first()
             dernier_son = dernier_historique_son.content_object if dernier_historique_son else None
         except Exception:
             dernier_son = None
-            
-        # --- NOUVEAUTÉS DASHBOARD MOBILE ---
-        # 1. Total Zikr
+
         zikr_aggr = HistoriqueZikr.objects.filter(user=request.user).aggregate(total=Sum('nombre_total'))
         total_zikr_user = zikr_aggr['total'] or 0
-        
-        # 2. Wird Mahuz
         wird_mahuz = Wird.objects.filter(titre__icontains='Mahuz').first()
-        # Vérifier si l'utilisateur a un Wird en cours (via ProgressionWird qui garde l'état courant)
         wird_en_cours = ProgressionWird.objects.filter(user=request.user).order_by('-derniere_modif').first()
-        
-        # 3. Calcul du niveau spirituel (Basé sur les interactions : Zikr + Ecoutes + Lectures)
         total_ecoutes = Historique.objects.filter(user=request.user).count()
         points = (total_zikr_user // 100) + total_ecoutes
-        niveau_spirituel = 1 + (points // 50)  # Niveau 1 par défaut, augmente tous les 50 "points"
+        niveau_spirituel = 1 + (points // 50)
 
-    # Nombre de contenus pour les badges
-    total_khassidas = Khassida.objects.count()
-    total_corans = Coran.objects.count()
-    total_sons = Son.objects.count()
-    total_zikrs = Zikr.objects.count()
-    audio_folders, top_audio_profiles, _ = _build_audio_folders_and_profiles(Son.objects.all())
+    sdm_card_themes = [
+        {'id': 'touba', 'label': 'Touba', 'src': '/static/images/sdm_rappels/sdm_touba_emerald.jpg'},
+        {'id': 'parchemin', 'label': 'Parchemin', 'src': '/static/images/sdm_rappels/sdm_parchemin_royal.jpg'},
+        {'id': 'medine', 'label': 'Médine', 'src': '/static/images/sdm_rappels/sdm_nuit_medine.jpg'},
+        {'id': 'kaaba', 'label': 'Or Noir', 'src': '/static/images/sdm_rappels/sdm_kaaba_or.jpg'},
+        {'id': 'jade', 'label': 'Firdaws', 'src': '/static/images/sdm_rappels/sdm_firdaws_jade.jpg'},
+        {'id': 'soufi', 'label': 'Aurore', 'src': '/static/images/sdm_rappels/sdm_sufi_dawn.jpg'},
+    ]
 
     context = {
-        'contenu': contenu,
-        'khassidas': khassida,
-        'recents': recents_khassidas,
-        'zikrs': zikrs,
-        'config': config,
+        **pub,
         'derniere_lecture': derniere_lecture,
         'dernier_son': dernier_son,
         'wird_mahuz': wird_mahuz,
@@ -313,12 +527,7 @@ def home(request):
         'total_zikr_user': total_zikr_user,
         'niveau_spirituel': niveau_spirituel,
         'total_ecoutes': total_ecoutes,
-        'total_khassidas': total_khassidas,
-        'total_corans': total_corans,
-        'total_sons': total_sons,
-        'total_zikrs': total_zikrs,
-        'audio_folders': audio_folders,
-        'top_audio_profiles': top_audio_profiles[:10],
+        'sdm_card_themes': sdm_card_themes,
     }
     return render(request, 'bibliotheque/index.html', context)
 
@@ -329,7 +538,36 @@ def liste_dynamique(request, categorie):
     items = []
 
     if categorie == 'khassida':
-        items = Khassida.objects.all()
+        compact_kh = cache.get('sdm_khassidas_list_v1')
+        if compact_kh is None:
+            compact_kh = []
+            for kh in Khassida.objects.only('id', 'titre', 'auteur', 'est_premium', 'image_couverture').order_by('titre', 'id'):
+                cover = ''
+                if kh.image_couverture:
+                    try:
+                        cover = kh.image_couverture.url
+                    except Exception:
+                        cover = ''
+                compact_kh.append([
+                    kh.id,
+                    kh.titre or 'Khassida',
+                    kh.auteur or 'Cheikh Ahmadou Bamba',
+                    1 if getattr(kh, 'est_premium', False) else 0,
+                    cover,
+                ])
+            cache.set('sdm_khassidas_list_v1', compact_kh, 300)
+        if query:
+            ql = query.strip().lower()
+            filtered_kh = [k for k in compact_kh if ql in k[1].lower() or ql in k[2].lower()]
+        else:
+            filtered_kh = compact_kh
+        return render(request, template_name, {
+            'items': [],
+            'items_count': len(filtered_kh),
+            'khassidas_json': json.dumps(filtered_kh, ensure_ascii=False, separators=(',', ':')),
+            'categorie': categorie,
+            'query': query,
+        })
     elif categorie == 'zikr':
         return redirect('zikr_compteur_default')
     elif categorie == 'wird':
@@ -430,8 +668,8 @@ def lire_pdf(request, categorie, id):
         if prog:
             page_reprise = prog.page_actuelle
 
-    # Fetch all sounds for background audio player
-    sons = Son.objects.all().order_by('-date_ajout')
+    # Fetch recent sounds for background audio player (limité pour ouverture PDF instantanée)
+    sons = Son.objects.only('id', 'titre', 'auteur_voix', 'categorie', 'lien_audio_externe', 'fichier_audio').order_by('-date_ajout')[:60]
 
     # Préparer l'URL directe du PDF comme fallback rapide (sans appel API synchrone bloquant)
     direct_pdf_url = ''
@@ -980,27 +1218,40 @@ def enregistrer_seance(request):
 # --- GESTION DES SONS ---
 
 def liste_sons(request):
-    """Audiothèque mobile organisée par Dossiers existants contenant leurs Profils de Kourels / Maîtres."""
+    """Audiothèque mobile ultra-rapide : catalogue en cache mémoire + rendu virtuel JS instantané (0 rechargement par dossier/profil)."""
     categorie_filter = (request.GET.get('cat') or '').strip().upper() or None
     profil_filter = (request.GET.get('profil') or '').strip() or None
+    oeuvre_filter = (request.GET.get('oeuvre') or '').strip().lower() or None
 
-    base_qs = Son.objects.all()
+    catalog = _get_cached_audio_catalog()
+    all_folders = catalog['folders_tree']
+    all_tracks = catalog['compact_tracks']
+    title_folders = catalog['title_folders']
+    counts_map = catalog['counts_map']
+    total_all_sons = catalog['total_all_sons']
+
     if categorie_filter:
-        base_qs = base_qs.filter(categorie=categorie_filter)
+        matched_folder = next((f for f in all_folders if f['code'] == categorie_filter), None)
+        collections_profiles = matched_folder['profiles'] if matched_folder else []
+        profile_buckets = {p['nom'].lower(): p for p in collections_profiles}
+        base_tracks = [t for t in all_tracks if t[3] == categorie_filter]
+    else:
+        collections_profiles = catalog['collections_profiles']
+        profile_buckets = catalog['profile_buckets']
+        base_tracks = all_tracks
 
-    folders_tree, collections_profiles, profile_buckets = _build_audio_folders_and_profiles(base_qs)
     active_profil_obj = profile_buckets.get(profil_filter.lower()) if profil_filter else None
     active_folder_meta = AUDIO_FOLDER_META.get(categorie_filter) if categorie_filter else None
+    active_oeuvre_obj = next((tf for tf in title_folders if tf['slug'] == oeuvre_filter), None) if oeuvre_filter else None
 
     if profil_filter:
-        sons = base_qs.filter(auteur_voix__iexact=profil_filter).order_by('titre')
+        pf_low = profil_filter.lower()
+        filtered_tracks = sorted([t for t in base_tracks if t[2].lower() == pf_low], key=lambda x: x[1].lower())
+    elif oeuvre_filter:
+        filtered_tracks = [t for t in base_tracks if t[5] == oeuvre_filter]
     else:
-        sons = base_qs.order_by('-date_ajout', 'titre')
+        filtered_tracks = base_tracks
 
-    counts_map = dict(
-        Son.objects.values('categorie').annotate(c=Count('id')).values_list('categorie', 'c')
-    )
-    total_all_sons = sum(counts_map.values())
     categories = Son.CATEGORIES
     categories_with_counts = [
         (code, AUDIO_FOLDER_META.get(code, {}).get('label', label), counts_map.get(code, 0))
@@ -1016,14 +1267,22 @@ def liste_sons(request):
             pass
 
     return render(request, 'bibliotheque/liste_sons.html', {
-        'sons': sons,
+        'sons_count': len(filtered_tracks),
+        'sons_json': json.dumps(filtered_tracks, ensure_ascii=False, separators=(',', ':')),
+        'all_tracks_json': json.dumps(all_tracks, ensure_ascii=False, separators=(',', ':')),
+        'folders_tree_json': json.dumps(all_folders, ensure_ascii=False, separators=(',', ':')),
+        'title_folders_json': json.dumps(title_folders, ensure_ascii=False, separators=(',', ':')),
+        'favoris_ids_json': json.dumps(favoris_ids),
         'categories': categories,
         'categories_with_counts': categories_with_counts,
-        'folders_tree': folders_tree,
+        'folders_tree': all_folders,
+        'title_folders': title_folders,
         'active_folder_meta': active_folder_meta,
         'collections_profiles': collections_profiles,
         'active_profil': profil_filter,
         'active_profil_obj': active_profil_obj,
+        'active_oeuvre': oeuvre_filter,
+        'active_oeuvre_obj': active_oeuvre_obj,
         'total_all_sons': total_all_sons,
         'active_cat': categorie_filter,
         'favoris_ids': favoris_ids,
@@ -1225,6 +1484,7 @@ def api_ajouter_son(request):
                 'message': 'Veuillez sélectionner un fichier audio Telegram ou coller un lien audio.'
             }, status=400)
 
+        _invalidate_catalog_cache()
         return JsonResponse({
             'status': 'success',
             'count': len(created_sons),
@@ -1243,6 +1503,7 @@ def api_supprimer_son(request, son_id):
         return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
     try:
         deleted, _ = Son.objects.filter(id=son_id).delete()
+        _invalidate_catalog_cache()
         return JsonResponse({'status': 'success', 'deleted': deleted > 0, 'id': son_id})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
@@ -1272,6 +1533,7 @@ def api_modifier_son(request, son_id):
         if nouvelle_cat in valid_cats:
             son.categorie = nouvelle_cat
         son.save()
+        _invalidate_catalog_cache()
 
         return JsonResponse({
             'status': 'success',

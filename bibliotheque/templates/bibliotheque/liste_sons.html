@@ -59,22 +59,58 @@
         font-size: 10px; font-weight: 800; color: var(--gold-lt);
     }
 
-    /* ── SEGMENTED CONTROL MOBILE (DOSSIERS / TITRES) ── */
+    /* ── SEGMENTED CONTROL MOBILE (DOSSIERS / PAR TITRE / TOUS) ── */
     .m-segmented {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
         background: rgba(0,0,0,0.45); border: 1px solid var(--border);
         border-radius: 14px; padding: 4px; margin-bottom: 12px;
     }
     .m-seg-btn {
-        padding: 9px 10px; border-radius: 10px; border: none; cursor: pointer;
-        background: transparent; color: var(--dim); font-size: 12px; font-weight: 800;
-        display: flex; align-items: center; justify-content: center; gap: 6px;
-        transition: all 0.2s ease;
+        padding: 9px 6px; border-radius: 10px; border: none; cursor: pointer;
+        background: transparent; color: var(--dim); font-size: 11px; font-weight: 800;
+        display: flex; align-items: center; justify-content: center; gap: 5px;
+        transition: all 0.2s ease; white-space: nowrap;
     }
     .m-seg-btn.active {
         background: linear-gradient(135deg, var(--gold-lt), var(--gold));
         color: #040B08; box-shadow: 0 3px 12px rgba(212,175,55,0.3);
     }
+
+    /* ── GRILLE DOSSIERS PAR TITRE D'ŒUVRE (AVEC IMAGES EXISTANTES) ── */
+    .title-folders-grid {
+        display: none; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px;
+    }
+    .title-folders-grid.show { display: grid; }
+    .title-folder-card {
+        position: relative; border-radius: 18px; overflow: hidden; text-decoration: none;
+        background: #07150F; border: 1px solid var(--border-g);
+        display: flex; flex-direction: column;
+        box-shadow: 0 8px 22px rgba(0,0,0,0.42);
+    }
+    .title-folder-cover {
+        position: relative; width: 100%; height: 104px; overflow: hidden;
+        background: linear-gradient(135deg, #0D291D, #040B08);
+    }
+    .title-folder-cover img {
+        width: 100%; height: 100%; object-fit: cover; object-position: top center;
+        filter: brightness(0.76) contrast(1.06);
+    }
+    .title-folder-cover::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(4,11,8,0.12) 0%, rgba(4,11,8,0.92) 100%);
+    }
+    .title-folder-badge {
+        position: absolute; top: 8px; right: 8px; z-index: 2;
+        background: rgba(4,11,8,0.82); backdrop-filter: blur(8px);
+        border: 1px solid rgba(253,224,71,0.5); color: var(--gold-lt);
+        font-size: 9.5px; font-weight: 900; padding: 2px 7px; border-radius: 99px;
+    }
+    .title-folder-body { padding: 9px 10px 11px; }
+    .title-folder-name {
+        font-size: 12.5px; font-weight: 900; color: #fff; line-height: 1.2;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .title-folder-sub { font-size: 10px; font-weight: 700; color: var(--gold-lt); margin-top: 3px; }
 
     /* ── CARTES DOSSIERS EXISTANTS CONTENANT LEURS PROFILS ── */
     .folders-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
@@ -499,11 +535,12 @@
         <div class="header-center">
             <span class="header-tag">
                 {% if active_profil %}{{ active_profil }}
+                {% elif active_oeuvre_obj %}{{ active_oeuvre_obj.titre }}
                 {% elif active_folder_meta %}{{ active_folder_meta.label }}
                 {% else %}Audiothèque{% endif %}
             </span>
             <span class="header-count" id="totalTracksCount">
-                {{ sons|length }} titre{{ sons|length|pluralize }} · {{ collections_profiles|length }} profil{{ collections_profiles|length|pluralize }}{% if not active_cat %} · {{ folders_tree|length }} dossiers{% endif %}
+                {{ sons_count }} titre{{ sons_count|pluralize }} · {{ collections_profiles|length }} profil{{ collections_profiles|length|pluralize }}{% if not active_cat and not active_oeuvre %} · {{ title_folders|length }} dossiers titres{% endif %}
             </span>
         </div>
         {% if user.is_staff or user.is_superuser %}
@@ -554,7 +591,7 @@
                 📁 {% if active_profil_obj %}{{ active_profil_obj.categorie_label }}{% elif active_folder_meta %}{{ active_folder_meta.label }}{% else %}Dossier Audio{% endif %}
             </span>
             <h2 style="font-size:17px; font-weight:900; color:#fff; margin-top:2px; line-height:1.2;">{{ active_profil }}</h2>
-            <p style="font-size:11px; color:var(--dim);">{{ sons|length }} œuvre{{ sons|length|pluralize }} vérifiée{{ sons|length|pluralize }}</p>
+            <p style="font-size:11px; color:var(--dim);">{{ sons_count }} œuvre{{ sons_count|pluralize }} vérifiée{{ sons_count|pluralize }}</p>
             <div class="ap-actions">
                 <button type="button" class="ap-btn ap-btn-gold tap-card" onclick="playFirstVisible()">
                     <i class="fa-solid fa-play"></i> Tout Lire
@@ -569,6 +606,34 @@
         </div>
     </div>
 
+    <!-- NIVEAU 3B : DOSSIER PAR TITRE D'ŒUVRE OUVERT (?oeuvre=...) -->
+    {% elif active_oeuvre_obj %}
+    <div class="active-profile-banner">
+        <div style="width:68px; height:84px; border-radius:14px; overflow:hidden; border:2px solid var(--gold); flex-shrink:0; background:#07150F;">
+            <img src="{{ active_oeuvre_obj.image }}" alt="{{ active_oeuvre_obj.titre }}"
+                 onerror="this.onerror=null;this.src='{{ active_oeuvre_obj.fallback_image }}';"
+                 style="width:100%; height:100%; object-fit:cover; object-position:top center;">
+        </div>
+        <div style="flex:1; min-width:0;">
+            <span style="font-size:9.5px; font-weight:800; text-transform:uppercase; color:var(--gold-lt); letter-spacing:0.1em;">
+                📂 Dossier par Titre d'Œuvre
+            </span>
+            <h2 style="font-size:17px; font-weight:900; color:#fff; margin-top:2px; line-height:1.2;">{{ active_oeuvre_obj.titre }}</h2>
+            <p style="font-size:11px; color:var(--dim);">{{ sons_count }} version{{ sons_count|pluralize }} · {{ active_oeuvre_obj.profiles_count }} Kourel{{ active_oeuvre_obj.profiles_count|pluralize }}/voix</p>
+            <div class="ap-actions">
+                <button type="button" class="ap-btn ap-btn-gold tap-card" onclick="playFirstVisible()">
+                    <i class="fa-solid fa-play"></i> Tout Lire
+                </button>
+                <button type="button" class="ap-btn ap-btn-glass tap-card" onclick="playRandomVisible()">
+                    <i class="fa-solid fa-shuffle"></i> Aléatoire
+                </button>
+                <a href="{% if active_cat %}?cat={{ active_cat }}{% else %}?{% endif %}" class="ap-btn ap-btn-glass tap-card">
+                    <i class="fa-solid fa-arrow-left"></i> Dossiers
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- NIVEAU 2 : DOSSIER EXISTANT OUVERT (?cat=KHASSIDA, WAKHTANE, etc.) -->
     {% elif active_cat %}
     <div class="folder-active-bar">
@@ -578,7 +643,7 @@
         </div>
         <div style="flex:1; min-width:0;">
             <div style="font-size:14px; font-weight:900; color:#fff;">{% if active_folder_meta %}{{ active_folder_meta.label }}{% else %}{{ active_cat }}{% endif %}</div>
-            <div style="font-size:10.5px; font-weight:700; color:var(--gold-lt);">{{ collections_profiles|length }} profil{{ collections_profiles|length|pluralize }} · {{ sons|length }} titres</div>
+            <div style="font-size:10.5px; font-weight:700; color:var(--gold-lt);">{{ collections_profiles|length }} profil{{ collections_profiles|length|pluralize }} · {{ sons_count }} titres</div>
         </div>
         <button type="button" class="ap-btn ap-btn-gold tap-card" style="padding:7px 11px;" onclick="playFirstVisible()">
             <i class="fa-solid fa-play"></i> Lire
@@ -619,18 +684,38 @@
         {% endfor %}
     </div>
 
-    <!-- NIVEAU 1 : ACCUEIL AUDIOTHÈQUE — DOSSIERS EXISTANTS AVEC LEURS PROFILS DEDANS -->
+    <!-- NIVEAU 1 : ACCUEIL AUDIOTHÈQUE — DOSSIERS KOURELS | DOSSIERS PAR TITRE (IMAGES) | TOUS LES TITRES -->
     {% else %}
     <div class="m-segmented">
         <button type="button" id="btnSegFolders" class="m-seg-btn active" onclick="setMainAudioTab('folders')">
             <i class="fa-solid fa-folder-tree"></i> Dossiers ({{ folders_tree|length }})
         </button>
+        <button type="button" id="btnSegTitles" class="m-seg-btn" onclick="setMainAudioTab('titles')">
+            <i class="fa-solid fa-images"></i> Par Titre ({{ title_folders|length }})
+        </button>
         <button type="button" id="btnSegTracks" class="m-seg-btn" onclick="setMainAudioTab('tracks')">
-            <i class="fa-solid fa-music"></i> Tous les Titres ({{ sons|length }})
+            <i class="fa-solid fa-music"></i> Tous ({{ sons_count }})
         </button>
     </div>
 
-    <!-- VUE DOSSIERS : CHAQUE DOSSIER EXISTANT CONTIENT SES PROFILS EXISTANTS -->
+    <!-- VUE 1B : DOSSIERS PAR TITRE D'ŒUVRE AVEC LES IMAGES EXISTANTES -->
+    <div class="title-folders-grid" id="titleFoldersGrid">
+        {% for tf in title_folders %}
+        <a href="?oeuvre={{ tf.slug }}" class="title-folder-card tap-card" data-title-folder="{{ tf.titre|lower }}">
+            <div class="title-folder-cover">
+                <img src="{{ tf.image }}" alt="{{ tf.titre }}" loading="lazy"
+                     onerror="this.onerror=null;this.src='{{ tf.fallback_image }}';">
+                <span class="title-folder-badge">{{ tf.count }} son{{ tf.count|pluralize }}</span>
+            </div>
+            <div class="title-folder-body">
+                <div class="title-folder-name">{{ tf.titre }}</div>
+                <div class="title-folder-sub">{{ tf.profiles_count }} Kourel{{ tf.profiles_count|pluralize }} / voix</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- VUE 1A : DOSSIERS EXISTANTS CONTENANT LEURS PROFILS EXISTANTS -->
     <div class="folders-stack" id="foldersStackView">
         {% for folder in folders_tree %}
         <div class="folder-box" data-folder-name="{{ folder.label|lower }}">
@@ -669,54 +754,16 @@
     </div>
     {% endif %}
 
-    <!-- LISTE DES PISTES (Masquée par défaut sur l'onglet Dossiers, visible dans un Dossier/Profil ou onglet Tous les Titres) -->
-    <div id="sonList" {% if not active_cat and not active_profil %}style="display:none;"{% endif %}>
-        {% for s in sons %}
-        {% if s.lien_audio_externe or s.fichier_audio %}
-        <div class="track-item"
-             data-id="{{ s.id }}"
-             data-url="{% if s.lien_audio_externe %}{{ s.lien_audio_externe }}{% else %}{{ s.fichier_audio.url }}{% endif %}"
-             data-titre="{{ s.titre }}"
-             data-auteur="{{ s.auteur_voix|default:s.get_categorie_display }}"
-             data-cat="{{ s.categorie }}"
-             data-index="{{ forloop.counter0 }}">
-            <div class="track-num">{{ forloop.counter }}</div>
-            <div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>
-            <div class="track-art"><i class="fa-solid fa-music"></i></div>
-            <div class="track-info">
-                <div class="track-title">{{ s.titre }}</div>
-                <div class="track-author">{{ s.auteur_voix|default:s.get_categorie_display }}</div>
-            </div>
-            <div class="track-actions">
-                <button class="track-btn {% if s.id in favoris_ids %}liked{% endif %}"
-                        onclick="toggleFavori(event,'son',{{ s.id }},this)"
-                        data-liked="{% if s.id in favoris_ids %}true{% else %}false{% endif %}"
-                        title="Favori">
-                    <i class="fa-{% if s.id in favoris_ids %}solid{% else %}regular{% endif %} fa-heart"></i>
-                </button>
-                <button type="button" class="track-btn btn-offline-dl" data-offline-key="son_{{ s.id }}"
-                        onclick="saveAudioOffline(event, {{ s.id }}, '{{ s.titre|escapejs }}', '{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}', '{% if s.lien_audio_externe %}{{ s.lien_audio_externe|escapejs }}{% else %}{{ s.fichier_audio.url|escapejs }}{% endif %}', '{{ s.categorie|escapejs }}', this)"
-                        title="Télécharger hors-ligne dans le dossier {{ s.auteur_voix|default:s.get_categorie_display }}">
-                    <i class="fa-solid fa-cloud-arrow-down"></i>
-                </button>
-                {% if user.is_staff or user.is_superuser %}
-                <button type="button" class="track-btn" onclick="openEditSonModal(event, {{ s.id }}, '{{ s.titre|escapejs }}', '{{ s.auteur_voix|default:s.get_categorie_display|escapejs }}', '{{ s.categorie|escapejs }}')" title="Admin : Renommer">
-                    <i class="fa-solid fa-pen" style="font-size:11px;"></i>
-                </button>
-                <button type="button" class="track-btn" onclick="deleteSonTrack(event, {{ s.id }}, '{{ s.titre|escapejs }}', this)" title="Admin : Supprimer" style="color:rgba(248,113,113,0.75);">
-                    <i class="fa-solid fa-trash-can" style="font-size:11px;"></i>
-                </button>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-        {% empty %}
-        <div style="text-align:center; padding:45px 20px; color:var(--dim);">
-            <i class="fa-solid fa-music" style="font-size:32px; margin-bottom:10px; opacity:0.4;"></i>
-            <p style="font-size:12px; font-weight:700;">Aucun son dans cette sélection</p>
-        </div>
-        {% endfor %}
+    <!-- LISTE DES PISTES (Rendu virtuel par lots de 40 pour fluidité mobile 60fps instantanée) -->
+    <div id="sonList" {% if not active_cat and not active_profil and not active_oeuvre %}style="display:none;"{% endif %}></div>
+    <div id="sonLoadMoreWrap" style="display:none; text-align:center; padding:12px 0 6px;">
+        <button type="button" id="sonLoadMoreBtn" onclick="renderNextTrackBatch(false)"
+                style="padding:9px 18px; border-radius:999px; background:rgba(212,175,55,0.14); border:1px solid rgba(212,175,55,0.4); color:var(--gold-lt); font-size:11.5px; font-weight:800; cursor:pointer;">
+            Charger plus de titres…
+        </button>
     </div>
+    <script id="sdm-sons-data" type="application/json">{{ sons_json|safe }}</script>
+    <script id="sdm-favs-data" type="application/json">{{ favoris_ids_json|safe }}</script>
 </div>
 
 <!-- MINI-BARRE FLOTTANTE DE RAPPEL POUR ROUVRIR LE LECTEUR PLEIN-ÉCRAN -->
@@ -938,18 +985,143 @@ function getCatIconClass(cat) {
     return 'fa-solid ' + (map[(cat || '').toUpperCase()] || 'fa-mosque');
 }
 
-let items = [...document.querySelectorAll('.track-item')];
-function bindTrackClicks() {
-    items = [...document.querySelectorAll('.track-item')];
-    items.forEach((it, idx) => {
-        it.dataset.index = idx;
-        if (!it.dataset.clickBound) {
-            it.dataset.clickBound = '1';
-            it.addEventListener('click', () => playTrack(it, true));
+const IS_STAFF = {% if user.is_staff or user.is_superuser %}true{% else %}false{% endif %};
+const RAW_TRACKS = (() => {
+    try { return JSON.parse(document.getElementById('sdm-sons-data')?.textContent || '[]'); }
+    catch (e) { return []; }
+})();
+const FAV_SET = new Set((() => {
+    try { return JSON.parse(document.getElementById('sdm-favs-data')?.textContent || '[]').map(String); }
+    catch (e) { return []; }
+})());
+let OFFLINE_SAVED_SET = new Set();
+
+// Normaliser les pistes compactes [id, titre, auteur, cat, url, slug]
+const ALL_TRACKS = RAW_TRACKS.map((r, idx) => ({
+    id: String(r[0]),
+    titre: r[1] || 'Sans titre',
+    auteur: r[2] || 'Kourel Mouride',
+    cat: r[3] || 'KHASSIDA',
+    url: r[4] || '',
+    slug: r[5] || '',
+    q: ((r[1] || '') + ' ' + (r[2] || '')).toLowerCase(),
+    idx
+}));
+
+let filteredTracks = ALL_TRACKS.slice();
+let renderedCount = 0;
+const TRACK_BATCH_SIZE = 40;
+let curTrackId = null;
+
+function createTrackNode(t, pos) {
+    const div = document.createElement('div');
+    div.className = 'track-item';
+    if (curTrackId && t.id === curTrackId) {
+        div.classList.add('playing');
+        if (aud && aud.paused) div.classList.add('paused');
+    }
+    div.dataset.id = t.id;
+    div.dataset.url = t.url;
+    div.dataset.titre = t.titre;
+    div.dataset.auteur = t.auteur;
+    div.dataset.cat = t.cat;
+    div.dataset.index = String(pos);
+
+    const liked = FAV_SET.has(t.id);
+    const saved = OFFLINE_SAVED_SET.has('son_' + t.id);
+
+    div.innerHTML =
+        `<div class="track-num">${pos + 1}</div>` +
+        `<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>` +
+        `<div class="track-art"><i class="fa-solid fa-music"></i></div>` +
+        `<div class="track-info">` +
+            `<div class="track-title">${escapeHtml(t.titre)}</div>` +
+            `<div class="track-author">${escapeHtml(t.auteur)}</div>` +
+        `</div>` +
+        `<div class="track-actions">` +
+            `<button class="track-btn ${liked ? 'liked' : ''}" data-action="fav" data-liked="${liked ? 'true' : 'false'}" title="Favori">` +
+                `<i class="fa-${liked ? 'solid' : 'regular'} fa-heart"></i>` +
+            `</button>` +
+            `<button type="button" class="track-btn btn-offline-dl" data-action="offline" data-offline-key="son_${t.id}" ${saved ? 'data-saved="1" style="color:#10B981;"' : ''} title="Télécharger hors-ligne">` +
+                `<i class="fa-solid ${saved ? 'fa-check' : 'fa-cloud-arrow-down'}"></i>` +
+            `</button>` +
+            (IS_STAFF
+                ? `<button type="button" class="track-btn" data-action="edit" title="Admin : Renommer"><i class="fa-solid fa-pen" style="font-size:11px;"></i></button>` +
+                  `<button type="button" class="track-btn" data-action="delete" title="Admin : Supprimer" style="color:rgba(248,113,113,0.75);"><i class="fa-solid fa-trash-can" style="font-size:11px;"></i></button>`
+                : '') +
+        `</div>`;
+    return div;
+}
+
+const sonListEl = document.getElementById('sonList');
+const loadMoreWrap = document.getElementById('sonLoadMoreWrap');
+const loadMoreBtn = document.getElementById('sonLoadMoreBtn');
+
+window.renderNextTrackBatch = function(reset = false) {
+    if (!sonListEl) return;
+    if (reset) {
+        sonListEl.innerHTML = '';
+        renderedCount = 0;
+    }
+    if (!filteredTracks.length) {
+        sonListEl.innerHTML = `<div style="text-align:center; padding:45px 20px; color:var(--dim);"><i class="fa-solid fa-music" style="font-size:32px; margin-bottom:10px; opacity:0.4;"></i><p style="font-size:12px; font-weight:700;">Aucun son dans cette sélection</p></div>`;
+        if (loadMoreWrap) loadMoreWrap.style.display = 'none';
+        return;
+    }
+    const end = Math.min(filteredTracks.length, renderedCount + TRACK_BATCH_SIZE);
+    const frag = document.createDocumentFragment();
+    for (let i = renderedCount; i < end; i++) {
+        frag.appendChild(createTrackNode(filteredTracks[i], i));
+    }
+    sonListEl.appendChild(frag);
+    renderedCount = end;
+
+    const listVisible = sonListEl.style.display !== 'none';
+    const remaining = filteredTracks.length - renderedCount;
+    if (loadMoreWrap) {
+        loadMoreWrap.style.display = (listVisible && remaining > 0) ? 'block' : 'none';
+        if (loadMoreBtn && remaining > 0) {
+            loadMoreBtn.textContent = `Charger plus (${remaining} titre${remaining > 1 ? 's' : ''} restant${remaining > 1 ? 's' : ''})`;
         }
+    }
+};
+
+// Délégation d'événement unique (zéro millier de listeners!)
+if (sonListEl) {
+    sonListEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-action]');
+        const item = e.target.closest('.track-item');
+        if (!item) return;
+        const pos = parseInt(item.dataset.index, 10);
+        const track = filteredTracks[pos];
+        if (!track) return;
+        if (btn) {
+            e.stopPropagation();
+            const act = btn.dataset.action;
+            if (act === 'fav') window.toggleFavori(e, 'son', track.id, btn);
+            else if (act === 'offline') window.saveAudioOffline(e, track.id, track.titre, track.auteur, track.url, track.cat, btn);
+            else if (act === 'edit' && window.openEditSonModal) window.openEditSonModal(e, track.id, track.titre, track.auteur, track.cat);
+            else if (act === 'delete' && window.deleteSonTrack) window.deleteSonTrack(e, track.id, track.titre, btn);
+            return;
+        }
+        playTrackObj(track, pos, true);
     });
 }
-bindTrackClicks();
+
+// Défilement infini automatique ultra-fluide
+if ('IntersectionObserver' in window && loadMoreWrap) {
+    const io = new IntersectionObserver((entries) => {
+        if (entries.some(en => en.isIntersecting) && sonListEl.style.display !== 'none' && renderedCount < filteredTracks.length) {
+            window.renderNextTrackBatch(false);
+        }
+    }, { rootMargin: '260px' });
+    io.observe(loadMoreWrap);
+}
+
+// Rendu initial uniquement si la liste est visible (sinon 0 nœuds DOM sur l'onglet Dossiers !)
+if (sonListEl && sonListEl.style.display !== 'none') {
+    window.renderNextTrackBatch(true);
+}
 
 function fmt(s) {
     if (!isFinite(s) || isNaN(s) || s < 0) return '0:00';
@@ -963,14 +1135,24 @@ function showToast(msg) {
     clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-/* ── BASCULE VUE DOSSIERS / TITRES & DÉPLIAGE PROFILS DANS UN DOSSIER ── */
+/* ── BASCULE VUE DOSSIERS / PAR TITRE (IMAGES) / TOUS & DÉPLIAGE PROFILS ── */
 window.setMainAudioTab = function(tab) {
     const foldersView = document.getElementById('foldersStackView');
+    const titlesView = document.getElementById('titleFoldersGrid');
     const list = document.getElementById('sonList');
     document.getElementById('btnSegFolders')?.classList.toggle('active', tab === 'folders');
+    document.getElementById('btnSegTitles')?.classList.toggle('active', tab === 'titles');
     document.getElementById('btnSegTracks')?.classList.toggle('active', tab === 'tracks');
     if (foldersView) foldersView.style.display = tab === 'folders' ? 'flex' : 'none';
-    if (list) list.style.display = tab === 'tracks' ? 'flex' : 'none';
+    if (titlesView) titlesView.classList.toggle('show', tab === 'titles');
+    if (list) {
+        list.style.display = tab === 'tracks' ? 'flex' : 'none';
+        if (tab === 'tracks' && renderedCount === 0) {
+            window.renderNextTrackBatch(true);
+        } else if (loadMoreWrap) {
+            loadMoreWrap.style.display = (tab === 'tracks' && renderedCount < filteredTracks.length) ? 'block' : 'none';
+        }
+    }
 };
 
 window.toggleFolderShelf = function(code, btn, totalCount) {
@@ -995,23 +1177,27 @@ window.setAudioView = function(mode) {
         if (grid) grid.classList.add('show');
         if (car) car.style.display = 'none';
         if (list) list.style.display = 'none';
+        if (loadMoreWrap) loadMoreWrap.style.display = 'none';
     } else {
         if (grid) grid.classList.remove('show');
         if (car) car.style.display = 'flex';
-        if (list) list.style.display = 'flex';
+        if (list) {
+            list.style.display = 'flex';
+            if (renderedCount === 0) window.renderNextTrackBatch(true);
+            else if (loadMoreWrap) loadMoreWrap.style.display = renderedCount < filteredTracks.length ? 'block' : 'none';
+        }
     }
 };
 
 window.playFirstVisible = function() {
-    const vis = items.filter(i => i.style.display !== 'none');
-    if (vis.length) playTrack(vis[0], true);
+    if (filteredTracks.length) playTrackObj(filteredTracks[0], 0, true);
 };
 window.playRandomVisible = function() {
-    const vis = items.filter(i => i.style.display !== 'none');
-    if (!vis.length) return;
+    if (!filteredTracks.length) return;
     isShuffle = true;
     document.getElementById('btn-shuffle').classList.add('active-ctrl');
-    playTrack(vis[Math.floor(Math.random() * vis.length)], true);
+    const r = Math.floor(Math.random() * filteredTracks.length);
+    playTrackObj(filteredTracks[r], r, true);
 };
 
 /* ── LECTURE & SYNCHRONISATION ── */
@@ -1021,46 +1207,43 @@ function setPlayingVisuals(isPlaying) {
     ppIcon.style.marginLeft = isPlaying ? '0' : '3px';
     if (miniPpIcon) miniPpIcon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
     if (miniDisc) miniDisc.classList.toggle('fa-spin', isPlaying);
-    items.forEach((it, i) => {
-        it.classList.toggle('playing', i === curIdx);
-        it.classList.toggle('paused', i === curIdx && !isPlaying);
+    document.querySelectorAll('.track-item').forEach((it) => {
+        const isMe = curTrackId && it.dataset.id === curTrackId;
+        it.classList.toggle('playing', Boolean(isMe));
+        it.classList.toggle('paused', Boolean(isMe) && !isPlaying);
     });
 }
 
-function playTrack(el, openFullscreen = true) {
-    bindTrackClicks();
-    curIdx = parseInt(el.dataset.index);
-    const titre = el.dataset.titre;
-    const auteur = el.dataset.auteur || 'Kourel Mouride';
-    const url = el.dataset.url;
+function playTrackObj(track, pos, openFullscreen = true) {
+    if (!track) return;
+    curIdx = typeof pos === 'number' ? pos : filteredTracks.findIndex(t => t.id === track.id);
+    curTrackId = track.id;
+    const titre = track.titre;
+    const auteur = track.auteur || 'Kourel Mouride';
+    const url = track.url;
 
     document.getElementById('p-title').textContent = titre;
     document.getElementById('p-author').textContent = auteur;
     document.getElementById('fp-collection-lbl').textContent = auteur;
     const fpLink = document.getElementById('fp-collection-link');
     if (fpLink) fpLink.href = '/collection/son/?profil=' + encodeURIComponent(auteur);
-    const visList = items.filter(i => i.style.display !== 'none');
-    const visPos = visList.indexOf(el) + 1;
     const posEl = document.getElementById('fp-track-pos');
-    if (posEl) posEl.textContent = visPos > 0 ? `Piste ${visPos} / ${visList.length}` : 'Lecture en cours';
+    if (posEl) posEl.textContent = curIdx >= 0 ? `Piste ${curIdx + 1} / ${filteredTracks.length}` : 'Lecture en cours';
     const vIcon = document.getElementById('vinyl-icon');
-    if (vIcon) vIcon.className = getCatIconClass(el.dataset.cat);
+    if (vIcon) vIcon.className = getCatIconClass(track.cat);
     document.getElementById('mini-title').textContent = titre;
     document.getElementById('mini-author').textContent = auteur;
     seekEl.value = 0; seekEl.style.setProperty('--value', '0%');
     document.getElementById('p-cur').textContent = '0:00';
     document.getElementById('p-dur').textContent = '0:00';
 
-    // Sync Favori & Hors-Ligne buttons in player
-    const listFav = el.querySelector('.track-btn');
     const favIcon = document.getElementById('fav-player-icon');
-    if (favIcon) favIcon.className = (listFav && listFav.dataset.liked === 'true') ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+    if (favIcon) favIcon.className = FAV_SET.has(track.id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
 
-    const dlBtn = el.querySelector('.btn-offline-dl');
+    const isSaved = OFFLINE_SAVED_SET.has('son_' + track.id);
     const offLbl = document.getElementById('offline-player-lbl');
     const offPill = document.getElementById('btn-offline-player');
-    const isSaved = dlBtn && dlBtn.dataset.saved === '1';
-    if (offPill) offPill.classList.toggle('on', Boolean(isSaved));
+    if (offPill) offPill.classList.toggle('on', isSaved);
     if (offLbl) offLbl.textContent = isSaved ? 'Hors-Ligne ✓' : 'Hors-Ligne';
 
     if (openFullscreen) {
@@ -1070,17 +1253,17 @@ function playTrack(el, openFullscreen = true) {
         miniDock.classList.add('show');
     }
 
-    fetch(`/api/ecoute-son/${el.dataset.id}/`, { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } }).catch(() => {});
+    fetch(`/api/ecoute-son/${track.id}/`, { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } }).catch(() => {});
 
     if (window.SDMAudioEngine) {
-        window.SDMAudioEngine.syncFromPageTrack({ id: el.dataset.id, titre, auteur, url }, true);
+        window.SDMAudioEngine.syncFromPageTrack({ id: track.id, titre, auteur, url }, true);
     }
 
     (async function startSrc() {
         let playUrl = url;
         if (window.SDMOfflineVault) {
             try {
-                const off = await window.SDMOfflineVault.getItem('son', el.dataset.id);
+                const off = await window.SDMOfflineVault.getItem('son', track.id);
                 if (off && off.blob) {
                     if (pageBlobUrl) { try { URL.revokeObjectURL(pageBlobUrl); } catch (e) {} }
                     pageBlobUrl = URL.createObjectURL(off.blob);
@@ -1094,7 +1277,7 @@ function playTrack(el, openFullscreen = true) {
         aud.play().then(() => {
             setPlayingVisuals(true);
             if (window.SDMAudioEngine) {
-                window.SDMAudioEngine.syncFromPageTrack({ id: el.dataset.id, titre, auteur, url }, true);
+                window.SDMAudioEngine.syncFromPageTrack({ id: track.id, titre, auteur, url }, true);
             }
         }).catch(err => {
             if (err && (err.name === 'AbortError' || String(err).includes('interrupted'))) return;
@@ -1146,27 +1329,23 @@ window.cycleLoopMode = function() {
 };
 
 window.playNext = function() {
-    bindTrackClicks();
-    const vis = items.filter(i => i.style.display !== 'none');
-    if (!vis.length) return;
-    if (isShuffle && vis.length > 1) {
-        let nextEl = vis[Math.floor(Math.random() * vis.length)];
-        if (parseInt(nextEl.dataset.index) === curIdx) nextEl = vis[(vis.indexOf(nextEl) + 1) % vis.length];
-        playTrack(nextEl, player.classList.contains('active'));
+    if (!filteredTracks.length) return;
+    if (isShuffle && filteredTracks.length > 1) {
+        let nextIdx = Math.floor(Math.random() * filteredTracks.length);
+        if (nextIdx === curIdx) nextIdx = (nextIdx + 1) % filteredTracks.length;
+        playTrackObj(filteredTracks[nextIdx], nextIdx, player.classList.contains('active'));
         return;
     }
-    const ci = vis.findIndex(i => parseInt(i.dataset.index) === curIdx);
-    playTrack(vis[(ci + 1) % vis.length], player.classList.contains('active'));
+    const nextIdx = (curIdx + 1) % filteredTracks.length;
+    playTrackObj(filteredTracks[nextIdx], nextIdx, player.classList.contains('active'));
 };
 window._sdmPagePlayNext = window.playNext;
 
 window.playPrev = function() {
     if (aud.currentTime > 4) { aud.currentTime = 0; return; }
-    bindTrackClicks();
-    const vis = items.filter(i => i.style.display !== 'none');
-    if (!vis.length) return;
-    const ci = vis.findIndex(i => parseInt(i.dataset.index) === curIdx);
-    playTrack(vis[(ci - 1 + vis.length) % vis.length], player.classList.contains('active'));
+    if (!filteredTracks.length) return;
+    const prevIdx = (curIdx - 1 + filteredTracks.length) % filteredTracks.length;
+    playTrackObj(filteredTracks[prevIdx], prevIdx, player.classList.contains('active'));
 };
 window._sdmPagePlayPrev = window.playPrev;
 
@@ -1217,17 +1396,17 @@ window.cycleSleepTimer = function() {
 
 window.openQueueDrawer = function() {
     const qList = document.getElementById('queueList');
-    const vis = items.filter(i => i.style.display !== 'none');
-    const start = Math.max(0, vis.findIndex(i => parseInt(i.dataset.index) === curIdx));
-    const slice = vis.slice(start, start + 30);
-    qList.innerHTML = slice.map(el => {
-        const active = parseInt(el.dataset.index) === curIdx;
+    const start = Math.max(0, curIdx);
+    const slice = filteredTracks.slice(start, start + 30);
+    qList.innerHTML = slice.map((t, offset) => {
+        const realIdx = start + offset;
+        const active = realIdx === curIdx;
         return `
-            <div onclick="playTrack(items[${el.dataset.index}], true); closeQueueDrawer();"
+            <div onclick="playTrackObj(filteredTracks[${realIdx}], ${realIdx}, true); closeQueueDrawer();"
                  style="padding:10px 12px; border-radius:13px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:8px; background:${active ? 'rgba(212,175,55,0.18)' : 'rgba(255,255,255,0.04)'}; border:1px solid ${active ? 'var(--gold)' : 'var(--border)'};">
                 <div style="min-width:0; flex:1;">
-                    <div style="font-size:12px; font-weight:800; color:${active ? 'var(--gold-lt)' : '#fff'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(el.dataset.titre)}</div>
-                    <div style="font-size:10px; color:var(--dim);">${escapeHtml(el.dataset.auteur)}</div>
+                    <div style="font-size:12px; font-weight:800; color:${active ? 'var(--gold-lt)' : '#fff'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.titre)}</div>
+                    <div style="font-size:10px; color:var(--dim);">${escapeHtml(t.auteur)}</div>
                 </div>
                 <i class="fa-solid ${active ? 'fa-volume-high' : 'fa-play'}" style="color:var(--gold-lt); font-size:12px;"></i>
             </div>
@@ -1238,26 +1417,26 @@ window.openQueueDrawer = function() {
 window.closeQueueDrawer = function() { document.getElementById('queueDrawer').classList.remove('open'); };
 
 window.shareCurrentTrack = function() {
-    if (curIdx === -1) return;
-    const el = items[curIdx];
-    const url = window.location.origin + '/collection/son/?autoplay=' + el.dataset.id;
-    const text = `🎧 Écoutez « ${el.dataset.titre} » (${el.dataset.auteur}) sur SDM Mouride :`;
+    if (curIdx < 0 || !filteredTracks[curIdx]) return;
+    const t = filteredTracks[curIdx];
+    const url = window.location.origin + '/collection/son/?autoplay=' + t.id;
+    const text = `🎧 Écoutez « ${t.titre} » (${t.auteur}) sur SDM Mouride :`;
     if (navigator.share) {
-        navigator.share({ title: el.dataset.titre, text, url }).catch(() => {});
+        navigator.share({ title: t.titre, text, url }).catch(() => {});
     } else {
         navigator.clipboard?.writeText(text + ' ' + url).then(() => showToast('Lien copié pour partage ✓'));
     }
 };
 
 window.saveCurrentTrackOffline = function() {
-    if (curIdx === -1) return;
-    const el = items[curIdx];
-    const btn = el.querySelector('.btn-offline-dl');
-    if (btn) btn.click();
+    if (curIdx < 0 || !filteredTracks[curIdx]) return;
+    const t = filteredTracks[curIdx];
+    const btn = document.querySelector(`.btn-offline-dl[data-offline-key="son_${t.id}"]`) || document.createElement('button');
+    window.saveAudioOffline(new Event('click'), t.id, t.titre, t.auteur, t.url, t.cat, btn);
 };
 
 window.saveAudioOffline = async function(e, id, titre, auteur, url, sousCategorie, btnEl) {
-    e.stopPropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
     if (!window.SDMOfflineVault) return;
     btnEl.disabled = true;
     btnEl.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
@@ -1273,10 +1452,11 @@ window.saveAudioOffline = async function(e, id, titre, auteur, url, sousCategori
             audioUrl: url,
             readUrl: `/collection/son/?autoplay=${id}`
         });
+        OFFLINE_SAVED_SET.add('son_' + id);
         btnEl.dataset.saved = '1';
         btnEl.style.color = '#10B981';
         btnEl.innerHTML = '<i class="fa-solid fa-check"></i>';
-        if (curIdx !== -1 && String(items[curIdx]?.dataset.id) === String(id)) {
+        if (curTrackId && String(curTrackId) === String(id)) {
             document.getElementById('btn-offline-player')?.classList.add('on');
             document.getElementById('offline-player-lbl').textContent = 'Hors-Ligne ✓';
         }
@@ -1290,30 +1470,34 @@ window.saveAudioOffline = async function(e, id, titre, auteur, url, sousCategori
 };
 
 window.toggleFavori = function(e, model, id, btn) {
-    e.stopPropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
     fetch(`/favoris/toggle/${model}/${id}/`, {
         method: 'POST',
         headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' }
     }).then(r => r.json()).then(d => {
         const added = d.status === 'added';
-        btn.innerHTML = added ? '<i class="fa-solid fa-heart"></i>' : '<i class="fa-regular fa-heart"></i>';
-        btn.classList.toggle('liked', added);
-        btn.dataset.liked = added ? 'true' : 'false';
+        if (added) FAV_SET.add(String(id)); else FAV_SET.delete(String(id));
+        if (btn) {
+            btn.innerHTML = added ? '<i class="fa-solid fa-heart"></i>' : '<i class="fa-regular fa-heart"></i>';
+            btn.classList.toggle('liked', added);
+            btn.dataset.liked = added ? 'true' : 'false';
+        }
+        if (curTrackId && String(curTrackId) === String(id)) {
+            const favIcon = document.getElementById('fav-player-icon');
+            if (favIcon) favIcon.className = added ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+        }
         showToast(added ? 'Ajouté aux favoris ❤️' : 'Retiré des favoris');
     }).catch(() => {});
 };
 
 window.togglePlayerFav = function() {
-    if (curIdx === -1) return;
-    const el = items[curIdx];
-    const listBtn = el.querySelector('.track-btn');
-    if (listBtn) window.toggleFavori(new Event('click'), 'son', el.dataset.id, listBtn);
-    const favIcon = document.getElementById('fav-player-icon');
-    const willLike = !(listBtn && listBtn.dataset.liked === 'true');
-    if (favIcon) favIcon.className = willLike ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+    if (curIdx < 0 || !filteredTracks[curIdx]) return;
+    const t = filteredTracks[curIdx];
+    const listBtn = document.querySelector(`.track-item[data-id="${t.id}"] .track-btn`);
+    window.toggleFavori(new Event('click'), 'son', t.id, listBtn);
 };
 
-/* ── SEEKBAR, VOLUME, ERREURS PROPRES & RECHERCHE ── */
+/* ── SEEKBAR, VOLUME, ERREURS PROPRES & RECHERCHE INSTANTANÉE ── */
 seekEl.addEventListener('input', e => {
     isSeeking = true;
     const pct = e.target.value / 1000;
@@ -1345,13 +1529,11 @@ window.addEventListener('sdm-audio-state', (e) => {
 });
 
 aud.addEventListener('error', () => {
-    if (audioErrorBusy || !aud.src || curIdx === -1) return;
+    if (audioErrorBusy || !aud.src || !curTrackId) return;
     audioErrorBusy = true;
-    const el = items[curIdx];
-    const sonId = el?.dataset.id;
-    if (!audioFallbackTried && sonId) {
+    if (!audioFallbackTried && curTrackId) {
         audioFallbackTried = true;
-        aud.src = `/proxy-audio/${sonId}/`;
+        aud.src = `/proxy-audio/${curTrackId}/`;
         aud.play().then(() => { audioErrorBusy = false; setPlayingVisuals(true); }).catch(() => {
             audioErrorBusy = false; audioFallbackTried = false;
             showToast('Piste indisponible — passage au suivant');
@@ -1364,42 +1546,50 @@ aud.addEventListener('error', () => {
 });
 aud.addEventListener('playing', () => { audioFallbackTried = false; audioErrorBusy = false; });
 
+let searchDebounce = null;
 document.getElementById('searchInput').addEventListener('input', function() {
-    const q = this.value.trim().toLowerCase();
-    let n = 0;
-    bindTrackClicks();
-    const list = document.getElementById('sonList');
-    const foldersView = document.getElementById('foldersStackView');
-    if (q && foldersView && list) {
-        // Lors d'une recherche, on affiche instantanément les profils correspondants ET les pistes correspondantes
-        list.style.display = 'flex';
-    } else if (!q && foldersView && list && document.getElementById('btnSegFolders')?.classList.contains('active')) {
-        list.style.display = 'none';
-    }
-    items.forEach(it => {
-        const ok = !q || it.dataset.titre.toLowerCase().includes(q) || it.dataset.auteur.toLowerCase().includes(q);
-        it.style.display = ok ? '' : 'none';
-        if (ok) n++;
-    });
-    document.querySelectorAll('[data-profile-name]').forEach(card => {
-        const match = !q || (card.dataset.profileName || '').includes(q);
-        card.style.display = match ? '' : 'none';
-    });
-    document.querySelectorAll('[data-folder-name]').forEach(fbox => {
-        const hasVisibleChild = [...fbox.querySelectorAll('[data-profile-name]')].some(c => c.style.display !== 'none');
-        const matchFolder = !q || (fbox.dataset.folderName || '').includes(q) || hasVisibleChild;
-        fbox.style.display = matchFolder ? '' : 'none';
-    });
-    document.getElementById('search-count').textContent = q ? `${n} titre${n > 1 ? 's' : ''}` : '';
+    const val = this.value;
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => {
+        const q = val.trim().toLowerCase();
+        const list = document.getElementById('sonList');
+        const foldersView = document.getElementById('foldersStackView');
+        filteredTracks = q ? ALL_TRACKS.filter(t => t.q.includes(q)) : ALL_TRACKS.slice();
+
+        if (q && foldersView && list) {
+            list.style.display = 'flex';
+        } else if (!q && foldersView && list && document.getElementById('btnSegFolders')?.classList.contains('active')) {
+            list.style.display = 'none';
+            if (loadMoreWrap) loadMoreWrap.style.display = 'none';
+        }
+        if (list && list.style.display !== 'none') {
+            window.renderNextTrackBatch(true);
+        }
+
+        document.querySelectorAll('[data-profile-name]').forEach(card => {
+            const match = !q || (card.dataset.profileName || '').includes(q);
+            card.style.display = match ? '' : 'none';
+        });
+        document.querySelectorAll('[data-folder-name]').forEach(fbox => {
+            const hasVisibleChild = [...fbox.querySelectorAll('[data-profile-name]')].some(c => c.style.display !== 'none');
+            const matchFolder = !q || (fbox.dataset.folderName || '').includes(q) || hasVisibleChild;
+            fbox.style.display = matchFolder ? '' : 'none';
+        });
+        document.querySelectorAll('[data-title-folder]').forEach(tf => {
+            const matchTf = !q || (tf.dataset.titleFolder || '').includes(q);
+            tf.style.display = matchTf ? '' : 'none';
+        });
+        document.getElementById('search-count').textContent = q ? `${filteredTracks.length} titre${filteredTracks.length > 1 ? 's' : ''}` : '';
+    }, 90);
 });
 
 window.addEventListener('DOMContentLoaded', async () => {
     // 1. Marquer en vert les sons déjà téléchargés hors-ligne
     if (window.SDMOfflineVault) {
         try {
-            const savedSet = await window.SDMOfflineVault.getSavedKeysSet();
+            OFFLINE_SAVED_SET = await window.SDMOfflineVault.getSavedKeysSet();
             document.querySelectorAll('.btn-offline-dl[data-offline-key]').forEach(btn => {
-                if (savedSet.has(btn.dataset.offlineKey)) {
+                if (OFFLINE_SAVED_SET.has(btn.dataset.offlineKey)) {
                     btn.dataset.saved = '1';
                     btn.style.color = '#10B981';
                     btn.innerHTML = '<i class="fa-solid fa-check"></i>';
@@ -1412,15 +1602,16 @@ window.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const autoId = params.get('autoplay');
     if (autoId) {
-        const target = items.find(i => String(i.dataset.id) === String(autoId));
-        if (target) { playTrack(target, true); return; }
+        const idx = filteredTracks.findIndex(t => t.id === String(autoId));
+        if (idx !== -1) { playTrackObj(filteredTracks[idx], idx, true); return; }
     }
     const cur = window.SDMAudioEngine ? window.SDMAudioEngine.getCurrentTrack() : null;
     if (cur && cur.titre && cur.url) {
-        const idx = items.findIndex(i => String(i.dataset.id) === String(cur.id));
+        const idx = filteredTracks.findIndex(t => t.id === String(cur.id));
         curIdx = idx;
-        const t = idx !== -1 ? items[idx].dataset.titre : cur.titre;
-        const a = idx !== -1 ? items[idx].dataset.auteur : (cur.auteur || 'Kourel Mouride');
+        curTrackId = String(cur.id || '');
+        const t = idx !== -1 ? filteredTracks[idx].titre : cur.titre;
+        const a = idx !== -1 ? filteredTracks[idx].auteur : (cur.auteur || 'Kourel Mouride');
         document.getElementById('p-title').textContent = t;
         document.getElementById('p-author').textContent = a;
         document.getElementById('fp-collection-lbl').textContent = a;
@@ -1458,7 +1649,11 @@ window.deleteSonTrack = async (e, sonId, titre, btnEl) => {
     e.stopPropagation();
     if (!confirm(`Supprimer définitivement « ${titre} » ?`)) return;
     const res = await fetch(`/sons-api/supprimer/${sonId}/`, { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } });
-    if (res.ok) { btnEl.closest('.track-item')?.remove(); bindTrackClicks(); showToast('Supprimé ✓'); }
+    if (res.ok) {
+        filteredTracks = filteredTracks.filter(t => t.id !== String(sonId));
+        btnEl.closest('.track-item')?.remove();
+        showToast('Supprimé ✓');
+    }
 };
 window.openEditSonModal = (e, sonId, titre, auteur, cat) => {
     e.stopPropagation();

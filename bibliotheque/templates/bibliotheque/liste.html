@@ -15,7 +15,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <!-- Coffre-fort Hors-Ligne & Persistance de Connexion Mobile -->
+    <!-- Coffre-fort Hors-Ligne, Navigation Instantanée Mobile & Persistance -->
+    <script src="{% static 'js/sdm_instant_nav.js' %}" defer></script>
     <script src="{% static 'js/sdm_offline_vault.js' %}"></script>
     <script>
         (function() {
@@ -498,29 +499,27 @@
             width: 100%; height: 100%; object-fit: contain; background: #fff;
         }
 
-        /* ═══════════════ NAVIGATION BAS ANDROID ═══════════════ */
+        /* ═══════════════ NAVIGATION BAS NATIVE MOBILE UNIFIÉE ═══════════════ */
         .nav-island {
-            position: fixed; bottom: 14px; left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 24px); max-width: 430px;
-            height: var(--nav-h); border-radius: 99px;
-            background: rgba(6, 14, 10, 0.94);
-            backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
-            border: 1px solid var(--border-g);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.75);
+            position: fixed; bottom: 0; left: 0; right: 0;
+            width: 100%; height: calc(62px + env(safe-area-inset-bottom, 0px));
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: rgba(4, 11, 8, 0.96);
+            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+            border-top: 1px solid rgba(212, 175, 55, 0.22);
             display: flex; align-items: center; justify-content: space-around;
-            padding: 0 10px; z-index: 100;
+            z-index: 100;
         }
         .nav-item {
             flex: 1; display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             gap: 3px; text-decoration: none;
-            color: rgba(255,255,255,0.42); height: 100%; position: relative;
-            font-size: 9px; font-weight: 700;
+            color: rgba(255,255,255,0.45); height: 100%; position: relative;
+            font-size: 9.5px; font-weight: 800;
         }
-        .nav-item i { font-size: 19px; transition: transform 0.3s; }
+        .nav-item i { font-size: 18px; transition: transform 0.2s; }
         .nav-item.active { color: var(--gold-lt); }
-        .nav-item.active i { transform: translateY(-3px); filter: drop-shadow(0 3px 8px rgba(212,175,55,0.45)); }
+        .nav-item.active i { transform: translateY(-2px); filter: drop-shadow(0 3px 8px rgba(212,175,55,0.45)); }
     </style>
 </head>
 <body>
@@ -533,7 +532,7 @@
             </a>
             <div class="topbar-title">
                 <h1>{{ categorie|title }} · Manuscrits & Lecture</h1>
-                <p><span id="visible-count">{{ items|length }}</span> sur {{ items|length }} œuvres disponibles · Miniatures 1re Page</p>
+                <p><span id="visible-count">{% if khassidas_json %}{{ items_count }}{% else %}{{ items|length }}{% endif %}</span> sur {% if khassidas_json %}{{ items_count }}{% else %}{{ items|length }}{% endif %} œuvres disponibles · Miniatures 1re Page</p>
             </div>
             <!-- Bouton d'ouverture rapide des 8 Modèles -->
             <button type="button" onclick="toggleThemeBar()" class="icon-action-btn active" title="Changer de Modèle Visuel">
@@ -626,8 +625,9 @@
             <button type="button" class="alpha-chip" onclick="filterByLetter('Z', this)">Z</button>
         </div>
 
-        <!-- CONTENEUR DES ITEMS (AVEC MINIATURES DE LA 1re PAGE) -->
+        <!-- CONTENEUR DES ITEMS (Rendu virtuel par lots de 40 pour les Khassidas : ~50KB au lieu de 3.3MB) -->
         <div class="items-container layout-grid" id="items-container">
+            {% if not khassidas_json %}
             {% for item in items %}
 
             {% if 'zikr' in categorie|lower %}
@@ -791,7 +791,11 @@
                 <p style="font-size:12px; opacity:0.6;">Essayez un autre mot-clé dans {{ categorie }}</p>
             </div>
             {% endfor %}
+            {% endif %}
         </div>
+        {% if khassidas_json %}
+        <script id="sdm-khassidas-data" type="application/json">{{ khassidas_json|safe }}</script>
+        {% endif %}
 
         <!-- Sentinelle de Défilement Infini (Lots de 40 pour fluidité 60 FPS) -->
         <div id="infinite-scroll-sentinel" style="text-align:center; padding:18px 10px;">
@@ -841,27 +845,27 @@
         </div>
     </div>
 
-    <!-- NAVIGATION BAS ANDROID -->
-    <nav class="nav-island">
+    <!-- NAVIGATION BAS NATIVE MOBILE UNIFIÉE (5 ONGLETS ESSENTIELS) -->
+    <nav class="nav-island" aria-label="Navigation principale">
         <a href="{% url 'home' %}" class="nav-item">
-            <i class="fa-solid fa-house-chimney"></i>
+            <i class="fa-solid fa-house"></i>
             <span>Accueil</span>
+        </a>
+        <a href="{% url 'liste_sons' %}" class="nav-item">
+            <i class="fa-solid fa-headphones"></i>
+            <span>Audios</span>
         </a>
         <a href="{% url 'liste' 'khassida' %}" class="nav-item {% if 'khassida' in categorie|lower %}active{% endif %}">
             <i class="fa-solid fa-book-open"></i>
             <span>Khassidas</span>
         </a>
-        <a href="{% url 'tazawwud_home' %}" class="nav-item">
-            <i class="fa-solid fa-graduation-cap"></i>
-            <span>Tazawwud</span>
+        <a href="{% url 'coran_interactif' %}" class="nav-item">
+            <i class="fa-solid fa-book-quran"></i>
+            <span>Coran</span>
         </a>
-        <a href="{% url 'favoris' %}" class="nav-item">
-            <i class="fa-solid fa-heart"></i>
-            <span>Favoris</span>
-        </a>
-        <a href="{% url 'profile' %}" class="nav-item">
-            <i class="fa-solid fa-user"></i>
-            <span>Profil</span>
+        <a href="{% url 'zikr_compteur_default' %}" class="nav-item">
+            <i class="fa-solid fa-fingerprint"></i>
+            <span>Zikr</span>
         </a>
     </nav>
 
@@ -909,12 +913,34 @@
             });
         })();
 
-        // ── 2. FILTRAGE INSTANTANÉ + PAGINATION DYNAMIQUE PAR LOTS DE 40 (INFINITE SCROLL 60 FPS) ──
+        // ── 2. FILTRAGE INSTANTANÉ + RENDU VIRTUEL PAR LOTS DE 40 (INFINITE SCROLL 60 FPS) ──
         let currentLetter = 'ALL';
         const BATCH_SIZE = 40;
         let currentDisplayLimit = BATCH_SIZE;
-        const allCards = Array.from(document.querySelectorAll('#items-container .item-card'));
+        const containerEl = document.getElementById('items-container');
+        const khDataEl = document.getElementById('sdm-khassidas-data');
+        const IS_VIRTUAL_KH = Boolean(khDataEl);
+        const RAW_KH = IS_VIRTUAL_KH ? (() => { try { return JSON.parse(khDataEl.textContent || '[]'); } catch(e) { return []; } })() : [];
+        const VIRTUAL_ITEMS = RAW_KH.map((r, i) => ({
+            id: r[0],
+            titre: r[1] || 'Khassida',
+            auteur: r[2] || 'Cheikh Ahmadou Bamba',
+            premium: Boolean(r[3]),
+            cover: r[4] || '',
+            tLow: (r[1] || '').toLowerCase(),
+            aLow: (r[2] || '').toLowerCase(),
+            num: i + 1
+        }));
+        let virtualFiltered = VIRTUAL_ITEMS;
+        let virtualRendered = 0;
+        let savedOfflineKeys = new Set();
+
+        const allCards = IS_VIRTUAL_KH ? [] : Array.from(document.querySelectorAll('#items-container .item-card'));
         let imgObserver = null;
+
+        function escHtml(s) {
+            return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
 
         if ('IntersectionObserver' in window) {
             imgObserver = new IntersectionObserver((entries) => {
@@ -934,17 +960,113 @@
             }, { rootMargin: '260px 0px' });
         }
 
+        function buildKhassidaCardNode(k, pos) {
+            const cat = '{{ categorie|escapejs }}';
+            const readUrl = `/lire/${cat}/${k.id}/`;
+            const pdfUrl = `/proxy-pdf/${cat}/${k.id}/`;
+            const thumbUrl = `/thumb-pdf/${cat}/${k.id}/`;
+            const thumbSrc = k.cover || thumbUrl;
+            const favUrl = `/favoris/toggle/${cat}/${k.id}/`;
+            const isSaved = savedOfflineKeys.has(`${cat}_${k.id}`);
+
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.dataset.title = k.tLow;
+            card.dataset.cat = cat;
+            card.dataset.id = String(k.id);
+            card.dataset.rawTitle = k.titre;
+            card.dataset.auteur = k.auteur;
+            card.dataset.pdfUrl = pdfUrl;
+            card.dataset.thumbUrl = thumbUrl;
+            card.dataset.readUrl = readUrl;
+
+            card.innerHTML =
+                `<div class="first-page-miniature" data-manuscript-style="${pos % 4}" ` +
+                     `data-thumb-src="${escHtml(thumbSrc)}" data-thumb-hd="${thumbUrl}?hd=1" ` +
+                     `data-pdf-url="${pdfUrl}" data-doc-key="${cat}_${k.id}" ` +
+                     `data-doc-title="${escHtml(k.titre)}" data-read-url="${readUrl}" ` +
+                     `onclick="window.location.href='${readUrl}'" style="cursor:pointer;">` +
+                    `<span class="miniature-bismillah">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</span>` +
+                    `<div class="miniature-title-box"><div class="miniature-title-text">${escHtml(k.titre)}</div></div>` +
+                    `<div class="miniature-lines-deco"><span></span><span></span><span></span></div>` +
+                    `<span class="miniature-footer-badge">1re Page · N°${k.num}</span>` +
+                    `<img alt="1re page de ${escHtml(k.titre)}" class="cover-img-real">` +
+                    `<span class="offline-status-pill" style="display:${isSaved ? 'inline-flex' : 'none'}; position:absolute; top:5px; left:5px; z-index:6; background:rgba(6,78,59,0.92); color:#6EE7B7; border:1px solid #10B981; font-size:8px; font-weight:800; padding:2px 6px; border-radius:99px;"><i class="fa-solid fa-circle-check"></i> Hors-Ligne</span>` +
+                    `<button type="button" class="page1-zoom-badge" onclick="event.stopPropagation(); openFirstPageQuickLook(this.closest('.first-page-miniature'))" title="Aperçu de la 1re page"><i class="fa-solid fa-magnifying-glass-plus"></i></button>` +
+                `</div>` +
+                `<div class="item-body"><a href="${readUrl}" style="text-decoration:none;">` +
+                    `<div class="item-title">${escHtml(k.titre)}${k.premium ? ' <span style="color:#d4af37;" title="Contenu Premium">👑</span>' : ''}</div>` +
+                    `<div class="item-subtitle"><span><i class="fa-solid fa-feather-pointed" style="color:var(--gold);"></i> ${escHtml(k.auteur)}</span></div>` +
+                `</a></div>` +
+                `<div class="item-actions-row">` +
+                    `<div style="display:flex; gap:5px;">` +
+                        `<button type="button" class="fav-btn" onclick="openFirstPageQuickLook(this.closest('.item-card').querySelector('.first-page-miniature'))" title="Voir la 1re page"><i class="fa-regular fa-eye"></i></button>` +
+                        `<a href="${favUrl}" class="fav-btn" title="Ajouter aux favoris"><i class="fa-solid fa-star"></i></a>` +
+                        `<button type="button" class="fav-btn btn-offline-save" onclick="saveCardOffline(event, this)" ${isSaved ? 'style="color:#10B981;border-color:#10B981;"' : ''} title="Enregistrer hors-ligne"><i class="fa-solid ${isSaved ? 'fa-check' : 'fa-cloud-arrow-down'}"></i></button>` +
+                    `</div>` +
+                    `<a href="${readUrl}" class="read-pill-btn"><i class="fa-solid fa-book-open"></i><span>Lire</span></a>` +
+                `</div>`;
+            return card;
+        }
+
+        function appendVirtualKhBatch() {
+            if (!IS_VIRTUAL_KH || !containerEl) return;
+            if (!virtualFiltered.length) {
+                containerEl.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; padding: 60px 20px; color: var(--dim);"><i class="fa-solid fa-book-open" style="font-size:44px; opacity:0.35; margin-bottom:14px;"></i><p style="font-size:15px; font-weight:700;">Aucun document trouvé</p></div>`;
+                const moreBtn = document.getElementById('btn-load-more');
+                if (moreBtn) moreBtn.style.display = 'none';
+                return;
+            }
+            const end = Math.min(virtualFiltered.length, currentDisplayLimit);
+            const frag = document.createDocumentFragment();
+            const newMinis = [];
+            for (let i = virtualRendered; i < end; i++) {
+                const node = buildKhassidaCardNode(virtualFiltered[i], i);
+                const mini = node.querySelector('.first-page-miniature[data-thumb-src]');
+                if (mini) newMinis.push(mini);
+                frag.appendChild(node);
+            }
+            containerEl.appendChild(frag);
+            virtualRendered = end;
+            if (imgObserver) {
+                newMinis.forEach(m => { m.dataset.observed = '1'; imgObserver.observe(m); });
+            }
+            const moreBtn = document.getElementById('btn-load-more');
+            if (moreBtn) {
+                moreBtn.style.display = (virtualRendered < virtualFiltered.length) ? 'inline-block' : 'none';
+                moreBtn.textContent = `Afficher la suite (${virtualRendered} / ${virtualFiltered.length})`;
+            }
+        }
+
         function filterByLetter(letter, btnEl) {
             currentLetter = letter;
             currentDisplayLimit = BATCH_SIZE;
             document.querySelectorAll('.alpha-chip').forEach(c => c.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
-            filterItemsInstant(true);
+            filterItemsInstant(false);
         }
 
         function filterItemsInstant(keepLimit = false) {
             if (!keepLimit) currentDisplayLimit = BATCH_SIZE;
             const q = (document.getElementById('live-search-input')?.value || '').trim().toLowerCase();
+
+            if (IS_VIRTUAL_KH) {
+                if (!keepLimit || virtualRendered === 0) {
+                    const lLow = currentLetter.toLowerCase();
+                    virtualFiltered = VIRTUAL_ITEMS.filter(k => {
+                        const mq = !q || k.tLow.includes(q) || k.aLow.includes(q);
+                        const ml = (currentLetter === 'ALL') || k.tLow.startsWith(lLow);
+                        return mq && ml;
+                    });
+                    if (containerEl) containerEl.innerHTML = '';
+                    virtualRendered = 0;
+                    const cntEl = document.getElementById('visible-count');
+                    if (cntEl) cntEl.textContent = String(virtualFiltered.length);
+                }
+                appendVirtualKhBatch();
+                return;
+            }
+
             let totalMatching = 0;
             let shownCount = 0;
 
@@ -1001,16 +1123,16 @@
         }
 
         // Initialiser l'affichage du premier lot de 40 cartes
-        filterItemsInstant(true);
+        filterItemsInstant(false);
 
         // ── 4. TÉLÉCHARGEMENT HORS-LIGNE INTÉGRÉ DANS L'APPLICATION (INDEXEDDB) ──
         async function markOfflineCards() {
             if (!window.SDMOfflineVault) return;
             const savedList = await window.SDMOfflineVault.listAll();
-            const savedKeys = new Set(savedList.map(x => x.key));
+            savedOfflineKeys = new Set(savedList.map(x => x.key));
             document.querySelectorAll('.item-card[data-cat][data-id]').forEach(card => {
                 const key = `${card.getAttribute('data-cat')}_${card.getAttribute('data-id')}`;
-                if (savedKeys.has(key)) {
+                if (savedOfflineKeys.has(key)) {
                     const pill = card.querySelector('.offline-status-pill');
                     if (pill) pill.style.display = 'inline-flex';
                     const btn = card.querySelector('.btn-offline-save');

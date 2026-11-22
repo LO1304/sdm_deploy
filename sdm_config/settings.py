@@ -24,7 +24,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # ── SÉCURITÉ RENFORCÉE DES SESSIONS (PERSISTANCE MOBILE PERMANENTE MULTI-ANNÉES) ──
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 365 * 50  # 50 ans : connexion permanente tant que l'utilisateur ne se déconnecte pas
-SESSION_SAVE_EVERY_REQUEST = True             # Renouvelle automatiquement la session à chaque interaction
+SESSION_SAVE_EVERY_REQUEST = False            # Évite une écriture PostgreSQL inutile à chaque clic (cookie déjà valable 50 ans)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_HTTPONLY = True        # Empêche l'accès JS au cookie de session
 SESSION_COOKIE_SAMESITE = 'Lax'      # Protection CSRF via cookies
@@ -79,6 +79,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'bibliotheque.debug_middleware.GlobalDebugMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -120,7 +121,7 @@ if 'DATABASE_URL' in os.environ:
     DATABASES = {
         'default': dj_database_url.config(
             default=os.environ.get('DATABASE_URL'),
-            conn_max_age=0,  # 0 pour fermer la connexion après chaque requête (évite les connexions mortes)
+            conn_max_age=60,  # Réutilise la connexion DB chaude (gain ~150-300ms par écran mobile)
             conn_health_checks=True, # Vérifie que la DB est en vie avant de faire la requête
         )
     }
@@ -160,13 +161,25 @@ STATICFILES_FINDERS = [
 MEDIA_URL   = '/media/'
 MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
 
+# ── CACHE MÉMOIRE RAPIDE (Vues Accueil & Audiothèque quasi-instantanées) ──
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'sdm-mobile-cache',
+        'TIMEOUT': 300,
+        'OPTIONS': {
+            'MAX_ENTRIES': 500,
+        },
+    }
+}
+
 # ── Storage Configuration ──
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.RawMediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
@@ -175,6 +188,7 @@ CLOUDINARY_STORAGE_CONFIG = CLOUDINARY_STORAGE
 
 # WhiteNoise configuration
 WHITENOISE_MANIFEST_STRICT = False
+WHITENOISE_MAX_AGE = 31536000
 
 # Backward compatibility for django-cloudinary-storage 0.3.0
 # (it still references the old setting names removed in Django 6.0)
