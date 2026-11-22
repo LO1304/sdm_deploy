@@ -1,818 +1,2546 @@
 [
   {
-    "id": "sdm_rappel_1230",
-    "msg_id": 1230,
-    "date_post": "2026-03-20",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_40",
+    "badge": "Masaalikul Jinaan",
     "arabe": "",
-    "texte": "Yalnanu ko yagga teweee barkep xassida yi... Alhamdoulilahi Rabbil halamin jerejefe Seexana Ahmadal Xadim ❤️",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "La meilleure parure dont l'homme puisse se parer, est la bonne conduite partout où il passe.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_rappel_1228",
-    "msg_id": 1228,
-    "date_post": "2026-03-19",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_41",
+    "badge": "Masaalikul Jinaan",
     "arabe": "",
-    "texte": "ZAKAT AL-FITR 1447H / 2026 – TOUBA\nLa Maison de la Zakat – Kër Asaka Yi rappelle aux fidèles musulmans l’obligation de s’acquitter de la Zakat al-Fitr avant la prière de l’Aïd.\nMontant fixé : 1000 FCFA par personne\nÉquivalent en denrées :\n• Riz : 2,5 kg\n• Maïs : 2,25 kg\n• Blé : 2 kg\nLa Zakat al-Fitr est une purification du jeûne du Ramadan et un moyen de permettre aux plus démunis de célébrer la fête de l’Aïd dans la dignité.\nElle doit être versée pour soi-même et pour chaque personne à charge avant la prière de l’Aïd.\nMaison de la Zakat – Kër Asaka Yi\nTouba – Sénégal",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1228.jpg"
+    "texte": "Eviter La machination et les controverses malsaines, la guerre froide ou toutes mauvaises relations.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
   },
   {
-    "id": "sdm_rappel_1227",
-    "msg_id": 1227,
-    "date_post": "2026-03-18",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_42",
+    "badge": "Masaalikul Jinaan",
     "arabe": "",
-    "texte": "8  9\nQui fait ceci et après la prière il se repend aussi longtemps qu'il lui est possible < Astaghfiroullah>, il sera absous de tous ses péchés.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1227.jpg"
+    "texte": "Ne manger que le pur licite, non le douteux, loin de l'usure et de ses semblables. MBÂCKE",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_rappel_1226",
-    "msg_id": 1226,
-    "date_post": "2026-03-17",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_43",
+    "badge": "Masaalikul Jinaan",
     "arabe": "",
-    "texte": "7  8\nQui fait ceci et après la prière il se repend aussi longtemps qu'il lui est possible < Astaghfiroullah>, il sera absous de tous ses péchés.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1226.jpg"
+    "texte": "O ami, si tu manges n'importe quoi, tu fais n'importe quoi, si tu accompagnes n'importe qui, tu deviens n'importe qui (choisis donc ce que tu manges et celui que tu fréquentes).",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_rappel_1224",
-    "msg_id": 1224,
-    "date_post": "2026-03-16",
+    "id": "sdm_cit_44",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Fuyez tout lieu de tentation et de séduction afin d'être sauvé du péché.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_45",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Il est nécessaire à toute personne responsable de ses actes d'éviter de prononcer des paroles interdites.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_46",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Eviter de verser le sang ou d'utiliser illégitimement le bien d'un musulman ou d'un semblable.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_48",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Fais du silence ta réponse, Si jamais tu es à court d'arguments; il arrive souvent qu'une parole ne trouve sa réponse que dans le silence.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_49",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Si la conduite d'un individu te séduit, épouse-la; alors, ce qui t'avait séduit naîtra en toi.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_52",
+    "badge": "Ilhâmul Wudûd",
+    "arabe": "",
+    "texte": "Persévère dans la quête de la droiture et de la soumission avec ascétisme, scrupule et sobriété.",
+    "source": "Ilhâmul Wudûd (L'Inspiration de l'Affectueux) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_53",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Ne te livre pas souvent et ce, partout où tu te trouves, aux amusements, au rire, à l'agitation, à la futilité. Nal?ju Qadâil Hâjd",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_54",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Dans l'assistance, maîtrise-toi le corps, consacre-toi au silence par la réserve, ainsi tu seras comblé.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_55",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Supporte avec patience les diffamations et ne les rends à personne, car l'échange de propos diffamatoires et le fait de se traiter mutuellement de menteur sont des marques des pires habitudes.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_57",
+    "badge": "Ilhâmul Wudûd",
+    "arabe": "",
+    "texte": "Evite la procrastination car à la longue, elle mène les soumis vers la perversion.",
+    "source": "Ilhâmul Wudûd (L'Inspiration de l'Affectueux) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_58",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Traite ton égal de la manière dont tu aimerais être traité toi-même.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_59",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Ne dis jamais à quelqu'un \"tu mens\" ou \"ce que tu dis est faux\" ou \"tu t'es trompé\", ou tout autre propos du genre, qui peut le frustrer, fut-il même un enfant, car cela est une erreur, s'il affirme quelque chose que tu ne connais pas, donne-lui raison en cela, ainsi tu auras fait preuve de noblesse Dis-lui plutôt \"je ne le voyais pas ainsi\" ou \"je croyais que...\" ou \"pour ma part, j'ignorais que...\"",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_60",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Sois avec tout le monde, ta vie durant, exactement comme tu souhaiterais qu'il soit avec toi.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_61",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Obéis à tes deux parents, sois envers eux bienveillant et empresse-toi d'exécuter leurs ordres, garde-toi de tout ce qu'ils t'interdisent, pour la FACE de DIEU et tu gagneras ainsi plus de considération.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_62",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Ne cherche pas à déceler, dans les défauts des gens, ce qu'ils ont mis sous voile, de peur que DIEU ne déchire les voiles de tes propres défauts. évoque exclusivement leurs qualités, quand on fait allusion à eux, ne dénigre aucun d'entre eux de ce dont tu es toi-même entaché. LA VOIE DÉ LA SATISFACTION DES BESOINS",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_63",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "La Voie de la Bonne Conduite consiste à montrer de l'indulgence au jeune, à l'instar d'un père et d'une mère, à respecter les grandes personnes, et à traiter ton semblable comme toi-même, pour la FACE du CREATEUR, Qui occupe le Trône.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_65",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Respecte la grande personne, même si elle te paraît vulgaire et méprisable. -SheikWAhmadou Bamba MBACKE",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_66",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Partout où tu es en compagnie d'une personne plus grande que toi, ne cesse de lui vouer respect. Lors d'un voyage, ou lors d'une autre occasion, honore-le dans l'assistance et cède-lui le lit, assoies-toi par terre et n'accepte pas de le partager avec lui (le lit), le solliciterait-il par largesse, sauf en cas de force majeure.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_69",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Ne te plains pas tout le temps des épreuves qui t'accablent. Sois courageux et agis de telle sorte que les gens croient que tu ne manques de rien. Car la science n'est jamais octroyée à quelqu'un qui craint la faim, Saches que DIEU élève son serviteur qui fait preuve de patience. KUN KAATIMAN",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_70",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Si tu recherches le savoir auprès d'un enseignant, sollicite l'agrément de celui-ci.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_72",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Sache que la connaissance est ardue, on ne l'acquiert qu'en s'abstenant des palabres. Nul n'en acquerra jamais une partie, s'il ne lui dispose pas son tout, sois persévérant!",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_73",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Il faut noter l'éducation de tes enfants afin qu'ils deviennent sages et soient dans la bonne voie.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_75",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Le savoir est à la vie des coeurs, ce qu'est la pluie à l'essor d'un pays quand elle l'arrose.\"",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_87",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "La compagnie des amis sincères te fait connaître tes vices et tes défauts.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_88",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "La compagnie de tes ennemis peut être utile par leurs critiques et ta longanimité devant leur malveillance.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_89",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Tu n'es au-dessus de personne, car tu ignores comment finira ta vie et quelle sera ta destinée demain.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_90",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Le Seigneur en a fini avec quatre (4) choses: la durée de notre vie; notre création, caractère, fortune.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_91",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Sois indulgent envers le jeune et ne lui épargne aucun conseil qui, selon toi est de nature à le mettre dans la Bonne Voie. LA VOIE DÇLA SATISFACTION DES BESOINS",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_93",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "la Pudeur est la soeur de la Foi; partout où elle est absente, la Foi n'y existe pas.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_94",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Ne choisis, quand tu cherches un compagnon, ni un sot, ni un jaloux, ni un envieux.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_95",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Quiconque est plus petit que toi, épargne-le et témoigne-lui de pitié.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_97",
+    "badge": "Ilhâmul Wudûd",
+    "arabe": "",
+    "texte": "Lorsque twséjournes dans un groupe, sois attentif, ne sois pas prompt et ne transgresse pas non plus.",
+    "source": "Ilhâmul Wudûd (L'Inspiration de l'Affectueux) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_98",
+    "badge": "Ilhâmul Wudûd",
+    "arabe": "",
+    "texte": "Ne t'empresse pas à intégrer un groupe sans prendre la précaution de les connaître véritablement. BACKE",
+    "source": "Ilhâmul Wudûd (L'Inspiration de l'Affectueux) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_99",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "La vérité s'éternise, alors que l'Erreur, même au paroxysme de la célébrité, finit par s'évanouir et déchoir.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_101",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Quand un méritant fait une requête auprès de toi, satisfais-le sans réticence. Ne sois jamais avare sur les biens de ce monde, au point d'être déshonoré dans l'Au-delà, car celui qui est frappé d'avarice est éloigné de DIEU et de l'ensemble de Ses créatures.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_102",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Rends tes précieyx services à tous, pour l'amour d'ALLAH exclusivement, sans relâche ni mot déplaisant. MASAALIK-UL J NAAN",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_103",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Honore les hôtes par la cordialité, l'hospitalité, la réjouissance et l'intimité. ÌvnACKE",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_105",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Habitue ta langue à la Bonne Parole, ainsi tu en seras heureux et tu seras préservé de tout mal.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_106",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Si tu veux rassembler les qualités éminentes, attache-toi à la crainte révérencielle et éloigne-toi des vices, tels que l'orgueil, l'envie, l'ostentation, la haine, l'avarice de même que l'animosité. En dehors de ces défauts, évite l'hypocrisie, la préciosité et le schisme. ILHAMOUL WADOUD",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_107",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Purifie ton coeur, aime pour eux ce que tu aimerais pour soi-meme, sois digne de confiance.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_108",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Evite deneur faire du mal; reconnais-leur leurs droits; sois patient et fais preuve de longanimité devant le mal qui t'atteindrait de leur part.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_109",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Accordes le pardon à ton offenseur, donnes à celui qui te prive, renoues amitié avec celui qui t'a abandonné et montres toi bon envers tous.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_110",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Il ne faut pas leur garder rancune lorsqu'ils se montrent injustes, lorsqu'ils te refusent un service ou une faveur ou lorsqu'ils te font du mal. MASAALlk2ULJlNAAN -Sheikh hmadou Bamba MBACKE",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_111",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Si tu es frappé du défaut d'impatience, remets-toi au Tout-Puissant avec humilitéï pour le repousser, car l'impatience fait tomber dans la privation, dans le découragement, dans le regret et la désobéissance.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_112",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Perfectionne ton caractère et traite-les avec gentillesse montre-toi à tous, doux et bienfaisant.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_113",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Pratique toujours avec eux, cette politique, cette sagesse de conseil et de pitié sans jalousie.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_114",
+    "badge": "Ilhâmul Wudûd",
+    "arabe": "",
+    "texte": "Les meilleures qualités des croyants sont l'endurance, la sincérité, la soumission, la reconnaissance, l'ascétisme, l'exclusivité du culte, la générosité, le silence, le scrupule, la pudeur, la bonne exhortation, la politesse légale, la sobriété.",
+    "source": "Ilhâmul Wudûd (L'Inspiration de l'Affectueux) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_115",
+    "badge": "Ilhâmul Wudûd",
+    "arabe": "",
+    "texte": "Retiens ta langue, sois taciturne où que tu sois.",
+    "source": "Ilhâmul Wudûd (L'Inspiration de l'Affectueux) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_116",
+    "badge": "Ilhâmul Wudûd",
+    "arabe": "",
+    "texte": "Si tu es assailli par le serpent de l'animosité, défends-toi par la prodigue de bons conseils et de générosité.",
+    "source": "Ilhâmul Wudûd (L'Inspiration de l'Affectueux) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_117",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Évitez de dire du mal de quelqu'un qui est absent. QASIDA AXIRU ZAMAN (La fin du Monde)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_119",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Sache que manquer à une promesse et mentir font partie des vices qui entachent une conversation,",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_120",
+    "badge": "Ilhâmul Wudûd",
+    "arabe": "",
+    "texte": "Lorsque tu es embrasé par la flamme de la dispute, éteins-la alors par l'eau du silence et du détournement.",
+    "source": "Ilhâmul Wudûd (L'Inspiration de l'Affectueux) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_121",
+    "badge": "Ilhâmul Wudûd",
+    "arabe": "",
+    "texte": "Lorsque tu es piqué par le scorpion de l'adversité, soigne-toi par le pardon et la paix. nspiration de l'AFFECTUEUX)",
+    "source": "Ilhâmul Wudûd (L'Inspiration de l'Affectueux) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_122",
+    "badge": "Ilhâmul Wudûd",
+    "arabe": "",
+    "texte": "Si tu es enivré par le vin de la colère et de l'envie, abreuve-toi des eaux de l'endurance, de l'ascétisme, ainsi tu seras comblé de bienfaits.",
+    "source": "Ilhâmul Wudûd (L'Inspiration de l'Affectueux) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_125",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Sache que les vices qui sont eux-mêmes des péchés, entraînent une sécheresse de coeur très dangereuse.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_128",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Ni l'oisiveté, ni le repos ne profitent à une personne qui veut devenir aisée, car le bien ne provient jamais de telles attitudes, les sont plutôt préjudiciables à l'aspirant. Sache que la gloire ne s'acquiert que selon l'effort fourni.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_129",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Sache que la vie de l'homme est une chose très précieuse qu'on ne doit employer qu'à l'utile.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_130",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Exploitez cinq situations Pien avant I yrs cinq autres alternatives, comme le recommande le Meilleur ep hommes( 1): la jeunesse bien avant la vieillesse, la validité physique bie aVant la mal ie, la richesse bien avant la pauvreté, la disponibilité bien avant nque de temps qui indispose, l'existence bien avant la mort, empressez-vous donc aux oeuvres pies avant qu'il ne soit trop tard! LE VIA IQUE ES ADOLESCENTS (Tazaoudou Çighâr)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_131",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "On ne pourra jamais parvenir au but sans avoir au préalable, franchi les étapes qui se situent en deçà du terme. -Sheikh Ahmadou«pambq MBACKE",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_133",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Il est établi selon la (Sagesse» que celui qui sollicite une chose dans la persévérence finira par l'impétrer.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_134",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "La jovialité et l'amour du repos doivent être réprimés par l'idée des dangers et de l'incertitude de l'avenir.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_138",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Xarit dëgg mooy mooy ki lay nëbbal lu fiaaw ngir yekkati la.\n\n🇫🇷 TonVrai ami est celui qui cache tes défauts, pour te revaloriser (te rendre plus grand).",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_139",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Deel weg mag ak doonte da di ku doyadi te xeebu.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_140",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bokk na ci yooni teggiinu yi: di def li nga gis mu rafet teyb li nga gis mu fiaaw.\n\n🇫🇷 il fait partie des voies qui mènent à la Bonne Conduite, que tu accomplisses que tu estimes bienséant et abandonnes ce que tu considères (juges) malséant. =",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_141",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Xarit dëgg mooy ki ànd ak yaw di lor boppam ngir jarifi la.\n\n🇫🇷 Ton vrai ami est celui qui agit de concert avec toi, celui qui se cause un dommage pour te servir.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_142",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul di baril wax fa moom, nekkal di kuy noopi, loolu dina waral nga am ag jubalam.\n\n🇫🇷 Ne parle pas beaucoup auprès de lui, en vérité, garde le silence, si tu veux profiter de Sa droiture.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_143",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Boo toogee fa moom bul di baril ay gestu mbaa ngay yëngu fu nekk nga jëm fa.\n\n🇫🇷 Ne sois pas, en sa présence, porté à tourner la tête et à bouger de tous côtés.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_144",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Xarit dëgg mooy kok bu la jamono njattee, mu sonnai boppam ngir siggil la.\n\n🇫🇷 Ton vrai ami est aussi celui qui, lorsque les adversités du monde te frappent, il répand sur toi sa fortune, pour te réhabiliter.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_145",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul def mukk ni ka àndoon ak Qudar, ndare bu daa manul a fiàkk (bul ko di laaj lu mu def lu nekk, nga ne ko loo ci jublu).\n\n🇫🇷 Ne le considère jamais comme en présence d'un familier, sauf en cas de force majeure.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_147",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul ànd ak moom mukk lu dul cig màggal, bul roy mukk waa jamono jii ( ci seenug fiàkk a màggal seeni sërifi).\n\n🇫🇷 Ne sois jamais en sa compagnie, la vie durant, sans l'honorer, comme c'est l'habitude de cette présente génération.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_148",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Te ngay teet reek kaf ak coow ci kanamam, boo jubloo defi teggiin.\n\n🇫🇷 Evite de rigoler, de plaisanter et de bavarder devant ton Maître Spirituel, si tu aspires à la Bonne Conduite.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_149",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Nangay yërëm gone, (rikk) bu ko nëbbal benn yoon genn laabiire gu aw yiwam nekk.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_150",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Sàkkul te bul yoqat ci sàkku gi, gàkk-gàkkub aji sàkku ji xam-xam mooy yoqat.\n\n🇫🇷 Recherche, sans te lasser dans la recherche. Le défaut d'un chercheur c'est de se décourager.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_151",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Kenn faju fi aajoom, aajo it fajuwu fi ndare bu jeneen daa juddu.\n\n🇫🇷 Nul n'arrivera dans ce monde à subvenir à tous ses besoins, car on ne finit de résoudre un problème sans qu'un autre ne naisse. ME ISB",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_152",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Nangay boole yitte ji jépp ci li ngay sàkku, ci lu dul gestu jëm ci lu warul.\n\n🇫🇷 Concentre ta volonté sur l'objet de ta recherche, sans tourner vers ce qui n'est pas indispensable. Wolof",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_153",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Àdduna de am na yitte yuy teree àgg ca njub ga, te dufiu jeex.\n\n🇫🇷 Le monde connaît des problèmes qui entravent l'accès à la Voie Droite et qui sont interminables.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_154",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul di yeexe am njàng, mbaa nga naan di naa —-— ko defi bu ma féexee, soo bëgee dab gaa fiu baax fia. FrvNe tarde pas à rechercher le savoir et ne le remets pas tout le temps jusqu'à la décharge de la totalité des problèmes, si jamais tu souhaites accéder au rang des Hommes (érudits).",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_155",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Fajal ko ay aajoom li feek yaa ngi dund, ci di ko jox, di ko liggéeyal li nga man.\n\n🇫🇷 Subviens à ses besoins ta vie durant, par des dons, par le travail, autant que tu pourra :• Wolof M ISBU",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_156",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Fig wegeel man a yam mooy nga weg sa sërifi, def ko ab sang, may ko say xéewal,\n\n🇫🇷 Considère avec le maximum de respect ton Guidespirituel • fais de lui un seigneur et disposelui. ton bien. • Wolof MEDISBUO",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_157",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul di déglu nit fii mbaa xëccoo yi fiu nekk.\n\n🇫🇷 Ne sois attentif ni aux gens, ni à ce qui, pour eux, fait l'objet de dispute.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_158",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Yoonu teggiin de mooy yérëm ndaw, ni ko baayam di yërëme ak ndayam te weg mag ak def sa moroom ni sa bopp ngir jëmmi Yàlla mi nekk ca aras (toogu ba). Wolof",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_159",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bayyil ag péexlu (noos) bul dl toog mukk cib lal ca jamonoy jàng ja, ci lu dul aw tiis (fiàkk pexej.\n\n🇫🇷 Fuis l'aisance et ne assoies jamais sur un lit à l'heure des études, si ce n'est par contrainte.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_160",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Nangay sax cig toroxlu cig toroxal sa bopp, ca jamonoy xamlu ja, kon de danga am leewg xol.\n\n🇫🇷 Consacre-toi à l'effacement, par modestie, durant toute la période des études, ainsi tu obtiendras l'illumination du coeur.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_161",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Wutal xam-xam, kon de dinga ci dunde ba fàww, ndax nit fii way faatu lafiu, te woroom xam-xam yi dunu faatu way dund lanu.\n\n🇫🇷 Acquiers le savoir, ainsi tu connaîtras par lui la vie pour toujours car les hommes mourront, mais les détenteurs du savoir restent immortels.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_163",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Xibaarees na it ne xam-xam de ab fofiaakon la (kuy daw di soree), ku dul cam su di ab mufikat du ko amn\n\n🇫🇷 On rapporte également que la connaissance est farouche, seul l'acquiert un individu patient (longanime).",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_164",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Képp ku gaawantuwul jàngi te féex ngir fioom njëkk yitte ya, lu ci ëpp du am la mu ca yittewoo, te du ca jot càkkutéefam.\n\n🇫🇷 Quiconque ne s'empresse pas d'acquérir le savoir, en s'y consacrant exclusivement, avant d'être assailli par les préoccupations, n'atteindra généralement pas son objectif en cela et jamais il ne réalisera ses desseins.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_165",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Nanga xam ne xam-xam de lu jafe la, deesu ko ame ci lu dul tëyye sa bopp wëliif \"dégg naa ak waxees na\".\n\n🇫🇷 Sache que la connaissance est ardue, on ne l'acquiert qu'en s'abstenant des palabres. Wolof",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_166",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Xam-xam du la may lennam mukk li feek joxoo ko sa lépp, kon farlu ci! Nul n'acquerra jamais une partie du savoir, s'il ne lui dispose pas son tout, sois persévérant I",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_167",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Saxal ci jàng ak nafar li nga jàng te bafi koy dëddook a ginnaawal.\n\n🇫🇷 Persévère dans les études, en révisant ce que tu as appris, sans relâche.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_168",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Na nga dëkke jàng naW, ak sàmm (sàmmoonteek ndigal ak terey sunu boroom yi) Néewal i nelaw, néewalug regg\n\n🇫🇷 Recours la constance des leçons, à la continence, à la réduction du sommeil et à la sobriété.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_169",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Nguurug neen waxtu rekk la, nguurug dëgg nag day wey ba yawmal-xiyaam.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_170",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Néewalal nelaw yi, tàggool ak tàyyeel, néewalal noflay, gàttalal mébat.\n\n🇫🇷 Réduis le sommeil, combats la paresse, diminue le repos, sois sobre en projets.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_171",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Ci xam-xam ak diine la ku gën di gêne, du ci ag askanoo ci ku kawe.\n\n🇫🇷 C'est par le savoir et la foi que prédomine celui qui est précédent et non par sa descendance de quelqu'un d'éminent.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_173",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Nanga xam ne gan de fàwwu mu nettali fiofiam fa mu fanaan, ak doonte laajeesu ko ko.\n\n🇫🇷 Sache que l'hôte est toujours un rapporteur de ce qu'il a vu durant son séjour, même si on ne lui demande rien.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_174",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Xamal ne rawanteg nit fii ci xam-xam lay nekk ak diine, nanga dëkke mufi. Fr Sache que ce qui différencie les créatures se trouve dans le savoir et la foi, sois longanime.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_175",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Xam-xam day dundal xolub aji xamlu ji, day leeral xol tey dindi ngumba (gu xol).\n\n🇫🇷 Le savoir vivifie le coeur de l'étudiant, illumine l'âme, comme Wéloigne l'égarement. Haaji - Wolof",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_176",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Booy sàkku xam-xam dimbandikool Yàlla te sellal ci xol bu dal.\n\n🇫🇷 Si tu es en quête du savoir, recours à DIEU, puis à la sincérité d'un coeur rassuré (tranquillisé).",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_177",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Rikk bu sa dënn(xol) xat mukk ci gan, ndax moom balaa yàgg mu laxas (mu dem).\n\n🇫🇷 Que ton coeur ne soit pasresserré pour la présence d'un hôte, attendu que son départ estimminent.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_178",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul bàyyi benn bis am njàng, te nga jëfe ko cig jaamu Yàlla.\n\n🇫🇷 Ne cesse de rechercher quotidiennement le savoir et de le mettre en pratique dans l'adoration (de DIEU).",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_179",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Teralal gan ya cig yaatal ak ganale ak mbégteek jegeel.\n\n🇫🇷 Honore les hôtes par la cordialité, l'hospitalité, laréjouissance et l'intimité.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_180",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "ku def la ko soob dajeek la ko naqari.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_181",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul nay mukk ci pofiat mii (alali àddina jii) ba loolu di waral sa gàcca ca (yalmal qiyaam) bis pénc.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_182",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Xamal ne wuute ab dëel (fausser rendez-vous, dige te defoo ko) ak fen bokk nanu ci gàkkgàkki wax, dee leen moytu.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_183",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Saa soo àndeekuw nit cib tukki, dee leen dimbali ci mbooleem lu fiu soxla. m",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_184",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Neen ak noflaay jëmm ju bëgg a doon dara du leen taamu.\n\n🇫🇷 Ni l'oisiveté, ni le repos ne profitent à une personne qui veut devenir aisée.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_185",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Aw yiw manul a bawoo ci Neen ak noflaay, aw ay rekk a cay bawoo.\n\n🇫🇷 L'oisiveté et repos n'offrent jamais le bien.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_186",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Kenn du jot teddnga ga ci lu dul ab coona.\n\n🇫🇷 Sache que la gloire ne s'acquiert que selon l'effort fourni.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_187",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Nangay rafetal jikko yi cig yaatu-yaatulu, ak a sàkkoo sopplu ci fioom (mbindéef yi) kon de soppees la.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_188",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Fonkal sa fiaari way jur, te am yërmaande ci fioom ak neewant, te deel gaaw ci seeni ndigal aki mbir.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_189",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Boroomug yayoo bu sàkkoo ci yaw dara, defal ko ko.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_190",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Nangay nooyal i wax ci nit fiépp, loolu de ci jikkoy way fiaw yi (fiu yewwu fii) la bokk.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_191",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Rikk nangay tudd lu baax la nekk ci nit fii bu nu Iéen tuddee bul ayibal kenn ci fioom ndax kat loo léen wax man naa am yaa léen ko ëpp.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_192",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Boo bëggee kooy àndandool bu muy ku dese cim xel mbaa ku ifiaan mbaa ku bariy xemmeemtéef. Bu di toog ak ku dul ku lay dolli diine ak xel.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_193",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bokk na ci ay teggiin ngay nuyyu képp koo dox ba àgg ci moom,te di ko fay bu la nuyyoo. Wolof",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_194",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bokk na ciy teggiin ngay bafi di gëstu rëcc-rëcci nit fii mbaa seeni fiaawtéef.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_195",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Boo bëggee dund sa diine mucc, sa wërsëg lëw (bari), sab der non, sa làmmifi bu ci tudd mukk ayibi nit, ndax kat yaw it am nga ay ayib, nit fii ami làmmifi.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_196",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "ku dul mérloo boppam du bégloo boroomam.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_198",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Mbafi-rus mooy dàttub diine, fu mu nekkul diine nekku fa.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_199",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Boo bëggee dugg ci kër (walla éegub) jàmbur nanga yëglu.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_200",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul fiaawal te bul lore Deel tàmmal saw làmmifi wax lu baax.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_201",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bokk na ci teggiin yu rafet nga saxoo di faj aajoy ku la mag boo ko déggee mu koy sàkku.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_202",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bu kenn soxla ci yaw dara ndare bu danga koo defal loolu mu soxla ci yaw, boo dee def noonu de danga am teraanga.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_203",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Boo toogee ak ku la mag bu defee lu jaaduwul suturaal ko.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_204",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Képp ku aj yitteem ci lekk ak séy na xam ne boole na lépp luy toroxte.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_205",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Ku tëyye boppam wëlif neen yi (caaxaan yi ) limees ko mu bokk ci boroom xel yi.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_207",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Rikk bul di wax kenn fen nga, walla wax nga lu dul dëgg, walla juum nga Walla jeneen wax ju man a merloo ak doonte ki nga koy wax gone la, bu waxee loo xamul nee ko dëggal nga, kon dees na la teral. Nee ko daal man de tegoon naa ko neneen, walla leneen laa jortoon, walla réere woon naa ko.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_208",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Boo toogee ak ku la mag booy ree nangay yam ci muufi Booy wax ak moom it bul bayliku ( ëppal ci wax ji) ndax loolu du lu rafet.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_209",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bariy ree daay ray ab xol, kon rikk néewalal ree yi, ndax nga gërëmloo Boroom bi.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_210",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Deel mufi ag l)àfifi te bu ci tontu kenn.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_211",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Defal sab tontu boo lottee muy \"noppi\", bari na wax joj tontu baa nga ca ag noppi.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_212",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul di baril looy geestu fu nekk, te dara fioru la ci geestu gi, ndax loolu kat màndargam ndof la.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_213",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul di baril am po, bul di ree lu bari.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_214",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Xasante ak weddéente bokk nanu ci jikko yi gën a bon niki déorante.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_215",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "ku sàkku mbir de bu ca saxee am ko. Ku fëgg bunt it boo fa saxee ubbilees la.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_216",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Nangay taqook ag noppi ànd ak dëddu (ci lug dëddu war) kon de nga jarifiu.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_217",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul di baj-baji mbaa ngay jéema yëddu lu nëbbu lu mu mana doon.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_218",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Bul di toogandook ku la mag ci lu dul lu manula fiàkk.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_219",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Àndal ak nit fii ni nga bëgge fiu ànde ko ak yaw",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_220",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Saa su Yàlla defee nga toogandook kula mag nanga ko def cig wegeel akug dal akug xeebu akug watandiku.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_221",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Yaw mbokk mi nanga am yërmande ci mbooleem mbindéef yi, nanga léen di xoole bëtub fieewant ak yërmande.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_222",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Yaw mbokk mi (rikk) boo toogee'k kula mag bu ko tàllal sab tànk, te deel damm sab gis wëlif ko (maanaam bul ko di faral di xool rekk).",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_224",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "Jëf yaa ngi ci yéene yi, ku nekk it la nga yéeneey sag pay.",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_228",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "lettre aux croyantes (7awa6u Sox„a D70P) Ecrit par Langues: Arabe, Français, Wolof Décembre 2018",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_229",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Je te recommande de pratiquer la patience et de persévérer dans la Crainte de ton Seigneur, en public et en privé; ainsi obtiendras tu le Pardon de Dieu Maa ngi lay digël yaw soxna si nga goor-goorlu ci mun ak ragal Yàlla, sa Boroom, ci lu nëbu ak lu feeô; soo ko defee dey Yàlla di na la jéggal ëlëg Icttrc aux croyantes (7awa6u Soua Pcuda D70P)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_230",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "N02 Repens-toi constamment en Dieu et persévère à toujours faire le bien; ne te détourne donc jamais vers autre chose que la droiture Na nga sax ci tuubal Yàlla saa su nekk ak farlu ci def lu baax; kon bul jéngg mukk jëm ci leneen IUdul ag njub Icttrc aux croyantes (7awa6u Soxna Pcuda D70P)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_231",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "N03 Sois tOUjOUrs humble et modeste, agis toujours dans la discrétion et évite d'élever ta voix en parlant; ainsi obtiendras-tu la Satisfaction Divine Na nga sax ci nangoo weet ngir jaamu sa Boroom. Looy def dee ko def ci sutura te deel suufeel sa kàddu saa yooy wax; soo ko defee dey Yàlla di na la gërëm Icttrc aux croyantes (7awa6u Soxua Pcuda D70P)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_232",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Durant le restant de tes jours, ne te dirige plus jamais vers une quelconque chose dont le caractère licite en Islam n'est point évident Yaw Soxna Penda, li la dese ci sa giirug dund,bul jogëti mukk jëm ci loo xam ne leeru la ne dagan na ci Lislaam Icttrc aux croyantes (7awa6u Soua Pcuda D70P)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_233",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Abstiens-toi strictement de tomber dans la médisance et l'orgueil; persévère à cultiver le Filenc et la patience Deel moytu bu baax jëw ak rëy. Deel saxoo noppi ak mun. Icttrc aux croyantes (7awa6u Soua Penda DIOP)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_234",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "N06 li Evite le mensonge, l'ostentation de même que le penchant pour la célébrité et les honneurs, gardetoi également de tomber dans l'autosatisfaction ou la haine envers tes semblables Deel moytu bu baax wax lu amul ak ngistal wala bëgga siiw. Na nga moytu naw sa jëf wala di bananteek sa moroomi mbindéef yi. Icttrc aux croyantes (7awa6u Soua Pcuda DIOP)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_236",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "N08 4 Ne conçois jamais l'idée d'adorer ton Seigneur tout en refusant de te conformer aUX recommandations de ton époux qui craint Dieu BUI xalaat mukk topp sa Boroom ci lu andulak topp sa ndigëlul boroom kër bu ragal Yàlla boobu Icttrc aux croyantes (7awa6u Soxna Pcuda D70P)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_238",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "NOIO Ainsi, à chaque fois qu'un éPOUX se montre satisfait du comportement de sa femme, le Seigneur se montrera également Satisfait de celle-ci et lui accordera des Faveurs et des Dons Looloo waral saa yu boroom kër gërëmee soxnaam, SUN' Boroom da na gërë soxna soosu te di na k efal ay xeewa Icttrc aux croyantes (7awa6u Soxua Pcnda D70P)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_239",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "NOII IHL.Si Mais à chaque fois qu'un éPOUX sera mécontent de l'attitude de sa femme, que celle-ci sache que jamais son Seigneur ne l'agréera oo Waaye su fekkee boroom kër gërëmul soxnaam, soxna soosU na xam ne SUnu Boroom du ko masa gërëm Icttrc auk croyantes (7awa6u Soxua Pcuda D70P)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_240",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "N012 Sache ainsi que toute oeuvre accomplie pour une autre raison que la Face exclusive Dieu est totalement vaine et sans valeur Maa ngi lay xamal ne lepp lu nit mana def te jëmmi Yàlla rekk taxul, jëfam joojU sanku na te pert na ko Icttrc aux croyantes (7awa6u Soua Pcuda D70P)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_241",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "N013 FIN Sache enfin que nul ne pourra se sauver du Châtiment Divin à l'Au-delà, s'il ne parvient à s'abstenir de quatre péchés graves que sont: le mensonge, l'orgueil, l'avarice et le préjugé négatif systématique [envers le Créateur et ses créatures] Te na la woor ne, kenn du mana mucc ëlëg ci mbugëlum sunU Boroom lifeeg bàyyiwul fieent mbir yii, te mooy: Wax ludUl dëgg, rëy, nay ci sa alal, Naaw njort ci sa moroom ak ci sa Boroom Icttrc aux croyantes (7awa6u Soua Panda D70P)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_285",
+    "badge": "Verset & Méditation",
+    "arabe": "",
+    "texte": "Quiconque veut parvenir à proximité d'ALLAH, doit lire le Coran sans jamais l'abandonner. Celui qui veut, dis-je, obtenir l'agrément d'ALLAH, doit lire et méditer le Coran» 8 580 Masaalikul Oinaan Shéex Ahmadu BAMBA",
+    "source": "Saint Coran · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_287",
+    "badge": "Verset & Méditation",
+    "arabe": "",
+    "texte": "Le livre [Coran] est la source de toutes les sciences dans le monde comme l'a dit le héros savantissime. Ne l'abandonne jamais; Iis-le constamment..» v sas 8 536 Masaalikul Oinaan fiR• Shéex Ahmadu BAMBA",
+    "source": "Saint Coran · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_297",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Kër gu (Njaareem, DIOURBEL) y a passé 15 ans à méditer, écrire et prier.",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_299",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des XURU MBACKE Ici vécu 15 ans Sokhna Mariama Bousso (Mame Diarra) mère de Cheikh Ahmadou It enfants de sont mis en terre, ainsi que son frère cadet Mame Balla Abibou Lahi.",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_301",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Bayti, Darou Khoudoss, Touba (Image en 2009) On peut voir ici des bagages de MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_302",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Photo de l'ancienne mosquée à l'emplacement de la mosquée actuelle où venait méditer Elle fut demontée et conservée en 1968 Kër gu mak à Njaareem, Dioubel.",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_303",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Mosquée de Darou Khoudoss en chantier (Image en 2009) De 1888 à 1895, pour sa retraite spirituelle, venait prier à l'emplacement de cette mosquée..",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_304",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Mausolée de Sheikh Ibrahima FALL (Image en 2009) On ne peut parler du mouridisme et de sans parler de Cheikh Ibrahima Fall né vers 1860 à Touré Atmane Fall (Ndiamby Fall) d'une lignée royale du Cayor. De retour d'exil s'installa à Diourbel Cheikh Ibrahima Fall le rejoint près de chez lui. Il aida aux travaux agricoles et à la construction. Ainsi sont nés les BAVE-FALL.",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_305",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des il Mausolée de Soxna Mariama Bousso à Porokhane (Image en 2009) POROKHANE vers Nioro ( Kaolack) où l'on peut voir le mausolée de la sainte mère de, Sokhna Mariama Bousso (Mame Diarra Bousso) qui fut rappelée à Dieu en 1863.",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_306",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Mosquée de Darou Salam (Image en 2009) Premier village créée par le vers 1885. Ici sont nés Cheikh Mouhamadou Moustapha Mbacké (1er successeur) ainsi que Serigne Fadilou Mbacké (2ème khalife). Cheikh Anta Borom Gawane né vers 1861 à Porokhane (frère de ) repose ici, c'est lui qui organisa des fêtes grandioses pour le retour d'exil du Cheikh, il était surnommé « l'éternel agitateur",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_307",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Mausolée de Sheikh Ibra Faty MBACKE (Image en 2009) Egalement appelé Mame Thierno Birahim ou Borom Darou, est né à Porohhane vers 1863, son père Mame Mor Anta Saly et sa mère Sokhna Faty Issa Diop. Son nom est un hommage à un martyr de l'Islam,le grand Cheikh Thièrno Ibrahima Kane. C'est lui qui s'occupa de la famille et des affaires de son frère pendant ses exils.. Il a toujours été très proche et fidèle à Il quitta ce monde en 1943",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_310",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Mausolée de Sheikh Mouhamadou Amine Bara MBACKE (Image en 2009) Fils de est le seul de ses enfants à être né à Touba, vers 1891, Il écrivit plusieurs oeuvres. Au rappel à Dieu de il écrivit un poème célèbre «ô terre de Touba! Réjouis toi de la grâce qui te fut accordée le jour où tu reçus le Cheikh, une faveur que n'a obtenue aucun autre terroir Il disparut le 18 juin 1946 à Mbacké Cayor.",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_312",
+    "badge": "Verset & Méditation",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Mausolée Sheikh Abdou Khadr MBACKE (Image en 2009) le 4ème khalife né en 1915 à Diourbel. Son règne fut seulement de 11 mois (du 19 juin 1989 au 13 mai 1990 Avant d'accéder aux plus hautes fonctions il fut pendant 20 ans Imam de la Mosquée de Touba. Toute sa vie avait été consacrée à l'enseignement du Saint Coran.",
+    "source": "Saint Coran · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_313",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des 'dia Mausolée de Sheikh Mouhamadoul Bachir MBACKE (Image en 2009) Fils de considéré comme son biographe a écrit «MinanouI-Bai2hiI- Khadim» (Les Bienfaits de l'EterneI). Cet ouvrage retrace la vie de jusqu'à son exil en 1895, ainsi que l'évolution spirituelle de Cheikh.",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_314",
+    "badge": "Verset & Méditation",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Mausolée Sheikh Salih\"BAdKE (Image en 2009) Le cinquième Khalife Général des Mourides. Né en 1915 à Diourbel. Il fit nn grand lotissement pour les talibés, d'importants travaux sur le réseau d'assainissement de Touba. Il initia le grand projet agricole de Khelcom 45.000 ha, avec 15 daaras (écoles coraniques) où les talibés sont initiés aux travaux champètres et à l'agriculture mécanisée. fit acheter une grande maison à Taverny (France) pour tout l'Islam.",
+    "source": "Saint Coran · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_315",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Rezno emwaes MOUR7Des Mausolée Sheikh Mouhamadou Moutada MBACKE (Image en 2009) Fils de, décédé le 8 aout 2004. Ce grand humaniste, considéré comme un missionnaire de la foi. Il oeuvra sans compter pour l'instruction et l'éducation. Il parcouru le monde pour faire découvrir le mouridisme.",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_395",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Tout homme de science, d'action ou de mérite est impuissant à égaler l'Elu le Plus Pur (Al Muçtafâ) dans son Caractère qui est Hautement Sublime. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_396",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est Prestigieux, il fait accéder à la Conjonction DIVINE, il est le Parvenu à la Proximité de DIEU, le Considérable qui a des compagnons grâce auxquels DIEU m'a dispensé du combat. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_397",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est Gracieux, Donateur, Tuteur et Intermédiaire Auprès du MEILLEUR SEIGNEUR Dont l'évocation a effacé mon laxisme. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_398",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est Impeccable, Illustre, Fidèle à l'échéance de ses Promesses c'est grâce à Lui que tous les injustes se sont écartés de mon voisinage, avec frayeur. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_399",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est un Saint-Homme, le Prophète des créatures et l'Envoyé de CELUI Qui éloigne de moi le coupable et l'agresseur. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_400",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Je me confie totalement à l' ETERNEL pour Qui je deviens un esclave et par Qui je deviens le serviteur de la Meilleure Créature, avec persévérance et pureté. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_401",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Ô toi serviteur de l'Elu Choisi le Meilleur (Al Mukhtâr) n'oublie pas ses compagnons, car quiconque les oublie dans son panégyrique, celui-ci est erroné. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_402",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Abû Bakr le véridique, l'homme de la vérité et de la fidélité, le compagnon du Prophète, l'Elu le Plus Pur (Al Muçtafâ), la grotte en est témoin. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_403",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Abû Hafç le discriminateur (Al Fârûq) (notre seigneur CUmar) dont l'égal est rare, c'est grâce à lui que la Religion de l'Elu le Plus Pur (Al Muçtafâ) s'est fortifiée à ses moments les plus secoués. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_404",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Y 'a-t-il parmi les compagnons un seul qui ressemble au fils de CAffân (notre seigneur Uthman ) qui est imbu de pudeur? il possède une lumière puis une autre, quelle merveilleuse position. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_405",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Le père des deux petits-fils de l'Elu Choisi le Meilleur (Al Mukhtâr), Celui-ci étant son cousin (Notre seigneur Ali), est éminent et privilégié; ô quel brave héros I œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_406",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "J'ai banni le faux, étant esclave de mon SEIGNEUR exclusivement et serviteur de Celui que les langues sont impuissantes à louer convenablement. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_407",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est le Prophète-Envoyé, il est le Meilleur Serviteur et Seigneur, il est l'Ami Intime et le Bien-Aimé, son égal ne se trouve nulle part. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_408",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est l'Interlocuteur, le Proche, l'Evocateur et le Reconnaissant, Il est un Généreux et un Honorable qui pratique la bienfaisance par des actions nobles et généreuses. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_409",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est le Pur, le Pieux, le Vertueux, Il est le Réparateur et le Porteur de Bonnes Nouvelles pour ceUX qui se soumettent à DIEU par la Vérité. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_410",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est le Célèbre, le Poli, le Pudique, le Bien-Eduqué, l' Avertisseur pour ceUX qui manifestent la négation et le péché de l'association. Il est Bon Conseiller, sans mauvaise intention, il est un Docte Bien Instruit, il est un Munificent qui parle avec douceur œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_411",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est Bien Elevé, Merveilleux, Il est Laborieux, c'est Lui le Dévot, Il est Celui qui prescrit et proscrit, il est Celui qui s'attache constamment à la bienfaisance. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_412",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est le Chef, Il est Vigilant, il est le Répondant, il est Pur de tous les vices, Il est le Il est le T IJ teUr efface et embellit. œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_413",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Il est Bien-Né, Glorieux, Riche en Dons, Il est à la Tête des créatures, Il est l'Archétype (de l'Humanité) \" an-Nâs \" et la Balance (al Mizân); qu'Il est solidement Bien Raffermi! œbnssidn: IYUuxndimntut Amdnnb MEDISBIJ",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_492",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "ihsaan collection PLUS QUE DES TABLEAUX MURAUX Citations extraites de: ILHAMUL WUDUD (INSPIRATION DE L'AFFECTUEUX) NAHOU QADA'Il HAJO (La voie de la satisfaction des besoins) MASAALIKUL OINAAN «Lorsque tu es piqué par le scorpion de l'adversité, soigne-toi par le pardon et la paix.' «La vérité s'éternise. alors que l'erreur, même au paroxysme de la célébrité. finit par s'évanouir et déchoir.» «Rends tes précieux services à tous, pour l'amour d'ALLAH exclusivement, sans relache ni mot déplaisant.' Passez vos commandes 771775259",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_501",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "LA LANGUE AMIE OU ENNEMIE? Selon le Prophète (PSL): «lorsque le serviteur se réveille (au matin ) les membres se plaignent à la langue lui disant: crains le SEIGNEUR à notre égard! Si tu suis la bonne voie nous la suivonsavec toi mais si tu t'en nous nous en écartons'. dit aussi ( le PROPHETE ps plupart dés péchés de l'homme lui vien en sa langue\". Ill",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_503",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "LA MEDISANCE En ce qui concerne les oreilles il convient aussi de les protéger de tout ce qui entraîne le péché tel la médisance. La médisance se définit comme le fait de parler de ton frère ou soeur absent(e) évoquant des choses qui lui déplairaient s'il les avait entendues. Selon un hadith: \"En Islam, la médisance est pire que le fait de commettre trente fois l'acte d'adultère\". Et dans CORAN elle est blâmée et comparée au fait de consommer un cadavre.",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_506",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "L'OREILLE CONDUIT SANS COUVERCLE? Bref, tout ce qu'il n'est pas permis de dire, il est défendu de l'écouter. L'envoyé de DIEU (Paix et Bénédiction sur lui) dit: \"L'auditeur est complice de celui qui parle\". Il ajoute: \"on versera à celui qui écoute la conversation de personnes sans leur consentement du plomb dans les oreilles le jour de la résurrection\". 1",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_507",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "LE COEUR A SES REMEDES Les remèdes dulcoeur sont au nombre de cinq(5) 1 -La lecture méditative du CORAN 2-La faim longuement endurée 3-La célébration d'offices de prière la nuit 4-L'imploration du SEIGNEUR avec humilité à l'aube 5-La compagnie des hommes vertueux",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_509",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "À CHAQUE QUÊTE SES CONDITIONS Dans AL Minhaadi, Ibrahim Ibn Adham dit. \"J'ai côtoyé la plupart des hommes de DIEU sur le Mont Labnân\". Ils m'ont recommandé Quand tu seras de retour chez les fils de ce monde fais leur ces trois prédications: Dis leur que celui qui mange beaucoup ne connaitra pas le plaisir de l'adoration, celui qui dort beaucoup ne sera pas béni dans sa vie et recherche la satisfaction des gens qu'il ne s'attende pas à ce que le SEIGNEUR l'agrée»",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_511",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "ETRE MEILLEUR QUE SOI-MÊME Ô Toi l'aspirant, souhaite pour les croyants ce que tu convoites pour toi-même tu seras alors admis au PARADIS sans avoir de comptes à rendre, Honore l'hôte, fût - il un dépravé et formule des prières en faveur de tes parents après chaque prière obligatoire,",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_513",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "SOIS BON ENVERS EUX Ne sois pas jaloux envers un croyant car l'envieux ne sera jamais maitre (il n'obtiendra jamais la prééminence), Si un homme te fait une injustice, excuse-le, Ne cherche pas à avoir la Victoire sur lui et ne fais pas d'invocations contre lui, '0000",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_514",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "BIENVEILLANCE Toute personne supérieure à toi, honore la. Quant à celui qui est au dessous de toi, ménaae - et traite re avec amabilité. Et traite ton égal tu comme traites toi même.",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_523",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "CONNAITRE POUR MIEUX ADORER Celui qui vous interdit de rechercher du savoir, son interdiction relève de l'égarement. Car celui qui empêche, en ce temps présent, aux gens de s'instruire, celui-là appelle à l'innovation exécrable. Car la pratique qui n'est pas inspirée par la science est entachée d'imperfections. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_524",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "SE FAIRE GUIDER Celui qui aspire à la Conjonction Spirituelle (Al wuçûl) du MA- JESTUEUX, qu'il se cramponne à la —Tradition de l'Envoyé de DIEU(La Sunna). En fréquentant un adorateur qui ne s'écarte, ni extérieurement, ni intérieurement, de la Voie Droite. Il le conduira ainsi, par la science et l'adoration, de même qu'il l'éduquera à. l'abandon des usages communs (Âda). MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_525",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "CONNAISSANCE BASE DE L'ADORATION La Vérité, c'est l'initiation de l'adorateur par la Profession de l'Unicité Divine (Tawhîd) et la Doctrine Juridique (Fiqh) assignée au musulman, avant le Soufisme exaltant (Taçawwuf). Qu'il s'affilie plutôt à la Doctrine des Hommes de la Tradition de l'Elu de DIEU et du Consensus, cela est une garantie. Hâtez-vous tous pour l'Acquisition de la Science, en ne visant dans cela que la FACE du POSSESSEUR DE LA MAJESTE MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_530",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "AME CHARNELLE ô vous les Evertuez-vous frères musulmans! au combat de l'Ame Charnelle, ainsi vous gagnerez Demain le Paradis en contrepartie. Celui qui ne lutte pas contre son Ame Charnelle, celui-là n'obtiendra pas les mérites qui en découlent. Et celui qui se consacre à la lutte contre l'Ame Charnelle, sera un bienheureux durant son séjour dans la tombe. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_531",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "LES 4 GRANDS ENNEMIS Si vous entreprenez le Combat Spirituel, commencez à partir de la valeur numérique de la lettre \"Dâl\" - sois quatre parmi les ennemis. Et un tel combat est la Grande Guerre Sainte, conformément à l'information que nous avons tenue d'eux. A savoir: l'Ame Charnelle, le Bas Monde, Satan le Maudit et la Passion Profane, chacun d'eux est un ennemi irréductible MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_532",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "LES 4 GRANDS ENNEMIS Il revient à chacun d'eux (les ennemis) une geôle et une arme bien connues; par conséquent, incarcérez-les et brisez-les et vous serez sauvés L'Ame Charnelle, quant à elle, est emprisonnée par une faim longuement endurée, et elle n'a d'autre entrave connue en dehors de celle-ci. Quant à son arme avec laquelle elle détourne l'adorateur de la Bonne Voie, c'est l'assouvissement de la faim. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_539",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "LES VICES Le VENGEUR et DOMINATEUR a prohibé les vices par lesquels l'Enfer gagne un sujet. Il a interdit le mensonge, la médisance, la calomnie, l'orgueil, la fatuité caractérisée. Puis l'ostentation, l'amour du renom, la haine, la jalousie, le sentiment de précellence absolue sur autrui. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_542",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "L'HEURE DE PRIÈRE Ne retarde pas l'exécution de la prière rituelle au delà de son temps fixé, sans excuse valable. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_543",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "HONORE TON PROCHAIN Ne ridiculise, ni ne repousse, ni ne Vltupère, ni n'accable un musulman, et repens-toi de cette pratique. Si ce n'est pour une raison admise par la Loi auquel cas cette pratique n'est pas prohibée. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_544",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "LA FREQUENTATION Evitez la compagnie de tout pervers, car cela n'est pas convenable dans la conduite de l'aspirant (al murîd). MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_546",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "LA LANGUE, FAUT LA RETENIR Notre préservation de langue des turpitudes, des paroles obscènes et de répudiation (de sa femme) nous est assignée par le CONTRAIGNANT, le MAÎTRE DU CIEL, retenez-la. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS c",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_548",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "L'AUDIT EST IMMINENT Chacun d'entre vous sera interpellé sur ce dont il avait la responsabilité, comme il est dit dans une logia de celui qui a compris. Maghâliqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_549",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "LES MEMBRES Préservez les membres, à savoir: le ventre, la langue, le sexe, les pieds, les yeux, les mains. Après cela les oreilles; quiconque les sauvegarde tous de la désobéissance, aura du profit. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_550",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "LES MEMBRES Chacun de tous ces membres est en face d'une porte des étages de l'Enfer, d'après la source authentique. Et celui qui se consacre constamment à les préserver sera protégé, le Jour de l'Epreuve, de l'entrée dans l'Enfer du DOMINATEUR, Qui est le MAJES- TUEUX. Et celui qui désobéit toujours au SEIGNEUR par un membre, la porte correspondante en Enfer sera celle de son châtiment dans l'Au-DeIà. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_552",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "LE VENTRE Quant aux ventres, préservez-les de la consommation de ce qui est illicite et de ce qui est douteux. Et persévérez dans la recherche de ce qui est licite, car c'est ce qui rapproche du POSSESSEUR de la MAJESTE. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS Œ.'",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_555",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "CONSOMMONS LICITE La recherche de ce qui est licite est un devoir qui incombe à tout musulman, sans illusion. Ni la science, ni l'adoration ne sont profitables avec la consommation des choses illicites, selon les Maîtres. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_556",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "10 PRINCIPES itinéraires de la Conjonction Spirituelle Observez la pratique des dix principes ci-dessous, car ils constituent les itinéraires de la Conjonction Spirituelle 1. Départissez-vous de l'atermoiement et restreignez vos désirs, car point une action ne se réalise sans que vous ne vous débarrassiez de ces deux vices. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_557",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "IO PRINCIPES itinéraires de la Conjonction Spirituelle Observez la pratique des dix principes ci-dessous, car ils constituent les itinéraires de la Conjonction Spirituelle 2. Adonnez-vous continuellement à la contemplation de DIEU, car cela mène à une fin heureuse. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_567",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "SOUFISME Quelques fondements De tels principes se notent pour la Conjonction Spirituelle et il revient également au Soufisme d'autres fondements Le premier d'entre eux, c'est de s'attacher au Livre Sacré et à la Coutume du Choisi le Meilleur, le Maître de la Bonne Guidée. Maghâliqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_570",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "A MEDITER On tient des savants que la désobéissance au MAJESTUEUX a également trois origines L'orgueil (Kibr), la cupidité iHirç) et ia jalousie qui- 'i' conque en est exempt, bénéficiera de la Droiture. L'orgueil a condamné Satan le Maudit, la cupidité a chassé (du Paradis) ADAM le Noble et la jalousie a poussé son fils (Caïn) à tuer son frère (Abel). MaghâIiqu-n-Nîrân wa Mafâtihul Jinan LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_573",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "SOUFISME Quelques fondements De tels principps se notent pour la Conjonction Spirituelle et il revient également au Soufisme d'autres fondements S'éloigner des risques de l'interprétation (Ta'wîl) et du laxisme des concessions, en faisant preuve de résolution dans la Coutume orthodoxe. Maghâliqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_575",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Voiles de l'Ame Charnelle Les voiles de l'Ame Charnelle ontsix origines. La Volonté Spirituelle de celui qui cherche à parveni à l'Enceinte Scellée doit nécessairement les iever. A savoir: l'usage abusif APPA du manger et du boir, la IE HAU multiplication des fréra quentations sans objet pieux L'abondance paroles (futiles)) l'exces de sommeiJeyIa pégligencé de la repétition des NOMS du CREATEUR DES ETRES HUMAINS. MaghâIiqu-n-Nîrân wa MafâtihUl Jinân LES VERROUS DE L'ENFER ET LES CLEFS DUTARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_576",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Adoration du MAJESTUEUX Il est prouvé que l'adoration du MAJESTUEUX comporte trois fondements. Le premier d'entre eux est la crainte, le deuxième, espérance et l'amour se préseryte comme le troisième de ces fondements. MaghâIiqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_577",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "L'adoration du MAJESTUEUX stprouvé que l'adoration du MAJESTUEUXtomporte trois fondeents.Le premierd'entre eux est la crainte, le deuxième, espérance et l'amour se présente tomme le troisième de ces fondements. La caractéristique -J de la Crainte du CLEMENT, c'est l'abandon des prohibitions, sans négligence. MaghâIiqu-n-Nîrân wa Mafâtihul Jinan LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS wn•seu",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_580",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "L'adoration du MAJESTUEUX est prouvé que l'adoration du MAJESTUEUX comporte trois fondements.Le premier d'entre eux est la crainte, le deuxième, espérance et -Tamour se présente comme le troisième de ces fondements, a manifestation, de l'Amour du POSSESSEUR DE LA MAJESTE est le désir ardent de se repentir continuellement. MaghâIiqu-n-Nîrân wa Mafâtihul Jinan LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_582",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "LA REFERENCE Réfère-toi au savant, suis l'exemple de celui qui est dans la Voie de la Tradition du Choisi par Excellence, le Meilleur de ceux qui suivent (le Droit Chemin). Maghâliqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_583",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "RECOMMANDATIONS 0. Notre Maître, notre Bien-Aimé, en l'occurrence MOUHAMMAD, sur lui la Prière de son SEIGNEUR éternellement,. Te recommande tout le temps d'adorer ton SEI- GNEUR, selon l'éminente Tradition. Au même titre qu'il te met en garde contre le danger de suivre le Traître Séducteur (Satan). Maghâliqu-n-Nîrân wa Mafâtihul Jinân LES VERROUS DE L'ENFER ET LES CLEFS DU PARADIS",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_587",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "o 1 Toi l'Eminent Hôte porteur de bonheur et de bienfaits, je te souhaite la bienvenue et te réserve une hospitalité sans restriction.» Yaxayra daifin Cheikhoul Khadim Naafila 2e Nuit RAKKAS Faatiha (1) Al Kawsar (10) Source: Xuratul aïni, Serigne Souhaibu MBACKE (Je ne cherche de recours qu'en ALLAH LE TRES HAUT. C'est en lui que je porte mon espoir et c'est fui seul que je crains. J'ai dit par conséquent que je te recommande autant qu'à ma propre personne la révérencielle crainte d'Allah le Majestueux car elle est (certes) la meilleure des choses.) Cheikhoul Khadim",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_603",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "o Toi l'Eminent Hôte porteur de bonheur et de bienfaits, je te souhaite la bienserve une hospitalité sans restriction.» Yaxayra daifin Cheikhoul Khadim Naafila 12e Nuit RAKKAS Faatiha (1) Al ixlaas (6) Source: Xuratul aïni, Serigne Souhaibu MBACKE 1 (TU dois également savoir ce qu'il t'incombe de faire comme obligations personnelles avant de passer à l'acte et connaître ce qui t'est interdit pour ensuite l'éviter.» Cheikhoul Khadim",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_605",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "Toi l'Eminent Hôte porteur de bonheur et de bienfaits, je te souhaite la bienserve une hospitalité sans restriction.» Yaxayra daifin Cheikhoul Khadim o Naafila 13e Nuit RAKKAS Faatiha (1) Al ixlaas (5) Source: Xuratul aïni, Serigne Souhaibu MBACKE 1 (de serviteur doit nécessairement s'appliquer à la pratique du culte. Sinon toute sa science s'évanouira comme de la poussière en l'air. La science est comme un arbre et l'action (pieuse) comme l'un de ses fruits. L'honneur est à l'arbre en tant qu'origine (et support), mais c'est le fruit que l'on consomme.» Cheikhoul Khadim",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_607",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "1 (ô Toi l'Eminent Hôte porteur de bonheur et de bienfaits, je te souhaite la bienserve une hospitalité sans restriction.» Yaxayra daifin Cheikhoul Khadim 0 Naafila 14e Nuit RAKKAS Faatiha (1) Izaa jaa'a nasru(7) Source: Xuratul aïni, Serigne Souhaibu MBACKE 1 (Le PROPHETE (Psi) a demandé: «y a t-il un motif pour faire humer le feu de l'enfer aux gens et les y rouler si ce n'est ce que leur langue aura récolté?» Puis, il dit (PSI): (Participe de la piété de l'individu son désintéressement de tout ce qui ne le concerne pas».» Cheikhoul Khadim",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_610",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "Il n'y a ni moyen ni pouvoir si ce n'est en DIEU le très haut, le majestueux. Je me satisfais de DIEU comme SEIGNEUR, de l'islam comme religion et de MOUHAMMED comme Prophète et envoyé (sur lui la Paix et la Bénédiction d'Allah ansi que sur sa famille et sur ses compagnons).» Cheikh Ahmadu Bamba MBACKE",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_625",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "Je t'affectionne ô mois béni de RAMADAN sans tricherie, moignes de mon attachement au cours de ton séjour au Livre Sacré de DIEU ici en ce lieu.) Yaxayra daifin Cheikhoul Khadim o Naafila 20e Nuit RAKKAS Faatiha (1) Ina anzal nahu (1) Al ixlaas (3) Source: Xuratul aïni, Serigne Souhaibu MBACKE 1 (Parmi les matJX résultants de l'absence de contrôle sur la langue, il y a le fait qu'elle entache le culte, durcit le coeur et diminue les chances d'obtenir les moyens de SUbSiStance. » Cheikhoul Khadim",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_636",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "o (Je t'affectionne ô mois béni de RAMADAN sans tricherie, moignes de mon attachement au cours de ton séjour au Livre Sacré de DIEU ici en ce lieu.) Yaxayra daifin Cheikhoul Khadim Naafila 26e Nuit RAKKAS Faatiha (1) Al Xaarihatu (1) Al ixlaas (5) Source: Xuratul aïni, Serigne Souhaibu MBACKE 1 (Quant atJX mains, ne touche jamais avec elles ce qui est prohibé, de toucher comme une femme étrangère (cf page 4) ou le bien d'un musulman sans son consentement... N'écris rien avec elles qui soit illicite.» Cheikhoul Khadim",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_637",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "o 1 (Selon les informations reçues, les savants • sont les secrétaires de DIEU et de l'Envoyé, (affectés) à ses serviteurs tant qu'ils ne fréquentent pas les souverains.» Cheikhoul Khadim (Je t'affectionne ô mois béni de RAMADAN sans tricherie, moignes de mon attachement au cours de ton séjour au Livre Sacré de DIEU ici en ce lieu.) Yaxayra daifin Cheikhoul Khadim Naafila 27e Nuit RAKKAS Faatiha (1) Ina anzal nahu (10) Source: Xuratul aïni, Serigne Souhaibu MBACKE",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_cit_641",
+    "badge": "Fathul Mannaan",
+    "arabe": "",
+    "texte": "1 (Je t'affectionne ô mois béni de RAMADAN sans tricherie, moignes de mon attachement au cours de ton séjour au Livre Sacré de DIEU ici en ce lieu.) Yaxayra daifin Cheikhoul Khadim 0 Naafila 30e Nuit RAKKAS Faatiha (1) Al ixiaas (11) Source: Xuratul aïni, Serigne Souhaibu MBACKE 1 (Selon un hadith Islam, la médisance est pire que le fait de commettre trente fois J'acte d'adultère\". Et dans le CORAN elle est blâmée et comparée au fait de consommer un cadavre.» Cheikhoul Khadim",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_cit_652",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Photo: el anu M Pudeur Mouridiquc (Garde-toi de laisser découvert ton ventre, de même que la partie située entre le nombril et les genoux, pour cette même raison. Cela est un signe de stupidité, d'ignorance et de manque de Pudeur, qualité tant magnifiée car la Pudeur est la soeur de la Foi partout où elle est uabsente, la Foi n'y existe pas.» NahjU -108",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_653",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "ihsaan collection PLUS QUE DES TABLEAUX MURAUX 009 Concentre fa volonté sur rofye( de (a recherche, sans fourner vers ce qui n'est pas indispensable. Ne sois aco' yens, ni à ce qui, pour eux, de dis u{e. Ne (ardepasà rechercher fesavoire(ne fe des Ifommes (érudits). Car fe monde connaît des problèmes qui entravent raccis à fa Voie 'Droite el sont in(enninabfes. Et fa survien( à fimprovis(e el, Iris souvent, effe enfève un individu afars submerge probbmes. (Nahiu Qadôil Restez motivé et motivez vos élèves! Passez vos commandes 771775259",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_655",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "Waajal 144311 L'aspirant ne doit désirer que l'agrément de DIEU Le Clément partout où il passe.",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_674",
+    "badge": "Masaalikul Jinaan",
+    "arabe": "",
+    "texte": "L'ACTION (JEF) La meilleure des actions (religieuses) est celle dont le profit est multiple touchant le plus grand nombre possible de personnes. v.i23",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_693",
     "badge": "Hadith Prophétique",
     "arabe": "",
-    "texte": "Celui qui effectue ceci, il bénéficiera de bénédic- tions aussi importantes en nombre que le nombre des jours de l'existence terrestre. A la résurection, il sera parmi les Prophètes.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1224.jpg"
+    "texte": "IIJaaja demeures furent vidées et, des miens, je fus brutalement séparé en vertu [du Service auquel je voue] le Panégyrique du Prophète dont nulle apologie n'est à même de louer avec justesse les Avantages. Les machinations ourdies par des personnes malveillantes ont abusé les colons au point qu'ils laissèrent libre COUrs à leur imagination, or celle-ci est souvent source de fausses idées....» Assirou -15",
+    "source": "Hadith · SDM Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_rappel_1223",
-    "msg_id": 1223,
-    "date_post": "2026-03-15",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Qui fait ceci et après la prière il se repend aussi longtemps qu'il lui est possible < Astaghfiroullah>, il sera préservé des deux de l'enfer, il sera considéré comme quelqu'un qui aura jeûné pendant toute la durée de l'existence, il bénéficiera des bénédictions aussi importantes en quantité que le nombre de toutes les étoiles et de toutes les feuilles des arbres ; il bénéficiera également de bénédictions capables de couvrir tout l'espace compris entre le ciel et la terre. Le jour de la résurection, il ira au Paradis escorté des anges Djibril, Mikaël, Izarafil, Izrahil.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1223.jpg"
-  },
-  {
-    "id": "sdm_rappel_1222",
-    "msg_id": 1222,
-    "date_post": "2026-03-13",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Celui qui effectue ce Nafila, il ira au paradis sans être jugé.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1222.jpg"
-  },
-  {
-    "id": "sdm_rappel_1219",
-    "msg_id": 1219,
-    "date_post": "2026-03-11",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Celui qui fait ceci, Dieu bâtira à son intention 70 cités avec dans chaque cité 1000 maisons et dans chaque concesssions 1000 chambres en or et en argent, dans que chambre 1 000 lits et dans chaque lit 1000 épouses.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1219.jpg"
-  },
-  {
-    "id": "sdm_rappel_1218",
-    "msg_id": 1218,
-    "date_post": "2026-03-10",
-    "badge": "Verset & Méditation",
-    "arabe": "",
-    "texte": "Celui qui effectue ceci, il sera considé- ré comme quelqu'un qui détiendrait tous les les biens de la planète et les dépenserait au nom de Dieu, comme quelqu'un qui avait lu le «< Tawrète », le « Injiil » le « Zabor » et le « Coran ». A sa mort il sera aussi propre (en péché) que le jour de sa naissance.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1218.jpg"
-  },
-  {
-    "id": "sdm_rappel_1216",
-    "msg_id": 1216,
-    "date_post": "2026-03-09",
+    "id": "sdm_cit_700",
     "badge": "Hadith Prophétique",
     "arabe": "",
-    "texte": "Celui qui le fait, il bénéficiera des bénédictions aussi importantes que celles dues à tous les hommes qui ont fait quelque chose de bien. Il sera absous de tous ses péchés sans exclusive. On le préservera de l'obscurité de la tombe, il ira au Paradis en compagnie du Prophète Mouhamad «< Salla lahou tahala halehi wasalama ».",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1216.jpg"
+    "texte": "La Nuit dc la cst la Nuit dc Naissance du Prophète l'anéantissement, la Nuit dc la dissipation dc la peinc ct de la purification des gens entachés de péchés. La Nuit de la délivrance, de la prospérité accompagnée dc joic ct dc réussite, ccllc dc l'avantage ct dc la vertu, avec l'éloignement du tourment. Jazbul xuloob Ohelkh Ahmadou Bamba MBAOKE",
+    "source": "Hadith · SDM Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_rappel_1214",
-    "msg_id": 1214,
-    "date_post": "2026-03-07",
+    "id": "sdm_cit_701",
     "badge": "Verset & Méditation",
     "arabe": "",
-    "texte": "Celui qui réalise ce nafila, il sera considéré comme quelqu'un qui détiendrait toutes les richesses terrestres et les employerait au service du Tout Puissant Dieu. Pour chaque lettre des sourates employées, on lui bâtira une grande cité au Paradis, il sera considéré comme quelqu'un qui s'est acquitté de ses devoirs envers le Tout Puissant pendant 70 ans au cours desquels, il aura passé les journées à jeûner et les nuits à prier ; il sera considéré comme quelqu'un qui a lu le Coran 100 fois, fait 100 fois le grand pèlerinage et 100 fois le petit pèlerinage, il bénéficiera des bénédictions dont Dieu seul connaît l'importance avant de mourir, il lui sera montré sa demeure au Paradis, le jour du jugement dernier, il ne verra rien qui lui fasse ",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1214.jpg"
+    "texte": "Il a conduit les justes vers Ic bonheur par la Meilleure Parole Infiniment Sage [IC CORAN], crâcc son SEIGNEUR le SUBSISTANT, IC PRIMORDIAL; je célèbre la Cloirc dc CELUI Qui ne dort pas. Accorde Ta Prière ct Ton Salut tout Ic temps à Celui dans la Nuit de la Naissance dc qui on a banni les pécheurs endurcis. Jazbul xuloob Oheikh AhrijacJou Bdrnba MBAOkE",
+    "source": "Saint Coran · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
   },
   {
-    "id": "sdm_rappel_1213",
-    "msg_id": 1213,
-    "date_post": "2026-03-06",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_707",
+    "badge": "Masaalikul Jinaan",
     "arabe": "",
-    "texte": "Celui qui fait ce Nafila, il bénéficiera de bénédictions d'un nombre aussi important que le nombre de tous les croyants, du premier au dernier s'il se trouvait malade, il guérira, s'il se trouvait endetté, Dieu l'acquitterait de ses dettes, s'il se trouvait angoissé, Dieu l'en guerirait et Dieu le préservera de l'enfer.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1213.jpg"
+    "texte": "/lasaa(ik 9inaan \"je sollicite le salut pour quiconque lit notre livre, pour celui qui y médite. Pour celui qui l'obtient (en possession), qui le loue, qui l'écrit ou l'emprunte. Je le sollicite au nom de notre ami, l'intercesseur, AHMED qu'ALLAH lui accorde, tout le temps, salut et paix. Qu'Il les accorde à sa Famille, à ses Compagnons et à tous ceux qui suivent ses traces jusqu'au jour des épreuves.\" Masaalik -73 Massàlik al Jinin Traité de soufisme",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
   },
   {
-    "id": "sdm_rappel_1212",
-    "msg_id": 1212,
-    "date_post": "2026-03-05",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_712",
+    "badge": "Sagesse Spirituelle",
     "arabe": "",
-    "texte": "Celui qui fait ce Nafila, s'il lui accordera beaucoup de bénédiction en outre il sera absous de tous ses péchés par ailleurs ; s'il se trouvait dans l'angoisse, Dieu l'en délivrera, Dieu le préservera des calamités de ce monde et de l'autre ; il sera préservé contre la pauvreté et verra ses chances d'acquisition de biens multipliées. Dieu se montrera miséricordieux à son égard. Il ira au Paradis en compagnie des plus illustres créatures.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1212.jpg"
+    "texte": "Un sage dit à son enfant: «Je te conseille six choses qui constituent le complément de la lucidité: 1. Ne discute pas sur ce que tu ignores avec celui qui est au-dessus de toi; 2. Ne cherche point ce que tu n'auras pas; 3. Ne dis pas par la langue, ce qui diffère de ce qui est dans ton coeur; 4. Que ta parole ne diffère pas de ton action, 5. Ne laisse pas passer ce qui vient à toi,¯ mais ne le cherche pas quand il t'échappe; 6. Evite l'empressement, car les arabres l'appellent \"la mère du regret\". Silkul Jawaahir Le cordon des joyaux précieux",
+    "source": "SDM · Sagesse Spirituelle",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_rappel_1211",
-    "msg_id": 1211,
-    "date_post": "2026-03-04",
-    "badge": "Verset & Méditation",
+    "id": "sdm_cit_713",
+    "badge": "Sagesse Spirituelle",
     "arabe": "",
-    "texte": "Celui qui effectue cette prière, Dieu agréera ses prières et son jeûne, tous ses péchés seront reconvertis en bienfaits. Pour chacune des lettres composant les sourates employées, il lui sera bâti une grande cité au Paradis, il sera considéré comme quelqu'un qui a donné à manger aux musulmans du monde entier.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1211.jpg"
+    "texte": "Sept (7 choses n'ont de bien que par sept (7) choses: Il n'y a aucun bien dans la parole sans action, ni dans la vision (apparente) sans connaissance (réelle), ni dans un royaume sans armée, ni dans l'amitié sans fidélité, ni dans l'érudition sans probité, ni dans l'aumône sans intention, ni dans la vie sans santé ou sans sécurité. Silkul JQUJQQhir Le cordon des joyaux précieux",
+    "source": "SDM · Sagesse Spirituelle",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
   },
   {
-    "id": "sdm_rappel_1209",
-    "msg_id": 1209,
-    "date_post": "2026-03-03",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_714",
+    "badge": "Sagesse Spirituelle",
     "arabe": "",
-    "texte": "De ce Nafila, il sera considéré comme quelqu'un qui a donné en aumône 1 000 dinars, affranchi 1 000 esclaves, donné à manger à 1 000 personnes n'ayant rien à manger.\nDieu agréera toutes ses prières et son jeûne, il sera préservé contre les maux d'ici et de l'au- delà. Il ne re- connaîtra pas les inquiétudes et angoisses du jour du jugement dernier, il lui sera donné l'ordre de sauver de l'enfer autant de personnes qu'il voudra et qui y étaient destinées sans qu'elles soient jugées.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1209.jpg"
+    "texte": "Le silence comporte cinq mille biens renfermés dans sept mots: l'adoration sans peine, la beauté sans parure, le grand respect sans besoin de l'autorite, cla sécurité sans besoin de forteresse, la satisfaction sans besoin d'excuses, le repos des anges honorables écrivains et le voile masquant ce que la pudeur cache. Silkul JQlJJQQhir Le cordon des joyaux précieux",
+    "source": "SDM · Sagesse Spirituelle",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_rappel_1208",
-    "msg_id": 1208,
-    "date_post": "2026-03-02",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_715",
+    "badge": "Sagesse Spirituelle",
     "arabe": "",
-    "texte": "Celui fait ce Nafila, on lui bâtira au paradis une grande maison composée de 7 chambres tout en or. Dans chacune de ces chambres il y aura 1 000 lits avec dans chacun d'eux une épouse, en outre il bénéficiera de bénédictions dues à 20 ans passés à jeûner et des bénédictions dues à 1 000 rakas effectués.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1208.jpg"
+    "texte": "Trois avatages éloignent le soucis et l'angoisse du coeur: la compagnie de l'érudit, l'aquittement des dettes, la présence de l'ami intime, Silkul JQUJQQhir Le cordorvdes joyaux précieux Cheikh Ahmad6u Bamba MBACI€",
+    "source": "SDM · Sagesse Spirituelle",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_rappel_1207",
-    "msg_id": 1207,
-    "date_post": "2026-03-01",
-    "badge": "Verset & Méditation",
+    "id": "sdm_cit_717",
+    "badge": "Sagesse Spirituelle",
     "arabe": "",
-    "texte": "Celui qui effectue cela, il bénéficiera de 8 000 épouses au Paradis et il vivra en compagnie du Prophète (Salla lahou tahala haleyi wa sallame), il bénéficiera en outre des faveurs dues à celui qui a étudié le « Tawrête », le « Zabor » et le « Coran »). Par ailleurs, il sera absous de tous ses péchés quelle que soit leur importance même s'ils égalaient en nombre les vagues de la mer. Il lui sera accordé les bénédictions dues à 70 ans de dévotions à Dieu ; il sera considéré comme quelqu'un qui a rendu leur liberté à 1 000 esclaves ; le jour du jugement dernier on lui donnera l'ordre de sauver de l'enfer autant de personnes qu'il le désirera et qui y étaient destinées. Il ira au Paradis sans être jugé.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1207.jpg"
+    "texte": "On rapporte que le détachement du coeur de ce monde repose sur quatre choses: la confiance parfaite en DIEU concernant ce qu'Il a promis pour l'autre monde, la complète indifférence pour les louanges comme pour les critiques, l'exclusivité du culte à DIEU dans l'action, ainsi que le pardon à l'offenseur. Silkul Jawctahir Le cordon des joyaux précieux",
+    "source": "SDM · Sagesse Spirituelle",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
   },
   {
-    "id": "sdm_rappel_1205",
-    "msg_id": 1205,
-    "date_post": "2026-02-28",
-    "badge": "Verset & Méditation",
+    "id": "sdm_cit_721",
+    "badge": "Fathul Mannaan",
     "arabe": "",
-    "texte": "Celui qui effectue ce nafila, après le salut final dire « la hawla wala khouwata ila billahi haliyil azimi » (70 fois), faire ensuite « salatou ala nabi » (70 fois), il sera absous de tous ses péchés sans exclusive; pour chaque verset il lui sera accordé les faveurs dues aux dévotions d'une année entière ain- celles dues à quelqu'un qui a rendu leur liberté à 1000 esclaves, donné en aumône 1000 dinars, donné à manger à 1000 personnes qui n'ont rien à manger, habillé 1 000 personnes se trouvant dans le dénuement le plus complet. Tout ce qui existe sur terre vivant ou non intercédera auprès de Dieu pour qu'il lui pardonne tous ses péchés, il sera préservé contre toutes les calamités, toutes les peines, la faim, l'indigence (sous toutes ses fo",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1205.jpg"
+    "texte": "o (ô Toi l'Eminent Hôte porteur de bonheur et de bienfaits, je te souhaite la bienvenue et te réserve une hospitalité sans restriction.» Yaxayra daifin Cheikhoul Khadim Naafila Nuit Faatiha (1) Al Kawsar (10) Source: Xuratul aïni, Serigne Souhaibu MBACKE (Je ne cherche de re- COUrs qu'en ALLAH LE TRES HAUT. C'est en lui que je porte mon espoir et c'est fui seul que je crains. J'ai dit par conséquent que je te recommande autant qu'à ma propre personne la crainte révérencielle d'Allah le Majestueux car elle est (certes) la meilleure des choses.) Cheikhoul Khadim",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
   },
   {
-    "id": "sdm_rappel_1204",
-    "msg_id": 1204,
-    "date_post": "2026-02-27",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_743",
+    "badge": "Fathul Mannaan",
     "arabe": "",
-    "texte": "Celui qui effectue ce Nafila, avant de quitter le lieu de prière, il se verra absous de tous ses péchés sans exclusive; on lui fera bénéficier de bénédictions égales à celles de 50 (hommes de Dieu) véridiques, de celles de 70 personnes tuées dans une guerre sainte. Avant sa mort, il goûtera de fruits provenant du Paradis, on lui demandera de sauver de l'enfer 70 personnes qui y étaient destinées.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1204.jpg"
+    "texte": "ô Toi l'Eminent Hôte porteur de bonheur et de bienfaits, je te souhaite la bienserve une hospitalité sans restriction.» Yaxayra daifin Cheikhoul Khadim o Naafila 12e Nuit RAKKAS Faatiha (1) Al ixlaas (6) Source: Xuratul aïni, Serigne Souhaibu MBACKE 1 (TU dois également savoir ce qu'il t'incombe de faire comme obligations personnelles avant de passer à l'acte et connaître ce qui t'est interdit pour ensuite l'éviter.) Cheikhoul Khadim",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_rappel_1203",
-    "msg_id": 1203,
-    "date_post": "2026-02-26",
-    "badge": "Verset & Méditation",
-    "arabe": "",
-    "texte": "Celui qui effectue ce nafila, il lui sera accordé les bénédictions dues à tous ceux qui acceptent stoïquement les decrets divins (mounkat yi) et à tous ceux qui manifestent à Dieu leur reconnaissance ; il lui sera accordé les avantages liésà la lecture du Coran en entier ; il bénéficiera des bénédictions qui procurent 70 ans de dévotions pendant lesquels il passe les journées à jeûner et les nuits à prier.\nOrdre sera donné à 2 anges qui se chargeront d'effacer ses péchés et d'enregistrer des bienfaits à son inten- tion et ce jusqu'au jour du jugement dernier. Dieu agréera ses prières et son jeûne et le mettra à l'abri des mauvaises intentions des hommes, il le ouvrira à son intention les portes des 8 paradis et le priera d'entrer dans celui",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1203.jpg"
-  },
-  {
-    "id": "sdm_rappel_1201",
-    "msg_id": 1201,
-    "date_post": "2026-02-25",
-    "badge": "Verset & Méditation",
-    "arabe": "",
-    "texte": "Celui qui effectue ce nafila, pour chaque lettre des sourates employées, il bénéficiera des bénédictions dues à 1 000 ans de dévotions. Il sera considéré comme quelqu'un qui a donné à manger à tous les musulmans pendnt 70 ans révolus tout en leur donnant à boire et les habillant. Il aura en outre les bénédictions liées à l'affranchissement de 1 000 esclaves ; ses vœux seront exaucés, il ressuscitera avec la lumière céleste. Il traversera « siraat » comme un éclair, il lui sera demandé de sauver de l'enfer (70) pesonnes qui y étaient destinées.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1201.jpg"
-  },
-  {
-    "id": "sdm_rappel_1200",
-    "msg_id": 1200,
-    "date_post": "2026-02-24",
-    "badge": "Verset & Méditation",
-    "arabe": "",
-    "texte": "Celui qui effectue ce nafila, il bénéficiera de bienfaits pour chaque verset, il sera considéré comme quelqu'un qui aura donné en aumône 1 000 dinars ; tous ses vœux seront exaucés, il bénéficiera en outre de bénédictions aussi importantes en quantité que le nombre de jours de l'existence terrestre ; pour chaque lettre on lui bâtira une grande maison au Paradis.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1200.jpg"
-  },
-  {
-    "id": "sdm_rappel_1199",
-    "msg_id": 1199,
-    "date_post": "2026-02-23",
+    "id": "sdm_cit_765",
     "badge": "Hadith Prophétique",
     "arabe": "",
-    "texte": "Celui qui effectue ce nafila, il sera considéré comme quelqu'un qui a effectué 1 000 rakas sur le « makhama » Ibrahima (à quelques mètres de la (Kaaba), 1 000 rakas dans la Mosquée de la Mecque, donné en aumône (5000 F) donné à manger à 1 000 personnes qui ont faim, ses vœux seront exaucés. Il sera considéré comme quelqu'un qui a donné à manger après une journée de jeûne à tous les musulmans. A sa mort il sera compté parmi ceux qui sont tués au cours d'une guerre sainte, il sera préservé des affres de la mort, sa tombe sera aménagée comme un des jardins d'Eden. Il ressuscitera auréolé de la lumière céleste, sera d'une beauté comparable à celle du soleil avec le plus beau parfum du monde, il sera au Paradis sans subir aucune épreuve, sans ju",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1199.jpg"
+    "texte": "Cataitte de boer 17 Qawadaw 13 Octobre 623 Ô TOI mon SEIGNEUR! Accorde Prière et Salut éternellement au Prophète, à la famille et atJX compagnons honorables et accepte, grâce à Lui, ma versification. Accorde Prière au Lion qui a apporté la Solution le Jour de Bedr avec ses compagnons orthodoxes, car Il honora sa Grande Promesse. Uw;bul Quteeb L'attirance des coeurs",
+    "source": "Hadith · SDM Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
   },
   {
-    "id": "sdm_rappel_1198",
-    "msg_id": 1198,
-    "date_post": "2026-02-22",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_782",
+    "badge": "Fathul Mannaan",
     "arabe": "",
-    "texte": "Si on effectue ce nafila, on sera considéré comme quelqu'un qui a fait le grand et le petit pélerinages 1 00 fois. On sera préservé de la pauvreté et verra nos chances d'acquisition de biens multipliées. De chaque lettre naîtront 2 anges qui se chargeront d'effacer nos péchés et d'enregistrer des bienfaits à notre intention; de nous octroyer des grades et ce, durant une année entière.\nA notre mort, on bénéficiera des faveurs dues à un combattant tué au cours d'une guerre sainte, on sera ab- sous (de tous ses péchés), on ne connaîtra pas les affres de la mort et on aura absolument les agréments du Tout Puissant, à sa mort, on lui ouvrira de sa tombe des portes qui donnent sur le paradis et qu'il contemplera jusqu'au jour du jugement.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1198.jpg"
+    "texte": "o 1 1 1 (Je t'affectionne ô mois béni de RAMADAN sans tricherie, moignes de mon attachement au cours de ton séjour au Livre Sacré de DIEU ici en ce lieu.) Yaxayra daifin Cheikhoul Khadim Naafila 20e Nuit RAKKAS Faatiha (1) Ina anzal nahu (1) Al ixlaas (3) Source: Xuratul aïni, Serigne Souhaibu MBACKE (Parmi les maux résultants de l'absence de contrôle sur la langue, il y a le fait qu'elle entache le culte, durcit le coeur et diminue les chances d'obtenir les moyens de subsistance. » Cheikhoul Khadim",
+    "source": "Fathul Mannaan (L'Inspiration du Bienfaisant) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_rappel_1197",
-    "msg_id": 1197,
-    "date_post": "2026-02-21",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_803",
+    "badge": "Cheikh Ahmadou Bamba",
     "arabe": "",
-    "texte": "Si on effectue ce nafila, on bénéficiera des avantages dues à 1 000 personnes qui se sont acquittées de leurs dévotions, on sera en plus absous de tous ses péchés avant qu'on ne quitte le lieu de prière.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1197.jpg"
+    "texte": "lil qeute LeueuatŒew Ô mon DIEU! Ô TOI le CLEMENT! Ô TOI le MISERICORDIEUX! Ô TOI le BON! Ô TOI le GENEREUX! Ô TOI le SUBLIME! Ô TOI qui Possède la Faculté de renverser les coeurs, détourne les nôtres des vices! Inspire-nous l'amour de tous les musulmans et délivre-nous du mal de tout transgresseur. Fais de l'ensemble des musulmans nos amis; nous serons alors préservés des préjudices. Mets sur le Droit Chemin la totalité des Croyants et des Croyantes, accorde-leur ensuite, à l'Au-delà, la Rémission de leurs péchés. Qt(aŒabu Slt/alti",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_rappel_1196",
-    "msg_id": 1196,
-    "date_post": "2026-02-20",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "si on effectue ce Nafila, on aura bénéficié des avantages dus à quelqu'un qui aura affranchi 1 000 esclaves et de ceux de quelqu'un qui aura donné à manger à 1 000 personnes au terme d'une journée de jeûne, de ceux dus à quelqu'un qui a habillé 1 000 personnes se trouvant dans un dénuement complet, donné à manger à 1 000 personnes qui ont faim, on bénéficiera des bénédictions aussi importantes en quantités que le nombre des espèces volantes de la planète ; on bénéficiera en outre des avantages dus aux plus grands saints et ceux qui sont tués au cours d'une guerre sainte, enfin on ne rencontrera aucune épreuve dans la tombe.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1196.jpg"
-  },
-  {
-    "id": "sdm_rappel_1194",
-    "msg_id": 1194,
-    "date_post": "2026-02-19",
-    "badge": "Verset & Méditation",
-    "arabe": "",
-    "texte": "celui qui effectue ce nafila, sera absous de tous ses péchés avant qu'il ne quitte les lieux de prières, il bénéficiera des avantages liés à mille grands pélerinages et à mille petits pélerinages (Oumra) effectués, ainsi qu'aux avantages dus à quelqu'un qui a donné en offrance 1 000 « dereumes » et qui a rendu visite 1 000 malades, il aura également les avantages dûs à quelq'un qui a accompagné 1 000 morts jusqu'à leur dernière demeure ; ainsi qu'à ceux dûs à quelqu'un qui a lu tout le Coran. Il bénéficiea enfin de bénéfictions plus importantes que celles dues à des évotions d'une durée de 70 ans.\nSource : Xuratul ayni",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1194.jpg"
-  },
-  {
-    "id": "sdm_rappel_1193",
-    "msg_id": 1193,
-    "date_post": "2026-02-18",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "ℕ ℚ ℙℝ́ℂ̀  ℙℝℝ ℝ\nCelui qui effectue dans la nuit qui précède le premier jour de Ramadan ce Nafila, Dieu le sauvera à jamais de l'enfer et exaucera tous ces vœux formulés à la suite de cette prière.\nSource : Xuratul Ayni.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1193.jpg"
-  },
-  {
-    "id": "sdm_rappel_1188",
-    "msg_id": 1188,
-    "date_post": "2025-09-26",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Video complete sur Youtube, lien au dessus...❤️",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
-  },
-  {
-    "id": "sdm_rappel_1180",
-    "msg_id": 1180,
-    "date_post": "2025-08-17",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Wakiir lu ci sunu Borom jox ko lepp te woolu ko....",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
-  },
-  {
-    "id": "sdm_rappel_1178",
-    "msg_id": 1178,
-    "date_post": "2025-08-16",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Thiey Fataha Kourel 1 Kaolack HTDKH",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
-  },
-  {
-    "id": "sdm_rappel_1162",
-    "msg_id": 1162,
-    "date_post": "2025-06-13",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Bés, Baay woo doomam ne ko kaay ma denk la juróom ben mbir yo'y dana'ñ firndeel ak yeewu.\n1. Bul werante ci mbir ak ko'k ëpp na la ca xamxam\n2. Bul wër loo manul am\n3. Bul wax lu wuutee'g li nga gëm\n4. Sa kàddu bu'm wuutee'g sa jëf\n5. Bul deelo teranga ji ñëw fi yaw, waaye bu ko topit bu la rëccee\n6. Moytul yakamti ndax naar yi dana'ñ koy woowe \"ndayi rëccu\"",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": true,
-    "raw_photo": "medisbu_1162.jpg"
-  },
-  {
-    "id": "sdm_rappel_1118",
-    "msg_id": 1118,
-    "date_post": "2025-03-28",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Pré Magal 2020\nKurel 1 Touba",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
-  },
-  {
-    "id": "sdm_rappel_1112",
-    "msg_id": 1112,
-    "date_post": "2025-03-28",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Pré Magal Magal 2020\nHizbut-Tarqiyyah",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
-  },
-  {
-    "id": "sdm_rappel_1055",
-    "msg_id": 1055,
-    "date_post": "2025-03-28",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "⭐⭐Préenregistrement Magal\nde 2010 à 2019⭐⭐",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
-  },
-  {
-    "id": "sdm_rappel_1004",
-    "msg_id": 1004,
-    "date_post": "2024-06-23",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Amul lu gëna màgg fa Sunu Boroom ñaan ko moom aji tabe ji. Moytu baax na waayee teewul dogal ba yeksi, ñaan nak dana jaññ dogal bu yeksi mba bu yekseegul. Ñaan dana dogalee musiba mu waron wàcci ci kaw suuf, ñaan dajeek moom ñu'y buxante ba bés penc taxaw",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
-  },
-  {
-    "id": "sdm_rappel_987",
-    "msg_id": 987,
-    "date_post": "2024-04-04",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Le Zikr , quiconque récite la ''basmallah'' 50 fois devant son oppresseur aura une garantie contre lui car... Kendalu'l jàmm ♥️",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
-  },
-  {
-    "id": "sdm_rappel_986",
-    "msg_id": 986,
-    "date_post": "2024-04-02",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "Le Zikr , mais toutes les formules précitées sont condensées dans une seule, ''Laa ilaaha illallaahu Muhammadu Rasuulullaahi'' (shw)... kendalu'l jàmm ❤️",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
-  },
-  {
-    "id": "sdm_rappel_982",
-    "msg_id": 982,
-    "date_post": "2024-04-01",
-    "badge": "Rappel Spirituel SDM",
-    "arabe": "",
-    "texte": "\"Le Zikr , quand au ''istigfâr\" (Astagfirullah), il te procure une réelle crainte d'ALLAH...\" Kendalu'l jàmm ♥️",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
-  },
-  {
-    "id": "sdm_rappel_980",
-    "msg_id": 980,
-    "date_post": "2024-03-31",
+    "id": "sdm_cit_812",
     "badge": "Hadith Prophétique",
     "arabe": "",
-    "texte": "Le Zikr, quand aux fruits de la ''hawqala'', de la ''hasbala'', et de la prière sur le Prophète (shws)... Kendalu'l jàmm ♥️",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Le motif de mon départ (en exil) est la volonté que DIEU a eu d'élever mon rang et de faire de moi Vintercesseur des miens et le Serviteur du Prophète (PSI) à demeure.",
+    "source": "Hadith · SDM Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
   },
   {
-    "id": "sdm_rappel_977",
-    "msg_id": 977,
-    "date_post": "2024-03-30",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_816",
+    "badge": "Sagesse Spirituelle",
     "arabe": "",
-    "texte": "\"Zikr, le fruit du tahlil ( la formule ''laa ilaaha illallaah'' ) est l'acquisition du tawhid... Les fruit du Takbir (Allahou Akbar ) et hamd (alhamdoulillah) sont....'' Kendalu'l jàmm ♥️",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Ta:awudu Sivar (les escen » Cheikh All nuadou Ba nuba Mbacke Legou: Qh/éavnbwte Quiconque se hâte dans sa jeunesse d'emprunter le Droit Chemin, bénéficiera de la quiétude quand il sera grand. Celui qui compense ce qu'il a perdu dans la vanité et se consacre à vivifier le temps. Par un repentir sincère, se tournant résolument vers DIEU, atteindra, la perfection. Attachez-vous à ces conseils que je vous prodigue, vous aurez alors un bénéfice certain Ici-bas et dans l'Au-deIà, en compagnie des bienheureux. EDISB 00000",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
   },
   {
-    "id": "sdm_rappel_975",
-    "msg_id": 975,
-    "date_post": "2024-03-27",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_825",
+    "badge": "Cheikh Ahmadou Bamba",
     "arabe": "",
-    "texte": "Le Zikr, si tu es débutant c'est la formule, ''Laa ilaaha illallaah'' qui te convient le plus car... Kendalu'l jàmm ♥️",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Nécrologie PahmÒwYmhacLe 40 ikhlass + Qacida Shoukourou Rafihou Ils furent des fidèles et sérieux serviteurs, obéissant à leur Maître et celui-ci Très Haut se montra pour eux, un Seigneur Munificent et Miséricordieux. Ils considéraient comme cause efficiente de catastrophes, le fait de manquer un \"wird\" ou de se gaver d'aliments, fussent-ils licites aux yeux de la loi! Quand la nuit, de ses ténèbres opaques, couvrait la face du monde, ils se levaient en sursaut pour vivifier la nuit noire. MÉD SBÙ Huqqal Bukaa'u,",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_rappel_939",
-    "msg_id": 939,
-    "date_post": "2024-01-28",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_832",
+    "badge": "Masaalikul Jinaan",
     "arabe": "",
-    "texte": "Regardez la vidéo complete...",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Le meilleur \"jihâd\" (guerre sainte) consiste à empêcher l'esprit de s'occuper de ce qui ne lui incombe pas.\" V.45G. I",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
   },
   {
-    "id": "sdm_rappel_923",
-    "msg_id": 923,
-    "date_post": "2023-12-04",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_836",
+    "badge": "Masaalikul Jinaan",
     "arabe": "",
-    "texte": "Dayo'b jëf ji mingi aju ci yéene ji...",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "On rapporte que le jour du jugement dernier, quand le pont sera jeté par dessus l'Enfer qu'il surplombera. Et que les créatures se débotteront dans l'angoisse et la tristesse, un crieur public lancera l'appel: Où sont ceux qui ont été au service des créatures? Et ceux-ci répondront: Nous voici!; on leur ordonnera d'entrer rapidement dans la demeure des délices en leur disant: entrez au Paradis sans peine, ni épreuve. Rends services à tbus, pour l'amour d'ALLAH exciusivement,sans relâche ni mot déplaisant.\" V.4G2-4GG. I",
+    "source": "Masaalikul Jinaan (Les Itinéraires du Paradis) · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_rappel_921",
-    "msg_id": 921,
-    "date_post": "2023-11-23",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_839",
+    "badge": "Cheikh Ahmadou Bamba",
     "arabe": "",
-    "texte": "Bokk na ci ag koolute ci sunu Boroom, yaakaar ci moom paju'g aajo yépp wayee nag nga jaaree ko ci aada'y wutin wa nuko tëralal. Waayee deesul yakaar ci mom ba noppi toog ag yoxo'y kese jàpp ni da nga yegg ci ludul jaar ci yoon wi wa lay jotale ci sa mébet. Jëfandiko lu lew da na yombal xol bu nangu ci'g topp ak jëf ju baax.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "01 0 coc Cooeü— Ramadan Mubarak Le Jeûne comporte deux Obligations dans sa pratique, ni plus ni moins: -Notre intention (de jeûner) -notre abstention vis-à-vis de tout ce qui est susceptible de le rompre et ce, pour la FACE du SUBSISTANT (DIEU), le NOURRICIER en provisions licites SUNNAH Ses Actes Traditionnels sont au nombre de trois, pour le perspicace (l'Imâm Al Awfi): -hâter la rupture après le coucher du soleil -prendre le plus tardivement possible le dernier repas (Suhûr) dans la nuit, -préserver la langue du bavardage. TAZAWUDU SHIKHAR I",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_rappel_913",
-    "msg_id": 913,
-    "date_post": "2023-08-18",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_cit_907",
+    "badge": "Verset & Méditation",
+    "arabe": "",
+    "texte": "A1 qur'an n'abandonne jamais le livre d'ALLAH... Quiconque veut parvenir à proximité d'ALLAH, doit lire le Coran sans jamais l'abandonner. Celui qui veut, dis-je, obtenir l'agrément d'ALLAH, doit lire I et méditer le Coran. Attache-toi à la lecture de ce livre, fut-ce trois(3), \"Hizb\" (soixantième partie [60el du Coran) chaque jour. N'abandonne jamais le livre d'ALLAH.» iman Cftc d 911bac.h.e 0. 529 532",
+    "source": "Saint Coran · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_cit_923",
+    "badge": "Nahju Qadâ'il Hâj",
+    "arabe": "",
+    "texte": "L' ACTION s'identifie à l'INTENTION Les actions ne valent que par les intentions qui les ont inspirées. A chacun selon ses intentions.» Nahju Qadaa'il Hajj CluiWh edEntddou bomba 911bacKe",
+    "source": "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_cit_1002",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "ALLAH assure à tout être sa subsistance, Il en est le garant assermenté Ne désespère point quand tu en es dépourvu, ne cesse de lui adresser prières et òdoration. Car ALLAH, connaît l'état de toutes Ses créatures il s'occupe de toutes dans leur ensemble et n'est point négligent. Le Très-Haut est trop grand pour manquer à Sa promesse il est bien au-dessus de l'impuissance et de l'oubli. Tache d'acquérir une foi correcte et solide, sois parfaitement convaincu des sentences du Très-Haut. Masalikul ainaan",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_cit_1011",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "ouba Une Ville résiliente O TOI NOTRE MAITRE TOI le CARDIEN-VICILENT, TOI qui veilles sur les sept cieux et ce qu'ils enveloppent, sur les sept terres et leurs contenus, tenant aussi le cours de leurs évènements sousTa Poigne. A TOI je confie les soins de ma propre garde et de la prise en charge de ma demeure, la cite bénite de Touba et ce, à jamais. Oh TOI MON SEIGNEUR, assimile ma demeure, la cite bénite de Touba a son nom par la grâce de l'envoyé (paix et bénédiction Sur Lui). MATLABOUL FAWZEYNI",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_cit_1159",
+    "badge": "Cheikh Ahmadou Bamba",
+    "arabe": "",
+    "texte": "Dis: «tout ce qui est la volonté d'ALLAH s'accomplit, on n'y peut rien; il n'y a ni force, ni moyen si ce n'est en ALLAH».»",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_txt_1162",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Bés, Baay woo doomam ne ko kaay ma denk la juróom ben mbir yo'y dana'ñ firndeel ak yeewu. 1. Bul werante ci mbir ak ko'k ëpp na la ca xamxam 2. Bul wër loo manul am 3. Bul wax lu wuutee'g li nga gëm 4. Sa kàddu bu'm wuutee'g sa jëf 5. Bul deelo teranga ji ñëw fi yaw, waaye bu ko topit bu la rëccee 6. Moytul yakamti ndax naar yi dana'ñ koy woowe \"ndayi rëccu",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_txt_1004",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
+    "arabe": "",
+    "texte": "🤲🏽Amul lu gëna màgg fa Sunu Boroom ñaan ko moom aji tabe ji. Moytu baax na waayee teewul dogal ba yeksi, ñaan nak dana jaññ dogal bu yeksi mba bu yekseegul. Ñaan dana dogalee musiba mu waron wàcci ci kaw suuf, ñaan dajeek moom ñu'y buxante ba bés penc taxaw",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_txt_987",
+    "badge": "Sagesse du Zikr",
+    "arabe": "",
+    "texte": "Le Zikr , quiconque récite la ''basmallah'' 50 fois devant son oppresseur aura une garantie contre lui car",
+    "source": "Masaalikul Jinaan · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_txt_986",
+    "badge": "Sagesse du Zikr",
+    "arabe": "",
+    "texte": "Le Zikr , mais toutes les formules précitées sont condensées dans une seule, ''Laa ilaaha illallaahu Muhammadu Rasuulullaahi'' (shw)",
+    "source": "Masaalikul Jinaan · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_txt_982",
+    "badge": "Sagesse du Zikr",
+    "arabe": "",
+    "texte": "Le Zikr , quand au ''istigfâr\" (Astagfirullah), il te procure une réelle crainte d'ALLAH",
+    "source": "Masaalikul Jinaan · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_txt_980",
+    "badge": "Sagesse du Zikr",
+    "arabe": "",
+    "texte": "Le Zikr, quand aux fruits de la ''hawqala'', de la ''hasbala'', et de la prière sur le Prophète (shws)",
+    "source": "Masaalikul Jinaan · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_txt_975",
+    "badge": "Sagesse du Zikr",
+    "arabe": "",
+    "texte": "Le Zikr, si tu es débutant c'est la formule, ''Laa ilaaha illallaah'' qui te convient le plus car",
+    "source": "Masaalikul Jinaan · Cheikh Ahmadou Bamba",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_txt_921",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
+    "arabe": "",
+    "texte": "Bokk na ci ag koolute ci sunu Boroom, yaakaar ci moom paju'g aajo yépp wayee nag nga jaaree ko ci aada'y wutin wa nuko tëralal. Waayee deesul yakaar ci mom ba noppi toog ag yoxo'y kese jàpp ni da nga yegg ci ludul jaar ci yoon wi wa lay jotale ci sa mébet. Jëfandiko lu lew da na yombal xol bu nangu ci'g topp ak jëf ju baax",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_txt_913",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
     "texte": "Céy Boroom Tuubaa, la ko jaam u Yàlla ag liggeeyal Sàngam ba jaraloon keemaan la... Jàr a jëf Mbàkke",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
   },
   {
-    "id": "sdm_rappel_907",
-    "msg_id": 907,
-    "date_post": "2023-04-28",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_907",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
     "arabe": "",
-    "texte": "Kepp ku bëgg a jige YALLA teg ci am ngëramam, na taqoo'k Al Qur'aan te bum ko bàyyi mukk. Saxal ci jàng Al Qur'aan donte 3i isib la bés bu nekk, wala loo ca man sa kéem kàttan nga saxoo ko, waaye bul bàayyi mukk tééreb sunu Boroom bi.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Kepp ku bëgg a jige YALLA teg ci am ngëramam, na taqoo'k Al Qur'aan te bum ko bàyyi mukk. Saxal ci jàng Al Qur'aan donte 3i isib la bés bu nekk, wala loo ca man sa kéem kàttan nga saxoo ko, waaye bul bàayyi mukk tééreb sunu Boroom bi",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_rappel_835",
-    "msg_id": 835,
-    "date_post": "2022-12-10",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_835",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
     "arabe": "",
-    "texte": "Seenug gëm ci yonent ya moo di ag dëggal ci ñoom, topp la nga xam ne dikke ñañu ko mu tukke ca seen Boroom. Te naka ñoom, dana war ci seen àq, dëggal ak kóolute ak seenug jottali. Fen, wor ak ug nëbbu, araamal na leen ci ñoom, moom Fayaakon bi.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Seenug gëm ci yonent ya moo di ag dëggal ci ñoom, topp la nga xam ne dikke ñañu ko mu tukke ca seen Boroom. Te naka ñoom, dana war ci seen àq, dëggal ak kóolute ak seenug jottali. Fen, wor ak ug nëbbu, araamal na leen ci ñoom, moom Fayaakon bi",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
   },
   {
-    "id": "sdm_rappel_833",
-    "msg_id": 833,
-    "date_post": "2022-10-13",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_831",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "Képp ci Ñoom dana def la nga xam ne digaleef na ko ca loolee; wommat nañu mbég mu ànd ak wóolu jëme ci man. Naka Ñoom, Seen Boroom, kay Aji-des, bind na leen ci leer ci lu dul nëx nëx. Sàbbaal seen Boroom moo di seen naan, ag sellalam moo di seen ñam; buleen sikki-sàkka.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Déet Maalaakay Buur bi Ñuy lekk, yal na nekk ci Ñoom dolli wóolu, déet Ñoom ñuy naan. Li am mooy ay jaam lañu yu ñu teral ba fàwwu; te ken ci Ñoom du moy Ka ñu jublu ka Yàlla",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_rappel_831",
-    "msg_id": 831,
-    "date_post": "2022-10-12",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_829",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
     "arabe": "",
-    "texte": "Déet Maalaakay Buur bi Ñuy lekk, yal na nekk ci Ñoom dolli wóolu, déet Ñoom ñuy naan. Li am mooy ay jaam lañu yu ñu teral ba fàwwu; te ken ci Ñoom du moy Ka ñu jublu ka Yàlla.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Gëm malaaka yi Ndaal Malaaka yi, gëm leen mooy dëggal te wóolu ne naka Ñoom, amul benn sikki-sàkka ne ñu am lañu; topp ñu ñu musal lañu ci ay bàkkaar. Naka Ñoom ñu ñu laabal lañu, duñu xayit (dem ginnaaw-kër) te duñu saw",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_rappel_829",
-    "msg_id": 829,
-    "date_post": "2022-10-05",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_828",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "Gëm malaaka yi\nNdaal Malaaka yi, gëm leen mooy dëggal te wóolu ne naka Ñoom, amul benn sikki-sàkka ne ñu am lañu; topp ñu ñu musal lañu ci ay bàkkaar. Naka Ñoom ñu ñu laabal lañu, duñu xayit (dem ginnaaw-kër) te duñu saw.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Naka Moom Yàlla, soril naa ko lépp lu yellul ci Moom, du war ci Moom dara, li fi nekk daal mooy dana maye ngir ngëneel. Kon nanga daganal, defug lépp lu mën a am ak bàyyi ga, ci àqi Yàlla la; yal na fegaleef la duur wa. Sunug tegtal ci yile ñaar fukk (i melo), biraloon naa ko ci téere bu dul bii, ag biral ngir naka bile téere boroomug jiitu la ca aji-mag ja jay aji-wuññi aji-lëmu",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
   },
   {
-    "id": "sdm_rappel_828",
-    "msg_id": 828,
-    "date_post": "2022-10-02",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_826",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "Naka Moom Yàlla, soril naa ko lépp lu yellul ci Moom, du war ci Moom dara, li fi nekk daal mooy dana maye ngir ngëneel. Kon nanga daganal, defug lépp lu mën a am ak bàyyi ga, ci àqi Yàlla la; yal na fegaleef la duur wa.\nSunug tegtal ci yile ñaar fukk (i melo), biraloon naa ko ci téere bu dul bii, ag biral ngir naka bile téere boroomug jiitu la ca aji-mag ja jay aji-wuññi aji-lëmu.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Seenug gëm seen Boroom mooy ag dëggal, ne naka Moom Yàlla, dana jomb ci Moom, safaani melo yi nu jota lim, na ngeen ko Ko jombale. Li ma ci namm mooy ñàkk ànd ak sosu ak ug jeex, yemonteek mbindeef ànd ak ug aajowoo; nanga xel-lu. Limu, lott, sib ak tëx, réer ak faatu ak silmaxa ànd ak luu",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
   },
   {
-    "id": "sdm_rappel_827",
-    "msg_id": 827,
-    "date_post": "2022-10-01",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_824",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
     "arabe": "",
-    "texte": "Ag nekkam ga di aji-lott mbaa aji-tëx walla Muy aji-sib walla Muy aji-réer walla Muy aji-gumba, walla Muy aji-dee, soril naa ko lépp lu yellul ci Moom, walla Muy aji-luu, yile way-jomb lañu ci Boroom Asamaan.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Ag nekkug sunu Boroom, kawe na, di Aji-àttan, di ngën gi Aji-namm, déet muy deñ di Aji-sant. Tey Aji-xam, tey Aji-dundu, tey Aji-dégg, maye na. Nekkam ga it di ngën gi Aji-gis war na. Tey Aji-wax, yal na la Yàlla gindi ci barkeb Laa ilaaha illal-Laah",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_rappel_826",
-    "msg_id": 826,
-    "date_post": "2022-09-30",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_823",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "Seenug gëm seen Boroom mooy ag dëggal, ne naka Moom Yàlla, dana jomb ci Moom, safaani melo yi nu jota lim, na ngeen ko Ko jombale. Li ma ci namm mooy ñàkk ànd  ak sosu ak ug jeex, yemonteek mbindeef ànd ak ug aajowoo; nanga xel-lu. Limu, lott, sib ak tëx, réer ak faatu ak silmaxa ànd ak luu.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Seenug gëm seen Boroom mooy ag dëggal, ne Kàttan ànd ak Nammeel war nañu ñoom ñaar ñeel Yàlla; nanga Ko jaamu te màggal Ko. Xam, Dund ànd ak Dégg, Gis ànd ak Wax, war nañu ñeel Boroom mbindeef yi",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
   },
   {
-    "id": "sdm_rappel_824",
-    "msg_id": 824,
-    "date_post": "2022-09-28",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_821",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "Ag nekkug sunu Boroom, kawe na, di Aji-àttan, di ngën gi Aji-namm, déet muy deñ di Aji-sant. Tey Aji-xam, tey Aji-dundu, tey Aji-dégg, maye na. Nekkam ga it di ngën gi Aji-gis war na. Tey Aji-wax, yal na la Yàlla gindi ci barkeb Laa ilaaha illal-Laah.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Boroomug wuute la ñeel mbindeef yi mbooleseen, te boroomug doylu la ci boppam; boole na yiw wépp ñeel ma. Kenn la moom Yàlla te déet di ko ñéel jenn aji-ñaareel, mësta deñ, màgg na, di Aji-màggi mbir",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_rappel_823",
-    "msg_id": 823,
-    "date_post": "2022-09-27",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_820",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "Seenug gëm seen Boroom mooy ag dëggal, ne Kàttan ànd ak Nammeel war nañu ñoom ñaar ñeel Yàlla; nanga Ko jaamu te màggal Ko. Xam, Dund ànd ak Dégg, Gis ànd ak Wax, war nañu ñeel Boroom mbindeef yi.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Seenug gëm seen Boroom mooy ag dëggal, ne naka Moom Yàlla amam ga lu dëggu la; Moom aji-jiitu la, déet di Ko ñeel ag tàmbalikaay; te boroomug des la, déet di ko ñeel ag yemukaay",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_rappel_822",
-    "msg_id": 822,
-    "date_post": "2022-09-26",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_819",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
     "arabe": "",
-    "texte": "Seenug gëm seen Boroom mooy ag dëggal, ne Wéet na, Aji-wéet la ci jëmm ja, ci melo wa ak ci jëf ja mbooleseen. Déet di Ko ñeel jenn aji-ñaareel ci jëmm ja ak melo wa ak ci jëfam ya.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Seenug ngëm, yéen ndaw ñi, ci ki nga xam ne ñeel na ko ndaw ñi ak mag ñi; Moo di ngeen gëm Yàlla, ak Malaaka ya ak téerey Yàlla, miy Aji-jubal aji-sóobu ju góor ak aji-sóobu ju jigéen ci yoonam; Ak bisam ba di aji-mujj, ak yonent ya ña di way-tedd ak dogal ba nga xam ne dana maye càkkutéef la",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
   },
   {
-    "id": "sdm_rappel_821",
-    "msg_id": 821,
-    "date_post": "2022-09-25",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_818",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
     "arabe": "",
-    "texte": "Boroomug wuute la ñeel mbindeef yi mbooleseen, te boroomug doylu la ci boppam; boole na yiw wépp ñeel ma. Kenn la moom Yàlla te déet di ko ñéel jenn aji-ñaareel, mësta deñ, màgg na, di Aji-màggi mbir.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Xaaji diiney sunu Boroom ñoo di ngëm (iimaan), nekk na ci ginnaawam wëyale santaaney Yàlla ci kaw suuf (islaam) ak'ug rafetal (ihsaan)",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
   },
   {
-    "id": "sdm_rappel_820",
-    "msg_id": 820,
-    "date_post": "2022-09-24",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_815",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
     "arabe": "",
-    "texte": "Seenug gëm seen Boroom mooy ag dëggal, ne naka Moom Yàlla amam ga lu dëggu la; Moom aji-jiitu la, déet di Ko ñeel ag tàmbalikaay; te boroomug des la, déet di ko ñeel ag yemukaay.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Yéen ndaw ñi buleen soxlawoo lu dul njub; nangeen soxlawoo ci xam-xam ya. Nangeen soxlawoo ci mokkal ak jàng ga; te ngeen teet jotaayu texeedi ya. Nangeen taqook koo xam me du deñ di aji-jaamu ñeel Boroomam te di aji-wommate jëm ci njubam ga",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_rappel_819",
-    "msg_id": 819,
-    "date_post": "2022-09-23",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_715",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "Seenug ngëm, yéen ndaw ñi, ci ki nga xam ne ñeel na ko ndaw ñi ak mag ñi; Moo di ngeen gëm Yàlla, ak Malaaka ya ak téerey Yàlla, miy Aji-jubal aji-sóobu ju góor ak aji-sóobu ju jigéen ci yoonam; Ak bisam ba di aji-mujj, ak yonent ya ña di way-tedd ak dogal ba nga xam ne dana maye càkkutéef la.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Ñatti tawfeex yo'y da na'ñ dax njàxare'y xol : ànd ak Boroom xamxam, fay sa'y bor, nekk ak sa \"xaritu ben bakkan",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
   },
   {
-    "id": "sdm_rappel_818",
-    "msg_id": 818,
-    "date_post": "2022-09-22",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_714",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
     "arabe": "",
-    "texte": "Xaaji diiney sunu Boroom ñoo di ngëm (iimaan), nekk na ci ginnaawam wëyale santaaney Yàlla ci kaw suuf (islaam) ak'ug rafetal (ihsaan).",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Noppi am na juróomi juni'y ngëneel yu'ñ man a tënk ci juróom yaari kàddu : nit ñi bëgg la ci ludul coono, taar bu aajoowul ay takkaay, cër bu matt bu aajoowul kilifteef, kaarànge gu aajoowuli ngànnaay, xol bu feex ci ludul sàkku njèggal, noflaay yu'g malaaka yu tedd yi'y bind jëf yi ak sutura su'y nëbb lepp lu kersa di sàng",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_rappel_816",
-    "msg_id": 816,
-    "date_post": "2022-09-21",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_711",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "Képp koo xam ne gaawantu na ci waxtuw ndawe jëm cig njub, dana noppalu ci waxtuw mage. Ku dabaatal la nga xam ne faat na ko ci ag neen, te mu dundal waxtu ya ci tuub gu sell ak jublu jëm ca Buur ba, dana texe ca mag ga. Jàppleen samag laabire ñeel leen; kon di ngeen tonowu ci àdduna ak ca allaaxira ànd ak ña texe.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Nëbbal ayib nit ñi, te sori kepp ku def yitteem mu'y wuññi ayibi nit ñi",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_rappel_815",
-    "msg_id": 815,
-    "date_post": "2022-09-20",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_710",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
     "arabe": "",
-    "texte": "Yéen ndaw ñi buleen soxlawoo lu dul njub; nangeen soxlawoo ci xam-xam ya. Nangeen soxlawoo ci mokkal ak jàng ga; te ngeen teet jotaayu texeedi ya. Nangeen taqook koo xam me du deñ di aji-jaamu ñeel Boroomam te di aji-wommate jëm ci njubam ga.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Waa Aljana leen rekk lanu'y réccu moo'y waxtu yileen rëcc te sabbaaluñ ca Yàlla Sunu Boroom",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
   },
   {
-    "id": "sdm_rappel_809",
-    "msg_id": 809,
-    "date_post": "2022-08-20",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_698",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "Clip matlabou chifahi au complet en français...",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Céy Boroom Tuubaa, ken du moom ci wéetal Yàlla ak topp sangam ba",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
   },
   {
-    "id": "sdm_rappel_776",
-    "msg_id": 776,
-    "date_post": "2022-04-19",
-    "badge": "Sagesse de Cheikh Ahmadou Bamba",
+    "id": "sdm_txt_655",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "⚔️Bataille de Badr racontée parfaitement par Serigne Bassirou Mbacké Khelcom",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Murid bi len warul nekk yitteem ludul ngëram u Yàlla",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_rappel_763",
-    "msg_id": 763,
-    "date_post": "2022-04-18",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_583",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "⚔️Bataille de Badr 17 Ramadan 13 Octobre 623",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Sunu Sàng, sunu soppe ba Muhamad, yalna ko Yàlla dolee teral, digal na la nga sax jaamu Yàlla teg ko ci Sunna, moytu loo na la itam ndugalum Saytaane mii di workat",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
   },
   {
-    "id": "sdm_rappel_726",
-    "msg_id": 726,
-    "date_post": "2022-04-05",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_582",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
     "arabe": "",
-    "texte": "(ndox mi'y laabal) moom mooy la nga xam ne ag ñoŋam soppikuwul; li mu ci jublu mooy cafka ga walla xet ga walla melo wa; Ci loo xam ne dina tàqalikook moom ( am ndox ) cig mbaax, niki ag ñaay, ak ug nékk, ak loo xam ne niki sarniix, ak tilim, ak diw, ak lu deme ni saabu, ak diw-ñor, ak luy nuru yii ma lim. Waxu ma nag ban, mba cepp, mba ceeñ, mbaa suufus kese, mba mbaalaam-baalaamum ndox, ci ludul sikk.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Deel sukkandiku ci boroom xàmxàm bi, di roy ki'y topp Suna's Yonenta ba, ka di aji gën ca ña'y jubal",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_rappel_724",
-    "msg_id": 724,
-    "date_post": "2022-04-04",
-    "badge": "Rappel Spirituel SDM",
+    "id": "sdm_txt_580",
+    "badge": "Sagesse Mouride (Wolof)",
     "arabe": "",
-    "texte": "Niki laab mooy laabug toj ma, ci lu dul ag wuute ak laabug sobe sa; Képp ci ñoom ñaar ci ndox lay doon mu di aji-laab tey aji-laabal, dina yéwénal fa aji-ñaw ja.",
-    "source": "SDM · Enseignements & Sagesse",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg",
-    "has_source_photo": false,
-    "raw_photo": ""
+    "texte": "Màndargam Bëgg Yàlla mooy yitte ju kawe jëm ci saxoo tuubal ko",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_txt_577",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Màndargam ragal Yàlla moo'y bàyyi tere yepp ci ludul sette",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_txt_576",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Cëslaayul topp Yàlla ñatt la te ñoo di Ragal, Yaakaar ag Bëgg",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_txt_571",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Bokk na ci dundug sofiyanke bi, saxoo Wird te Yàlla rekk tax",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_txt_570",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Wacci yoon u njub yatti yi dana'ñ ko waral, rëy (moo sankoon saytaane), ñakk a doylu(moo gennee Adama aljana) ak kiñaan u fiiraange(moo taaxoon Kayin domi Adama ray mbokkam ma Abel)",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_txt_567",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Dundug sofiyanke amna ay cëslaay. Bi ci jiitu mooy taqoo ak njàngum alxuraan ak topp sunnag sunu Sàng ba Muhamad, yalna Yàlla julli ci mom te dolli ko ay teranga",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_txt_565",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
+    "arabe": "",
+    "texte": "Bul doyadal mukk sàntaane diine ji, fonkal te sàmm sa islam, ndax woyofal ko moo'y indi ak reer. Te'it bul dendalee mukk Yàlla sunu boroom ak ken mba lenn ci lu nëbbatu ak lu feeñ, Yalna la ci Yalla musal",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_txt_564",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
+    "arabe": "",
+    "texte": "Na nga góor-góorlu ci topp njubug sunu Boroom gi te wóolu ko ci bàyyi koo'g sa bopp ngir sànt ko ci xeewal yi'm la'y defal",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_txt_558",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Avec ihsaan Collection vivez pleinement vos moments particuliers",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_txt_557",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Na ngeen sax ci xeñtu ak Topp Yàlla ngir ne loli moleen di may mujj gu rafet",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_txt_555",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Ligeey am lu lew lo dunde warteef la ci bep jullit. Xamxam ak Jàam u Yàlla du jariñ ludul ci kaw la nga'y dunde di lu lew",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_txt_553",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Lekk ba regg (ci lu lew), dan na waral xol bu wow, xel mu'y jànnaxe, gallankoor ag mokkal, diisal ay cër ci xamlu ak jaam u Yàlla, teksi may saytane bunt doli ci doleel bànnex. Na ngeen ko wàttandiku",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_txt_552",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
+    "arabe": "",
+    "texte": "Ngir sàmm seeni biir, na ngeen sax ci xeewaloo lu dagan lol fàggu ga lew na looli da na leel dolli jigee sunu Boroom",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_txt_541",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
+    "arabe": "",
+    "texte": "Sunu Boroom tere na jël alal u jàmbur ci ludul ag nàangoom ndax looli da'y waral mbugal ëlëg, yi mel ni dundee diine ak woote woo mbir ngir wut ca loo ca àmee kese kese",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_txt_540",
+    "badge": "Tazawwudu-ç-Çighâr (Wolof)",
+    "arabe": "",
+    "texte": "Sunu Boroom tere na bepp xeet u ñaawal nit ci bët(piis), wala ci lamiñ, wala reetaan ak xaxataay. Tere na itam njaalo ak foo'k soxna sulu leewul, wala xool, wala bànneex u ci kàddoom",
+    "source": "Cheikh Ahmadou Bamba · SDM",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "sdm_txt_539",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Sunu Borom tere na jiko yi sawara di am cër ëlëk... Tere na fen, soss, jëw, rëy, ngistal, bëgguw tagg, soxor, iñaan ak yëgg ngëneel ci kaw ñeneen ñi",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "sdm_txt_538",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Bokk na itam ci sarti tuup, sàkk u njéggal u ka nga tooñ ci'y kàddu yooko wax, wala yooko jëwee wala yooko waxal te waxuko. Jeggal u ka nga tooñ sooko gisatul nga yokk say jaam u Yàlla te sàkkul njéggal u Yàlla ka nga tooñ ngir nga man a deloo tooñaange ga bes penc",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "sdm_txt_536",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Sóobu ci yoon u Yàlla dacee bokk yam ci liñ la rëddal mu'y jëfe digle yi, bàyyi tere yi te saxoo tuup",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "sdm_txt_535",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Kaso'b Saytaane moo'y baril tudd Yàlla ngànnayam moo'y sàggan",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "sdm_txt_534",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Kaso'b bànneex mooy noppi ci wax ju la dul yokk wala ju àmul njariñ, waye ngànnaayam moodi wax ju bari ju amul njariñ (wax ci kawi kàddu wala ci'm bind)",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "sdm_txt_533",
+    "badge": "Sagesse Mouride (Wolof)",
+    "arabe": "",
+    "texte": "Kaso'b aduna mooy xàmxàm bu ànd ak jëfe te Yàlla rekk tax, waye ngànnaayam moodi jotaay ak àndando yu amul njariñ (niki toogaay u jëm ak jëm wala ci xarala yi ''technologies\")",
+    "source": "SDM · Paroles de Sagesse",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
   }
 ]

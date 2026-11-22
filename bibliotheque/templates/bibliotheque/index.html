@@ -467,14 +467,17 @@
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></span>
                     <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-gold-400">
-                        Rappel du Jour SDM <span id="sdm-rappel-counter" class="text-white/55"></span>
+                        Citation du Jour SDM <span id="sdm-rappel-counter" class="text-white/55"></span>
                     </span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                    <button type="button" onclick="navSdmRappel(-1)" class="w-7 h-7 rounded-full bg-white/10 text-white text-[11px] flex items-center justify-center tap-card" title="Rappel précédent">
+                    <button type="button" onclick="randomSdmRappel()" class="w-7 h-7 rounded-full bg-gold-500/20 border border-gold-400/40 text-gold-300 text-[11px] flex items-center justify-center tap-card" title="Citation aléatoire">
+                        <i class="fa-solid fa-shuffle"></i>
+                    </button>
+                    <button type="button" onclick="navSdmRappel(-1)" class="w-7 h-7 rounded-full bg-white/10 text-white text-[11px] flex items-center justify-center tap-card" title="Citation précédente">
                         <i class="fa-solid fa-chevron-left"></i>
                     </button>
-                    <button type="button" onclick="navSdmRappel(1)" class="w-7 h-7 rounded-full bg-white/10 text-white text-[11px] flex items-center justify-center tap-card" title="Rappel suivant">
+                    <button type="button" onclick="navSdmRappel(1)" class="w-7 h-7 rounded-full bg-white/10 text-white text-[11px] flex items-center justify-center tap-card" title="Citation suivante">
                         <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
@@ -504,11 +507,15 @@
                 </div>
             </div>
 
-            <!-- BARRE DE PERSONNALISATION (6 DÉCORS NANO BANANA SDM + TAILLE + EXPORT PNG HD) -->
+            <!-- BARRE DE PERSONNALISATION (6 DÉCORS NANO BANANA SDM + PHOTO PERSO + TAILLE + EXPORT PNG HD) -->
             <div class="p-3 bg-black/55 border-t border-white/10 space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-[10px] font-extrabold uppercase tracking-wider text-white/60">Décor SDM :</span>
                     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                        <label class="sdm-theme-swatch h-8 px-2.5 rounded-full bg-gold-500/20 border border-dashed border-gold-400/70 text-gold-300 text-[10px] font-extrabold flex items-center gap-1 cursor-pointer flex-shrink-0 tap-card" title="Choisir ma propre image">
+                            <i class="fa-solid fa-image"></i> Photo
+                            <input type="file" accept="image/*" class="hidden" onchange="setSdmCustomBg(this)">
+                        </label>
                         {% for th in sdm_card_themes %}
                         <button type="button" onclick="setSdmCardBg('{{ th.src }}', this)"
                                 class="sdm-theme-swatch w-8 h-8 rounded-full overflow-hidden border-2 {% if forloop.first %}border-gold-400 scale-105{% else %}border-white/20{% endif %} flex-shrink-0 tap-card"
@@ -762,7 +769,7 @@
         if (txEl) txEl.textContent = r.texte || '';
         const srcEl = document.getElementById('sdm-rappel-source');
         if (srcEl) srcEl.textContent = r.source || 'SDM · Enseignements & Sagesse';
-        if (r.theme_image) {
+        if (r.theme_image && !sdmCustomBgActive) {
             sdmCurrentBg = r.theme_image;
             const img = document.getElementById('sdm-rappel-bg-img');
             if (img) img.src = r.theme_image;
@@ -770,13 +777,24 @@
     }
     if (SDM_RAPPELS.length) renderSdmRappelCard();
 
+    let sdmCustomBgActive = false;
+
     window.navSdmRappel = function(delta) {
         if (!SDM_RAPPELS.length) return;
         sdmRappelIdx = (sdmRappelIdx + delta + SDM_RAPPELS.length) % SDM_RAPPELS.length;
         renderSdmRappelCard();
     };
 
+    window.randomSdmRappel = function() {
+        if (SDM_RAPPELS.length < 2) return;
+        let next = Math.floor(Math.random() * SDM_RAPPELS.length);
+        if (next === sdmRappelIdx) next = (next + 1) % SDM_RAPPELS.length;
+        sdmRappelIdx = next;
+        renderSdmRappelCard();
+    };
+
     window.setSdmCardBg = function(src, btn) {
+        sdmCustomBgActive = false;
         sdmCurrentBg = src;
         const img = document.getElementById('sdm-rappel-bg-img');
         if (img) img.src = src;
@@ -788,6 +806,19 @@
             btn.classList.remove('border-white/20');
             btn.classList.add('border-gold-400', 'scale-105');
         }
+    };
+
+    window.setSdmCustomBg = function(input) {
+        const file = input && input.files && input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            sdmCustomBgActive = true;
+            sdmCurrentBg = e.target.result;
+            const img = document.getElementById('sdm-rappel-bg-img');
+            if (img) img.src = sdmCurrentBg;
+        };
+        reader.readAsDataURL(file);
     };
 
     window.adjustSdmFont = function(dir) {
@@ -815,7 +846,10 @@
         await new Promise(res => { bg.onload = res; bg.onerror = res; });
 
         if (bg.complete && bg.naturalWidth) {
-            ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+            const scale = Math.max(canvas.width / bg.naturalWidth, canvas.height / bg.naturalHeight);
+            const dw = bg.naturalWidth * scale;
+            const dh = bg.naturalHeight * scale;
+            ctx.drawImage(bg, (canvas.width - dw) / 2, (canvas.height - dh) / 2, dw, dh);
         } else {
             ctx.fillStyle = '#04140D';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -884,11 +918,16 @@
             y += frFontSize + 18;
         }
 
-        // Signature source
+        // Signature source + Sceau SDM en bas si photo personnalisée
         y += 34;
         ctx.font = '800 24px Inter, sans-serif';
         ctx.fillStyle = '#FDE047';
-        ctx.fillText(srcTxt, canvas.width / 2, Math.min(y, 1140));
+        ctx.fillText(srcTxt, canvas.width / 2, Math.min(y, 1180));
+        if (sdmCustomBgActive) {
+            ctx.font = '900 32px Inter, sans-serif';
+            ctx.fillStyle = '#FDE047';
+            ctx.fillText('۞  SDM  ۞', canvas.width / 2, 1345);
+        }
 
         canvas.toBlob(async (blob) => {
             if (!blob) return;

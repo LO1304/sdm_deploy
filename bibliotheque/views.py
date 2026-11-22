@@ -470,8 +470,8 @@ def home(request):
             'audio_folders': audio_folders,
             'top_audio_profiles': top_audio_profiles,
             'rappel_du_jour_sdm': rappel_du_jour_sdm,
-            'sdm_rappels_json': json.dumps(sdm_rappels_all[:120], ensure_ascii=False),
-            'rappel_du_jour_index': rappel_du_jour_index % max(1, min(len(sdm_rappels_all), 120)),
+            'sdm_rappels_json': json.dumps(sdm_rappels_all, ensure_ascii=False, separators=(',', ':')),
+            'rappel_du_jour_index': rappel_du_jour_index % max(1, len(sdm_rappels_all)),
             'sdm_rappels_total': len(sdm_rappels_all),
         }
         cache.set(pub_cache_key, pub, 300)
