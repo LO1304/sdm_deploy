@@ -483,29 +483,42 @@
                 </div>
             </div>
 
-            <!-- APERÇU CARTE 3:4 AVEC FOND NANO BANANA SDM -->
-            <div id="sdm-rappel-stage" class="relative w-full aspect-[3/4] overflow-hidden flex flex-col items-center justify-center px-7 py-12 text-center select-none">
+            <!-- APERÇU CARTE 3:4 AVEC FOND NANO BANANA SDM / GALERIE + SOURCE STYLÉE -->
+            <div id="sdm-rappel-stage" class="relative w-full aspect-[3/4] overflow-hidden flex flex-col items-center justify-center px-7 py-10 text-center select-none bg-[#040B08]">
                 <img id="sdm-rappel-bg-img"
                      src="{% if rappel_du_jour_sdm and rappel_du_jour_sdm.theme_image %}{{ rappel_du_jour_sdm.theme_image }}{% else %}/static/images/sdm_rappels/sdm_touba_emerald.jpg{% endif %}"
                      alt="Fond Rappel SDM"
-                     class="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-300">
-                <div class="absolute inset-0 bg-gradient-to-b from-black/25 via-black/35 to-black/25 z-0 pointer-events-none"></div>
+                     style="opacity:0.75;"
+                     class="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-200">
+                <div id="sdm-rappel-veil" class="absolute inset-0 bg-gradient-to-b from-black/25 via-black/30 to-black/35 z-0 pointer-events-none"></div>
 
-                <div class="relative z-10 flex flex-col items-center justify-center max-w-[88%] my-auto pb-8">
-                    <span id="sdm-rappel-badge" class="px-3 py-1 rounded-full bg-black/50 border border-gold-400/50 text-gold-300 text-[9.5px] font-extrabold uppercase tracking-widest mb-3 backdrop-blur-sm">
-                        {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.badge }}{% else %}Rappel Spirituel SDM{% endif %}
+                <div class="relative z-10 flex flex-col items-center justify-center max-w-[90%] my-auto pb-8">
+                    <span id="sdm-rappel-badge" class="px-3.5 py-1 rounded-full bg-black/55 border border-gold-400/55 text-gold-300 text-[9.5px] font-extrabold uppercase tracking-[0.16em] mb-3.5 backdrop-blur-sm shadow">
+                        {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.badge }}{% else %}Citation SDM{% endif %}
                     </span>
                     <div id="sdm-rappel-ar" dir="rtl" class="font-arabic text-xl text-amber-200 leading-relaxed mb-2.5 drop-shadow" style="text-shadow:0 2px 10px rgba(0,0,0,0.85);">
                         {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.arabe }}{% endif %}
                     </div>
-                    <p id="sdm-rappel-text" class="text-[13.5px] font-bold text-white leading-relaxed whitespace-pre-line drop-shadow" style="text-shadow:0 2px 12px rgba(0,0,0,0.92);">
+                    <p id="sdm-rappel-text" class="text-[14px] font-bold text-white leading-relaxed whitespace-pre-line" style="text-shadow:0 2px 12px rgba(0,0,0,0.92);">
                         {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.texte }}{% else %}{{ contenu.rappel.francais|default:"La constance dans le souvenir d'Allah illumine le cœur." }}{% endif %}
                     </p>
-                    <span id="sdm-rappel-source" class="mt-3 text-[10px] font-extrabold uppercase tracking-wider text-gold-300/90">
-                        {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.source }}{% else %}SDM · Sagesse{% endif %}
-                    </span>
+
+                    <!-- SOURCE STYLÉE EN 2 LIGNES (SÉPARATEUR DORÉ + ŒUVRE ITALIQUE + AUTEUR) -->
+                    <div class="mt-4 flex flex-col items-center">
+                        <div class="flex items-center gap-2 mb-1.5 opacity-85">
+                            <span class="w-8 h-[1px] bg-gradient-to-r from-transparent to-gold-400"></span>
+                            <span class="text-gold-300 text-[10px]">۞</span>
+                            <span class="w-8 h-[1px] bg-gradient-to-l from-transparent to-gold-400"></span>
+                        </div>
+                        <span id="sdm-rappel-oeuvre" class="font-serif italic text-[12.5px] font-bold text-gold-300 tracking-wide" style="text-shadow:0 2px 8px rgba(0,0,0,0.9);">
+                            {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.oeuvre|default:rappel_du_jour_sdm.badge }}{% else %}Masaalikul Jinaan{% endif %}
+                        </span>
+                        <span id="sdm-rappel-auteur" class="mt-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.18em] text-white/80" style="text-shadow:0 1px 6px rgba(0,0,0,0.9);">
+                            {% if rappel_du_jour_sdm %}{{ rappel_du_jour_sdm.auteur|default:"Cheikh Ahmadou Bamba (RTA)" }}{% else %}Cheikh Ahmadou Bamba (RTA){% endif %}
+                        </span>
+                    </div>
                 </div>
-                <span id="sdm-custom-watermark" class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3 py-0.5 rounded-full bg-black/55 border border-gold-400/55 text-gold-300 text-[10px] font-black tracking-widest">
+                <span id="sdm-custom-watermark" class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-3 py-0.5 rounded-full bg-black/60 border border-gold-400/55 text-gold-300 text-[10px] font-black tracking-widest">
                     ۞ SDM ۞
                 </span>
             </div>
@@ -515,10 +528,11 @@
                    style="position:fixed;top:-9999px;left:-9999px;opacity:0;width:1px;height:1px;"
                    onchange="setSdmCustomBg(this)">
 
-            <!-- BARRE DE PERSONNALISATION (6 DÉCORS NANO BANANA SDM + PHOTO GALERIE + TAILLE + EXPORT PNG HD) -->
-            <div class="p-3 bg-black/55 border-t border-white/10 space-y-2.5">
+            <!-- BARRE DE PERSONNALISATION COMPLÈTE (DÉCORS + GALERIE + OPACITÉ PHOTO + COULEURS TEXTE + TAILLE + EXPORT PNG) -->
+            <div class="p-3 bg-black/60 border-t border-white/10 space-y-2.5">
+                <!-- 1. Choix du Décor ou Photo Galerie -->
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-white/60">Décor SDM :</span>
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-white/60 flex-shrink-0">Fond :</span>
                     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                         <button type="button" id="btn-sdm-gallery" onclick="openSdmGalleryPicker()"
                                 class="sdm-theme-swatch h-8 px-2.5 rounded-full bg-gold-500/20 border border-dashed border-gold-400/70 text-gold-300 text-[10px] font-extrabold flex items-center gap-1 cursor-pointer flex-shrink-0 tap-card"
@@ -535,7 +549,35 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <!-- 2. Opacité de la photo (curseur temps réel) -->
+                <div class="flex items-center gap-2.5 px-1">
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-white/65 whitespace-nowrap">
+                        <i class="fa-solid fa-circle-half-stroke text-gold-400 mr-1"></i>Opacité photo
+                    </span>
+                    <input type="range" id="sdm-bg-opacity-slider" min="15" max="100" value="75"
+                           oninput="setSdmPhotoOpacity(this.value)"
+                           class="flex-1 accent-amber-400 h-1.5 cursor-pointer">
+                    <span id="sdm-bg-opacity-val" class="text-[10.5px] font-black text-gold-300 w-9 text-right tabular-nums">75%</span>
+                </div>
+
+                <!-- 3. Couleur de l'écriture -->
+                <div class="flex items-center justify-between gap-2 px-1">
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-white/65 whitespace-nowrap">
+                        <i class="fa-solid fa-palette text-gold-400 mr-1"></i>Texte :
+                    </span>
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                        <button type="button" onclick="setSdmTextColor('#FFFFFF', '#FDE047', false, this)" class="sdm-color-dot w-6 h-6 rounded-full border-2 border-gold-400 scale-110 flex-shrink-0" style="background:#FFFFFF;" title="Blanc Pur"></button>
+                        <button type="button" onclick="setSdmTextColor('#FDE047', '#FFFFFF', false, this)" class="sdm-color-dot w-6 h-6 rounded-full border-2 border-white/25 flex-shrink-0" style="background:#FDE047;" title="Or Royal"></button>
+                        <button type="button" onclick="setSdmTextColor('#FEF3C7', '#F59E0B', false, this)" class="sdm-color-dot w-6 h-6 rounded-full border-2 border-white/25 flex-shrink-0" style="background:#FEF3C7;" title="Crème Parchemin"></button>
+                        <button type="button" onclick="setSdmTextColor('#A7F3D0', '#FDE047', false, this)" class="sdm-color-dot w-6 h-6 rounded-full border-2 border-white/25 flex-shrink-0" style="background:#A7F3D0;" title="Émeraude Clair"></button>
+                        <button type="button" onclick="setSdmTextColor('#BAE6FD', '#FDE047', false, this)" class="sdm-color-dot w-6 h-6 rounded-full border-2 border-white/25 flex-shrink-0" style="background:#BAE6FD;" title="Bleu Céleste"></button>
+                        <button type="button" onclick="setSdmTextColor('#FBCFE8', '#FDE047', false, this)" class="sdm-color-dot w-6 h-6 rounded-full border-2 border-white/25 flex-shrink-0" style="background:#FBCFE8;" title="Rose Perle"></button>
+                        <button type="button" onclick="setSdmTextColor('#0B1410', '#78350F', true, this)" class="sdm-color-dot w-6 h-6 rounded-full border-2 border-white/40 flex-shrink-0" style="background:#0B1410;" title="Noir Encre (pour photos claires)"></button>
+                    </div>
+                </div>
+
+                <!-- 4. Taille & Export / Partage -->
+                <div class="flex items-center gap-2 pt-0.5">
                     <button type="button" onclick="adjustSdmFont(-1)" class="px-2.5 py-2 rounded-xl bg-white/10 text-white text-[11px] font-black tap-card">A-</button>
                     <button type="button" onclick="adjustSdmFont(1)" class="px-2.5 py-2 rounded-xl bg-white/10 text-white text-[11px] font-black tap-card">A+</button>
                     <button type="button" onclick="exportSdmRappelImage(false)" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
@@ -756,13 +798,17 @@
         if (navigator.share) navigator.share({ title: 'SDM Mouride', text: text, url: window.location.origin }).catch(()=>{});
     }
 
-    /* ═══ STUDIO RAPPEL QUOTIDIEN SDM (NANO BANANA + GALERIE + SWIPE + EXPORT PNG HD) ═══ */
+    /* ═══ STUDIO RAPPEL QUOTIDIEN SDM (NANO BANANA + GALERIE + OPACITÉ + COULEURS + SWIPE + PNG HD) ═══ */
     const SDM_RAPPELS = {{ sdm_rappels_json|safe|default:"[]" }};
     let sdmRappelIdx = {{ rappel_du_jour_index|default:0 }};
     let sdmFontScale = 1.0;
     let sdmCustomBgActive = false;
     let sdmUserPickedBg = false;
     let sdmCustomBlobUrl = null;
+    let sdmPhotoOpacity = 0.75;
+    let sdmTextColor = '#FFFFFF';
+    let sdmAccentColor = '#FDE047';
+    let sdmIsDarkInk = false;
     let sdmCurrentBg = document.getElementById('sdm-rappel-bg-img')?.getAttribute('src') || '/static/images/sdm_rappels/sdm_touba_emerald.jpg';
 
     function renderSdmRappelCard() {
@@ -771,7 +817,7 @@
         const cntEl = document.getElementById('sdm-rappel-counter');
         if (cntEl) cntEl.textContent = `(${sdmRappelIdx + 1}/${SDM_RAPPELS.length})`;
         const bEl = document.getElementById('sdm-rappel-badge');
-        if (bEl) bEl.textContent = r.badge || 'Citation SDM';
+        if (bEl) bEl.textContent = r.oeuvre || r.badge || 'Citation SDM';
         const arEl = document.getElementById('sdm-rappel-ar');
         if (arEl) {
             arEl.textContent = r.arabe || '';
@@ -779,14 +825,58 @@
         }
         const txEl = document.getElementById('sdm-rappel-text');
         if (txEl) txEl.textContent = r.texte || '';
-        const srcEl = document.getElementById('sdm-rappel-source');
-        if (srcEl) srcEl.textContent = r.source || 'SDM · Enseignements & Sagesse';
+        const oeEl = document.getElementById('sdm-rappel-oeuvre');
+        if (oeEl) oeEl.textContent = '« ' + (r.oeuvre || r.badge || 'Sagesse SDM') + ' »';
+        const auEl = document.getElementById('sdm-rappel-auteur');
+        if (auEl) auEl.textContent = r.auteur || 'Cheikh Ahmadou Bamba (RTA)';
         if (r.theme_image && !sdmCustomBgActive && !sdmUserPickedBg) {
             sdmCurrentBg = r.theme_image;
             const img = document.getElementById('sdm-rappel-bg-img');
             if (img) img.src = r.theme_image;
         }
     }
+
+    window.setSdmPhotoOpacity = function(valPct) {
+        const pct = Math.max(15, Math.min(100, parseInt(valPct, 10) || 75));
+        sdmPhotoOpacity = pct / 100;
+        const img = document.getElementById('sdm-rappel-bg-img');
+        if (img) img.style.opacity = String(sdmPhotoOpacity);
+        const lbl = document.getElementById('sdm-bg-opacity-val');
+        if (lbl) lbl.textContent = pct + '%';
+    };
+
+    window.setSdmTextColor = function(mainColor, accentColor, isDarkInk, btn) {
+        sdmTextColor = mainColor;
+        sdmAccentColor = accentColor;
+        sdmIsDarkInk = Boolean(isDarkInk);
+
+        const txEl = document.getElementById('sdm-rappel-text');
+        const oeEl = document.getElementById('sdm-rappel-oeuvre');
+        const auEl = document.getElementById('sdm-rappel-auteur');
+        const arEl = document.getElementById('sdm-rappel-ar');
+        const veil = document.getElementById('sdm-rappel-veil');
+        const shadow = sdmIsDarkInk ? '0 1px 10px rgba(255,255,255,0.88)' : '0 2px 12px rgba(0,0,0,0.92)';
+
+        if (txEl) { txEl.style.color = mainColor; txEl.style.textShadow = shadow; }
+        if (oeEl) { oeEl.style.color = accentColor; oeEl.style.textShadow = shadow; }
+        if (auEl) { auEl.style.color = sdmIsDarkInk ? '#1F2937' : 'rgba(255,255,255,0.85)'; auEl.style.textShadow = shadow; }
+        if (arEl) { arEl.style.color = accentColor; arEl.style.textShadow = shadow; }
+        if (veil) {
+            veil.style.background = sdmIsDarkInk
+                ? 'linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.34), rgba(255,255,255,0.22))'
+                : 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.30), rgba(0,0,0,0.35))';
+        }
+
+        document.querySelectorAll('.sdm-color-dot').forEach(b => {
+            b.classList.remove('border-gold-400', 'scale-110');
+            b.classList.add('border-white/25');
+        });
+        if (btn) {
+            btn.classList.remove('border-white/25');
+            btn.classList.add('border-gold-400', 'scale-110');
+        }
+        try { if (navigator.vibrate) navigator.vibrate(6); } catch (e) {}
+    };
 
     window.navSdmRappel = function(delta) {
         if (!SDM_RAPPELS.length) return;
@@ -880,18 +970,22 @@
     };
 
     window.exportSdmRappelImage = async function(doShare = false) {
-        const badge = document.getElementById('sdm-rappel-badge')?.textContent || 'Rappel SDM';
+        const badge = document.getElementById('sdm-rappel-badge')?.textContent || 'Citation SDM';
         const ar = document.getElementById('sdm-rappel-ar')?.textContent?.trim() || '';
         const txt = document.getElementById('sdm-rappel-text')?.textContent?.trim() || '';
-        const srcTxt = document.getElementById('sdm-rappel-source')?.textContent || 'SDM Mouride';
+        const oeuvreTxt = document.getElementById('sdm-rappel-oeuvre')?.textContent?.trim() || 'Masaalikul Jinaan';
+        const auteurTxt = document.getElementById('sdm-rappel-auteur')?.textContent?.trim() || 'Cheikh Ahmadou Bamba (RTA)';
 
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
         canvas.height = 1440;
         const ctx = canvas.getContext('2d');
 
+        // Base sombre (ou claire si encre sombre)
+        ctx.fillStyle = sdmIsDarkInk ? '#F8F4EA' : '#040B08';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         const bg = new Image();
-        // IMPORTANT mobile : ne pas mettre crossOrigin sur une image blob:/data: issue de la galerie
         if (sdmCurrentBg && !sdmCurrentBg.startsWith('blob:') && !sdmCurrentBg.startsWith('data:')) {
             bg.crossOrigin = 'anonymous';
         }
@@ -899,21 +993,22 @@
         await new Promise(res => { bg.onload = res; bg.onerror = res; });
 
         if (bg.complete && bg.naturalWidth) {
+            ctx.save();
+            ctx.globalAlpha = sdmPhotoOpacity;
             const scale = Math.max(canvas.width / bg.naturalWidth, canvas.height / bg.naturalHeight);
             const dw = bg.naturalWidth * scale;
             const dh = bg.naturalHeight * scale;
             ctx.drawImage(bg, (canvas.width - dw) / 2, (canvas.height - dh) / 2, dw, dh);
-        } else {
-            ctx.fillStyle = '#04140D';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
         }
-        ctx.fillStyle = sdmCustomBgActive ? 'rgba(0,0,0,0.46)' : 'rgba(0,0,0,0.34)';
+        ctx.fillStyle = sdmIsDarkInk ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.28)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Dessiner les lignes enveloppées proprement au centre de la carte Nano Banana SDM
+        // Dessiner les lignes enveloppées proprement au centre de la carte
         function wrapLines(context, text, maxW) {
             const out = [];
             for (const para of text.split('\n')) {
+                if (!para.trim()) { out.push(''); continue; }
                 let line = '';
                 for (const word of para.split(' ')) {
                     const test = line ? line + ' ' + word : word;
@@ -931,10 +1026,10 @@
 
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.shadowColor = 'rgba(0,0,0,0.85)';
+        ctx.shadowColor = sdmIsDarkInk ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.88)';
         ctx.shadowBlur = 14;
 
-        const maxW = 820;
+        const maxW = 830;
         const frFontSize = Math.round(38 * sdmFontScale);
         const arFontSize = Math.round(52 * sdmFontScale);
 
@@ -943,42 +1038,64 @@
         ctx.font = `700 ${frFontSize}px Inter, sans-serif`;
         const frLines = wrapLines(ctx, txt, maxW).slice(0, 14);
 
-        const totalH = 70 + (arLines.length * (arFontSize + 16)) + (arLines.length ? 30 : 0) + (frLines.length * (frFontSize + 18)) + 70;
-        let y = Math.max(240, (canvas.height - 160 - totalH) / 2);
+        const totalH = 75 + (arLines.length * (arFontSize + 16)) + (arLines.length ? 26 : 0) + (frLines.length * (frFontSize + 18)) + 150;
+        let y = Math.max(230, (canvas.height - 170 - totalH) / 2);
 
         // Badge haut
         ctx.font = '800 24px Inter, sans-serif';
-        ctx.fillStyle = '#FDE047';
+        ctx.fillStyle = sdmAccentColor;
         ctx.fillText('۞  ' + badge.toUpperCase() + '  ۞', canvas.width / 2, y);
-        y += 66;
+        y += 68;
 
         // Texte Arabe
         if (arLines.length) {
             ctx.font = `700 ${arFontSize}px Amiri, serif`;
-            ctx.fillStyle = '#FEF08A';
+            ctx.fillStyle = sdmAccentColor;
             for (const l of arLines) {
                 ctx.fillText(l, canvas.width / 2, y);
                 y += arFontSize + 16;
             }
-            y += 28;
+            y += 24;
         }
 
-        // Texte Français / Wolof
+        // Texte Français / Wolof (couleur choisie par l'utilisateur)
         ctx.font = `700 ${frFontSize}px Inter, sans-serif`;
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = sdmTextColor;
         for (const l of frLines) {
-            ctx.fillText(l, canvas.width / 2, y);
-            y += frFontSize + 18;
+            if (l) ctx.fillText(l, canvas.width / 2, y);
+            y += l ? (frFontSize + 18) : 18;
         }
 
-        // Signature source + Sceau SDM en bas si photo personnalisée
-        y += 34;
-        ctx.font = '800 24px Inter, sans-serif';
-        ctx.fillStyle = '#FDE047';
-        ctx.fillText(srcTxt, canvas.width / 2, Math.min(y, 1180));
+        // Séparateur doré + Source stylée en 2 lignes (Œuvre italique + Auteur)
+        y += 26;
+        const divY = Math.min(y, 1110);
+        ctx.save();
+        ctx.strokeStyle = sdmAccentColor;
+        ctx.globalAlpha = 0.7;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2 - 140, divY);
+        ctx.lineTo(canvas.width / 2 - 28, divY);
+        ctx.moveTo(canvas.width / 2 + 28, divY);
+        ctx.lineTo(canvas.width / 2 + 140, divY);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.font = '700 24px Georgia, serif';
+        ctx.fillStyle = sdmAccentColor;
+        ctx.fillText('۞', canvas.width / 2, divY);
+
+        ctx.font = 'italic 700 30px Georgia, serif';
+        ctx.fillStyle = sdmAccentColor;
+        ctx.fillText(oeuvreTxt, canvas.width / 2, divY + 46);
+
+        ctx.font = '800 21px Inter, sans-serif';
+        ctx.fillStyle = sdmIsDarkInk ? '#1F2937' : 'rgba(255,255,255,0.88)';
+        ctx.fillText(auteurTxt.toUpperCase(), canvas.width / 2, divY + 84);
+
         if (sdmCustomBgActive) {
             ctx.font = '900 32px Inter, sans-serif';
-            ctx.fillStyle = '#FDE047';
+            ctx.fillStyle = sdmAccentColor;
             ctx.fillText('۞  SDM  ۞', canvas.width / 2, 1345);
         }
 
