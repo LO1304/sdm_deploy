@@ -339,6 +339,12 @@
         display: flex; flex-direction: column; overflow-y: auto;
     }
     #audio-player.active { transform: translateY(0); }
+    body.sdm-player-open .m-appbar,
+    body.sdm-player-open .nav-island {
+        opacity: 0 !important;
+        pointer-events: none !important;
+        visibility: hidden !important;
+    }
 
     .fp-shell {
         width: 100%; max-width: 520px; margin: 0 auto;
@@ -952,8 +958,17 @@
 const _pjaxAbort = new AbortController();
 const _sig = { signal: _pjaxAbort.signal };
 const aud = window.SDMAudioEngine ? window.SDMAudioEngine.getAudioElement() : document.getElementById('sdm-global-audio');
+// Nettoyer d'éventuels overlays portalisés d'une visite précédente puis porter #audio-player, #mini-dock et #queueDrawer sur document.body (immunité totale contre tout stacking context !)
+document.querySelectorAll('body > [data-sdm-son-portal="1"]').forEach(el => el.remove());
 const player = document.getElementById('audio-player');
 const miniDock = document.getElementById('mini-dock');
+const queueDrawerEl = document.getElementById('queueDrawer');
+[miniDock, player, queueDrawerEl].forEach(el => {
+    if (el && el.parentElement !== document.body) {
+        el.setAttribute('data-sdm-son-portal', '1');
+        document.body.appendChild(el);
+    }
+});
 const seekEl = document.getElementById('seek');
 const ppIcon = document.getElementById('pp-icon');
 const miniPpIcon = document.getElementById('mini-pp-icon');
@@ -1304,6 +1319,7 @@ window.openFullPlayer = function() {
     if (!player) return;
     if (!player.classList.contains('active')) {
         player.classList.add('active');
+        document.body.classList.add('sdm-player-open');
         if (!_playerPushedHistory) {
             _playerPushedHistory = true;
             try {
@@ -1315,6 +1331,7 @@ window.openFullPlayer = function() {
 };
 window.closePlayer = function(fromPopstate = false) {
     if (player) player.classList.remove('active');
+    document.body.classList.remove('sdm-player-open');
     if (miniDock && (curIdx !== -1 || (aud && aud.src))) miniDock.classList.add('show');
     if (fromPopstate) {
         _playerPushedHistory = false;
@@ -1589,6 +1606,8 @@ aud.addEventListener('playing', () => { audioFallbackTried = false; audioErrorBu
 window.__sdmPageCleanup = () => {
     _disposed = true;
     _playerPushedHistory = false;
+    document.body.classList.remove('sdm-player-open');
+    document.querySelectorAll('body > [data-sdm-son-portal="1"]').forEach(el => el.remove());
     try { _pjaxAbort.abort(); } catch (e) {}
     if (sleepTimerId) clearTimeout(sleepTimerId);
     if (sleepTickId) clearInterval(sleepTickId);
