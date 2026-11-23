@@ -873,6 +873,9 @@
             if (data.code === 200) {
                 PT = data.data.timings;
                 localStorage.setItem(cacheKey, JSON.stringify(PT));
+                if (window.SDMNotifications && window.SDMNotifications.saveLivePrayers) {
+                    window.SDMNotifications.saveLivePrayers(PT);
+                }
                 updateUISlots(); tick();
             }
         } catch(e) { updateUISlots(); tick(); }

@@ -2,20 +2,17 @@
 <!DOCTYPE html>
 <html lang="fr" class="dark">
 <head>
-    <!-- PWA -->
     <link rel="manifest" href="/static/manifest.json">
     <meta name="theme-color" content="#040B08">
     <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SDM — {{ wird.titre }}</title>
-    
-    <!-- Fonts: Inter for UI, Amiri for Arabic -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'js/sdm_instant_nav.js' %}" defer></script>
 
     <script>
         tailwind.config = {
@@ -23,193 +20,335 @@
             theme: {
                 extend: {
                     colors: {
-                        mouride: {
-                            900: '#040B08',
-                            800: '#081711',
-                            surface: 'rgba(12, 34, 25, 0.45)',
-                        },
-                        gold: {
-                            400: '#FDE047',
-                            500: '#D4AF37',
-                            600: '#A68A28',
-                        }
+                        gold: { 300: '#FEF08A', 400: '#FDE047', 500: '#D4AF37', 600: '#A68A28' }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                        arabic: ['Amiri', 'serif'],
-                    },
-                    boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
-                        'glow': '0 0 40px rgba(212, 175, 55, 0.3)',
+                        arabic: ['Amiri', 'serif']
                     }
                 }
             }
-        }
+        };
     </script>
 
     <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body { 
-            background-color: #040B08; 
-            color: white; 
-            font-family: 'Inter', sans-serif; 
-            min-height: 100vh;
+        :root { --ar-size: 27px; }
+        *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            background: #040B08;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100dvh;
+            padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+            background-image:
+                radial-gradient(circle at 20% 0%, rgba(212,175,55,0.16), transparent 48%),
+                radial-gradient(circle at 85% 90%, rgba(16,185,129,0.14), transparent 50%);
             overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% -20%, rgba(212, 175, 55, 0.1) 0%, transparent 60%);
-            -webkit-tap-highlight-color: transparent;
         }
-
         .glass {
-            background: rgba(8, 23, 17, 0.6);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(8, 25, 18, 0.78);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,0.09);
+        }
+        .ar-text {
+            font-family: 'Amiri', serif;
+            font-size: var(--ar-size);
+            line-height: 2.0;
         }
 
-        /* Tapping Circle */
-        .wp-counter-ring { position: relative; width: 100%; max-width: 250px; aspect-ratio: 1; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
-        .wp-counter-ring svg { position: absolute; top:0; left:0; width:100%; height:100%; transform: rotate(-90deg); filter: drop-shadow(0 0 10px rgba(212,175,55,0.3)); }
-        .ring-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 3; }
-        .ring-progress { fill: none; stroke: #D4AF37; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 283; transition: stroke-dashoffset 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        .tap-btn-core {
-            width: 72%; height: 72%; border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #D4AF37, #A68A28);
-            border: 6px solid #040B08;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 0 40px rgba(212,175,55,0.3), inset 0 2px 10px rgba(255,255,255,0.4);
-            cursor: pointer; transition: all 0.1s;
-            position: relative; z-index: 10;
-            outline: none; -webkit-tap-highlight-color: transparent;
+        /* ── COMPTEUR CHAPELET SACRÉ (24 PERLES LUMINEUSES + ANNEAU SVG + CORE TAP) ── */
+        .wp-counter-stage {
+            position: relative;
+            width: 236px;
+            height: 236px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            touch-action: manipulation;
         }
-        .tap-btn-core:active { transform: scale(0.92); box-shadow: 0 0 20px rgba(212,175,55,0.5), inset 0 2px 5px rgba(255,255,255,0.2); }
-        
-        /* Pulse Animation around the button */
-        .tap-pulse {
-            position: absolute; width: 72%; height: 72%; border-radius: 50%;
-            border: 2px solid rgba(212,175,55,0.4);
-            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        .wp-counter-stage svg {
+            position: absolute;
+            inset: 14px;
+            width: calc(100% - 28px);
+            height: calc(100% - 28px);
+            transform: rotate(-90deg);
+            filter: drop-shadow(0 0 10px rgba(212,175,55,0.35));
             pointer-events: none;
         }
-        @keyframes pulse-ring {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.4); opacity: 0; }
+        .ring-bg { fill: none; stroke: rgba(255,255,255,0.07); stroke-width: 4; }
+        .ring-progress {
+            fill: none; stroke: url(#wirdGoldGrad); stroke-width: 5;
+            stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.25s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        
-        /* Typography */
-        .ar-text { font-family: 'Amiri', serif; line-height: 2.2; }
+        .w-bead-ring { position: absolute; inset: 0; pointer-events: none; }
+        .w-bead {
+            position: absolute; width: 9px; height: 9px; border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.18s ease;
+        }
+        .w-bead.lit {
+            background: #D4AF37;
+            border-color: #FDE047;
+            box-shadow: 0 0 8px rgba(253,224,71,0.75);
+            transform: scale(1.22);
+        }
+        .w-bead.head {
+            background: #FFFFFF;
+            border-color: #FDE047;
+            box-shadow: 0 0 14px #FDE047;
+            transform: scale(1.48);
+        }
+        .tap-btn-core {
+            width: 158px; height: 158px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 25%, #FEF08A 0%, #D4AF37 52%, #7C5C14 100%);
+            border: 5px solid #040B08;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 0 38px rgba(212,175,55,0.38), inset 0 2px 10px rgba(255,255,255,0.5);
+            cursor: pointer; transition: transform 0.08s ease, box-shadow 0.12s ease;
+            position: relative; z-index: 10; outline: none;
+        }
+        .tap-btn-core:active, .tap-btn-core.pressed {
+            transform: scale(0.92);
+            box-shadow: 0 0 18px rgba(253,224,71,0.65), inset 0 2px 6px rgba(0,0,0,0.25);
+        }
+        .tap-btn-core.done-step {
+            background: radial-gradient(circle at 30% 25%, #6EE7B7 0%, #10B981 55%, #065F46 100%);
+            box-shadow: 0 0 38px rgba(16,185,129,0.48);
+        }
+        .tap-ripple {
+            position: absolute; width: 158px; height: 158px; border-radius: 50%;
+            border: 2px solid rgba(253,224,71,0.55);
+            pointer-events: none; opacity: 0;
+        }
+        .tap-ripple.pop { animation: rippleOut 0.45s ease-out forwards; }
+        @keyframes rippleOut {
+            0% { transform: scale(1); opacity: 0.85; }
+            100% { transform: scale(1.38); opacity: 0; }
+        }
+
+        /* Barre bas native mobile */
+        .wird-nav-island {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: calc(62px + env(safe-area-inset-bottom, 0px));
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: rgba(4,11,8,0.96); backdrop-filter: blur(18px);
+            border-top: 1px solid rgba(212,175,55,0.22);
+            display: flex; align-items: center; justify-content: space-around;
+            z-index: 880;
+        }
+        .wird-nav-island .nav-item {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 3px;
+            text-decoration: none; color: rgba(255,255,255,0.48);
+            font-size: 9.5px; font-weight: 800; height: 100%;
+        }
+        .wird-nav-island .nav-item i { font-size: 18px; }
+        .wird-nav-island .nav-item.active { color: #FDE047; }
     </style>
 </head>
-<body class="selection:bg-gold-500 selection:text-black pb-10">
+<body class="selection:bg-gold-500 selection:text-black">
 
-<div class="max-w-3xl mx-auto px-5 pt-8 md:pt-12" id="wird-app">
+<div class="max-w-lg mx-auto px-3.5 pt-3 space-y-3" id="wird-app">
 
-    <!-- HEADER -->
-    <header class="flex items-center justify-between mb-8" data-aos="fade-down">
-        <a href="{% url 'home' %}" class="w-12 h-12 rounded-2xl glass flex items-center justify-center text-white/70 hover:text-gold-500 transition-colors border border-white/10 active:scale-95">
-            <i class="fa-solid fa-chevron-left"></i>
+    <!-- 1. EN-TÊTE MOBILE COMPACT + SON + SOMMAIRE DES 21 ÉTAPES -->
+    <header class="flex items-center justify-between gap-2">
+        <a href="{% url 'home' %}" class="w-10 h-10 rounded-xl glass flex items-center justify-center text-white/80 border border-white/10 active:scale-95 flex-shrink-0" title="Retour Accueil">
+            <i class="fa-solid fa-chevron-left text-sm"></i>
         </a>
-        <div class="text-center">
-            <h1 class="text-xs md:text-sm font-bold tracking-[0.2em] text-gold-500 uppercase">{{ wird.titre }}</h1>
-            <p class="text-[10px] font-semibold text-white/40 tracking-widest mt-1">ÉTAPE <span id="current-step-num" class="text-white">1</span> / {{ etapes|length }}</p>
+        <div class="flex-1 min-w-0 text-center">
+            <h1 class="text-[12.5px] font-black tracking-wider text-gold-400 uppercase truncate">{{ wird.titre }}</h1>
+            <p class="text-[10px] font-bold text-white/60">
+                Étape <span id="current-step-num" class="text-white font-black">1</span>/{{ etapes|length }}
+                · <span id="global-percent" class="text-emerald-300 font-black">0%</span>
+                · <span id="global-timer" class="font-mono text-white/75">00:00</span>
+            </p>
         </div>
-        <div class="w-12 h-12 rounded-2xl glass flex flex-col items-center justify-center border border-white/10">
-            <i class="fa-regular fa-clock text-[10px] text-white/40 mb-0.5"></i>
-            <span class="text-[10px] font-mono font-bold text-white/90" id="global-timer">00:00</span>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button type="button" id="btn-wird-feedback" onclick="cycleWirdFeedback()" class="w-10 h-10 rounded-xl glass flex items-center justify-center text-gold-400 border border-gold-500/35 active:scale-95" title="Son & Vibration">
+                <i id="wird-fb-icon" class="fa-solid fa-volume-high text-xs"></i>
+            </button>
+            <button type="button" onclick="openStepsDrawer()" class="w-10 h-10 rounded-xl glass flex items-center justify-center text-white border border-white/15 active:scale-95" title="Sommaire des {{ etapes|length }} étapes">
+                <i class="fa-solid fa-list-ol text-xs"></i>
+            </button>
         </div>
     </header>
 
-    <!-- SUIVI CALENDRIER 7 JOURS & SÉANCES MATIN (06h30 SUBA) / SOIR (17h00 TAKUSSAN) -->
-    <div class="glass rounded-3xl p-4 mb-6 border border-gold-500/30 shadow-glass">
-        <div class="flex items-center justify-between gap-2 mb-3">
-            <div>
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-gold-400 block">Suivi Quotidien du Wird</span>
-                <span id="wird-streak-label" class="text-xs font-black text-white">🔥 0 jour de suite</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-                <button type="button" id="btn-wird-am" onclick="markWirdSlot('morning')" class="px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-[10px] font-extrabold text-white/80">
-                    🌅 06h30 Suba
-                </button>
-                <button type="button" id="btn-wird-pm" onclick="markWirdSlot('evening')" class="px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-[10px] font-extrabold text-white/80">
-                    🌇 17h00 Takussan
-                </button>
-            </div>
-        </div>
-        <div id="wird-7days-strip" class="grid grid-cols-7 gap-1.5"></div>
+    <!-- BARRE DE PROGRESSION GLOBALE FINE -->
+    <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-emerald-400 to-gold-400 transition-all duration-300" id="global-progress-bar" style="width: 0%"></div>
     </div>
 
-    <!-- CONTENT CARD -->
-    <main class="glass rounded-[32px] p-6 text-center md:p-10 mb-8 shadow-glass relative overflow-hidden" data-aos="zoom-in" data-aos-delay="100">
-        <!-- Decoration -->
-        <div class="absolute -top-16 -right-16 w-32 h-32 bg-gold-500/10 blur-[50px] rounded-full pointer-events-none"></div>
-
-        <div class="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold tracking-widest text-gold-400 uppercase mb-6" id="step-type">
-            INVOCATION
+    <!-- 2. SUIVI QUOTIDIEN COMPACT : 06h30 SUBA / 17h00 TAKUSSAN + CALENDRIER 7 JOURS -->
+    <section class="glass rounded-2xl p-3 border border-gold-500/30 space-y-2">
+        <div class="flex items-center justify-between gap-2">
+            <div class="min-w-0">
+                <span id="wird-streak-label" class="text-[11px] font-black text-gold-300">🔥 0 jour de suite</span>
+                <a href="{% url 'notifications' %}" class="text-[9.5px] font-bold text-emerald-300 ml-2 underline">Rappels 06h30 / 17h00</a>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+                <button type="button" id="btn-wird-am" onclick="markWirdSlot('morning')" class="px-2 py-1 rounded-lg bg-white/10 border border-white/15 text-[9.5px] font-extrabold text-white/80">
+                    🌅 06h30
+                </button>
+                <button type="button" id="btn-wird-pm" onclick="markWirdSlot('evening')" class="px-2 py-1 rounded-lg bg-white/10 border border-white/15 text-[9.5px] font-extrabold text-white/80">
+                    🌇 17h00
+                </button>
+            </div>
         </div>
-        
-        <h2 class="text-lg md:text-xl font-bold text-white tracking-tight mb-2" id="step-title-fr">Chargement...</h2>
-        <h3 class="font-arabic text-2xl md:text-3xl text-gold-500 mb-8" id="step-title-ar">...</h3>
+        <div id="wird-7days-strip" class="grid grid-cols-7 gap-1"></div>
+    </section>
 
-        <div class="mb-8">
-            <p class="ar-text text-3xl md:text-4xl text-white drop-shadow-md" dir="rtl" id="text-ar">...</p>
+    <!-- 3. CARTE SACRÉE DE L'ÉTAPE (ARABE CALLIGRAPHIÉ + PHONÉTIQUE + TRADUCTION + ZOOM A-/A+) -->
+    <main class="glass rounded-[26px] p-4 border border-gold-500/35 relative overflow-hidden">
+        <div class="flex items-center justify-between gap-2 mb-2.5 pb-2 border-b border-white/10">
+            <span class="px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-400/40 text-[9px] font-black tracking-widest text-gold-300 uppercase" id="step-type">
+                INVOCATION
+            </span>
+            <div class="flex items-center gap-1">
+                <button type="button" onclick="toggleWirdField('trans')" id="btn-tog-trans" class="px-2 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/45 text-[9.5px] font-extrabold text-emerald-200">Phon.</button>
+                <button type="button" onclick="toggleWirdField('trad')" id="btn-tog-trad" class="px-2 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/45 text-[9.5px] font-extrabold text-emerald-200">Trad.</button>
+                <button type="button" onclick="adjWirdFont(-2)" class="w-7 h-7 rounded-lg bg-white/10 text-[10px] font-black text-white">A-</button>
+                <button type="button" onclick="adjWirdFont(2)" class="w-7 h-7 rounded-lg bg-white/10 text-[10px] font-black text-white">A+</button>
+            </div>
         </div>
 
-        <div class="max-w-xl mx-auto space-y-4">
-            <p class="text-[13px] md:text-sm md:leading-relaxed font-medium italic text-white/50 leading-relaxed" id="text-trans">...</p>
-            <div class="w-12 h-[1px] bg-gold-500/30 mx-auto"></div>
-            <p class="text-[14px] md:text-base md:leading-relaxed font-medium text-white/90 leading-relaxed" id="text-trad">...</p>
+        <div class="text-center mb-2">
+            <h2 class="text-sm font-black text-white leading-tight" id="step-title-fr">Chargement…</h2>
+            <h3 class="font-arabic text-lg text-gold-400 leading-snug" id="step-title-ar">…</h3>
+        </div>
+
+        <!-- Zone scrollable douce pour garder le compteur TOUJOURS visible sous le pouce -->
+        <div class="max-h-[210px] overflow-y-auto px-1 space-y-2.5 text-center" id="wird-text-scroll">
+            <p class="ar-text text-white drop-shadow" dir="rtl" id="text-ar">…</p>
+            <p class="text-[12px] font-medium italic text-gold-200/80 leading-relaxed" id="text-trans">…</p>
+            <p class="text-[12.5px] font-medium text-white/85 leading-relaxed pt-1 border-t border-white/10" id="text-trad">…</p>
         </div>
     </main>
 
-    <!-- INTERACTION & COUNTER -->
-    <div class="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12" data-aos="fade-up" data-aos-delay="200">
-        
-        <!-- TAP CIRCLE -->
-        <div class="flex-shrink-0 w-full md:w-auto relative flex justify-center mb-6 md:mb-0">
-            <div class="wp-counter-ring group">
-                <div class="tap-pulse"></div>
-                <!-- SVG Circle parameters adjusted in JS (stroke-dashoffset range 0-283 for r=45) -->
-                <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45" class="ring-bg"></circle>
-                    <circle cx="50" cy="50" r="45" class="ring-progress" id="progress-circle"></circle>
-                </svg>
-                <button class="tap-btn-core" id="tap-btn">
-                    <span id="current-count" class="text-6xl font-black text-white tracking-tighter mt-3 drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)] leading-none">0</span>
-                    <span class="text-xs font-black text-white/80 uppercase tracking-widest mt-1 mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">/ <span id="target-count">70</span></span>
-                </button>
-                <p class="absolute -bottom-6 w-full text-center text-[10px] font-bold text-gold-500/50 uppercase tracking-[0.2em] pointer-events-none">Appuyez ici</p>
-            </div>
-        </div>
-        
-        <!-- NAVIGATION -->
-        <div class="flex-1 w-full max-w-sm mx-auto flex flex-col gap-5">
-            <div class="flex items-center gap-3">
-                <button class="flex-1 glass py-4 rounded-xl flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none hover:text-white" id="prev-btn" disabled>
-                    <i class="fa-solid fa-backward-step"></i> Précédent
-                </button>
-                <button class="flex-1 bg-gradient-to-r from-gold-400 to-gold-600 py-4 rounded-xl flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-[#040B08] active:scale-95 transition-all shadow-[0_10px_20px_rgba(212,175,55,0.2)] disabled:opacity-30 disabled:pointer-events-none" id="next-btn">
-                    Suivant <i class="fa-solid fa-forward-step"></i>
-                </button>
-            </div>
-            
-            <div class="w-full">
-                <div class="flex justify-between text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5 px-1">
-                    <span>Progression globale</span>
-                    <span id="global-percent">0%</span>
-                </div>
-                <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden flex">
-                    <div class="h-full bg-gold-500 transition-all duration-500 ease-out" id="global-progress-bar" style="width: 0%"></div>
-                </div>
-            </div>
+    <!-- 4. COMPTEUR CHAPELET SACRÉ + OUTILS PRO (-1, RESET, VALIDER ÉTAPE, PLEIN ÉCRAN) -->
+    <section class="glass rounded-[28px] p-4 border border-gold-500/35 space-y-3" id="counter-panel">
+        <div class="wp-counter-stage" id="wp-stage">
+            <div class="w-bead-ring" id="w-bead-ring"></div>
+            <div class="tap-ripple" id="tap-ripple"></div>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="wirdGoldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#10B981"/>
+                        <stop offset="100%" stop-color="#FDE047"/>
+                    </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="45" class="ring-bg"></circle>
+                <circle cx="50" cy="50" r="45" class="ring-progress" id="progress-circle"></circle>
+            </svg>
+            <button type="button" class="tap-btn-core" id="tap-btn" aria-label="Compter une répétition">
+                <span id="current-count" class="text-[52px] font-black text-[#040B08] tracking-tighter leading-none">0</span>
+                <span class="text-[11px] font-black text-[#040B08]/80 uppercase tracking-widest mt-1">/ <span id="target-count">1</span></span>
+                <span id="step-pct-pill" class="mt-1 px-2 py-0.5 rounded-full bg-black/20 text-[9px] font-black text-white">0%</span>
+            </button>
         </div>
 
+        <!-- Outils de précision (-1, Reset, Valider toute l'étape, Mode Yeux Fermés) -->
+        <div class="grid grid-cols-4 gap-1.5">
+            <button type="button" onclick="decrementTap()" class="py-2 rounded-xl bg-white/8 border border-white/12 text-[10.5px] font-extrabold text-white/85 active:scale-95">
+                <i class="fa-solid fa-minus mr-0.5"></i> 1
+            </button>
+            <button type="button" onclick="resetCurrentStep()" class="py-2 rounded-xl bg-white/8 border border-white/12 text-[10.5px] font-extrabold text-white/85 active:scale-95">
+                <i class="fa-solid fa-rotate-left mr-0.5"></i> 0
+            </button>
+            <button type="button" onclick="completeCurrentStepNow()" class="py-2 rounded-xl bg-emerald-500/20 border border-emerald-400/45 text-[10.5px] font-extrabold text-emerald-200 active:scale-95" title="Valider l'étape (chapelet physique)">
+                <i class="fa-solid fa-check-double mr-0.5"></i> Fait
+            </button>
+            <button type="button" onclick="openBlindTapMode()" class="py-2 rounded-xl bg-gold-500/15 border border-gold-400/40 text-[10.5px] font-extrabold text-gold-300 active:scale-95" title="Mode Plein-Écran (taper n'importe où)">
+                <i class="fa-solid fa-expand mr-0.5"></i> Zen
+            </button>
+        </div>
+
+        <!-- Navigation Précédent / Suivant -->
+        <div class="flex items-center gap-2.5">
+            <button type="button" id="prev-btn" class="flex-1 py-3 rounded-xl glass border border-white/15 text-xs font-extrabold text-white/80 flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-35">
+                <i class="fa-solid fa-backward-step"></i> Précédent
+            </button>
+            <button type="button" id="next-btn" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-gold-400 to-gold-600 text-[#040B08] text-xs font-black flex items-center justify-center gap-1.5 shadow-lg active:scale-95">
+                Suivant <i class="fa-solid fa-forward-step"></i>
+            </button>
+        </div>
+    </section>
+
+</div>
+
+<!-- MODE ZEN PLEIN-ÉCRAN (TAPER N'IMPORTE OÙ LES YEUX FERMÉS) -->
+<div id="blind-tap-overlay" onclick="tapFromBlind(event)" class="hidden fixed inset-0 z-[10050] bg-[#020806]/98 flex flex-col items-center justify-between p-6 text-center select-none" style="touch-action:manipulation;">
+    <div class="w-full max-w-md flex items-center justify-between">
+        <span id="blind-step-lbl" class="text-xs font-black text-gold-400 uppercase tracking-wider">Étape 1</span>
+        <button type="button" onclick="event.stopPropagation(); closeBlindTapMode();" class="px-3.5 py-2 rounded-xl bg-white/10 border border-white/20 text-xs font-black text-white">
+            <i class="fa-solid fa-xmark mr-1"></i> Quitter Zen
+        </button>
+    </div>
+    <div class="space-y-4">
+        <p id="blind-title" class="text-base font-black text-white/80"></p>
+        <div id="blind-count" class="text-[96px] font-black text-gold-400 leading-none tabular-nums">0</div>
+        <div id="blind-target" class="text-sm font-extrabold text-emerald-300">/ 70</div>
+        <p class="text-[11px] font-bold text-white/45 uppercase tracking-widest">Touchez n'importe où sur l'écran pour compter</p>
+    </div>
+    <div class="text-xs font-bold text-white/40">Wird Mahuz · SDM Mouride</div>
+</div>
+
+<!-- TIROIR SOMMAIRE DES 21 ÉTAPES DU WIRD MAHUZ -->
+<div id="steps-drawer" onclick="if(event.target===this) closeStepsDrawer()" class="hidden fixed inset-0 z-[10045] bg-black/80 backdrop-blur-md flex items-end justify-center p-2">
+    <div class="w-full max-w-lg rounded-t-3xl bg-[#071811] border border-gold-400/45 p-4 max-h-[80vh] flex flex-col shadow-2xl">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+            <div>
+                <span class="text-[9.5px] font-black uppercase tracking-widest text-gold-400 block">Sommaire intégral</span>
+                <h3 class="text-sm font-black text-white">{{ wird.titre }} ({{ etapes|length }} étapes)</h3>
+            </div>
+            <button type="button" onclick="closeStepsDrawer()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div id="steps-drawer-list" class="overflow-y-auto pt-3 space-y-1.5 pr-1"></div>
     </div>
 </div>
 
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    AOS.init({ once: true, offset: 20 });
+<!-- MODAL DE CLÔTURE SACRÉE DU WIRD -->
+<div id="wird-finish-modal" class="hidden fixed inset-0 z-[10055] bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-3xl bg-[#061A12] border border-gold-400/55 p-6 text-center space-y-4 shadow-2xl">
+        <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-emerald-400 to-gold-400 text-[#040B08] flex items-center justify-center text-3xl shadow-xl">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div>
+            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-300">Séance Validée ✓</span>
+            <h2 class="text-xl font-black text-white mt-1">Al-Hamdoulillâh ! Wird Terminé</h2>
+            <p id="wird-finish-meta" class="text-xs font-bold text-gold-300 mt-1">Durée : 00:00 · Enregistré dans votre calendrier 7 jours</p>
+        </div>
+        <div class="rounded-2xl bg-black/40 border border-gold-400/30 p-3.5 text-center space-y-1">
+            <p class="font-arabic text-xl text-gold-300" dir="rtl">تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ</p>
+            <p class="text-[11.5px] text-white/80">Qu'Allah accepte votre Wird, illumine votre cœur et vous accorde Sa protection et la baraka de Cheikh Ahmadou Bamba.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="restartWirdFromFinish()" class="py-3 rounded-2xl bg-white/10 border border-white/15 text-xs font-extrabold text-white">
+                <i class="fa-solid fa-rotate-right mr-1"></i> Recommencer
+            </button>
+            <a href="{% url 'home' %}" class="py-3 rounded-2xl bg-gradient-to-r from-gold-400 to-gold-600 text-[#040B08] text-xs font-black flex items-center justify-center gap-1" style="text-decoration:none;">
+                Accueil <i class="fa-solid fa-house"></i>
+            </a>
+        </div>
+    </div>
+</div>
 
+<!-- BARRE DE NAVIGATION MOBILE NATIVE -->
+<nav class="wird-nav-island nav-island" aria-label="Navigation principale">
+    <a href="{% url 'home' %}" class="nav-item"><i class="fa-solid fa-house"></i><span>Accueil</span></a>
+    <a href="{% url 'liste_sons' %}" class="nav-item"><i class="fa-solid fa-headphones"></i><span>Audios</span></a>
+    <a href="{% url 'liste' 'khassida' %}" class="nav-item"><i class="fa-solid fa-book-open"></i><span>Khassidas</span></a>
+    <a href="{% url 'coran_interactif' %}" class="nav-item"><i class="fa-solid fa-book-quran"></i><span>Coran</span></a>
+    <a href="{% url 'zikr_compteur_default' %}" class="nav-item active"><i class="fa-solid fa-fingerprint"></i><span>Zikr</span></a>
+</nav>
+
+<script>
     const ETAPES = [
         {% for etape in etapes %}
         {
@@ -222,77 +361,237 @@
             trad: "{{ etape.traduction_francais|escapejs }}",
             rep: {{ etape.repetitions }},
             type: "{{ etape.type|escapejs }}"
-        },
+        }{% if not forloop.last %},{% endif %}
         {% endfor %}
     ];
 
-    let currentIdx = {{ progression.etape_courante|default:1 }} - 1;
-    let count = {{ progression.repetitions_faites|default:0 }};
-    let startTime = Date.now();
-    let elapsed = 0;
     const wirdId = {{ wird.id|default:0 }};
-    const circleLength = 283; // 2 * PI * 45
+    const WIRD_STATE_KEY = 'sdm_wird_state_v2_' + wirdId;
+    const WIRD_TRACK_KEY = 'sdm_wird_tracker_v1';
+    const circleLength = 283;
+    const BEAD_COUNT = 24;
+
+    let currentIdx = Math.max(0, Math.min(ETAPES.length - 1, ({{ progression.etape_courante|default:1 }}) - 1));
+    let count = {{ progression.repetitions_faites|default:0 }};
+    let completedSteps = new Set();
+    let feedbackMode = localStorage.getItem('sdm_wird_fb') || 'sound'; // sound | vibrate | silent
+    let showTrans = true;
+    let showTrad = true;
+    let arFontSize = parseInt(localStorage.getItem('sdm_wird_arsize') || '27', 10);
+    let startTime = Date.now();
+    let autoNextTimeout = null;
+    let audioCtx = null;
+
+    // Restaurer l'état hors-ligne s'il est plus récent / avancé
+    try {
+        const saved = JSON.parse(localStorage.getItem(WIRD_STATE_KEY) || 'null');
+        if (saved && typeof saved.idx === 'number' && saved.idx >= 0 && saved.idx < ETAPES.length) {
+            currentIdx = saved.idx;
+            count = Math.max(0, Math.min(ETAPES[currentIdx].rep, Number(saved.count) || 0));
+            if (Array.isArray(saved.done)) completedSteps = new Set(saved.done.map(Number));
+        }
+    } catch (e) {}
+
+    function persistLocalWirdState() {
+        try {
+            localStorage.setItem(WIRD_STATE_KEY, JSON.stringify({
+                idx: currentIdx,
+                count: count,
+                done: [...completedSteps],
+                ts: Date.now()
+            }));
+        } catch (e) {}
+    }
+
+    // Créer les 24 perles lumineuses autour du compteur
+    function buildBeads() {
+        const ring = document.getElementById('w-bead-ring');
+        if (!ring) return;
+        ring.innerHTML = '';
+        const R = 110;
+        const cx = 118, cy = 118;
+        for (let i = 0; i < BEAD_COUNT; i++) {
+            const angle = (i / BEAD_COUNT) * Math.PI * 2 - Math.PI / 2;
+            const x = cx + R * Math.cos(angle) - 4.5;
+            const y = cy + R * Math.sin(angle) - 4.5;
+            const b = document.createElement('span');
+            b.className = 'w-bead';
+            b.style.left = x + 'px';
+            b.style.top = y + 'px';
+            ring.appendChild(b);
+        }
+    }
+
+    function playBeadClick(isFinishStep = false) {
+        if (feedbackMode === 'silent') return;
+        if (navigator.vibrate) {
+            try { navigator.vibrate(isFinishStep ? [80, 45, 90] : 16); } catch (e) {}
+        }
+        if (feedbackMode !== 'sound') return;
+        try {
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (!Ctx) return;
+            if (!audioCtx) audioCtx = new Ctx();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = isFinishStep ? 'triangle' : 'sine';
+            osc.frequency.setValueAtTime(isFinishStep ? 740 : 520, now);
+            osc.frequency.exponentialRampToValueAtTime(isFinishStep ? 980 : 280, now + (isFinishStep ? 0.18 : 0.045));
+            gain.gain.setValueAtTime(isFinishStep ? 0.14 : 0.09, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + (isFinishStep ? 0.24 : 0.055));
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + (isFinishStep ? 0.25 : 0.06));
+        } catch (e) {}
+    }
+
+    function renderFeedbackIcon() {
+        const ic = document.getElementById('wird-fb-icon');
+        if (!ic) return;
+        ic.className = feedbackMode === 'sound'
+            ? 'fa-solid fa-volume-high text-xs'
+            : (feedbackMode === 'vibrate' ? 'fa-solid fa-mobile-screen-button text-xs' : 'fa-solid fa-volume-xmark text-xs');
+    }
+
+    function cycleWirdFeedback() {
+        const order = ['sound', 'vibrate', 'silent'];
+        feedbackMode = order[(order.indexOf(feedbackMode) + 1) % order.length];
+        localStorage.setItem('sdm_wird_fb', feedbackMode);
+        renderFeedbackIcon();
+        playBeadClick(false);
+    }
+
+    function adjWirdFont(delta) {
+        arFontSize = Math.max(18, Math.min(44, arFontSize + delta));
+        document.documentElement.style.setProperty('--ar-size', arFontSize + 'px');
+        localStorage.setItem('sdm_wird_arsize', String(arFontSize));
+    }
+
+    function toggleWirdField(which) {
+        if (which === 'trans') {
+            showTrans = !showTrans;
+            document.getElementById('text-trans').style.display = showTrans ? '' : 'none';
+            document.getElementById('btn-tog-trans').style.opacity = showTrans ? '1' : '0.45';
+        } else {
+            showTrad = !showTrad;
+            document.getElementById('text-trad').style.display = showTrad ? '' : 'none';
+            document.getElementById('btn-tog-trad').style.opacity = showTrad ? '1' : '0.45';
+        }
+    }
 
     function updateUI() {
         if (!ETAPES.length) return;
         const step = ETAPES[currentIdx];
 
-        document.getElementById('current-step-num').innerText = step.num;
-        document.getElementById('step-type').innerText = step.type;
-        document.getElementById('step-title-fr').innerText = step.titleFr;
-        document.getElementById('step-title-ar').innerText = step.titleAr;
-        document.getElementById('text-ar').innerText = step.textAr;
-        document.getElementById('text-trans').innerText = step.trans;
-        document.getElementById('text-trad').innerText = step.trad;
-        
-        document.getElementById('current-count').innerText = count;
-        document.getElementById('target-count').innerText = step.rep;
-        
-        const pct = count / step.rep;
-        const offset = circleLength - (pct * circleLength);
-        document.getElementById('progress-circle').style.strokeDashoffset = offset;
+        document.getElementById('current-step-num').textContent = step.num;
+        document.getElementById('step-type').textContent = step.type || 'WIRD';
+        document.getElementById('step-title-fr').textContent = step.titleFr;
+        document.getElementById('step-title-ar').textContent = step.titleAr;
+        document.getElementById('text-ar').textContent = step.textAr;
+        document.getElementById('text-trans').textContent = step.trans;
+        document.getElementById('text-trad').textContent = step.trad;
+
+        document.getElementById('current-count').textContent = count;
+        document.getElementById('target-count').textContent = step.rep;
+
+        const pct = Math.min(1, count / Math.max(1, step.rep));
+        document.getElementById('step-pct-pill').textContent = Math.round(pct * 100) + '%';
+        document.getElementById('progress-circle').style.strokeDashoffset = circleLength - (pct * circleLength);
+
+        const core = document.getElementById('tap-btn');
+        if (core) core.classList.toggle('done-step', count >= step.rep);
+
+        // Illuminer les 24 perles
+        const litCount = Math.round(pct * BEAD_COUNT);
+        document.querySelectorAll('#w-bead-ring .w-bead').forEach((b, i) => {
+            b.classList.toggle('lit', i < litCount);
+            b.classList.toggle('head', litCount > 0 && i === litCount - 1);
+        });
+
+        // Mettre à jour le mode Zen s'il est ouvert
+        document.getElementById('blind-step-lbl').textContent = `Étape ${step.num} / ${ETAPES.length}`;
+        document.getElementById('blind-title').textContent = step.titleFr;
+        document.getElementById('blind-count').textContent = count;
+        document.getElementById('blind-target').textContent = `/ ${step.rep}`;
 
         document.getElementById('prev-btn').disabled = (currentIdx === 0);
-
         const nextBtn = document.getElementById('next-btn');
-        if (currentIdx === ETAPES.length - 1 && count === step.rep) {
-            // À la toute fin, le bouton Suivant devient "Recommencer"
-            nextBtn.innerHTML = 'Recommencer <i class="fa-solid fa-rotate-right"></i>';
-            nextBtn.disabled = false;
+        if (currentIdx === ETAPES.length - 1) {
+            nextBtn.innerHTML = 'Terminer le Wird <i class="fa-solid fa-check"></i>';
         } else {
             nextBtn.innerHTML = 'Suivant <i class="fa-solid fa-forward-step"></i>';
-            nextBtn.disabled = (currentIdx === ETAPES.length - 1 && count < step.rep);
         }
 
-        const globalProgPct = ((currentIdx + (count/step.rep)) / ETAPES.length) * 100;
-        document.getElementById('global-progress-bar').style.width = globalProgPct + '%';
-        document.getElementById('global-percent').innerText = Math.round(globalProgPct) + '%';
+        const globalPct = Math.min(100, Math.round(((currentIdx + pct) / ETAPES.length) * 100));
+        document.getElementById('global-progress-bar').style.width = globalPct + '%';
+        document.getElementById('global-percent').textContent = globalPct + '%';
 
-        if(wirdId > 0) saveProgress();
+        persistLocalWirdState();
+        if (wirdId > 0) saveProgress();
     }
 
-    let autoNextTimeout = null;
+    function triggerTapEffect() {
+        const rip = document.getElementById('tap-ripple');
+        if (rip) {
+            rip.classList.remove('pop');
+            void rip.offsetWidth;
+            rip.classList.add('pop');
+        }
+    }
 
     function tap() {
         const step = ETAPES[currentIdx];
-        if(!step) return;
+        if (!step) return;
         if (count < step.rep) {
             count++;
-            if (navigator.vibrate) navigator.vibrate(20);
-            
-            updateUI(); // Met à jour l'IU avec le nouveau compte
+            const finished = (count >= step.rep);
+            if (finished) completedSteps.add(currentIdx);
+            playBeadClick(finished);
+            triggerTapEffect();
+            updateUI();
 
-            if (count === step.rep) {
-                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-                
-                // Si on est à la dernière étape, on n'auto-next pas pour forcer la validation manuelle
+            if (finished) {
                 if (currentIdx < ETAPES.length - 1) {
                     if (autoNextTimeout) clearTimeout(autoNextTimeout);
-                    autoNextTimeout = setTimeout(() => {
-                        nextStep();
-                    }, 800); // 800ms de délai pour laisser l'utilisateur voir qu'il a fini l'étape
+                    autoNextTimeout = setTimeout(() => nextStep(), 750);
+                } else {
+                    setTimeout(() => showWirdFinishModal(), 450);
                 }
             }
+        }
+    }
+
+    function decrementTap() {
+        if (autoNextTimeout) clearTimeout(autoNextTimeout);
+        if (count > 0) {
+            count--;
+            completedSteps.delete(currentIdx);
+            updateUI();
+        }
+    }
+
+    function resetCurrentStep() {
+        if (autoNextTimeout) clearTimeout(autoNextTimeout);
+        count = 0;
+        completedSteps.delete(currentIdx);
+        updateUI();
+    }
+
+    function completeCurrentStepNow() {
+        const step = ETAPES[currentIdx];
+        if (!step) return;
+        count = step.rep;
+        completedSteps.add(currentIdx);
+        playBeadClick(true);
+        updateUI();
+        if (currentIdx < ETAPES.length - 1) {
+            if (autoNextTimeout) clearTimeout(autoNextTimeout);
+            autoNextTimeout = setTimeout(() => nextStep(), 550);
+        } else {
+            showWirdFinishModal();
         }
     }
 
@@ -300,141 +599,199 @@
         if (autoNextTimeout) clearTimeout(autoNextTimeout);
         if (currentIdx < ETAPES.length - 1) {
             currentIdx++;
-            count = 0;
+            count = completedSteps.has(currentIdx) ? ETAPES[currentIdx].rep : 0;
             updateUI();
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        } else if (currentIdx === ETAPES.length - 1 && count === ETAPES[currentIdx].rep) {
-            // Enregistrer la séance du matin ou du soir dans le calendrier 7 jours
-            const slot = (new Date().getHours() < 15) ? 'morning' : 'evening';
-            markWirdSlot(slot, true);
-            // L'utilisateur valide la fin, on boucle à zéro !
-            currentIdx = 0;
-            count = 0;
-            startTime = Date.now();
-            updateUI();
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            const sc = document.getElementById('wird-text-scroll');
+            if (sc) sc.scrollTop = 0;
+        } else {
+            showWirdFinishModal();
         }
     }
-
-    const WIRD_TRACK_KEY = 'sdm_wird_tracker_v1';
-    function getWirdTodayIso() {
-        const d = new Date();
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    }
-    function renderWirdTracker() {
-        let tr = { days: {} };
-        try { tr = Object.assign(tr, JSON.parse(localStorage.getItem(WIRD_TRACK_KEY) || '{}')); } catch (e) {}
-        if (!tr.days) tr.days = {};
-        const todayIso = getWirdTodayIso();
-        const rec = tr.days[todayIso] || { morning: false, evening: false };
-
-        const bAm = document.getElementById('btn-wird-am');
-        const bPm = document.getElementById('btn-wird-pm');
-        if (bAm) {
-            bAm.className = rec.morning
-                ? 'px-2.5 py-1.5 rounded-xl bg-emerald-500/25 border border-emerald-400/60 text-[10px] font-black text-emerald-200'
-                : 'px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-[10px] font-extrabold text-white/80';
-            bAm.textContent = rec.morning ? '🌅 06h30 ✓' : '🌅 06h30 Suba';
-        }
-        if (bPm) {
-            bPm.className = rec.evening
-                ? 'px-2.5 py-1.5 rounded-xl bg-emerald-500/25 border border-emerald-400/60 text-[10px] font-black text-emerald-200'
-                : 'px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-[10px] font-extrabold text-white/80';
-            bPm.textContent = rec.evening ? '🌇 17h00 ✓' : '🌇 17h00 Takussan';
-        }
-
-        let streak = 0;
-        const cur = new Date(todayIso + 'T12:00:00');
-        while (true) {
-            const k = cur.toISOString().slice(0, 10);
-            const r = tr.days[k];
-            if (r && (r.morning || r.evening)) { streak++; cur.setDate(cur.getDate() - 1); }
-            else break;
-        }
-        const lbl = document.getElementById('wird-streak-label');
-        if (lbl) lbl.textContent = `🔥 ${streak} jour${streak > 1 ? 's' : ''} de suite`;
-
-        const strip = document.getElementById('wird-7days-strip');
-        if (strip) {
-            const names = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-            let html = '';
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date(Date.now() - i * 86400000);
-                const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                const r = tr.days[k];
-                const ok = r && (r.morning || r.evening);
-                const isT = (k === todayIso);
-                html += `<div class="rounded-xl py-1.5 text-center border ${ok ? 'bg-emerald-500/20 border-emerald-400/55 text-emerald-200' : (isT ? 'bg-gold-500/15 border-gold-400/60 text-gold-300' : 'bg-white/5 border-white/10 text-white/45')}">` +
-                        `<span class="block text-[9px] font-extrabold uppercase">${names[d.getDay()]}</span>` +
-                        `<span class="block text-xs mt-0.5">${ok ? '🔥' : (isT ? '⏳' : '·')}</span></div>`;
-            }
-            strip.innerHTML = html;
-        }
-    }
-    window.markWirdSlot = function(slot, forceTrue = false) {
-        const todayIso = getWirdTodayIso();
-        let tr = { days: {} };
-        try { tr = Object.assign(tr, JSON.parse(localStorage.getItem(WIRD_TRACK_KEY) || '{}')); } catch (e) {}
-        if (!tr.days) tr.days = {};
-        const rec = tr.days[todayIso] || { morning: false, evening: false };
-        rec[slot] = forceTrue ? true : !rec[slot];
-        tr.days[todayIso] = rec;
-        try { localStorage.setItem(WIRD_TRACK_KEY, JSON.stringify(tr)); } catch (e) {}
-        renderWirdTracker();
-    };
-    renderWirdTracker();
 
     function prevStep() {
         if (autoNextTimeout) clearTimeout(autoNextTimeout);
         if (currentIdx > 0) {
             currentIdx--;
-            count = 0; 
+            count = completedSteps.has(currentIdx) ? ETAPES[currentIdx].rep : 0;
             updateUI();
-            window.scrollTo({top: 0, behavior: 'smooth'});
         }
     }
 
-    function saveProgress() {
-        fetch("{% url 'save_wird_progress' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                wird_id: wirdId,
-                etape: ETAPES[currentIdx].num,
-                reps: count
-            })
-        }).catch(e => console.log('Hors ligne ou erreur API'));
+    function jumpToStep(idx) {
+        if (idx < 0 || idx >= ETAPES.length) return;
+        if (autoNextTimeout) clearTimeout(autoNextTimeout);
+        currentIdx = idx;
+        count = completedSteps.has(idx) ? ETAPES[idx].rep : 0;
+        closeStepsDrawer();
+        updateUI();
     }
 
-    setInterval(() => {
-        elapsed = Math.floor((Date.now() - startTime) / 1000);
-        const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
-        const s = String(elapsed % 60).padStart(2, '0');
-        document.getElementById('global-timer').innerText = m + ':' + s;
-    }, 1000);
+    function openStepsDrawer() {
+        const list = document.getElementById('steps-drawer-list');
+        if (list) {
+            list.innerHTML = ETAPES.map((st, idx) => {
+                const isCur = idx === currentIdx;
+                const isDone = completedSteps.has(idx);
+                return `<button type="button" onclick="jumpToStep(${idx})" class="w-full text-left px-3 py-2.5 rounded-2xl border flex items-center justify-between gap-2.5 ${isCur ? 'bg-gold-500/20 border-gold-400/60' : (isDone ? 'bg-emerald-500/12 border-emerald-400/35' : 'bg-white/[0.04] border-white/10')}">` +
+                    `<div class="flex items-center gap-2.5 min-w-0">` +
+                        `<span class="w-7 h-7 rounded-xl flex items-center justify-center text-[11px] font-black flex-shrink-0 ${isDone ? 'bg-emerald-500 text-black' : (isCur ? 'bg-gold-400 text-black' : 'bg-white/10 text-white/75')}">${isDone ? '✓' : st.num}</span>` +
+                        `<div class="min-w-0"><div class="text-xs font-extrabold text-white truncate">${st.titleFr}</div><div class="font-arabic text-xs text-gold-300 truncate">${st.titleAr}</div></div>` +
+                    `</div>` +
+                    `<span class="px-2 py-0.5 rounded-lg bg-black/40 text-[10px] font-black text-gold-300 flex-shrink-0">×${st.rep}</span>` +
+                `</button>`;
+            }).join('');
+        }
+        document.getElementById('steps-drawer').classList.remove('hidden');
+    }
+    function closeStepsDrawer() { document.getElementById('steps-drawer').classList.add('hidden'); }
+
+    function openBlindTapMode() {
+        document.getElementById('blind-tap-overlay').classList.remove('hidden');
+    }
+    function closeBlindTapMode() {
+        document.getElementById('blind-tap-overlay').classList.add('hidden');
+    }
+    function tapFromBlind(e) {
+        if (e.target && e.target.closest('button')) return;
+        tap();
+    }
+
+    function showWirdFinishModal() {
+        closeBlindTapMode();
+        const slot = (new Date().getHours() < 15) ? 'morning' : 'evening';
+        markWirdSlot(slot, true);
+        const timerTxt = document.getElementById('global-timer')?.textContent || '00:00';
+        const slotLbl = slot === 'morning' ? 'Matin (06h30 Suba)' : 'Soir (17h00 Takussan)';
+        document.getElementById('wird-finish-meta').textContent = `Séance ${slotLbl} validée · Durée : ${timerTxt}`;
+        document.getElementById('wird-finish-modal').classList.remove('hidden');
+    }
+
+    function restartWirdFromFinish() {
+        document.getElementById('wird-finish-modal').classList.add('hidden');
+        currentIdx = 0;
+        count = 0;
+        completedSteps.clear();
+        startTime = Date.now();
+        updateUI();
+    }
+
+    // ── CALENDRIER 7 JOURS & SÉANCES 06h30 SUBA / 17h00 TAKUSSAN ──
+    function getWirdTodayIso() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    function loadWirdTracker() {
+        try { return JSON.parse(localStorage.getItem(WIRD_TRACK_KEY) || '{"days":{}}'); }
+        catch (e) { return { days: {} }; }
+    }
+    function markWirdSlot(slot, forceTrue = false) {
+        const today = getWirdTodayIso();
+        const tr = loadWirdTracker();
+        if (!tr.days) tr.days = {};
+        if (!tr.days[today]) tr.days[today] = { morning: false, evening: false };
+        tr.days[today][slot] = forceTrue ? true : !tr.days[today][slot];
+        try { localStorage.setItem(WIRD_TRACK_KEY, JSON.stringify(tr)); } catch (e) {}
+        renderWirdCalendar();
+        if (navigator.vibrate) try { navigator.vibrate(14); } catch (e) {}
+    }
+    function renderWirdCalendar() {
+        const tr = loadWirdTracker();
+        const days = tr.days || {};
+        const today = getWirdTodayIso();
+        const todayRec = days[today] || { morning: false, evening: false };
+
+        const amBtn = document.getElementById('btn-wird-am');
+        const pmBtn = document.getElementById('btn-wird-pm');
+        if (amBtn) {
+            amBtn.className = todayRec.morning
+                ? 'px-2 py-1 rounded-lg bg-emerald-500/25 border border-emerald-400 text-[9.5px] font-black text-emerald-200'
+                : 'px-2 py-1 rounded-lg bg-white/10 border border-white/15 text-[9.5px] font-extrabold text-white/75';
+            amBtn.textContent = todayRec.morning ? '🌅 06h30 ✓' : '🌅 06h30';
+        }
+        if (pmBtn) {
+            pmBtn.className = todayRec.evening
+                ? 'px-2 py-1 rounded-lg bg-emerald-500/25 border border-emerald-400 text-[9.5px] font-black text-emerald-200'
+                : 'px-2 py-1 rounded-lg bg-white/10 border border-white/15 text-[9.5px] font-extrabold text-white/75';
+            pmBtn.textContent = todayRec.evening ? '🌇 17h00 ✓' : '🌇 17h00';
+        }
+
+        let streak = 0;
+        for (let d = 0; d < 60; d++) {
+            const dt = new Date(Date.now() - d * 86400000);
+            const iso = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+            const rec = days[iso];
+            if (rec && (rec.morning || rec.evening)) streak++;
+            else if (d === 0) continue;
+            else break;
+        }
+        const streakEl = document.getElementById('wird-streak-label');
+        if (streakEl) streakEl.textContent = `🔥 ${streak} jour${streak > 1 ? 's' : ''} de suite`;
+
+        const strip = document.getElementById('wird-7days-strip');
+        if (strip) {
+            const labels = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+            let html = '';
+            for (let i = 6; i >= 0; i--) {
+                const dt = new Date(Date.now() - i * 86400000);
+                const iso = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+                const rec = days[iso] || {};
+                const doneBoth = rec.morning && rec.evening;
+                const doneOne = rec.morning || rec.evening;
+                const isToday = iso === today;
+                const cls = doneBoth
+                    ? 'bg-emerald-500/30 border-emerald-400 text-emerald-200'
+                    : (doneOne ? 'bg-amber-500/25 border-amber-400 text-amber-200'
+                        : (isToday ? 'bg-white/10 border-gold-400/60 text-white' : 'bg-white/[0.03] border-white/10 text-white/40'));
+                html += `<div class="rounded-lg border py-1 text-center ${cls}">` +
+                    `<span class="block text-[8px] font-bold uppercase">${labels[dt.getDay()]}</span>` +
+                    `<span class="block text-[10px] font-black">${doneBoth ? '✓✓' : (doneOne ? '✓' : dt.getDate())}</span></div>`;
+            }
+            strip.innerHTML = html;
+        }
+    }
+
+    let saveTimer = null;
+    function saveProgress() {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+            fetch('/api/wird/progress/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({
+                    wird_id: wirdId,
+                    etape: currentIdx + 1,
+                    repetitions: count,
+                    temps_ecoule: Math.floor((Date.now() - startTime) / 1000)
+                })
+            }).catch(() => {});
+        }, 700);
+    }
 
     document.getElementById('tap-btn').addEventListener('click', tap);
     document.getElementById('next-btn').addEventListener('click', nextStep);
     document.getElementById('prev-btn').addEventListener('click', prevStep);
-
-    updateUI();
-</script>
-
-
-<!-- Service Worker Registration -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js').then(function(registration) {
-        console.log('ServiceWorker registration successful');
-      }, function(err) {
-        console.log('ServiceWorker registration failed: ', err);
-      });
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' || e.code === 'Enter') {
+            if (document.activeElement && document.activeElement.tagName === 'BUTTON') return;
+            e.preventDefault();
+            tap();
+        }
     });
-  }
+
+    setInterval(() => {
+        const s = Math.floor((Date.now() - startTime) / 1000);
+        const mins = String(Math.floor(s / 60)).padStart(2, '0');
+        const secs = String(s % 60).padStart(2, '0');
+        document.getElementById('global-timer').textContent = `${mins}:${secs}`;
+    }, 1000);
+
+    document.documentElement.style.setProperty('--ar-size', arFontSize + 'px');
+    buildBeads();
+    renderFeedbackIcon();
+    updateUI();
+    renderWirdCalendar();
 </script>
+<script src="{% static 'js/sdm_audio_engine.js' %}"></script>
+<script src="{% static 'js/sdm_notifications.js' %}"></script>
 </body>
 </html>

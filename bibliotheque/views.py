@@ -112,12 +112,19 @@ AUDIO_FOLDER_META = {
         'gradient': 'linear-gradient(135deg, #F43F5E, #881337)',
         'order': 6,
     },
+    'BASSIROU_KHELCOM': {
+        'label': 'Serigne Bassirou Mbacké Khelcom',
+        'subtitle': 'Wakhtanes, Khassidas & Enseignements intégraux',
+        'icon': 'fa-microphone-lines',
+        'gradient': 'linear-gradient(135deg, #F59E0B, #065F46)',
+        'order': 2,
+    },
     'ADHAN': {
         'label': 'Adhan & Appels',
         'subtitle': 'Appels à la prière',
         'icon': 'fa-mosque',
         'gradient': 'linear-gradient(135deg, #14B8A6, #134E4A)',
-        'order': 7,
+        'order': 8,
     },
 }
 
@@ -147,6 +154,7 @@ PROFILE_IMAGES = [
 
 FOLDER_IMAGES = {
     'KHASSIDA': '/static/images/audio_thumbs/touba.jpg',
+    'BASSIROU_KHELCOM': '/static/images/audio_thumbs/serigne_touba.jpg',
     'WAKHTANE': '/static/images/audio_thumbs/serigne_touba.jpg',
     'XAM_XAM': '/static/images/audio_thumbs/parchemin.jpg',
     'CORAN': '/static/images/audio_thumbs/kaaba.jpg',
@@ -169,10 +177,15 @@ def _pick_profile_image(name, cat):
     return PROFILE_IMAGES[sum(ord(c) for c in (name or 'SDM')) % len(PROFILE_IMAGES)]
 
 
+def _is_bassirou_khelcom_author(auteur_voix):
+    low = (auteur_voix or '').lower()
+    return ('bassirou' in low) and ('mback' in low or 'khelcom' in low)
+
+
 def _build_audio_folders_and_profiles(queryset):
     """
     Regroupe les profils existants (Kourels, Maîtres, Récitants) directement à l'intérieur
-    de leurs dossiers/catégories existants (Khassidas, Wakhtane, Xam Xam, Coran, etc.)
+    de leurs dossiers/catégories existants (Khassidas, Serigne Bassirou Mbacké Khelcom, Wakhtane, Xam Xam, Coran, etc.)
     avec une image nette existante par dossier et par profil.
     """
     cat_labels = dict(Son.CATEGORIES)
@@ -181,8 +194,13 @@ def _build_audio_folders_and_profiles(queryset):
 
     rows = queryset.values('categorie', 'auteur_voix').annotate(total=Count('id')).order_by('-total')
     for row in rows:
-        cat = (row['categorie'] or 'KHASSIDA').upper()
-        name = (row['auteur_voix'] or '').strip() or cat_labels.get(cat, 'Collection SDM')
+        raw_name = (row['auteur_voix'] or '').strip()
+        if _is_bassirou_khelcom_author(raw_name):
+            cat = 'BASSIROU_KHELCOM'
+            name = 'Serigne Bassirou Mbacké Khelcom'
+        else:
+            cat = (row['categorie'] or 'KHASSIDA').upper()
+            name = raw_name or cat_labels.get(cat, 'Collection SDM')
         words = [w for w in name.replace('—', ' ').replace('-', ' ').split() if w]
         initials = (words[0][0] + (words[1][0] if len(words) > 1 else '')).upper() if words else 'SD'
         gradient = PROFILE_PALETTES[sum(ord(c) for c in name) % len(PROFILE_PALETTES)]
@@ -376,14 +394,14 @@ def _build_audio_title_folders(sons_list):
 
 def _invalidate_catalog_cache():
     cache.delete_many([
-        'sdm_audio_catalog_v2',
+        'sdm_audio_catalog_v3',
         f'sdm_home_public_v1_{datetime.date.today().isoformat()}',
     ])
 
 
 def _get_cached_audio_catalog():
     """Construit et met en cache en mémoire le catalogue audio complet (dossiers, profils, titres, pistes compactes)."""
-    cached = cache.get('sdm_audio_catalog_v2')
+    cached = cache.get('sdm_audio_catalog_v3')
     if cached is not None:
         return cached
 
@@ -406,9 +424,14 @@ def _get_cached_audio_catalog():
                 audio_url = ''
         if not audio_url:
             continue
-        cat = (s.categorie or 'KHASSIDA').upper()
+        raw_auteur = (s.auteur_voix or '').strip()
+        if _is_bassirou_khelcom_author(raw_auteur):
+            cat = 'BASSIROU_KHELCOM'
+            auteur = 'Serigne Bassirou Mbacké Khelcom'
+        else:
+            cat = (s.categorie or 'KHASSIDA').upper()
+            auteur = raw_auteur or cat_labels.get(cat, 'Collection SDM')
         counts_map[cat] = counts_map.get(cat, 0) + 1
-        auteur = (s.auteur_voix or '').strip() or cat_labels.get(cat, 'Collection SDM')
         compact_tracks.append([
             s.id,
             s.titre or 'Sans titre',
@@ -427,7 +450,7 @@ def _get_cached_audio_catalog():
         'total_all_sons': len(compact_tracks),
         'compact_tracks': compact_tracks,
     }
-    cache.set('sdm_audio_catalog_v2', data, 300)
+    cache.set('sdm_audio_catalog_v3', data, 300)
     return data
 
 
@@ -1296,9 +1319,12 @@ def liste_sons(request):
         filtered_tracks = base_tracks
 
     categories = Son.CATEGORIES
+    all_cat_pairs = [('KHASSIDA', 'Khassidas & Kourels'), ('BASSIROU_KHELCOM', 'Serigne Bassirou Mbacké Khelcom')] + [
+        (code, label) for code, label in Son.CATEGORIES if code != 'KHASSIDA'
+    ]
     categories_with_counts = [
         (code, AUDIO_FOLDER_META.get(code, {}).get('label', label), counts_map.get(code, 0))
-        for code, label in Son.CATEGORIES
+        for code, label in all_cat_pairs
     ]
 
     favoris_ids = []

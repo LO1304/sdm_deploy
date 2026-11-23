@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sdm-premium-v21';
+const CACHE_NAME = 'sdm-premium-v22';
 const SHELL_ASSETS = [
   '/',
   '/offline/',
@@ -190,16 +190,141 @@ self.addEventListener('message', (event) => {
   const data = event.data || {};
   if (data.type === 'SHOW_NOTIFICATION') {
     const title = data.title || 'SDM Mouride';
+    const silent = Boolean(data.silent);
     const options = {
       body: data.body || '',
       icon: '/static/images/icons/icon-192x192.png',
       badge: '/static/images/icons/icon-192x192.png',
       tag: data.tag || 'sdm-reminder',
       renotify: true,
-      vibrate: [180, 90, 180],
+      silent: silent,
+      vibrate: silent ? undefined : [180, 90, 180],
       data: { url: data.url || '/' }
     };
     event.waitUntil(self.registration.showNotification(title, options));
+  }
+});
+
+// ── VÉRIFICATION EN ARRIÈRE-PLAN (Periodic Background Sync sur Android PWA même app fermée) ──
+async function runSwBackgroundNotificationCheck() {
+  try {
+    const stateCache = await caches.open('sdm-notif-state-v1');
+    const stateRes = await stateCache.match('/__sdm_notif_state__');
+    const state = stateRes ? await stateRes.json() : {};
+    const prefs = state.prefs || { enabled: true, prayerEnabled: true, wirdEnabled: true, sonEnabled: true, khassidaEnabled: true };
+    if (!prefs.enabled) return;
+
+    const firedRes = await stateCache.match('/__sdm_sw_fired__');
+    const fired = firedRes ? await firedRes.json() : {};
+
+    const feedRes = await fetch('/api/notifications/sync-feed/', { credentials: 'same-origin' });
+    if (!feedRes.ok) return;
+    const feed = await feedRes.json();
+
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const toMin = (hhmm) => {
+      if (!hhmm || !String(hhmm).includes(':')) return -1;
+      const [h, m] = String(hhmm).slice(0, 5).split(':').map(Number);
+      return (isNaN(h) || isNaN(m)) ? -1 : h * 60 + m;
+    };
+
+    let changed = false;
+    const silent = (prefs.soundMode === 'silent');
+
+    // 1. Nouveau Son publié
+    if (prefs.sonEnabled && feed.latest_son && feed.latest_son.id) {
+      const sid = String(feed.latest_son.id);
+      if (fired.last_son_id && fired.last_son_id !== sid) {
+        fired.last_son_id = sid;
+        changed = true;
+        await self.registration.showNotification(`🎧 Nouveau Son : ${feed.latest_son.titre}`, {
+          body: `${feed.latest_son.auteur || 'Kourel Mouride'} vient d'être ajouté sur SDM Mouride.`,
+          icon: '/static/images/icons/icon-192x192.png',
+          badge: '/static/images/icons/icon-192x192.png',
+          tag: `sdm-son-${sid}`,
+          silent: silent,
+          vibrate: silent ? undefined : [160, 80, 160],
+          data: { url: `/collection/son/?autoplay=${sid}` }
+        });
+      } else if (!fired.last_son_id) {
+        fired.last_son_id = sid;
+        changed = true;
+      }
+    }
+
+    // 2. Prières du jour
+    if (prefs.prayerEnabled) {
+      const prayers = state.prayers || feed.prayers || [];
+      const lead = parseInt(prefs.prayerLeadMin || 5, 10);
+      const pSilent = (prefs.prayerSoundMode === 'silent');
+      for (const p of prayers) {
+        const pm = toMin(p.time);
+        const k = `sw_prayer_${today}_${p.name}`;
+        if (pm >= 0 && !fired[k] && nowMin >= (pm - lead) && nowMin <= (pm + 25)) {
+          fired[k] = Date.now();
+          changed = true;
+          await self.registration.showNotification(`🕌 Heure de la Prière : ${p.name}`, {
+            body: `La prière de ${p.name} est prévue à ${p.time}.`,
+            icon: '/static/images/icons/icon-192x192.png',
+            badge: '/static/images/icons/icon-192x192.png',
+            tag: k,
+            silent: pSilent,
+            vibrate: pSilent ? undefined : [180, 90, 180],
+            data: { url: '/' }
+          });
+          break;
+        }
+      }
+    }
+
+    // 3. Wird Mahuz (06h30 Suba / 17h00 Takussan)
+    if (prefs.wirdEnabled) {
+      const wm = toMin(prefs.wirdMorningTime || '06:30');
+      const we = toMin(prefs.wirdEveningTime || '17:00');
+      const wUrl = feed.wird_url || '/wird/mahuz-al-khafif/';
+      const kM = `sw_wird_m_${today}`;
+      if (wm >= 0 && !fired[kM] && nowMin >= wm && nowMin <= wm + 180) {
+        fired[kM] = Date.now();
+        changed = true;
+        await self.registration.showNotification('📿 Rappel Wird Mahuz du Matin (06h30)', {
+          body: 'Ouvrez le compteur sacré pour accomplir votre Wird du matin après Suba.',
+          icon: '/static/images/icons/icon-192x192.png',
+          badge: '/static/images/icons/icon-192x192.png',
+          tag: kM,
+          silent: silent,
+          vibrate: silent ? undefined : [160, 80, 160],
+          data: { url: wUrl }
+        });
+      }
+      const kE = `sw_wird_e_${today}`;
+      if (we >= 0 && !fired[kE] && nowMin >= we && nowMin <= we + 180) {
+        fired[kE] = Date.now();
+        changed = true;
+        await self.registration.showNotification('📿 Rappel Wird Mahuz du Soir (17h00)', {
+          body: 'N\'oubliez pas votre Wird Mahuz du soir après Takussan !',
+          icon: '/static/images/icons/icon-192x192.png',
+          badge: '/static/images/icons/icon-192x192.png',
+          tag: kE,
+          silent: silent,
+          vibrate: silent ? undefined : [160, 80, 160],
+          data: { url: wUrl }
+        });
+      }
+    }
+
+    if (changed) {
+      await stateCache.put('/__sdm_sw_fired__', new Response(JSON.stringify(fired), {
+        headers: { 'Content-Type': 'application/json' }
+      }));
+    }
+  } catch (e) {}
+}
+
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'sdm-smart-notifs') {
+    event.waitUntil(runSwBackgroundNotificationCheck());
   }
 });
 

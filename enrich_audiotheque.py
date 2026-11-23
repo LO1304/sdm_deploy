@@ -67,7 +67,7 @@ def sync_verified_sons():
     for s in Son.objects.all():
         u = (s.lien_audio_externe or '').strip()
         is_manual_admin = ('/media/audios/telegram/' in u) or u.startswith('/static/audios_locaux/')
-        if (u not in verified_by_url and not is_manual_admin) or ('/raw/upload/' in u) or ('(1)' in (s.titre or '')):
+        if (u not in verified_by_url and not is_manual_admin) or ('/raw/upload/' in u):
             to_delete_ids.append(s.id)
             continue
 

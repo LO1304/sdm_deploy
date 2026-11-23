@@ -1441,15 +1441,24 @@ window.cycleSleepTimer = function() {
     }, mins * 60000);
 };
 
+window.playQueueIndex = function(realIdx) {
+    const idx = parseInt(realIdx, 10);
+    if (!isNaN(idx) && filteredTracks[idx]) {
+        playTrackObj(filteredTracks[idx], idx, true);
+        window.closeQueueDrawer();
+    }
+};
+
 window.openQueueDrawer = function() {
     const qList = document.getElementById('queueList');
+    if (!qList) return;
     const start = Math.max(0, curIdx);
-    const slice = filteredTracks.slice(start, start + 30);
+    const slice = filteredTracks.slice(start, start + 50);
     qList.innerHTML = slice.map((t, offset) => {
         const realIdx = start + offset;
         const active = realIdx === curIdx;
         return `
-            <div onclick="playTrackObj(filteredTracks[${realIdx}], ${realIdx}, true); closeQueueDrawer();"
+            <div data-q-idx="${realIdx}" onclick="window.playQueueIndex(${realIdx})"
                  style="padding:10px 12px; border-radius:13px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:8px; background:${active ? 'rgba(212,175,55,0.18)' : 'rgba(255,255,255,0.04)'}; border:1px solid ${active ? 'var(--gold)' : 'var(--border)'};">
                 <div style="min-width:0; flex:1;">
                     <div style="font-size:12px; font-weight:800; color:${active ? 'var(--gold-lt)' : '#fff'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.titre)}</div>
@@ -1459,9 +1468,9 @@ window.openQueueDrawer = function() {
             </div>
         `;
     }).join('');
-    document.getElementById('queueDrawer').classList.add('open');
+    document.getElementById('queueDrawer')?.classList.add('open');
 };
-window.closeQueueDrawer = function() { document.getElementById('queueDrawer').classList.remove('open'); };
+window.closeQueueDrawer = function() { document.getElementById('queueDrawer')?.classList.remove('open'); };
 
 window.shareCurrentTrack = function() {
     if (curIdx < 0 || !filteredTracks[curIdx]) return;
