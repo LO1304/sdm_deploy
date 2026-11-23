@@ -217,7 +217,7 @@ body::after {
 [data-aos] { backface-visibility: hidden; }
 
 /* Fix position z-index for main content */
-.site-wrapper { position: relative; z-index: 1; }
+.site-wrapper { position: relative; }
 
 /* Responsive adjustments for very small screens */
 @media (max-width: 380px) {

@@ -880,15 +880,16 @@
 
     async function fetchCity(lat, lng) {
         const cacheKey = `city_${lat.toFixed(2)}_${lng.toFixed(2)}`;
+        const setCity = (val) => { const el = document.getElementById('loc-city'); if (el) el.textContent = val; };
         const cached = localStorage.getItem(cacheKey);
-        if (cached) { document.getElementById('loc-city').textContent = cached; return; }
+        if (cached) { setCity(cached); return; }
         try {
             const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=fr`);
             const data = await res.json();
             const city = data.city || data.locality || DEF_CITY;
-            document.getElementById('loc-city').textContent = city;
+            setCity(city);
             localStorage.setItem(cacheKey, city);
-        } catch(e) { document.getElementById('loc-city').textContent = DEF_CITY; }
+        } catch(e) { setCity(DEF_CITY); }
     }
 
     if (navigator.geolocation) {

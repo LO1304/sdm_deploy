@@ -388,16 +388,34 @@
         });
     }
 
-    // Sauvegarder la position exacte uniquement au moment de quitter la page dans CET onglet
-    window.addEventListener('pagehide', () => {
-        if (aud && currentTrack) {
+    // Gestion unique et propre de pagehide :
+    // - Si navigation interne SDM vers une page hors-PJAX (Coran, Khassida PDF, Zikr) : sauvegarder pour reprise fluide
+    // - Si fermeture / balayage de l'application depuis les apps récentes : couper proprement le son et MediaSession
+    window.addEventListener('pagehide', (evt) => {
+        const isInternalNav = (Date.now() - (window.__sdmInternalNavTs || 0)) < 2500;
+        if (isInternalNav && aud && currentTrack) {
             const wasPlaying = !aud.paused;
             try {
                 if (wasPlaying) sessionStorage.setItem(TAB_PLAYING_KEY, '1');
                 else sessionStorage.removeItem(TAB_PLAYING_KEY);
             } catch (e) {}
             saveState({ currentTime: aud.currentTime, isPlaying: wasPlaying }, true);
+            return;
         }
+        // Fermeture réelle de l'app / onglet (ou mise en cache non-interne) : arrêt propre sans laisser le son tourner
+        if (aud) {
+            try { sessionStorage.removeItem(TAB_PLAYING_KEY); } catch (e) {}
+            saveState({ isPlaying: false }, true);
+            try { aud.pause(); } catch (e) {}
+            if (!evt || !evt.persisted) {
+                try { aud.removeAttribute('src'); aud.load(); } catch (e) {}
+            }
+        }
+        try {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = 'none';
+            }
+        } catch (e) {}
     });
 
     // API publique du moteur audio global
@@ -561,20 +579,6 @@
             renderMiniWidgets(anotherTabIsPlaying ? true : null);
         }
     };
-
-    // Arrêt propre si l'utilisateur ferme / balaie l'application des apps récentes (sans affecter l'écoute en arrière-plan)
-    window.addEventListener('pagehide', () => {
-        if (aud) {
-            saveState({ isPlaying: false }, true);
-            try { aud.pause(); } catch (e) {}
-            try { aud.removeAttribute('src'); aud.load(); } catch (e) {}
-        }
-        try {
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.playbackState = 'none';
-            }
-        } catch (e) {}
-    });
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => window.SDMAudioEngine.init());

@@ -143,6 +143,7 @@
     }, { passive: true, capture: true });
 
     // 5. MOTEUR PJAX ZERO-COUPURE AUDIO (le lecteur <audio id="sdm-global-audio"> ne s'arrête JAMAIS lors des retours / dossiers / onglets)
+    window.__sdmLastPjaxUrl = window.location.pathname + window.location.search;
     const pjaxHtmlCache = new Map();
     let pjaxInFlight = null;
 
@@ -217,6 +218,7 @@
             const newRoot = doc.getElementById('sdm-pjax-root');
             const curRoot = document.getElementById('sdm-pjax-root');
             if (!newRoot || !curRoot) {
+                window.__sdmInternalNavTs = Date.now();
                 window.location.href = urlPath;
                 return;
             }
@@ -243,6 +245,7 @@
 
             // 3. Mettre à jour le titre, l'URL, le contenu principal et la barre d'onglets
             if (doc.title) document.title = doc.title;
+            window.__sdmLastPjaxUrl = urlPath;
             if (pushHistory) {
                 history.pushState({ sdmPjax: true, url: urlPath }, '', urlPath);
             }
@@ -285,6 +288,7 @@
             resetProgress();
         } catch (err) {
             resetProgress();
+            window.__sdmInternalNavTs = Date.now();
             window.location.href = urlPath;
         }
     }
@@ -315,16 +319,25 @@
             e.preventDefault();
             sdmSoftNavigate(path, true);
         } else {
+            window.__sdmInternalNavTs = Date.now();
             startProgress();
         }
     });
 
     // Intercepter le bouton Retour / Suivant du téléphone ou navigateur (ZÉRO coupure audio !)
     window.addEventListener('popstate', () => {
+        // Si le lecteur audio plein-écran est ouvert, Retour le réduit proprement SANS changer de page ni couper le son !
+        const fullPlayer = document.getElementById('audio-player');
+        if (fullPlayer && fullPlayer.classList.contains('active') && typeof window.closePlayer === 'function') {
+            window.closePlayer(true);
+            return;
+        }
         const cur = window.location.pathname + window.location.search;
+        if (cur === window.__sdmLastPjaxUrl) return;
         if (isPjaxEligible(cur)) {
             sdmSoftNavigate(cur, false);
         } else {
+            window.__sdmInternalNavTs = Date.now();
             window.location.reload();
         }
     });
