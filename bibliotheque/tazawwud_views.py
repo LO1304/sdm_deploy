@@ -218,7 +218,7 @@ def tazawwud_home(request):
         coach_msg = "Tu as nourri ton âme aujourd'hui avec Tazawwudu-ç-Çighâr. Reviens demain ou continue une étape bonus !"
     elif missed_yesterday:
         coach_mode = 'missed'
-        coach_title = "🦉 Alerte Duolingo : Tu as sauté hier !"
+        coach_title = "🔥 Rappel de Série : Tu as sauté hier !"
         coach_msg = f"Attention ! {missed_days_count} jour(s) manqué(s) cette semaine. Cheikh Ahmadou Bamba t'attend : fais juste 2 minutes maintenant pour rallumer ta flamme !"
     else:
         coach_mode = 'todo_today'

@@ -1,7 +1,7 @@
 {% extends 'bibliotheque/layout.html' %}
 {% load static %}
 
-{% block title %}Masaalikul Jinaan · Mode Duolingo · SDM Mouride{% endblock %}
+{% block title %}Masaalikul Jinaan · Apprentissage Guidé · SDM Mouride{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -53,17 +53,17 @@
             <span class="px-3 py-1 rounded-full bg-gold-500/20 border border-gold-400/45 text-gold-300 text-[9.5px] font-black uppercase tracking-widest">
                 ۞ Cheikh Ahmadou Bamba (RTA)
             </span>
-            <a href="{% url 'notifications' %}" class="w-8 h-8 rounded-xl bg-gold-500/15 border border-gold-400/35 text-gold-300 flex items-center justify-center tap-card" style="text-decoration:none;" title="Rappels Duolingo">
+            <a href="{% url 'notifications' %}" class="w-8 h-8 rounded-xl bg-gold-500/15 border border-gold-400/35 text-gold-300 flex items-center justify-center tap-card" style="text-decoration:none;" title="Rappels d'étude">
                 <i class="fa-solid fa-bell text-xs"></i>
             </a>
         </div>
 
         <h1 class="text-xl font-black text-white leading-tight">Masaalikul Jinaan</h1>
         <p class="text-[11.5px] text-emerald-100/80 mt-0.5">
-            Les Itinéraires du Paradis · 4 Grandes Portes · {{ total_chapitres }} Chapitres · {{ total_questions }} Questions
+            Les Itinéraires du Paradis · 4 Grandes Portes · {{ total_chapitres }} Leçons · {{ total_questions }} Questions
         </p>
 
-        <!-- STATS DUOLINGO (FLAMME, MOYENNE /20, CHAPITRES, XP) -->
+        <!-- STATS DE PROGRESSION (FLAMME, MOYENNE /20, LEÇONS, XP) -->
         <div class="grid grid-cols-4 gap-2 mt-3.5">
             <div class="rounded-2xl bg-black/40 border border-orange-400/30 p-2 text-center">
                 <span class="text-base block">🔥</span>
@@ -305,9 +305,9 @@
         text.textContent = `Merci infiniment pour ta régularité aujourd'hui (${doneCount}/${totalCount} chapitres · moyenne ${avg || '20'}/20). Continue ainsi, tu honores les enseignements de Cheikh Ahmadou Bamba !`;
     } else if (missedYesterday) {
         banner.className = 'rounded-2xl p-3.5 border border-rose-400/60 bg-rose-950/70 flex items-start gap-3 animate-pulse';
-        emoji.textContent = '🦉🔥';
-        title.textContent = 'Alerte Duolingo · Tu as sauté hier !';
-        text.textContent = 'Hé ! Ne laisse pas Masaalikul Jinaan prendre la poussière ! 4 minutes maintenant suffisent pour rallumer ta flamme et faire grimper ta note /20. Allez, on s\'y remet tout de suite !';
+        emoji.textContent = '🔥';
+        title.textContent = 'Rappel de Série · Tu as sauté hier !';
+        text.textContent = 'Ne laisse pas Masaalikul Jinaan prendre la poussière ! 4 minutes maintenant suffisent pour rallumer ta flamme et faire grimper ta note /20. Allez, on s\'y remet tout de suite !';
     } else if (doneCount > 0) {
         banner.className = 'rounded-2xl p-3.5 border border-amber-400/60 bg-amber-950/65 flex items-start gap-3';
         emoji.textContent = '🔥';

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sdm-premium-v16';
+const CACHE_NAME = 'sdm-premium-v17';
 const SHELL_ASSETS = [
   '/',
   '/offline/',
@@ -13,6 +13,7 @@ const SHELL_ASSETS = [
   '/static/js/sdm_notifications.js',
   '/static/manifest.json',
   '/static/images/icons/icon-192x192.png',
+  '/static/images/serigne_touba_splash.jpg',
   '/static/images/sdm_rappels/thumbs/sdm_touba_emerald.jpg',
   '/static/images/sdm_rappels/thumbs/sdm_parchemin_royal.jpg',
   '/static/images/sdm_rappels/thumbs/sdm_nuit_medine.jpg',
@@ -220,12 +221,18 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = new URL((event.notification.data && event.notification.data.url) || '/', self.location.origin).href;
+  const rawUrl = (event.notification.data && event.notification.data.url) || '/';
+  const targetUrl = new URL(rawUrl, self.location.origin).href;
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
       for (let i = 0; i < windowClients.length; i++) {
         const client = windowClients[i];
-        if (client.url === targetUrl && 'focus' in client) return client.focus();
+        if (client.url.startsWith(self.location.origin)) {
+          if ('navigate' in client) {
+            return client.navigate(targetUrl).then((navClient) => (navClient && 'focus' in navClient ? navClient.focus() : null)).catch(() => client.focus());
+          }
+          if ('focus' in client) return client.focus();
+        }
       }
       if (clients.openWindow) return clients.openWindow(targetUrl);
     })

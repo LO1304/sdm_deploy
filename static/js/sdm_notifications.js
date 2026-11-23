@@ -1,21 +1,25 @@
 /*
  * SDM Smart Notifications Engine & Offline Indicator
  * Gère :
- *  1. Heures de prière (Fajr, Tisbar, Takussan, Timiss, Guéwé)
- *  2. Verset du Jour à l'heure exacte choisie par l'utilisateur
- *  3. Citation de Cheikh Ahmadou Bamba (318 citations) à l'heure exacte choisie
- *  4. Nouveaux Khassidas ajoutés (avec le nom exact du Khassida + lien direct)
- *  5. Coach Tazawwudu-ç-Çighâr « Mode Duolingo » (relance si cours non fait aujourd'hui ou jour sauté !)
- *  6. Bandeau discret « Mode Hors-Ligne actif » si déconnecté
+ *  1. Heures de prière (Fajr, Tisbar, Takussan, Timiss, Guéwé) avec choix Sonore / Vibration / Silencieux
+ *  2. Verset du Jour & Citation de Cheikh Ahmadou Bamba (clic direct sur le rappel exact !)
+ *  3. Nouveaux Sons & Nouveaux Khassidas publiés (notifications réelles avec titre exact & lien direct)
+ *  4. Rappels Wird Quotidien (06h30 après Suba & 17h00 après Takussan) avec suivi des jours
+ *  5. Rappels d'Étude (Masaalikul Jinaan & Tazawwudu-ç-Çighâr) si jour sauté
+ *  6. Choix du mode sonore (Khassida / Adhan, Vibration seule, ou Silencieux) + prévisualisation audio
  */
 (function () {
     if (window.__SDM_NOTIFS_INIT__) return;
     window.__SDM_NOTIFS_INIT__ = true;
 
-    const PREFS_KEY = 'sdm_notif_prefs_v2';
-    const FIRED_KEY = 'sdm_notif_fired_v2';
-    const FEED_KEY = 'sdm_notif_feed_cache_v2';
+    const PREFS_KEY = 'sdm_notif_prefs_v3';
+    const FIRED_KEY = 'sdm_notif_fired_v3';
+    const FEED_KEY = 'sdm_notif_feed_cache_v3';
     const LAST_KH_KEY = 'sdm_last_seen_khassida_id';
+    const LAST_SON_KEY = 'sdm_last_seen_son_id';
+    const WIRD_TRACK_KEY = 'sdm_wird_tracker_v1';
+
+    const DEFAULT_KHASSIDA_SOUND = 'https://res.cloudinary.com/dcajqzg2h/video/upload/v1795376309/media/audios/telegram/khassida/KURELSQACIDAS_8012_Wajahtou_Wadjhiyaza.mp3';
 
     const DEFAULT_PREFS = {
         enabled: true,
@@ -26,8 +30,16 @@
         citationEnabled: true,
         citationTime: '13:30',
         khassidaEnabled: true,
-        duolingoEnabled: true,
-        duolingoTime: '19:30'
+        sonEnabled: true,
+        wirdEnabled: true,
+        wirdMorningTime: '06:30',
+        wirdEveningTime: '17:00',
+        studyEnabled: true,
+        studyTime: '19:30',
+        soundMode: 'sound',         // 'sound' | 'vibrate' | 'silent'
+        prayerSoundMode: 'sound',   // 'sound' | 'vibrate' | 'silent'
+        reminderSoundUrl: DEFAULT_KHASSIDA_SOUND,
+        prayerSoundUrl: DEFAULT_KHASSIDA_SOUND
     };
 
     const FALLBACK_VERSES = [
@@ -36,20 +48,20 @@
         { ar: 'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ', fr: 'Quiconque place sa confiance en Allah, Il lui suffit.', ref: 'Sourate At-Talâq (65:3)' },
         { ar: 'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي', fr: 'Souvenez-vous de Moi, Je Me souviendrai de vous. Remerciez-Moi.', ref: 'Sourate Al-Baqara (2:152)' },
         { ar: 'رَبِّ زِدْنِي عِلْمًا', fr: 'Ô mon Seigneur, accrois mes connaissances !', ref: 'Sourate Tâ-Hâ (20:114)' },
-        { ar: 'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ', fr: 'Certes, Allah est avec les endurants.', ref: 'Sourate Al-Baqara (2:153)' },
-        { ar: 'لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا', fr: 'Allah n’impose à aucune âme une charge supérieure à sa capacité.', ref: 'Sourate Al-Baqara (2:286)' }
+        { ar: 'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ', fr: 'Certes, Allah est avec les endurants.', ref: 'Sourate Al-Baqara (2:153)' }
     ];
 
-    const DUOLINGO_NUDGES_TODAY = [
-        '🔥 Ta flamme Tazawwudu-ç-Çighâr attend ! 2 minutes de lecture suffisent pour sauver ta série aujourd\'hui.',
-        '🦉 Hey ! Il se fait tard et tu n\'as pas encore fait ta leçon du jour sur Tazawwudu-ç-Çighâr. Ne laisse pas ta série s\'éteindre !',
-        '📖 1 petite étape de Tazawwud = +20 XP et ta série préservée ! Cheikh Ahmadou Bamba t\'attend.'
+    const STUDY_NUDGES_TODAY = [
+        '🔥 Ta série d\'étude t\'attend ! 3 minutes sur Masaalikul Jinaan ou Tazawwudu-ç-Çighâr suffisent aujourd\'hui.',
+        '📖 1 petite étape aujourd\'hui = ta flamme préservée et ta moyenne /20 en hausse !'
     ];
-    const DUOLINGO_NUDGES_MISSED = [
-        '🔥 Alerte Série ! Tu as sauté hier sur Tazawwudu-ç-Çighâr… Reviens faire 1 étape rapide pour rallumer ta flamme !',
-        '🦉 On ne lâche rien ! Un jour manqué, ça arrive — fais 3 minutes de Tazawwud maintenant et reprends ton élan !',
-        '⚡ Ta progression Tazawwud t\'attend ! Ne laisse pas un deuxième jour passer sans apprendre un vers de Serigne Touba.'
+    const STUDY_NUDGES_MISSED = [
+        '🔥 Tu as sauté hier ! Reviens faire 1 leçon rapide pour rallumer ta flamme et continuer ton chemin.',
+        '⚡ On ne lâche rien ! 3 minutes maintenant suffisent pour reprendre ta progression quotidienne.'
     ];
+
+    let chimeAudio = null;
+    let chimeTimer = null;
 
     function getPrefs() {
         try {
@@ -71,10 +83,9 @@
     function markFired(key) {
         const f = getFired();
         f[key] = Date.now();
-        // Garder seulement les 60 dernières clés
         const keys = Object.keys(f);
-        if (keys.length > 60) {
-            keys.sort((a, b) => f[a] - f[b]).slice(0, keys.length - 60).forEach(k => delete f[k]);
+        if (keys.length > 80) {
+            keys.sort((a, b) => f[a] - f[b]).slice(0, keys.length - 80).forEach(k => delete f[k]);
         }
         try { localStorage.setItem(FIRED_KEY, JSON.stringify(f)); } catch (e) {}
     }
@@ -90,31 +101,66 @@
         return (isNaN(h) || isNaN(m)) ? -1 : h * 60 + m;
     }
 
-    // Afficher une notification système (SW) + toast élégant in-app
-    function dispatchNotification(title, body, url, tag) {
-        // 1. Toast in-app natif (visible même sans permission OS)
+    function stopPreviewSound() {
+        if (chimeTimer) { clearTimeout(chimeTimer); chimeTimer = null; }
+        if (chimeAudio) {
+            try { chimeAudio.pause(); chimeAudio.currentTime = 0; } catch (e) {}
+        }
+    }
+
+    function playNotificationSound(soundUrl, durationMs = 7500) {
+        if (!soundUrl) return;
+        // Ne pas interrompre un Khassida déjà en lecture dans le lecteur principal
+        const mainAud = document.getElementById('sdm-global-audio');
+        if (mainAud && !mainAud.paused && mainAud.src) return;
+        try {
+            stopPreviewSound();
+            if (!chimeAudio) {
+                chimeAudio = new Audio();
+                chimeAudio.preload = 'none';
+            }
+            chimeAudio.src = soundUrl;
+            chimeAudio.volume = 0.85;
+            chimeAudio.play().catch(() => {});
+            chimeTimer = setTimeout(stopPreviewSound, durationMs);
+        } catch (e) {}
+    }
+
+    // Afficher notification système + toast in-app respectant le mode Son / Vibration / Silencieux
+    function dispatchNotification(title, body, url, tag, opts = {}) {
+        const prefs = getPrefs();
+        const isPrayer = Boolean(opts.isPrayer);
+        const mode = isPrayer ? (prefs.prayerSoundMode || prefs.soundMode || 'sound') : (prefs.soundMode || 'sound');
+        const soundUrl = isPrayer ? (prefs.prayerSoundUrl || DEFAULT_KHASSIDA_SOUND) : (prefs.reminderSoundUrl || DEFAULT_KHASSIDA_SOUND);
+
         showInAppBanner(title, body, url);
 
-        // 2. Notification OS Android / Desktop via Service Worker
+        if (mode === 'sound') {
+            playNotificationSound(soundUrl, isPrayer ? 10000 : 7000);
+            try { if (navigator.vibrate) navigator.vibrate([160, 80, 160]); } catch (e) {}
+        } else if (mode === 'vibrate') {
+            try { if (navigator.vibrate) navigator.vibrate([180, 90, 180]); } catch (e) {}
+        }
+
         if ('Notification' in window && Notification.permission === 'granted') {
+            const notifOpts = {
+                body: body,
+                icon: '/static/images/icons/icon-192x192.png',
+                badge: '/static/images/icons/icon-192x192.png',
+                tag: tag || 'sdm-notif',
+                renotify: true,
+                silent: (mode === 'silent'),
+                vibrate: (mode === 'silent') ? undefined : [160, 80, 160],
+                data: { url: url || '/' }
+            };
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.ready.then((reg) => {
-                    if (reg && reg.showNotification) {
-                        reg.showNotification(title, {
-                            body: body,
-                            icon: '/static/images/icons/icon-192x192.png',
-                            badge: '/static/images/icons/icon-192x192.png',
-                            tag: tag || 'sdm-notif',
-                            renotify: true,
-                            vibrate: [160, 80, 160],
-                            data: { url: url || '/' }
-                        });
-                    }
+                    if (reg && reg.showNotification) reg.showNotification(title, notifOpts);
                 }).catch(() => {
-                    try { new Notification(title, { body, icon: '/static/images/icons/icon-192x192.png' }); } catch (e) {}
+                    try { new Notification(title, { body, icon: '/static/images/icons/icon-192x192.png', silent: mode === 'silent' }); } catch (e) {}
                 });
             } else {
-                try { new Notification(title, { body, icon: '/static/images/icons/icon-192x192.png' }); } catch (e) {}
+                try { new Notification(title, { body, icon: '/static/images/icons/icon-192x192.png', silent: mode === 'silent' }); } catch (e) {}
             }
         }
     }
@@ -141,9 +187,16 @@
             `</div>` +
             `<button type="button" aria-label="Fermer" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:14px;padding:2px 4px;cursor:pointer;">✕</button>`;
         box.addEventListener('click', (e) => {
+            stopPreviewSound();
             if (e.target.tagName === 'BUTTON') { box.remove(); return; }
             box.remove();
-            if (url) window.location.href = url;
+            if (url) {
+                if (typeof window.sdmSoftNavigate === 'function' && url.startsWith('/')) {
+                    window.sdmSoftNavigate(url, true);
+                } else {
+                    window.location.href = url;
+                }
+            }
         });
         document.body.appendChild(box);
         requestAnimationFrame(() => {
@@ -155,14 +208,14 @@
                 box.style.opacity = '0';
                 setTimeout(() => box.remove(), 300);
             }
-        }, 7500);
+        }, 8000);
     }
 
-    async function syncFeed() {
+    async function syncFeed(force = false) {
         let cached = null;
         try { cached = JSON.parse(localStorage.getItem(FEED_KEY) || 'null'); } catch (e) {}
         if (!navigator.onLine) return cached;
-        if (cached && cached._ts && (Date.now() - cached._ts) < 5 * 60 * 1000) return cached;
+        if (!force && cached && cached._ts && (Date.now() - cached._ts) < 2 * 60 * 1000) return cached;
         try {
             const res = await fetch('/api/notifications/sync-feed/', { credentials: 'same-origin' });
             if (res.ok) {
@@ -175,6 +228,17 @@
         return cached;
     }
 
+    function getWirdTodayStatus() {
+        const today = todayIso();
+        try {
+            const tr = JSON.parse(localStorage.getItem(WIRD_TRACK_KEY) || '{}');
+            const rec = (tr.days && tr.days[today]) || {};
+            return { morning: !!rec.morning, evening: !!rec.evening };
+        } catch (e) {
+            return { morning: false, evening: false };
+        }
+    }
+
     async function runNotificationChecks() {
         const prefs = getPrefs();
         if (!prefs.enabled) return;
@@ -185,7 +249,24 @@
         const fired = getFired();
         const feed = await syncFeed();
 
-        // 1. Nouveaux Khassidas ajoutés (avec le NOM EXACT du Khassida !)
+        // 1A. Nouveaux Sons publiés (alerte RÉELLE avec nom exact du son et lecture directe !)
+        if (prefs.sonEnabled && feed && feed.latest_son && feed.latest_son.id) {
+            const latestSonId = String(feed.latest_son.id);
+            const seenSonId = localStorage.getItem(LAST_SON_KEY);
+            if (!seenSonId) {
+                localStorage.setItem(LAST_SON_KEY, latestSonId);
+            } else if (seenSonId !== latestSonId) {
+                localStorage.setItem(LAST_SON_KEY, latestSonId);
+                dispatchNotification(
+                    `🎧 Nouveau Son : ${feed.latest_son.titre}`,
+                    `${feed.latest_son.auteur || 'Kourel Mouride'} vient d'être ajouté dans l'Audiothèque SDM. Touchez pour écouter !`,
+                    `/collection/son/?autoplay=${latestSonId}`,
+                    `sdm-son-${latestSonId}`
+                );
+            }
+        }
+
+        // 1B. Nouveaux Khassidas PDF ajoutés
         if (prefs.khassidaEnabled && feed && feed.latest_khassida && feed.latest_khassida.id) {
             const latestId = String(feed.latest_khassida.id);
             const seenId = localStorage.getItem(LAST_KH_KEY);
@@ -202,7 +283,7 @@
             }
         }
 
-        // 2. Horaires de prière (Dakar / Sénégal par défaut ou horaires du feed)
+        // 2. Horaires de prière (avec option sonore dédiée ou silencieux)
         if (prefs.prayerEnabled) {
             const prayers = (feed && feed.prayers) || [
                 { name: 'Fajr (Subh)', time: '05:45' },
@@ -221,14 +302,45 @@
                         `🕌 Heure de la Prière : ${p.name}`,
                         lead > 0 ? `La prière de ${p.name} est prévue à ${p.time}. Préparez vos ablutions.` : `Il est l'heure de la prière de ${p.name} (${p.time}).`,
                         '/',
-                        key
+                        key,
+                        { isPrayer: true }
                     );
                     break;
                 }
             }
         }
 
-        // 3. Verset du Jour à l'heure exacte choisie par l'utilisateur -> Lien direct vers le Studio Verset !
+        // 3. Rappels Wird Quotidien (06h30 après Suba & 17h00 après Takussan)
+        if (prefs.wirdEnabled) {
+            const wUrl = (feed && feed.wird_url) || '/collection/wird/';
+            const wStat = getWirdTodayStatus();
+            const wm = toMin(prefs.wirdMorningTime || '06:30');
+            const we = toMin(prefs.wirdEveningTime || '17:00');
+
+            const wKeyM = `wird_m_${today}`;
+            if (wm >= 0 && !wStat.morning && !fired[wKeyM] && nowMin >= wm && nowMin <= wm + 120) {
+                markFired(wKeyM);
+                dispatchNotification(
+                    '📿 Rappel Wird du Matin (après Suba)',
+                    'Il est l\'heure de votre Wird du matin (06h30). Touchez pour ouvrir le compteur et enregistrer votre journée.',
+                    wUrl,
+                    wKeyM
+                );
+            }
+
+            const wKeyE = `wird_e_${today}`;
+            if (we >= 0 && !wStat.evening && !fired[wKeyE] && nowMin >= we && nowMin <= we + 120) {
+                markFired(wKeyE);
+                dispatchNotification(
+                    '📿 Rappel Wird du Soir (après Takussan)',
+                    'N\'oubliez pas votre Wird du soir (17h00). Touchez pour accomplir votre séance et maintenir votre série !',
+                    wUrl,
+                    wKeyE
+                );
+            }
+        }
+
+        // 4. Verset du Jour -> Lien DIRECT vers le Studio Verset !
         if (prefs.verseEnabled) {
             const vm = toMin(prefs.verseTime);
             const vKey = `verse_${today}`;
@@ -244,7 +356,7 @@
             }
         }
 
-        // 4. Citation de Cheikh Ahmadou Bamba -> Lien DIRECT vers la citation exacte (enregistrer / copier / partager)
+        // 5. Citation de Cheikh Ahmadou Bamba -> Lien DIRECT vers la citation exacte !
         if (prefs.citationEnabled) {
             const cm = toMin(prefs.citationTime);
             const cKey = `citation_${today}`;
@@ -265,12 +377,11 @@
             }
         }
 
-        // 5. Coach « Mode Duolingo » (Tazawwudu-ç-Çighâr & Masaalikul Jinaan — relance si jour sauté !)
-        if (prefs.duolingoEnabled) {
-            const dm = toMin(prefs.duolingoTime);
-            const dKey = `duolingo_${today}`;
+        // 6. Rappel d'Étude Quotidien (Masaalikul Jinaan & Tazawwudu-ç-Çighâr)
+        if (prefs.studyEnabled) {
+            const dm = toMin(prefs.studyTime);
+            const dKey = `study_${today}`;
             if (dm >= 0 && !fired[dKey] && nowMin >= dm) {
-                // Vérifier progression locale Masaalikul Jinaan
                 let mjDoneToday = false, mjMissed = false, mjStreak = 0;
                 try {
                     const mj = JSON.parse(localStorage.getItem('sdm_masaalik_progress_v1') || '{}');
@@ -285,36 +396,22 @@
                 const tz = (feed && feed.tazawwud) || { done_today: false, missed_yesterday: false, streak: 0 };
                 if (!mjDoneToday && !tz.done_today) {
                     markFired(dKey);
-                    const targetMasaalik = (now.getDate() % 2 === 0);
-                    if (targetMasaalik) {
-                        const title = mjMissed
-                            ? '🦉 Jour sauté sur Masaalikul Jinaan !'
-                            : '🔥 Ta flamme Masaalikul Jinaan va s\'éteindre !';
-                        const body = mjMissed
-                            ? 'Tu as sauté hier sur Masaalikul Jinaan ! Reviens faire 1 chapitre rapide pour rallumer ta flamme et monter ta note /20.'
-                            : (mjStreak > 0
-                                ? `🔥 Série de ${mjStreak} jour(s) en danger ! 3 minutes sur Masaalikul Jinaan suffisent aujourd'hui.`
-                                : '📖 3 minutes sur Masaalikul Jinaan aujourd\'hui = une leçon de Cheikh Ahmadou Bamba maîtrisée et ta flamme allumée !');
-                        dispatchNotification(title, body, '/masaalik/', dKey);
-                    } else {
-                        const pool = tz.missed_yesterday ? DUOLINGO_NUDGES_MISSED : DUOLINGO_NUDGES_TODAY;
-                        let msg = pool[now.getDate() % pool.length];
-                        if (tz.streak > 0 && !tz.missed_yesterday) {
-                            msg = `🔥 Série de ${tz.streak} jour(s) en danger ! ` + msg;
-                        }
-                        dispatchNotification(
-                            tz.missed_yesterday ? '🦉 Jour sauté sur Tazawwudu-ç-Çighâr !' : '🔥 Ta flamme Tazawwud va s\'éteindre !',
-                            msg,
-                            '/tazawwud/',
-                            dKey
-                        );
+                    const pool = (mjMissed || tz.missed_yesterday) ? STUDY_NUDGES_MISSED : STUDY_NUDGES_TODAY;
+                    let msg = pool[now.getDate() % pool.length];
+                    if ((mjStreak || tz.streak) > 0 && !mjMissed && !tz.missed_yesterday) {
+                        msg = `🔥 Série de ${Math.max(mjStreak, tz.streak)} jour(s) en jeu ! ` + msg;
                     }
+                    dispatchNotification(
+                        (mjMissed || tz.missed_yesterday) ? '🔥 Rappel d\'Étude · Jour sauté !' : '📖 Votre leçon du jour vous attend !',
+                        msg,
+                        '/masaalik/',
+                        dKey
+                    );
                 }
             }
         }
     }
 
-    // 6. Indicateur discret de Mode Hors-Ligne
     function updateOfflinePill() {
         let pill = document.getElementById('sdm-offline-pill');
         if (!navigator.onLine) {
@@ -333,21 +430,30 @@
     window.SDMNotifications = {
         getPrefs,
         savePrefs,
+        syncFeed,
+        previewSound(url) {
+            playNotificationSound(url || getPrefs().reminderSoundUrl, 8000);
+        },
+        stopPreviewSound,
         async requestPermission() {
             if (!('Notification' in window)) return 'unsupported';
             const perm = await Notification.requestPermission();
             if (perm === 'granted') {
-                dispatchNotification('۞ Notifications SDM Activées !', 'Vous recevrez vos rappels de prières, versets, citations de Cheikh Ahmadou Bamba et coach Tazawwud.', '/notifications/', 'sdm-welcome');
+                dispatchNotification('۞ Notifications SDM Activées !', 'Prières, Wird (06h30/17h00), Versets, Citations, Nouveaux Sons & Khassidas actifs.', '/notifications/', 'sdm-welcome');
             }
             return perm;
         },
         testNow(kind) {
-            if (kind === 'duolingo') {
-                dispatchNotification('🦉 Coach Duolingo · Masaalikul Jinaan', '🔥 Ne brise pas ta série ! 3 minutes sur Masaalikul Jinaan suffisent pour garder ta flamme allumée et améliorer ta note /20 !', '/masaalik/', 'sdm-test-duo');
-            } else if (kind === 'khassida') {
-                dispatchNotification('📚 Nouveau Khassida : Mawahibou Nâfih', 'Un nouveau manuscrit est disponible dans votre bibliothèque SDM Mouride.', '/collection/khassida/', 'sdm-test-kh');
+            if (kind === 'study') {
+                dispatchNotification('🔥 Rappel d\'Étude · Masaalikul Jinaan', 'Ne brise pas ta série ! 3 minutes sur Masaalikul Jinaan suffisent pour garder ta flamme allumée et améliorer ta note /20 !', '/masaalik/', 'sdm-test-study');
+            } else if (kind === 'wird') {
+                dispatchNotification('📿 Rappel Wird Quotidien (06h30 / 17h00)', 'Pensez à accomplir votre Wird quotidien et à valider votre journée dans le suivi.', '/collection/wird/', 'sdm-test-wird');
+            } else if (kind === 'son') {
+                dispatchNotification('🎧 Nouveau Son : Wajahtou Wadjhiyaza', 'Kourel National Hizbut Tarqiyyah est disponible dans l\'Audiothèque SDM !', '/collection/son/', 'sdm-test-son');
+            } else if (kind === 'prayer') {
+                dispatchNotification('🕌 Heure de la Prière : Takussan (Asr)', 'Il est l\'heure de la prière de Takussan. Préparez vos ablutions.', '/', 'sdm-test-prayer', { isPrayer: true });
             } else {
-                dispatchNotification('۞ Citation de Cheikh Ahmadou Bamba', '« La meilleure parure dont l\'homme puisse se parer est la bonne conduite (al-adab) partout où il passe. » — Masaalikul Jinaan', '/?tab=spirit&cid=mj_v1089', 'sdm-test-cit');
+                dispatchNotification('۞ Parole de Cheikh Ahmadou Bamba', '« La meilleure parure dont l\'homme puisse se parer est la bonne conduite (al-adab) partout où il passe. » — Masaalikul Jinaan', '/?tab=spirit&cid=mj_v1089', 'sdm-test-cit');
             }
         },
         checkNow: runNotificationChecks
@@ -357,7 +463,7 @@
     window.addEventListener('offline', updateOfflinePill);
     window.addEventListener('DOMContentLoaded', () => {
         updateOfflinePill();
-        setTimeout(runNotificationChecks, 2500);
+        setTimeout(runNotificationChecks, 2200);
         setInterval(runNotificationChecks, 60000);
     });
     document.addEventListener('visibilitychange', () => {

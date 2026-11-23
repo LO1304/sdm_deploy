@@ -12,6 +12,7 @@ urlpatterns = [
     path('admin/run-import-xamxam/', views.run_import_xamxam, name='run_import_xamxam'),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
+    path('mot-de-passe-oublie/', views.password_reset_simple, name='password_reset_simple'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('firebase-login/', firebase_auth_view.firebase_login, name='firebase_login'),
 

@@ -27,6 +27,7 @@
 
     // Injecter les styles du micro-widget ultra-compact à côté du nom
     const styleEl = document.createElement('style');
+    styleEl.setAttribute('data-sdm-global-style', '1');
     styleEl.textContent = `
         .sdm-name-audio-widget {
             display: none;
@@ -560,6 +561,20 @@
             renderMiniWidgets(anotherTabIsPlaying ? true : null);
         }
     };
+
+    // Arrêt propre si l'utilisateur ferme / balaie l'application des apps récentes (sans affecter l'écoute en arrière-plan)
+    window.addEventListener('pagehide', () => {
+        if (aud) {
+            saveState({ isPlaying: false }, true);
+            try { aud.pause(); } catch (e) {}
+            try { aud.removeAttribute('src'); aud.load(); } catch (e) {}
+        }
+        try {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = 'none';
+            }
+        } catch (e) {}
+    });
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => window.SDMAudioEngine.init());

@@ -95,17 +95,17 @@
     </div>
 
     <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- COACH DUOLINGO SDM & CALENDRIER D'ÉVOLUTION 7 JOURS                -->
+    <!-- COACH ÉTUDES SDM & CALENDRIER D'ÉVOLUTION 7 JOURS                  -->
     <!-- ══════════════════════════════════════════════════════════════════ -->
     <div class="glass rounded-3xl p-4 border {% if coach_mode == 'missed' %}border-orange-400/55 bg-gradient-to-br from-orange-950/60 to-red-950/35{% elif coach_mode == 'done_today' %}border-emerald-400/50 bg-gradient-to-br from-emerald-950/55 to-[#040B08]{% else %}border-gold-400/50 bg-gradient-to-br from-amber-950/55 to-[#040B08]{% endif %} shadow-2xl space-y-3.5">
         <div class="flex items-start gap-3">
             <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 shadow-lg {% if coach_mode == 'missed' %}bg-orange-500/25 border border-orange-400/50{% elif coach_mode == 'done_today' %}bg-emerald-500/25 border border-emerald-400/50{% else %}bg-gold-500/25 border border-gold-400/50{% endif %}">
-                {% if coach_mode == 'missed' %}🦉{% elif coach_mode == 'done_today' %}🏆{% else %}🔥{% endif %}
+                {% if coach_mode == 'missed' %}🔥{% elif coach_mode == 'done_today' %}🏆{% else %}✨{% endif %}
             </div>
             <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-[10px] font-black uppercase tracking-widest {% if coach_mode == 'missed' %}text-orange-300{% elif coach_mode == 'done_today' %}text-emerald-300{% else %}text-gold-300{% endif %}">
-                        Coach Tazawwud · Mode Duolingo
+                        Suivi Quotidien · Tazawwudu-ç-Çighâr
                     </span>
                     <span class="px-2 py-0.5 rounded-full bg-black/50 border border-orange-400/40 text-[10px] font-black text-orange-300">
                         🔥 {{ streak_live }} j
@@ -138,7 +138,7 @@
             </a>
             <a href="{% url 'notifications' %}"
                class="py-3 px-3 rounded-2xl bg-white/10 border border-white/15 text-gold-300 text-xs font-extrabold tap-card"
-               style="text-decoration:none;" title="Régler l'heure de rappel Duolingo">
+               style="text-decoration:none;" title="Régler l'heure de rappel d'étude">
                 <i class="fa-solid fa-bell"></i>
             </a>
         </div>

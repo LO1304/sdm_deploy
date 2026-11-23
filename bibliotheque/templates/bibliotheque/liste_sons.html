@@ -583,8 +583,8 @@
     <!-- NIVEAU 3 : PROFIL DE KOUREL / MAÎTRE OUVERT (?profil=...) -->
     {% if active_profil %}
     <div class="active-profile-banner">
-        <div class="profile-avatar" style="width:64px; height:64px; font-size:20px; background:{% if active_profil_obj %}{{ active_profil_obj.gradient }}{% else %}linear-gradient(135deg, #D4AF37, #065F46){% endif %};">
-            {% if active_profil_obj %}<span>{{ active_profil_obj.initials }}</span>{% else %}<i class="fa-solid fa-microphone-lines"></i>{% endif %}
+        <div class="profile-avatar" style="width:64px; height:64px; font-size:20px; overflow:hidden; background:{% if active_profil_obj %}{{ active_profil_obj.gradient }}{% else %}linear-gradient(135deg, #D4AF37, #065F46){% endif %};">
+            {% if active_profil_obj and active_profil_obj.image %}<img src="{{ active_profil_obj.image }}" alt="{{ active_profil }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">{% elif active_profil_obj %}<span>{{ active_profil_obj.initials }}</span>{% else %}<i class="fa-solid fa-microphone-lines"></i>{% endif %}
         </div>
         <div style="flex:1; min-width:0;">
             <span style="font-size:9.5px; font-weight:800; text-transform:uppercase; color:var(--gold-lt); letter-spacing:0.1em;">
@@ -663,7 +663,7 @@
         {% for p in collections_profiles %}
         <a href="?cat={{ active_cat }}&profil={{ p.nom|urlencode }}" class="profile-chip-card tap-card" data-profile-name="{{ p.nom|lower }}">
             <div class="profile-avatar" style="background:{{ p.gradient }};">
-                <span>{{ p.initials }}</span>
+                <img src="{{ p.image|default:'/static/images/audio_thumbs/touba.jpg' }}" alt="{{ p.nom }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                 <span class="profile-badge-cnt">{{ p.count }}</span>
             </div>
             <span class="profile-chip-name">{{ p.nom }}</span>
@@ -675,7 +675,7 @@
         {% for p in collections_profiles %}
         <a href="?cat={{ active_cat }}&profil={{ p.nom|urlencode }}" class="collection-card tap-card" data-profile-name="{{ p.nom|lower }}">
             <div class="profile-avatar" style="width:58px; height:58px; font-size:19px; background:{{ p.gradient }};">
-                <span>{{ p.initials }}</span>
+                <img src="{{ p.image|default:'/static/images/audio_thumbs/touba.jpg' }}" alt="{{ p.nom }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                 <span class="profile-badge-cnt">{{ p.count }}</span>
             </div>
             <div style="font-size:11.5px; font-weight:800; color:#fff; line-height:1.25;">{{ p.nom }}</div>
@@ -720,8 +720,8 @@
         {% for folder in folders_tree %}
         <div class="folder-box" data-folder-name="{{ folder.label|lower }}">
             <a href="?cat={{ folder.code }}" class="folder-box-head tap-card">
-                <div class="folder-box-icon" style="background:{{ folder.gradient }};">
-                    <i class="fa-solid {{ folder.icon }}"></i>
+                <div class="folder-box-icon" style="background:{{ folder.gradient }}; overflow:hidden; padding:0; border:1.5px solid rgba(250,204,21,0.55);">
+                    <img src="{{ folder.image|default:'/static/images/audio_thumbs/touba.jpg' }}" alt="{{ folder.label }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                 </div>
                 <div class="folder-box-meta">
                     <div class="folder-box-title">{{ folder.label }}</div>
@@ -730,12 +730,12 @@
                 <span class="folder-open-pill">Ouvrir <i class="fa-solid fa-chevron-right" style="font-size:9px;"></i></span>
             </a>
 
-            <!-- PROFILS EXISTANTS RANGÉS DIRECTEMENT DANS CE DOSSIER -->
+            <!-- PROFILS EXISTANTS RANGÉS DIRECTEMENT DANS CE DOSSIER (AVEC IMAGES NETTES) -->
             <div class="folder-profiles-shelf" id="shelf-{{ folder.code }}">
                 {% for p in folder.profiles %}
                 <a href="?cat={{ folder.code }}&profil={{ p.nom|urlencode }}" class="profile-chip-card tap-card" style="width:92px;" data-profile-name="{{ p.nom|lower }}">
                     <div class="profile-avatar" style="width:48px; height:48px; font-size:15px; background:{{ p.gradient }};">
-                        <span>{{ p.initials }}</span>
+                        <img src="{{ p.image|default:'/static/images/audio_thumbs/touba.jpg' }}" alt="{{ p.nom }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                         <span class="profile-badge-cnt">{{ p.count }}</span>
                     </div>
                     <span class="profile-chip-name">{{ p.nom }}</span>
@@ -948,6 +948,9 @@
 
 {% block extra_js %}
 <script>
+(function initSdmListeSonsPage() {
+const _pjaxAbort = new AbortController();
+const _sig = { signal: _pjaxAbort.signal };
 const aud = window.SDMAudioEngine ? window.SDMAudioEngine.getAudioElement() : document.getElementById('sdm-global-audio');
 const player = document.getElementById('audio-player');
 const miniDock = document.getElementById('mini-dock');
@@ -955,6 +958,7 @@ const seekEl = document.getElementById('seek');
 const ppIcon = document.getElementById('pp-icon');
 const miniPpIcon = document.getElementById('mini-pp-icon');
 const miniDisc = document.getElementById('mini-disc-icon');
+if (!aud || !player) return;
 
 let curIdx = -1;
 let isSeeking = false;
@@ -986,6 +990,7 @@ function getCatIconClass(cat) {
 }
 
 const IS_STAFF = {% if user.is_staff or user.is_superuser %}true{% else %}false{% endif %};
+const IS_AUTH = {% if user.is_authenticated %}true{% else %}false{% endif %};
 const RAW_TRACKS = (() => {
     try { return JSON.parse(document.getElementById('sdm-sons-data')?.textContent || '[]'); }
     catch (e) { return []; }
@@ -1437,6 +1442,11 @@ window.saveCurrentTrackOffline = function() {
 
 window.saveAudioOffline = async function(e, id, titre, auteur, url, sousCategorie, btnEl) {
     if (e && e.stopPropagation) e.stopPropagation();
+    if (!IS_AUTH) {
+        showToast('Créez un compte gratuit pour télécharger les sons hors-ligne');
+        setTimeout(() => { window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname + window.location.search); }, 650);
+        return;
+    }
     if (!window.SDMOfflineVault) return;
     btnEl.disabled = true;
     btnEl.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
@@ -1518,15 +1528,20 @@ aud.addEventListener('timeupdate', () => {
     const pct = aud.currentTime / aud.duration;
     seekEl.value = Math.round(pct * 1000);
     seekEl.style.setProperty('--value', (pct * 100) + '%');
-    document.getElementById('p-cur').textContent = fmt(aud.currentTime);
-    document.getElementById('p-dur').textContent = fmt(aud.duration);
-});
+    const cEl = document.getElementById('p-cur');
+    const dEl = document.getElementById('p-dur');
+    if (cEl) cEl.textContent = fmt(aud.currentTime);
+    if (dEl) dEl.textContent = fmt(aud.duration);
+}, _sig);
 
-aud.addEventListener('loadedmetadata', () => { document.getElementById('p-dur').textContent = fmt(aud.duration); });
+aud.addEventListener('loadedmetadata', () => {
+    const dEl = document.getElementById('p-dur');
+    if (dEl) dEl.textContent = fmt(aud.duration);
+}, _sig);
 
 window.addEventListener('sdm-audio-state', (e) => {
     setPlayingVisuals(Boolean(e.detail?.isPlaying));
-});
+}, _sig);
 
 aud.addEventListener('error', () => {
     if (audioErrorBusy || !aud.src || !curTrackId) return;
@@ -1543,8 +1558,14 @@ aud.addEventListener('error', () => {
     }
     audioErrorBusy = false; audioFallbackTried = false;
     setTimeout(() => playNext(), 800);
-});
-aud.addEventListener('playing', () => { audioFallbackTried = false; audioErrorBusy = false; });
+}, _sig);
+aud.addEventListener('playing', () => { audioFallbackTried = false; audioErrorBusy = false; }, _sig);
+
+window.__sdmPageCleanup = () => {
+    try { _pjaxAbort.abort(); } catch (e) {}
+    if (sleepTimerId) clearTimeout(sleepTimerId);
+    if (sleepTickId) clearInterval(sleepTickId);
+};
 
 let searchDebounce = null;
 document.getElementById('searchInput').addEventListener('input', function() {
@@ -1583,7 +1604,7 @@ document.getElementById('searchInput').addEventListener('input', function() {
     }, 90);
 });
 
-window.addEventListener('DOMContentLoaded', async () => {
+async function bootListeSons() {
     // 1. Marquer en vert les sons déjà téléchargés hors-ligne
     if (window.SDMOfflineVault) {
         try {
@@ -1598,7 +1619,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         } catch (e) {}
     }
 
-    // 2. Support ?autoplay=<id> ou reprise visuelle du titre en cours
+    // 2. Support ?autoplay=<id> ou reprise visuelle SANS AUCUNE COUPURE du titre déjà en cours
     const params = new URLSearchParams(window.location.search);
     const autoId = params.get('autoplay');
     if (autoId) {
@@ -1612,17 +1633,36 @@ window.addEventListener('DOMContentLoaded', async () => {
         curTrackId = String(cur.id || '');
         const t = idx !== -1 ? filteredTracks[idx].titre : cur.titre;
         const a = idx !== -1 ? filteredTracks[idx].auteur : (cur.auteur || 'Kourel Mouride');
-        document.getElementById('p-title').textContent = t;
-        document.getElementById('p-author').textContent = a;
-        document.getElementById('fp-collection-lbl').textContent = a;
+        const pTitle = document.getElementById('p-title');
+        const pAuth = document.getElementById('p-author');
+        const fpLbl = document.getElementById('fp-collection-lbl');
+        const mTitle = document.getElementById('mini-title');
+        const mAuth = document.getElementById('mini-author');
+        if (pTitle) pTitle.textContent = t;
+        if (pAuth) pAuth.textContent = a;
+        if (fpLbl) fpLbl.textContent = a;
         const fpLink = document.getElementById('fp-collection-link');
         if (fpLink) fpLink.href = '/collection/son/?profil=' + encodeURIComponent(a);
-        document.getElementById('mini-title').textContent = t;
-        document.getElementById('mini-author').textContent = a;
+        if (mTitle) mTitle.textContent = t;
+        if (mAuth) mAuth.textContent = a;
+        if (aud && aud.duration && isFinite(aud.duration)) {
+            const pct = aud.currentTime / aud.duration;
+            seekEl.value = Math.round(pct * 1000);
+            seekEl.style.setProperty('--value', (pct * 100) + '%');
+            const cEl = document.getElementById('p-cur');
+            const dEl = document.getElementById('p-dur');
+            if (cEl) cEl.textContent = fmt(aud.currentTime);
+            if (dEl) dEl.textContent = fmt(aud.duration);
+        }
         miniDock.classList.add('show');
         setPlayingVisuals(Boolean(aud && !aud.paused));
     }
-});
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootListeSons, { once: true });
+} else {
+    bootListeSons();
+}
 
 {% if user.is_staff or user.is_superuser %}
 window.openTelegramAudioModal = () => { document.getElementById('telegramAudioModal').style.display = 'flex'; };
@@ -1678,5 +1718,6 @@ window.saveEditSon = async () => {
     if (res.ok) { closeEditSonModal(); location.reload(); }
 };
 {% endif %}
+})();
 </script>
 {% endblock %}

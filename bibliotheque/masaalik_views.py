@@ -2,9 +2,10 @@ import json
 import datetime
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, Http404
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from .masaalik_data import MASAALIK_PORTES, get_all_chapitres, get_chapitre_by_slug, build_duolingo_deck
+from .masaalik_data import MASAALIK_PORTES, get_all_chapitres, get_chapitre_by_slug, build_masaalik_deck
 
 
 def _compute_streak(active_days):
@@ -66,13 +67,14 @@ def masaalik_home(request):
     return render(request, "bibliotheque/masaalik/home.html", context)
 
 
+@login_required(login_url='/login/')
 def masaalik_chapitre(request, slug):
-    """Lecteur étape par étape style Duolingo pour un chapitre de Masaalik-ul Jinaan."""
+    """Lecteur étape par étape pour une leçon de Masaalik-ul Jinaan (compte requis pour sauvegarder notes & progression)."""
     chapitre, prev_ch, next_ch = get_chapitre_by_slug(slug)
     if not chapitre:
         raise Http404("Chapitre Masaalikul Jinaan introuvable")
 
-    deck = build_duolingo_deck(chapitre)
+    deck = build_masaalik_deck(chapitre)
     context = {
         "chapitre": chapitre,
         "prev_ch": prev_ch,

@@ -119,6 +119,25 @@
         </div>
     </header>
 
+    <!-- SUIVI CALENDRIER 7 JOURS & SÉANCES MATIN (06h30 SUBA) / SOIR (17h00 TAKUSSAN) -->
+    <div class="glass rounded-3xl p-4 mb-6 border border-gold-500/30 shadow-glass">
+        <div class="flex items-center justify-between gap-2 mb-3">
+            <div>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-gold-400 block">Suivi Quotidien du Wird</span>
+                <span id="wird-streak-label" class="text-xs font-black text-white">🔥 0 jour de suite</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <button type="button" id="btn-wird-am" onclick="markWirdSlot('morning')" class="px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-[10px] font-extrabold text-white/80">
+                    🌅 06h30 Suba
+                </button>
+                <button type="button" id="btn-wird-pm" onclick="markWirdSlot('evening')" class="px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-[10px] font-extrabold text-white/80">
+                    🌇 17h00 Takussan
+                </button>
+            </div>
+        </div>
+        <div id="wird-7days-strip" class="grid grid-cols-7 gap-1.5"></div>
+    </div>
+
     <!-- CONTENT CARD -->
     <main class="glass rounded-[32px] p-6 text-center md:p-10 mb-8 shadow-glass relative overflow-hidden" data-aos="zoom-in" data-aos-delay="100">
         <!-- Decoration -->
@@ -285,6 +304,9 @@
             updateUI();
             window.scrollTo({top: 0, behavior: 'smooth'});
         } else if (currentIdx === ETAPES.length - 1 && count === ETAPES[currentIdx].rep) {
+            // Enregistrer la séance du matin ou du soir dans le calendrier 7 jours
+            const slot = (new Date().getHours() < 15) ? 'morning' : 'evening';
+            markWirdSlot(slot, true);
             // L'utilisateur valide la fin, on boucle à zéro !
             currentIdx = 0;
             count = 0;
@@ -293,6 +315,74 @@
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
     }
+
+    const WIRD_TRACK_KEY = 'sdm_wird_tracker_v1';
+    function getWirdTodayIso() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    function renderWirdTracker() {
+        let tr = { days: {} };
+        try { tr = Object.assign(tr, JSON.parse(localStorage.getItem(WIRD_TRACK_KEY) || '{}')); } catch (e) {}
+        if (!tr.days) tr.days = {};
+        const todayIso = getWirdTodayIso();
+        const rec = tr.days[todayIso] || { morning: false, evening: false };
+
+        const bAm = document.getElementById('btn-wird-am');
+        const bPm = document.getElementById('btn-wird-pm');
+        if (bAm) {
+            bAm.className = rec.morning
+                ? 'px-2.5 py-1.5 rounded-xl bg-emerald-500/25 border border-emerald-400/60 text-[10px] font-black text-emerald-200'
+                : 'px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-[10px] font-extrabold text-white/80';
+            bAm.textContent = rec.morning ? '🌅 06h30 ✓' : '🌅 06h30 Suba';
+        }
+        if (bPm) {
+            bPm.className = rec.evening
+                ? 'px-2.5 py-1.5 rounded-xl bg-emerald-500/25 border border-emerald-400/60 text-[10px] font-black text-emerald-200'
+                : 'px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-[10px] font-extrabold text-white/80';
+            bPm.textContent = rec.evening ? '🌇 17h00 ✓' : '🌇 17h00 Takussan';
+        }
+
+        let streak = 0;
+        const cur = new Date(todayIso + 'T12:00:00');
+        while (true) {
+            const k = cur.toISOString().slice(0, 10);
+            const r = tr.days[k];
+            if (r && (r.morning || r.evening)) { streak++; cur.setDate(cur.getDate() - 1); }
+            else break;
+        }
+        const lbl = document.getElementById('wird-streak-label');
+        if (lbl) lbl.textContent = `🔥 ${streak} jour${streak > 1 ? 's' : ''} de suite`;
+
+        const strip = document.getElementById('wird-7days-strip');
+        if (strip) {
+            const names = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+            let html = '';
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(Date.now() - i * 86400000);
+                const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                const r = tr.days[k];
+                const ok = r && (r.morning || r.evening);
+                const isT = (k === todayIso);
+                html += `<div class="rounded-xl py-1.5 text-center border ${ok ? 'bg-emerald-500/20 border-emerald-400/55 text-emerald-200' : (isT ? 'bg-gold-500/15 border-gold-400/60 text-gold-300' : 'bg-white/5 border-white/10 text-white/45')}">` +
+                        `<span class="block text-[9px] font-extrabold uppercase">${names[d.getDay()]}</span>` +
+                        `<span class="block text-xs mt-0.5">${ok ? '🔥' : (isT ? '⏳' : '·')}</span></div>`;
+            }
+            strip.innerHTML = html;
+        }
+    }
+    window.markWirdSlot = function(slot, forceTrue = false) {
+        const todayIso = getWirdTodayIso();
+        let tr = { days: {} };
+        try { tr = Object.assign(tr, JSON.parse(localStorage.getItem(WIRD_TRACK_KEY) || '{}')); } catch (e) {}
+        if (!tr.days) tr.days = {};
+        const rec = tr.days[todayIso] || { morning: false, evening: false };
+        rec[slot] = forceTrue ? true : !rec[slot];
+        tr.days[todayIso] = rec;
+        try { localStorage.setItem(WIRD_TRACK_KEY, JSON.stringify(tr)); } catch (e) {}
+        renderWirdTracker();
+    };
+    renderWirdTracker();
 
     function prevStep() {
         if (autoNextTimeout) clearTimeout(autoNextTimeout);

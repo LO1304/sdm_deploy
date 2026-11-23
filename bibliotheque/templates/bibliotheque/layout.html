@@ -56,6 +56,7 @@
     <link rel="stylesheet" href="{% static 'css/sdm_theme.css' %}">
 
     {% block extra_head %}{% endblock %}
+    {% block extra_css %}{% endblock %}
 
     <!-- THEME LOADER (Pre-render to avoid flash of unstyled content) -->
     <script>
@@ -257,8 +258,8 @@
     </div>
     {% endif %}
 
-    <!-- Contenu Principal (Cadre Application Mobile Natif) -->
-    <div class="site-wrapper pb-24 {% block wrapper_classes %}max-w-[540px] mx-auto pt-3 px-3.5{% endblock %}">
+    <!-- Contenu Principal (Cadre Application Mobile Natif — Swap PJAX Zéro Coupure Audio) -->
+    <div id="sdm-pjax-root" class="site-wrapper pb-24 {% block wrapper_classes %}max-w-[540px] mx-auto pt-3 px-3.5{% endblock %}">
         {% block content %}{% endblock %}
     </div>
 
@@ -291,6 +292,207 @@
     <!-- Lecteur Audio Global Persistant (Ne s'arrête pas entre les pages ni en arrière-plan) -->
     <audio id="sdm-global-audio" preload="auto" playsinline webkit-playsinline></audio>
 
+    <!-- ═══ ÉCRAN DE LANCEMENT ANIMÉ SDM (PHOTO SERIGNE TOUBA FLOUTÉE + PALETTES + CITATION + WAJAHTOU WADJHIYAZA) ═══ -->
+    <div id="sdm-launch-splash" style="display:none;position:fixed;inset:0;z-index:10060;background:#030A07;overflow:hidden;">
+        <img src="{% static 'images/serigne_touba_splash.jpg' %}" alt="Cheikh Ahmadou Bamba"
+             style="position:absolute;inset:-14px;width:calc(100% + 28px);height:calc(100% + 28px);object-fit:cover;object-position:center 22%;filter:blur(6px) brightness(0.42) contrast(1.08);transform:scale(1.06);animation:sdmSplashZoom 14s ease-in-out infinite alternate;">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 20% 20%, rgba(250,204,21,0.22), transparent 52%), radial-gradient(circle at 82% 78%, rgba(16,185,129,0.26), transparent 55%), linear-gradient(180deg, rgba(3,10,7,0.55) 0%, rgba(3,10,7,0.75) 55%, rgba(3,10,7,0.96) 100%);"></div>
+        <!-- Palettes lumineuses flottantes -->
+        <div style="position:absolute;top:14%;left:12%;width:150px;height:150px;border-radius:50%;background:rgba(250,204,21,0.16);filter:blur(42px);animation:sdmOrbFloat 7s ease-in-out infinite alternate;pointer-events:none;"></div>
+        <div style="position:absolute;bottom:18%;right:10%;width:180px;height:180px;border-radius:50%;background:rgba(16,185,129,0.2);filter:blur(48px);animation:sdmOrbFloat 9s ease-in-out infinite alternate-reverse;pointer-events:none;"></div>
+
+        <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(28px, env(safe-area-inset-top, 28px)) 24px max(30px, env(safe-area-inset-bottom, 30px));text-align:center;max-width:440px;margin:0 auto;">
+            <!-- Haut : Logo + Palettes -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px;">
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="width:18px;height:4px;border-radius:99px;background:#FDE047;"></span>
+                    <span style="width:10px;height:4px;border-radius:99px;background:#34D399;"></span>
+                    <span style="width:6px;height:4px;border-radius:99px;background:#F59E0B;"></span>
+                </div>
+                <div style="width:76px;height:76px;border-radius:24px;background:linear-gradient(135deg,rgba(250,204,21,0.22),rgba(6,78,59,0.65));border:2px solid rgba(250,204,21,0.7);display:flex;align-items:center;justify-content:center;font-size:32px;color:#FDE047;box-shadow:0 0 36px rgba(250,204,21,0.35);animation:sdmLogoPulse 2.6s ease-in-out infinite;">
+                    ۞
+                </div>
+                <div>
+                    <div style="font-size:22px;font-weight:900;letter-spacing:0.12em;color:#FDE047;text-shadow:0 2px 16px rgba(0,0,0,0.85);">SDM MOURIDE</div>
+                    <div style="font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.72);margin-top:2px;">Cheikh Ahmadou Bamba · Khadimou Rassoul</div>
+                </div>
+            </div>
+
+            <!-- Centre : Citation différente à chaque lancement -->
+            <div style="background:rgba(4,16,11,0.68);backdrop-filter:blur(14px);border:1px solid rgba(250,204,21,0.35);border-radius:22px;padding:18px 18px;width:100%;box-shadow:0 16px 40px rgba(0,0,0,0.55);">
+                <div style="font-size:9.5px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:#FDE047;margin-bottom:8px;">۞ Parole de Lumière</div>
+                <p id="sdm-splash-quote" style="font-size:13.5px;font-weight:700;color:#fff;line-height:1.55;margin:0;"></p>
+                <div id="sdm-splash-source" style="font-size:10px;font-weight:800;color:#6EE7B7;margin-top:10px;letter-spacing:0.06em;"></div>
+            </div>
+
+            <!-- Bas : Audio Wajahtou Wadjhiyaza + Bouton Entrer -->
+            <div style="width:100%;display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(0,0,0,0.55);border:1px solid rgba(52,211,153,0.4);">
+                    <span class="sdm-mini-eq" style="display:inline-flex;"><span></span><span></span><span></span></span>
+                    <span style="font-size:10.5px;font-weight:800;color:#A7F3D0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Wajahtou Wadjhiyaza · Kourel National Hizbut Tarqiyyah</span>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button type="button" onclick="window.enterSdmFromSplash(true)"
+                            style="flex:1;padding:14px 16px;border-radius:18px;border:none;background:linear-gradient(135deg,#FDE047,#D4AF37);color:#040B08;font-size:13px;font-weight:900;letter-spacing:0.04em;cursor:pointer;box-shadow:0 10px 28px rgba(212,175,55,0.42);">
+                        <i class="fa-solid fa-play" style="margin-right:6px;"></i> Entrer avec le Khassida
+                    </button>
+                    <button type="button" onclick="window.enterSdmFromSplash(false)"
+                            style="padding:14px 14px;border-radius:18px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;font-weight:800;cursor:pointer;" title="Entrer sans son">
+                        <i class="fa-solid fa-volume-xmark"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ BANNIÈRE FLUIDE D'INSTALLATION PWA (POUR LES UTILISATEURS OUVRANT LE LIEN HORS STORES) ═══ -->
+    <div id="sdm-pwa-install-bar" style="display:none;position:fixed;bottom:calc(74px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:440px;z-index:990;background:linear-gradient(135deg,rgba(6,36,24,0.97),rgba(4,14,10,0.98));border:1px solid rgba(250,204,21,0.55);border-radius:20px;padding:12px 14px;box-shadow:0 16px 40px rgba(0,0,0,0.65);backdrop-filter:blur(16px);">
+        <div style="display:flex;align-items:center;gap:11px;">
+            <img src="{% static 'images/icons/icon-192x192.png' %}" alt="SDM" style="width:40px;height:40px;border-radius:12px;border:1px solid rgba(250,204,21,0.5);flex-shrink:0;">
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:12px;font-weight:900;color:#FDE047;line-height:1.2;">Installer l'application SDM</div>
+                <div style="font-size:10.5px;color:rgba(255,255,255,0.82);margin-top:2px;line-height:1.3;">Ajoutez SDM sur votre écran d'accueil pour l'ouvrir directement parmi vos applications.</div>
+            </div>
+            <button type="button" onclick="window.triggerSdmPwaInstall()" style="padding:8px 12px;border-radius:12px;border:none;background:linear-gradient(135deg,#FDE047,#D4AF37);color:#040B08;font-size:11px;font-weight:900;cursor:pointer;flex-shrink:0;">
+                Installer
+            </button>
+            <button type="button" onclick="window.dismissSdmPwaBar()" aria-label="Fermer" style="background:none;border:none;color:rgba(255,255,255,0.45);font-size:14px;padding:2px 4px;cursor:pointer;">✕</button>
+        </div>
+    </div>
+
+    <!-- GUIDE VISUEL iOS / AUTRES NAVIGATEURS SI beforeinstallprompt NON DISPO -->
+    <div id="sdm-ios-install-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;z-index:10070;background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;padding:16px;">
+        <div style="width:100%;max-width:420px;background:#071811;border:1px solid rgba(250,204,21,0.45);border-radius:26px;padding:20px;color:#fff;box-shadow:0 20px 50px rgba(0,0,0,0.75);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <span style="font-size:14px;font-weight:900;color:#FDE047;">📲 Ajouter SDM à vos applications</span>
+                <button type="button" onclick="document.getElementById('sdm-ios-install-modal').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:16px;cursor:pointer;">✕</button>
+            </div>
+            <p style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5;margin-bottom:12px;">
+                En attendant la sortie officielle sur App Store et Play Store, installez SDM en 2 secondes :
+            </p>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:11.5px;color:#fff;">
+                <div style="padding:10px 12px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
+                    <strong style="color:#FDE047;">1.</strong> Sur iPhone (Safari) touchez <strong>Partager</strong> <i class="fa-solid fa-arrow-up-from-bracket"></i> · Sur Android (Chrome) touchez le menu <strong>⋮</strong>.
+                </div>
+                <div style="padding:10px 12px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
+                    <strong style="color:#FDE047;">2.</strong> Choisissez <strong>« Sur l'écran d'accueil »</strong> ou <strong>« Installer l'application »</strong> puis confirmez.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style data-sdm-global-style="1">
+        @keyframes sdmSplashZoom { from { transform: scale(1.04); } to { transform: scale(1.14); } }
+        @keyframes sdmOrbFloat { from { transform: translate(0, 0) scale(1); } to { transform: translate(24px, -20px) scale(1.18); } }
+        @keyframes sdmLogoPulse { 0%,100% { box-shadow: 0 0 24px rgba(250,204,21,0.32); } 50% { box-shadow: 0 0 44px rgba(250,204,21,0.65); } }
+    </style>
+
+    <script>
+    (function initSdmSplashAndInstall() {
+        const SPLASH_KEY = 'sdm_splash_shown_v1';
+        const LAUNCH_AUDIO = {
+            id: 'launch_wajahtou_ht',
+            titre: 'Wajahtou Wadjhiyaza',
+            auteur: 'Kourel National Hizbut Tarqiyyah',
+            url: 'https://res.cloudinary.com/dcajqzg2h/video/upload/v1795376309/media/audios/telegram/khassida/KURELSQACIDAS_8012_Wajahtou_Wadjhiyaza.mp3'
+        };
+        const LAUNCH_QUOTES = [
+            { t: "La meilleure parure dont l'homme puisse se parer est la bonne conduite (al-adab) partout où il passe.", s: "Masaalikul Jinaan (v.1089) · Cheikh Ahmadou Bamba" },
+            { t: "L'homme le plus estimé auprès d'Allah est celui qui Le craint le plus, sans discrimination d'aucune sorte.", s: "Masaalikul Jinaan (v.48) · Cheikh Ahmadou Bamba" },
+            { t: "Sache que la science et l'action constituent les deux moyens pour atteindre le bonheur éternel.", s: "Masaalikul Jinaan (v.91) · Cheikh Ahmadou Bamba" },
+            { t: "La mention du Nom d'Allah constitue le début de la sainteté, et son abandon est le plus haut degré de l'égarement.", s: "Masaalikul Jinaan (v.304) · Cheikh Ahmadou Bamba" },
+            { t: "Le meilleur jihâd consiste à empêcher son esprit de s'occuper de ce qui ne lui incombe pas.", s: "Masaalikul Jinaan (v.456) · Cheikh Ahmadou Bamba" },
+            { t: "Sache que l'abandon à Allah n'exclut nullement le travail licite (kasb) : le meilleur comportement est d'allier les deux.", s: "Masaalikul Jinaan (v.1037–1039) · Cheikh Ahmadou Bamba" },
+            { t: "Quand un bonheur t'arrive, remercie Allah ; quand un malheur te frappe, patiente avec constance.", s: "Masaalikul Jinaan (v.1302) · Cheikh Ahmadou Bamba" },
+            { t: "Embellis ton for intérieur, lieu du regard du Maître des créatures, au lieu de te soucier des apparences.", s: "Masaalikul Jinaan (v.986) · Cheikh Ahmadou Bamba" },
+            { t: "Le savoir est à la vie des cœurs ce qu'est la pluie à l'essor d'une terre lorsqu'elle l'arrose.", s: "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba" },
+            { t: "L'aspirant sincère (le Mouride) ne doit désirer que l'agrément d'Allah le Clément, partout où il passe.", s: "Paroles de Lumière · Cheikh Ahmadou Bamba" }
+        ];
+
+        // 1. Afficher le Splash Screen animé une fois par ouverture de l'app (avec citation différente à chaque lancement)
+        const splashEl = document.getElementById('sdm-launch-splash');
+        if (splashEl && !sessionStorage.getItem(SPLASH_KEY)) {
+            let lastQIdx = parseInt(localStorage.getItem('sdm_last_splash_q') || '-1', 10);
+            let nextQIdx = Math.floor(Math.random() * LAUNCH_QUOTES.length);
+            if (nextQIdx === lastQIdx) nextQIdx = (nextQIdx + 1) % LAUNCH_QUOTES.length;
+            localStorage.setItem('sdm_last_splash_q', String(nextQIdx));
+            const q = LAUNCH_QUOTES[nextQIdx];
+            const qEl = document.getElementById('sdm-splash-quote');
+            const sEl = document.getElementById('sdm-splash-source');
+            if (qEl) qEl.textContent = '« ' + q.t + ' »';
+            if (sEl) sEl.textContent = q.s;
+            splashEl.style.display = 'block';
+
+            // Tenter la lecture douce immédiate de Wajahtou Wadjhiyaza (si autorisé par le navigateur)
+            setTimeout(() => {
+                const aud = document.getElementById('sdm-global-audio');
+                if (aud && !aud.src && window.SDMAudioEngine) {
+                    window.SDMAudioEngine.loadAndPlay(LAUNCH_AUDIO).catch(() => {});
+                }
+            }, 350);
+        }
+
+        window.enterSdmFromSplash = function(playAudio) {
+            sessionStorage.setItem(SPLASH_KEY, '1');
+            const sp = document.getElementById('sdm-launch-splash');
+            if (sp) {
+                sp.style.transition = 'opacity 0.35s ease';
+                sp.style.opacity = '0';
+                setTimeout(() => { sp.style.display = 'none'; }, 360);
+            }
+            const aud = document.getElementById('sdm-global-audio');
+            if (playAudio && window.SDMAudioEngine) {
+                if (!aud || aud.paused || !aud.src) {
+                    window.SDMAudioEngine.loadAndPlay(LAUNCH_AUDIO).catch(() => {});
+                }
+            } else if (!playAudio && aud && !aud.paused) {
+                aud.pause();
+            }
+        };
+
+        // 2. Bannière fluide d'installation PWA (si ouvert dans un navigateur via un lien partagé)
+        let deferredInstallEvt = null;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+        function maybeShowInstallBar() {
+            if (isStandalone) return;
+            const dismissedTs = parseInt(localStorage.getItem('sdm_pwa_dismiss_ts') || '0', 10);
+            if (Date.now() - dismissedTs < 24 * 3600 * 1000) return;
+            const bar = document.getElementById('sdm-pwa-install-bar');
+            if (bar) bar.style.display = 'block';
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallEvt = e;
+            maybeShowInstallBar();
+        });
+
+        window.addEventListener('load', () => {
+            if (!isStandalone) setTimeout(maybeShowInstallBar, 3500);
+        });
+
+        window.triggerSdmPwaInstall = async function() {
+            if (deferredInstallEvt) {
+                deferredInstallEvt.prompt();
+                try { await deferredInstallEvt.userChoice; } catch (e) {}
+                deferredInstallEvt = null;
+                const bar = document.getElementById('sdm-pwa-install-bar');
+                if (bar) bar.style.display = 'none';
+            } else {
+                const m = document.getElementById('sdm-ios-install-modal');
+                if (m) m.style.display = 'flex';
+            }
+        };
+
+        window.dismissSdmPwaBar = function() {
+            localStorage.setItem('sdm_pwa_dismiss_ts', String(Date.now()));
+            const bar = document.getElementById('sdm-pwa-install-bar');
+            if (bar) bar.style.display = 'none';
+        };
+    })();
+    </script>
+
     <!-- Scripts Globaux (Optimisés Mobile : zéro blocage AOS, navigation instantanée, notifications intelligentes) -->
     <script src="{% static 'js/sdm_instant_nav.js' %}" defer></script>
     <script src="{% static 'js/sdm_notifications.js' %}" defer></script>
@@ -298,7 +500,7 @@
     <script src="{% static 'js/sdm_audio_engine.js' %}"></script>
     <script src="{% static 'js/sdm_main.js' %}" defer></script>
     
-    {% block extra_js %}{% endblock %}
+    <div id="sdm-pjax-scripts" hidden>{% block extra_js %}{% endblock %}</div>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {

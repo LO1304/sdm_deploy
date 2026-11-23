@@ -132,10 +132,48 @@ PROFILE_PALETTES = [
 ]
 
 
+PROFILE_IMAGES = [
+    '/static/images/audio_thumbs/touba.jpg',
+    '/static/images/audio_thumbs/khassida.jpg',
+    '/static/images/audio_thumbs/mosquee.jpg',
+    '/static/images/audio_thumbs/auth_or.jpg',
+    '/static/images/audio_thumbs/medine.jpg',
+    '/static/images/audio_thumbs/kaaba.jpg',
+    '/static/images/audio_thumbs/parchemin.jpg',
+    '/static/images/audio_thumbs/firdaws.jpg',
+    '/static/images/audio_thumbs/aurore.jpg',
+    '/static/images/audio_thumbs/pattern.jpg',
+]
+
+FOLDER_IMAGES = {
+    'KHASSIDA': '/static/images/audio_thumbs/touba.jpg',
+    'WAKHTANE': '/static/images/audio_thumbs/serigne_touba.jpg',
+    'XAM_XAM': '/static/images/audio_thumbs/parchemin.jpg',
+    'CORAN': '/static/images/audio_thumbs/kaaba.jpg',
+    'ZIKR': '/static/images/audio_thumbs/medine.jpg',
+    'RAJASS': '/static/images/audio_thumbs/aurore.jpg',
+    'ADHAN': '/static/images/audio_thumbs/mosquee.jpg',
+}
+
+
+def _pick_profile_image(name, cat):
+    low = (name or '').lower()
+    if any(k in low for k in ('bamba', 'touba', 'bassirou', 'saliou', 'abdou', 'mback')):
+        return '/static/images/audio_thumbs/touba.jpg'
+    if any(k in low for k in ('ahlu', 'khadim', 'hizbut', 'kourel', 'kurel', 'khassida')):
+        return '/static/images/audio_thumbs/khassida.jpg'
+    if cat == 'CORAN':
+        return '/static/images/audio_thumbs/kaaba.jpg'
+    if cat == 'XAM_XAM':
+        return '/static/images/audio_thumbs/parchemin.jpg'
+    return PROFILE_IMAGES[sum(ord(c) for c in (name or 'SDM')) % len(PROFILE_IMAGES)]
+
+
 def _build_audio_folders_and_profiles(queryset):
     """
     Regroupe les profils existants (Kourels, Maîtres, Récitants) directement à l'intérieur
-    de leurs dossiers/catégories existants (Khassidas, Wakhtane, Xam Xam, Coran, etc.).
+    de leurs dossiers/catégories existants (Khassidas, Wakhtane, Xam Xam, Coran, etc.)
+    avec une image nette existante par dossier et par profil.
     """
     cat_labels = dict(Son.CATEGORIES)
     folder_map = {}
@@ -148,6 +186,7 @@ def _build_audio_folders_and_profiles(queryset):
         words = [w for w in name.replace('—', ' ').replace('-', ' ').split() if w]
         initials = (words[0][0] + (words[1][0] if len(words) > 1 else '')).upper() if words else 'SD'
         gradient = PROFILE_PALETTES[sum(ord(c) for c in name) % len(PROFILE_PALETTES)]
+        p_image = _pick_profile_image(name, cat)
 
         if cat not in folder_map:
             meta = AUDIO_FOLDER_META.get(cat, {
@@ -163,6 +202,7 @@ def _build_audio_folders_and_profiles(queryset):
                 'subtitle': meta['subtitle'],
                 'icon': meta['icon'],
                 'gradient': meta['gradient'],
+                'image': FOLDER_IMAGES.get(cat, '/static/images/audio_thumbs/touba.jpg'),
                 'order': meta['order'],
                 'total_tracks': 0,
                 'profiles_dict': {},
@@ -179,6 +219,7 @@ def _build_audio_folders_and_profiles(queryset):
                 'categorie_label': f_entry['label'],
                 'count': 0,
                 'gradient': gradient,
+                'image': p_image,
             }
         f_entry['profiles_dict'][pkey]['count'] += row['total']
 
@@ -191,6 +232,7 @@ def _build_audio_folders_and_profiles(queryset):
                 'categorie_label': f_entry['label'],
                 'count': 0,
                 'gradient': gradient,
+                'image': p_image,
             }
         flat_profiles[pkey]['count'] += row['total']
 
@@ -203,6 +245,7 @@ def _build_audio_folders_and_profiles(queryset):
             'subtitle': f['subtitle'],
             'icon': f['icon'],
             'gradient': f['gradient'],
+            'image': f['image'],
             'total_tracks': f['total_tracks'],
             'total_profiles': len(profs),
             'profiles': profs,
@@ -333,14 +376,14 @@ def _build_audio_title_folders(sons_list):
 
 def _invalidate_catalog_cache():
     cache.delete_many([
-        'sdm_audio_catalog_v1',
+        'sdm_audio_catalog_v2',
         f'sdm_home_public_v1_{datetime.date.today().isoformat()}',
     ])
 
 
 def _get_cached_audio_catalog():
     """Construit et met en cache en mémoire le catalogue audio complet (dossiers, profils, titres, pistes compactes)."""
-    cached = cache.get('sdm_audio_catalog_v1')
+    cached = cache.get('sdm_audio_catalog_v2')
     if cached is not None:
         return cached
 
@@ -384,7 +427,7 @@ def _get_cached_audio_catalog():
         'total_all_sons': len(compact_tracks),
         'compact_tracks': compact_tracks,
     }
-    cache.set('sdm_audio_catalog_v1', data, 300)
+    cache.set('sdm_audio_catalog_v2', data, 300)
     return data
 
 
@@ -1649,6 +1692,110 @@ def register_view(request):
         form = ModernRegisterForm()
     return render(request, 'bibliotheque/register.html', {'form': form})
 
+
+def password_reset_simple(request):
+    """
+    Réinitialisation simplifiée du mot de passe :
+      Étape 1 : l'utilisateur saisit son email (ou nom d'utilisateur).
+                Si un serveur SMTP est configuré, un code à 6 chiffres lui est envoyé ;
+                sinon, passage fluide direct à la création du nouveau mot de passe.
+      Étape 2 : vérification du code (si SMTP actif) + définition du nouveau mot de passe + connexion auto.
+    """
+    from django.contrib.auth import get_user_model
+    from django.core.mail import send_mail
+    import random
+
+    User = get_user_model()
+    step = request.session.get('pwd_reset_step', 'email')
+    reset_uid = request.session.get('pwd_reset_uid')
+    reset_email_mask = request.session.get('pwd_reset_email_mask', '')
+    need_code = request.session.get('pwd_reset_need_code', False)
+    error_msg = None
+    info_msg = None
+
+    if request.GET.get('restart') == '1':
+        for k in ('pwd_reset_step', 'pwd_reset_uid', 'pwd_reset_code', 'pwd_reset_email_mask', 'pwd_reset_need_code'):
+            request.session.pop(k, None)
+        return redirect('password_reset_simple')
+
+    if request.method == 'POST':
+        action = request.POST.get('action', 'find_account')
+
+        if action == 'find_account':
+            ident = (request.POST.get('identifier') or '').strip()
+            user = None
+            if ident:
+                user = User.objects.filter(email__iexact=ident).first() or User.objects.filter(username__iexact=ident).first()
+            if not user:
+                error_msg = "Aucun compte trouvé avec cet email ou ce nom d'utilisateur."
+            else:
+                code = f"{random.randint(100000, 999999)}"
+                email_sent = False
+                smtp_configured = bool(getattr(settings, 'EMAIL_HOST_USER', '') and getattr(settings, 'EMAIL_HOST_PASSWORD', ''))
+                if smtp_configured and user.email:
+                    try:
+                        send_mail(
+                            subject="SDM Mouride — Code de réinitialisation de mot de passe",
+                            message=f"Assalamou Alaykoum {user.username},\n\nVoici votre code de vérification SDM : {code}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet email.",
+                            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', settings.EMAIL_HOST_USER),
+                            recipient_list=[user.email],
+                            fail_silently=False,
+                        )
+                        email_sent = True
+                    except Exception:
+                        email_sent = False
+
+                em = user.email or user.username
+                mask = (em[:2] + '***' + em[em.find('@'):]) if '@' in em else (em[:2] + '***')
+                request.session['pwd_reset_uid'] = user.id
+                request.session['pwd_reset_code'] = code
+                request.session['pwd_reset_email_mask'] = mask
+                request.session['pwd_reset_need_code'] = email_sent
+                request.session['pwd_reset_step'] = 'new_password'
+                step = 'new_password'
+                reset_uid = user.id
+                reset_email_mask = mask
+                need_code = email_sent
+                info_msg = (
+                    f"Un code à 6 chiffres a été envoyé à {mask}. Saisissez-le avec votre nouveau mot de passe."
+                    if email_sent else
+                    f"Compte trouvé ({mask}) ! Choisissez directement votre nouveau mot de passe ci-dessous."
+                )
+
+        elif action == 'set_password' and reset_uid:
+            user = User.objects.filter(id=reset_uid).first()
+            p1 = (request.POST.get('new_password1') or '').strip()
+            p2 = (request.POST.get('new_password2') or '').strip()
+            code_in = (request.POST.get('code') or '').strip()
+            expected_code = request.session.get('pwd_reset_code', '')
+
+            if not user:
+                error_msg = "Session expirée. Veuillez recommencer."
+                step = 'email'
+            elif need_code and code_in != expected_code:
+                error_msg = "Le code de vérification saisi est incorrect."
+            elif len(p1) < 6:
+                error_msg = "Le nouveau mot de passe doit contenir au moins 6 caractères."
+            elif p1 != p2:
+                error_msg = "Les deux mots de passe ne correspondent pas."
+            else:
+                user.set_password(p1)
+                user.save()
+                for k in ('pwd_reset_step', 'pwd_reset_uid', 'pwd_reset_code', 'pwd_reset_email_mask', 'pwd_reset_need_code'):
+                    request.session.pop(k, None)
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                request.session.set_expiry(60 * 60 * 24 * 365)
+                messages.success(request, "Votre mot de passe a été modifié avec succès. Bienvenue !")
+                return redirect('home')
+
+    return render(request, 'bibliotheque/password_reset_simple.html', {
+        'step': step,
+        'email_mask': reset_email_mask,
+        'need_code': need_code,
+        'error_msg': error_msg,
+        'info_msg': info_msg,
+    })
+
 @csrf_exempt
 def api_restore_session(request):
     """
@@ -2441,10 +2588,36 @@ def notifications_list(request):
 def api_notifications_sync_feed(request):
     """Flux léger JSON pour les notifications locales programmées (nouveau Khassida, verset, citation, prières, streak Tazawwud)."""
     import datetime as dt
-    feed_pub = cache.get('sdm_notif_pub_feed_v2')
+    feed_pub = cache.get('sdm_notif_pub_feed_v3')
     if feed_pub is None:
         latest_kh = Khassida.objects.only('id', 'titre').order_by('-id').first()
         latest_kh_data = {'id': latest_kh.id, 'titre': latest_kh.titre} if latest_kh else None
+
+        latest_son = Son.objects.only('id', 'titre', 'auteur_voix').order_by('-id').first()
+        latest_son_data = {
+            'id': latest_son.id,
+            'titre': latest_son.titre,
+            'auteur': latest_son.auteur_voix or 'Kourel Mouride',
+        } if latest_son else None
+
+        wird_obj = Wird.objects.filter(titre__icontains='Mahuz').first() or Wird.objects.first()
+        wird_url = f"/wird/{wird_obj.slug}/" if (wird_obj and wird_obj.slug) else "/collection/wird/"
+
+        # Extraits Khassidas disponibles comme sons de notification / prière
+        alert_sounds = [
+            {
+                'id': 'wajahtou_ht',
+                'label': 'Wajahtou Wadjhiyaza · Hizbut Tarqiyyah',
+                'url': 'https://res.cloudinary.com/dcajqzg2h/video/upload/v1795376309/media/audios/telegram/khassida/KURELSQACIDAS_8012_Wajahtou_Wadjhiyaza.mp3',
+            },
+        ]
+        for s_item in Son.objects.filter(categorie__in=['KHASSIDA', 'ADHAN']).exclude(lien_audio_externe='').only('id', 'titre', 'auteur_voix', 'lien_audio_externe')[:8]:
+            if s_item.lien_audio_externe and s_item.lien_audio_externe.startswith('http'):
+                alert_sounds.append({
+                    'id': f'son_{s_item.id}',
+                    'label': f"{(s_item.titre or 'Khassida')[:38]} · {(s_item.auteur_voix or 'SDM')[:20]}",
+                    'url': s_item.lien_audio_externe,
+                })
 
         # Citation du jour (depuis nos citations vérifiées SDM & Masaalikul Jinaan)
         citation_data = {
@@ -2514,11 +2687,14 @@ def api_notifications_sync_feed(request):
 
         feed_pub = {
             'latest_khassida': latest_kh_data,
+            'latest_son': latest_son_data,
+            'wird_url': wird_url,
+            'alert_sounds': alert_sounds,
             'citation_du_jour': citation_data,
             'verset_du_jour': verset_data,
             'prayers': prayers,
         }
-        cache.set('sdm_notif_pub_feed_v2', feed_pub, 180)
+        cache.set('sdm_notif_pub_feed_v3', feed_pub, 180)
 
     # État Tazawwud "Mode Duolingo" personnel
     tazawwud_state = {'done_today': False, 'missed_yesterday': False, 'streak': 0, 'score_total': 0}
@@ -2645,6 +2821,7 @@ def quiz_home(request):
     return render(request, 'bibliotheque/quiz/quiz_home.html', context)
 
 
+@login_required(login_url='/login/')
 def quiz_play_random(request, theme_slug='mixte'):
     """Lance une manche aléatoire de 10 questions uniques (sans répétition) depuis la banque massive."""
     diff_param = request.GET.get('diff')
@@ -2667,6 +2844,7 @@ def quiz_play_random(request, theme_slug='mixte'):
     })
 
 
+@login_required(login_url='/login/')
 def quiz_play(request, niveau_id):
     niveau = get_object_or_404(NiveauQuiz, id=niveau_id)
     if request.user.is_authenticated:
@@ -2690,6 +2868,7 @@ def quiz_play(request, niveau_id):
     })
 
 
+@login_required(login_url='/login/')
 def quiz_play_theme(request, categorie_id):
     categorie = get_object_or_404(CategorieQuiz, id=categorie_id)
     cn = (categorie.nom or '').lower()
