@@ -1,13 +1,10 @@
-const CACHE_NAME = 'sdm-premium-v15';
+const CACHE_NAME = 'sdm-premium-v16';
 const SHELL_ASSETS = [
   '/',
-  '/collection/son/',
-  '/collection/khassida/',
-  '/coran/',
+  '/offline/',
+  '/masaalik/',
   '/zikr-compteur/',
   '/telechargements/',
-  '/offline/',
-  '/notifications/',
   '/static/css/sdm_theme.css',
   '/static/js/sdm_main.js',
   '/static/js/sdm_instant_nav.js',
@@ -16,19 +13,18 @@ const SHELL_ASSETS = [
   '/static/js/sdm_notifications.js',
   '/static/manifest.json',
   '/static/images/icons/icon-192x192.png',
-  '/static/images/sdm_rappels/sdm_touba_emerald.jpg',
-  '/static/images/sdm_rappels/sdm_parchemin_royal.jpg',
-  '/static/images/sdm_rappels/sdm_nuit_medine.jpg',
-  '/static/images/sdm_rappels/sdm_kaaba_or.jpg',
-  '/static/images/sdm_rappels/sdm_firdaws_jade.jpg',
-  '/static/images/sdm_rappels/sdm_sufi_dawn.jpg',
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap'
+  '/static/images/sdm_rappels/thumbs/sdm_touba_emerald.jpg',
+  '/static/images/sdm_rappels/thumbs/sdm_parchemin_royal.jpg',
+  '/static/images/sdm_rappels/thumbs/sdm_nuit_medine.jpg',
+  '/static/images/sdm_rappels/thumbs/sdm_kaaba_or.jpg',
+  '/static/images/sdm_rappels/thumbs/sdm_firdaws_jade.jpg',
+  '/static/images/sdm_rappels/thumbs/sdm_sufi_dawn.jpg',
+  'https://cdn.tailwindcss.com'
 ];
 
 const INSTANT_SHELL_PATHS = new Set([
   '/',
+  '/masaalik/',
   '/collection/son/',
   '/collection/khassida/',
   '/coran/',

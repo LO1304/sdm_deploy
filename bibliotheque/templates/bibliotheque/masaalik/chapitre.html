@@ -1,0 +1,309 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}Ch.{{ chapitre.num }} · {{ chapitre.titre }} · Masaalikul Jinaan{% endblock %}
+
+{% block extra_css %}
+<style>
+    .mj-card-stage {
+        min-height: 330px;
+        background: radial-gradient(circle at top right, rgba(250,204,21,0.14), transparent 55%),
+                    linear-gradient(165deg, rgba(6,32,24,0.96), rgba(4,13,10,0.98));
+        border: 1px solid rgba(250,204,21,0.32);
+    }
+    .mj-opt-btn {
+        transition: all .15s ease;
+    }
+    .mj-opt-btn:active { transform: scale(0.985); }
+    .mj-opt-btn.correct {
+        background: rgba(16,185,129,0.22) !important;
+        border-color: #34D399 !important;
+        color: #A7F3D0 !important;
+    }
+    .mj-opt-btn.wrong {
+        background: rgba(244,63,94,0.22) !important;
+        border-color: #FB7185 !important;
+        color: #FECDD3 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-3.5 pb-6">
+
+    <!-- BARRE SUPÉRIEURE DUOLINGO (RETOUR + BARRE DE PROGRESSION + SCORE EN DIRECT) -->
+    <div class="flex items-center gap-2.5">
+        <a href="{% url 'masaalik_home' %}" class="w-9 h-9 rounded-xl bg-white/10 text-white flex items-center justify-center flex-shrink-0 tap-card" style="text-decoration:none;">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </a>
+        <div class="flex-1">
+            <div class="flex items-center justify-between text-[10px] font-extrabold text-white/70 mb-1">
+                <span>Ch.{{ chapitre.num }} · <span id="mj-step-counter">1/{{ total_steps }}</span></span>
+                <span class="text-gold-300">⚡ <span id="mj-live-score">0</span>/{{ total_questions }} bonnes</span>
+            </div>
+            <div class="w-full h-2.5 rounded-full bg-white/10 overflow-hidden">
+                <div id="mj-step-bar" class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-gold-400 transition-all duration-300" style="width:6%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARTE ÉTAPE PAR ÉTAPE (CALIBRÉE PETIT ÉCRAN MOBILE) -->
+    <div id="mj-player-box" class="mj-card-stage rounded-[24px] p-5 flex flex-col justify-between shadow-2xl">
+        <div>
+            <span id="mj-card-tag" class="inline-block px-3 py-1 rounded-full bg-gold-500/20 border border-gold-400/45 text-gold-300 text-[9.5px] font-black uppercase tracking-wider mb-3">
+                Masaalikul Jinaan
+            </span>
+            <h2 id="mj-card-title" class="text-[17px] font-black text-white leading-snug"></h2>
+            <p id="mj-card-body" class="text-[13.5px] text-white/90 leading-relaxed mt-3"></p>
+            <p id="mj-card-meta" class="text-[11px] font-bold text-emerald-300 mt-3 hidden"></p>
+
+            <!-- OPTIONS DE QUESTION INTERMÉDIAIRE -->
+            <div id="mj-options-wrap" class="space-y-2 mt-4 hidden"></div>
+
+            <!-- FEEDBACK IMMÉDIAT FIDÈLE AU LIVRE -->
+            <div id="mj-feedback-box" class="mt-3.5 rounded-2xl p-3 text-[11.5px] leading-snug hidden"></div>
+        </div>
+
+        <div class="pt-5">
+            <button type="button" id="mj-continue-btn" onclick="nextMasaalikStep()"
+                    class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-gold-400 to-amber-500 text-black text-xs font-black uppercase tracking-wider shadow-lg tap-card">
+                Continuer <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ÉCRAN FINAL : NOTE /20, ÉTOILES, MESSAGE DE REMERCIEMENT & CHAPITRE SUIVANT -->
+    <div id="mj-finish-box" class="hidden mj-card-stage rounded-[24px] p-5 text-center space-y-4 shadow-2xl">
+        <div class="text-4xl" id="mj-finish-stars">⭐⭐⭐</div>
+        <div>
+            <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/45 text-emerald-300 text-[10px] font-black uppercase tracking-widest">
+                Chapitre {{ chapitre.num }} terminé !
+            </span>
+            <h2 class="text-2xl font-black text-white mt-2">
+                Note : <span id="mj-final-note" class="text-gold-300">20/20</span>
+            </h2>
+            <p class="text-xs font-bold text-emerald-300 mt-1" id="mj-final-xp">+105 XP · 🔥 Flamme mise à jour</p>
+        </div>
+
+        <div class="rounded-2xl bg-black/45 border border-gold-400/35 p-3.5 text-left">
+            <span class="text-[10px] font-black uppercase tracking-wider text-gold-300 block mb-1">
+                ۞ Merci pour ta progression !
+            </span>
+            <p id="mj-final-merci" class="text-[12px] text-white/90 leading-relaxed"></p>
+        </div>
+
+        <div class="space-y-2">
+            {% if next_ch %}
+            <a href="{% url 'masaalik_chapitre' next_ch.slug %}"
+               class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-gold-400 to-amber-500 text-black text-xs font-black flex items-center justify-center gap-2 tap-card"
+               style="text-decoration:none;">
+                Chapitre suivant : Ch.{{ next_ch.num }} · {{ next_ch.titre }} <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            {% endif %}
+
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="shareMasaalikGrade()"
+                        class="py-3 rounded-2xl bg-[#25D366]/20 border border-[#25D366]/45 text-[#4ADE80] text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Partager ma note
+                </button>
+                <a href="{% url 'masaalik_home' %}"
+                   class="py-3 rounded-2xl bg-white/10 border border-white/15 text-white text-[11px] font-extrabold flex items-center justify-center gap-1.5 tap-card"
+                   style="text-decoration:none;">
+                    <i class="fa-solid fa-route"></i> Arborescence
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function initMasaalikPlayer() {
+    const DECK = {{ deck_json|safe|default:"[]" }};
+    const SLUG = '{{ chapitre.slug|escapejs }}';
+    const CH_NUM = {{ chapitre.num }};
+    const CH_TITRE = '{{ chapitre.titre|escapejs }}';
+    const TOTAL_Q = {{ total_questions|default:8 }};
+    const STORAGE_KEY = 'sdm_masaalik_progress_v1';
+
+    let stepIdx = 0;
+    let correctCount = 0;
+    let answeredCurrent = false;
+    let lastNote20 = 0;
+
+    function renderStep() {
+        if (stepIdx >= DECK.length) {
+            finishChapter();
+            return;
+        }
+        const card = DECK[stepIdx];
+        answeredCurrent = (card.type !== 'question');
+
+        document.getElementById('mj-step-counter').textContent = `${stepIdx + 1}/${DECK.length}`;
+        document.getElementById('mj-live-score').textContent = correctCount;
+        document.getElementById('mj-step-bar').style.width = `${Math.round(((stepIdx + 1) / DECK.length) * 100)}%`;
+
+        const tagEl = document.getElementById('mj-card-tag');
+        const titleEl = document.getElementById('mj-card-title');
+        const bodyEl = document.getElementById('mj-card-body');
+        const metaEl = document.getElementById('mj-card-meta');
+        const optsWrap = document.getElementById('mj-options-wrap');
+        const fbBox = document.getElementById('mj-feedback-box');
+        const nextBtn = document.getElementById('mj-continue-btn');
+
+        optsWrap.innerHTML = '';
+        optsWrap.classList.add('hidden');
+        fbBox.classList.add('hidden');
+        metaEl.classList.add('hidden');
+
+        if (card.type === 'intro') {
+            tagEl.textContent = '📖 ' + card.tag;
+            titleEl.textContent = card.titre;
+            bodyEl.textContent = card.texte;
+            metaEl.textContent = '✨ ' + card.meta;
+            metaEl.classList.remove('hidden');
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = '1';
+            nextBtn.innerHTML = 'Démarrer le chapitre <i class="fa-solid fa-play ml-1"></i>';
+        } else if (card.type === 'passage') {
+            tagEl.textContent = '۞ ' + card.tag;
+            titleEl.textContent = card.titre;
+            bodyEl.textContent = card.texte;
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = '1';
+            nextBtn.innerHTML = 'Étape suivante <i class="fa-solid fa-arrow-right ml-1"></i>';
+        } else {
+            tagEl.textContent = `❓ Question ${card.q_num}/${card.q_total}`;
+            titleEl.textContent = card.question;
+            bodyEl.textContent = '';
+            optsWrap.classList.remove('hidden');
+            nextBtn.disabled = true;
+            nextBtn.style.opacity = '0.45';
+            nextBtn.innerHTML = 'Choisis une réponse…';
+
+            card.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'mj-opt-btn w-full text-left px-3.5 py-3 rounded-2xl bg-white/8 border border-white/15 text-white text-[12.5px] font-bold flex items-center gap-2.5';
+                const letter = ['A', 'B', 'C', 'D'][idx] || String(idx + 1);
+                btn.innerHTML = `<span class="w-6 h-6 rounded-lg bg-white/10 text-gold-300 text-[11px] font-black flex items-center justify-center flex-shrink-0">${letter}</span><span class="flex-1">${optText}</span>`;
+                btn.addEventListener('click', () => handleAnswer(idx, btn, card));
+                optsWrap.appendChild(btn);
+            });
+        }
+    }
+
+    function handleAnswer(chosenIdx, btn, card) {
+        if (answeredCurrent) return;
+        answeredCurrent = true;
+        const isCorrect = (chosenIdx === card.answer);
+        if (isCorrect) correctCount += 1;
+        document.getElementById('mj-live-score').textContent = correctCount;
+
+        const allBtns = document.querySelectorAll('#mj-options-wrap .mj-opt-btn');
+        allBtns.forEach((b, i) => {
+            b.disabled = true;
+            if (i === card.answer) b.classList.add('correct');
+            else if (i === chosenIdx && !isCorrect) b.classList.add('wrong');
+        });
+
+        const fbBox = document.getElementById('mj-feedback-box');
+        fbBox.classList.remove('hidden');
+        if (isCorrect) {
+            fbBox.className = 'mt-3.5 rounded-2xl p-3 text-[11.5px] leading-snug bg-emerald-950/80 border border-emerald-400/55 text-emerald-100';
+            fbBox.innerHTML = `<strong class="text-emerald-300 block mb-0.5">✅ Exact ! +10 XP</strong>${card.explication}`;
+        } else {
+            fbBox.className = 'mt-3.5 rounded-2xl p-3 text-[11.5px] leading-snug bg-rose-950/80 border border-rose-400/55 text-rose-100';
+            fbBox.innerHTML = `<strong class="text-rose-300 block mb-0.5">💡 Ce que dit le livre :</strong>${card.explication}`;
+        }
+
+        const nextBtn = document.getElementById('mj-continue-btn');
+        nextBtn.disabled = false;
+        nextBtn.style.opacity = '1';
+        nextBtn.innerHTML = (stepIdx + 1 >= DECK.length)
+            ? 'Voir ma note /20 <i class="fa-solid fa-trophy ml-1"></i>'
+            : 'Continuer <i class="fa-solid fa-arrow-right ml-1"></i>';
+        try { if (navigator.vibrate) navigator.vibrate(isCorrect ? 10 : [20, 40, 20]); } catch (e) {}
+    }
+
+    window.nextMasaalikStep = function() {
+        if (!answeredCurrent) return;
+        stepIdx += 1;
+        renderStep();
+    };
+
+    async function finishChapter() {
+        document.getElementById('mj-player-box').classList.add('hidden');
+        document.getElementById('mj-finish-box').classList.remove('hidden');
+
+        const noteRaw = (correctCount / Math.max(1, TOTAL_Q)) * 20;
+        const note20 = Number.isInteger(noteRaw) ? noteRaw : Number(noteRaw.toFixed(1));
+        lastNote20 = note20;
+        const stars = note20 >= 16 ? 3 : (note20 >= 12 ? 2 : (note20 >= 8 ? 1 : 0));
+        const xpEarned = 25 + correctCount * 10 + (note20 === 20 ? 20 : 0);
+
+        // Sauvegarde locale immédiate (100% compatible hors-ligne)
+        const now = new Date();
+        const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        let prog = { chapters: {}, active_days: [], xp: 0, streak: 1 };
+        try { prog = Object.assign(prog, JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')); } catch (e) {}
+        const prev = prog.chapters[SLUG] || {};
+        prog.chapters[SLUG] = {
+            note_20: Math.max(Number(prev.note_20 || 0), note20),
+            last_note_20: note20,
+            stars: Math.max(Number(prev.stars || 0), stars),
+            completed: true,
+            updated_at: todayIso
+        };
+        if (!prog.active_days.includes(todayIso)) prog.active_days.push(todayIso);
+        prog.xp = Number(prog.xp || 0) + xpEarned;
+
+        // Calcul streak local
+        const dSet = new Set(prog.active_days);
+        let st = 0;
+        const d = new Date(todayIso + 'T12:00:00');
+        while (dSet.has(d.toISOString().slice(0, 10))) { st += 1; d.setDate(d.getDate() - 1); }
+        prog.streak = st;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(prog)); } catch (e) {}
+
+        // Affichage immédiat
+        document.getElementById('mj-finish-stars').textContent = stars > 0 ? ('⭐'.repeat(stars) + '☆'.repeat(3 - stars)) : '🌱';
+        document.getElementById('mj-final-note').textContent = `${note20}/20`;
+        document.getElementById('mj-final-xp').textContent = `+${xpEarned} XP · 🔥 Flamme : ${st} jour(s)`;
+
+        let merciMsg = note20 >= 18
+            ? "Mâshâ'Allah ! Merci infiniment pour ton sérieux et ta constance dans l'étude de Masaalikul Jinaan. Cheikh Ahmadou Bamba a prié pour quiconque médite cet ouvrage (v.70) !"
+            : (note20 >= 14
+                ? "Alhamdoulillah ! Merci pour ta belle progression aujourd'hui. Continue sur cet élan lumineux, tu maîtrises de mieux en mieux les enseignements de Serigne Touba !"
+                : (note20 >= 10
+                    ? "Bravo et merci pour ton effort ! Tu avances étape par étape dans Masaalikul Jinaan. Rejoue ce chapitre quand tu veux pour viser les 3 étoiles !"
+                    : "Merci d'avoir pris le temps d'étudier aujourd'hui ! L'apprentissage est un chemin : rejoue ce chapitre calmement pour ancrer chaque enseignement et faire grimper ta note."));
+        document.getElementById('mj-final-merci').textContent = merciMsg;
+
+        // Synchronisation serveur silencieuse si en ligne
+        if (navigator.onLine) {
+            try {
+                const res = await fetch('/api/masaalik/save-progress/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ slug: SLUG, correct: correctCount, total: TOTAL_Q })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.merci_msg) document.getElementById('mj-final-merci').textContent = data.merci_msg;
+                }
+            } catch (e) {}
+        }
+    }
+
+    window.shareMasaalikGrade = function() {
+        const msg = `۞ Masaalikul Jinaan (Mode Duolingo · SDM Mouride)\nJ'ai terminé le Chapitre ${CH_NUM} (« ${CH_TITRE} ») avec la note de ${lastNote20}/20 !\nRejoins-moi pour étudier les enseignements de Cheikh Ahmadou Bamba : ${window.location.origin}/masaalik/`;
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+    };
+
+    renderStep();
+})();
+</script>
+{% endblock %}

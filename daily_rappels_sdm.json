@@ -1,1532 +1,1370 @@
 [
   {
-    "id": "sdm_cit_40",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
+    "id": "mj_v3",
+    "theme": "Introduction & Égalité",
+    "badge": "Masaalikul Jinaan · v.3–4",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "La meilleure parure dont l'homme puisse se parer, est la bonne conduite partout où il passe.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Louange à Allah qui exige de nous la sincérité des actions et l'observance de la conduite pieuse (al-adab), Lui qui considère en nous le cœur et les qualités spirituelles, et non ce qui n'est qu'apparent.",
     "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_cit_41",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
+    "id": "mj_v8",
+    "theme": "Introduction & Égalité",
+    "badge": "Masaalikul Jinaan · v.8–10",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Eviter La machination et les controverses malsaines, la guerre froide ou toutes mauvaises relations.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_42",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Ne manger que le pur licite, non le douteux, loin de l'usure et de ses semblables. MBÂCKE.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_43",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "O ami, si tu manges n'importe quoi, tu fais n'importe quoi, si tu accompagnes n'importe qui, tu deviens n'importe qui (choisis donc ce que tu manges et celui que tu fréquentes).",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Quiconque lutte contre Satan, contre son âme charnelle et contre sa passion profane obtient le Paradis ; celui qui purifie son cœur de tout vice acquiert la lumière et l'agrément d'Allah.",
     "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_cit_44",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
+    "id": "mj_v47",
+    "theme": "Introduction & Égalité",
+    "badge": "Masaalikul Jinaan · v.47–49",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Fuyez tout lieu de tentation et de séduction afin d'être sauvé du péché.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_45",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Il est nécessaire à toute personne responsable de ses actes d'éviter de prononcer des paroles interdites.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_46",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Eviter de verser le sang ou d'utiliser illégitimement le bien d'un musulman ou d'un semblable.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_48",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Fais du silence ta réponse, Si jamais tu es à court d'arguments; il arrive souvent qu'une parole ne trouve sa réponse que dans le silence.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_49",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Si la conduite d'un individu te séduit, épouse-la; alors, ce qui t'avait séduit naîtra en toi.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne te laisse pas abuser par ma condition d'homme noir pour ne pas profiter de cet ouvrage. L'homme le plus estimé auprès d'Allah est celui qui Le craint le plus, sans discrimination d'aucune sorte. La couleur de la peau ne saurait être cause de l'idiotie d'un homme ou de sa mauvaise compréhension.",
     "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_cit_52",
-    "badge": "Ilhâmul Wudûd",
-    "oeuvre": "Ilhâmul Wudûd",
+    "id": "mj_v51",
+    "theme": "Introduction & Égalité",
+    "badge": "Masaalikul Jinaan · v.51–53",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Persévère dans la quête de la droiture et de la soumission avec ascétisme, scrupule et sobriété.",
-    "source": "Ilhâmul Wudûd — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne fais pas des grâces qu'Allah accorde une exclusivité réservée aux seuls anciens : il arrive qu'un homme d'époque récente connaisse des secrets qu'ignorait un ancien. Une fine pluie peut en devancer une abondante, mais l'avantage revient à l'abondante.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v70",
+    "theme": "Introduction & Égalité",
+    "badge": "Masaalikul Jinaan · v.70–71",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Je sollicite le salut auprès d'Allah pour quiconque lit notre livre, pour celui qui le médite, pour celui qui le possède, qui le loue, qui le copie ou qui l'emprunte.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v80",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.80–82",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La science se divise en deux parties : l'exotérique régit l'action des hommes (le fiqh), et l'ésotérique régit les états d'âme (le tasawwuf ou soufisme). Il est obligatoire de les réunir toutes les deux.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v87",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.87–90",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Celui qui applique le fiqh et fait fi du soufisme est un pervers, et celui qui pratique le soufisme sans le fiqh est un hérétique (zindîq) ; mais celui qui réunit les deux est un beau modèle à suivre, selon le grand Imam Mâlik.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v91",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.91–93",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sache que la science et l'action constituent les deux moyens pour atteindre le bonheur éternel. Soucie-toi de ces deux principes dans la pureté absolue et avec un culte exclusif voué à Allah.",
     "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_cit_53",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
+    "id": "mj_v96",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.96–97",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Ne te livre pas souvent et ce, partout où tu te trouves, aux amusements, au rire, à l'agitation, à la futilité.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_54",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Dans l'assistance, maîtrise-toi le corps, consacre-toi au silence par la réserve, ainsi tu seras comblé.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_55",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Supporte avec patience les diffamations et ne les rends à personne, car l'échange de propos diffamatoires et le fait de se traiter mutuellement de menteur sont des marques des pires habitudes.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_57",
-    "badge": "Ilhâmul Wudûd",
-    "oeuvre": "Ilhâmul Wudûd",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Evite la procrastination car à la longue, elle mène les soumis vers la perversion.",
-    "source": "Ilhâmul Wudûd — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_58",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Traite ton égal de la manière dont tu aimerais être traité toi-même.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Efforce-toi d'accomplir habituellement les œuvres pies avec vigueur et éloigne-toi de la paresse. Conduis-toi de la manière dont tu te serais conduit si tu savais que ta mort était imminente.",
     "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_cit_60",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
+    "id": "mj_v102",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.102",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Sois avec tout le monde, ta vie durant, exactement comme tu souhaiterais qu'il soit avec toi.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "L'ajournement du repentir par crainte de récidiver constitue un piège tendu à l'homme par Satan le rebelle.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v103",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.103–105",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La science est supérieure à l'action car elle en est le fondement, mais elle ne porte de fruits que par la pratique. Un peu de bonnes actions fondées sur la science vaut davantage que beaucoup d'actions accomplies dans l'ignorance.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v106",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.106–107",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La seule science utile est celle que la personne a apprise et enseignée exclusivement pour l'amour d'Allah Très-Haut, non celle acquise pour les disputes, les controverses, la gloire ou le prestige.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v114",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.114–116",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La science utile est celle qui inspire la crainte d'Allah, l'humilité, l'ascèse et la bonne conduite ; c'est celle qui purifie le cœur, dompte la passion mondaine et préserve des péchés.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v123",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.123–125",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La meilleure des actions est celle dont le profit touche le plus grand nombre, telle la science utile, ainsi que l'action qui purifie le cœur et celle accomplie avec persévérance, fût-elle en faible quantité.",
     "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_cit_61",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
+    "id": "mj_v128",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.128",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Obéis à tes deux parents, sois envers eux bienveillant et empresse-toi d'exécuter leurs ordres, garde-toi de tout ce qu'ils t'interdisent, pour la FACE de Dieu et tu gagneras ainsi plus de considération.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_66",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Partout où tu es en compagnie d'une personne plus grande que toi, ne cesse de lui vouer respect. Lors d'un voyage, ou lors d'une autre occasion, honore-le dans l'assistance et cède-lui le lit, assoies-toi par terre et n'accepte pas de le partager avec lui (le lit), le solliciterait-il par largesse, sauf en cas de force majeure.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_70",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Si tu recherches le savoir auprès d'un enseignant, sollicite l'agrément de celui-ci.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_72",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Sache que la connaissance est ardue, on ne l'acquiert qu'en s'abstenant des palabres. Nul n'en acquerra jamais une partie, s'il ne lui dispose pas son tout, sois persévérant!",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_73",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Il faut noter l'éducation de tes enfants afin qu'ils deviennent sages et soient dans la bonne voie.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La pire désobéissance est celle qui endurcit le cœur et fait oublier Allah et Son adoration.",
     "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_cit_75",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
+    "id": "mj_v159",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.159",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Le savoir est à la vie des cœurs, ce qu'est la pluie à l'essor d'un pays quand elle l'arrose.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La vraie science est celle qui engendre la crainte d'Allah l'Omniscient ; celui qui n'acquiert pas cette science n'est qu'un ignorant blâmable.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v170",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.170–173",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La science utile est celle qui fait connaître à l'homme ses propres défauts de manière claire, et l'incite à la longanimité, à la générosité, à la bonté, à la pureté, à l'honnêteté et au scrupule.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v178",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.178–179",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La science ne peut que conduire l'homme vers la sagesse ou le pousser vers la perdition. Quiconque aide un chercheur de science pour l'amour d'Allah aura sa part dans toute la récompense acquise par celui-ci.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v181",
+    "theme": "Science & Action",
+    "badge": "Masaalikul Jinaan · v.181–183",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La qualité de savant ne s'attribue pas au plus grand nombre de récits débités : la science est une lumière qui réside dans le cœur. Celui qui ne craint pas Allah n'est pas un savant ('âlim), eût-il épuisé toutes les disciplines.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v133",
+    "theme": "Sagesse Profonde",
+    "badge": "Masaalikul Jinaan · v.133–135",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La chose la plus souhaitable aux yeux des morts est de pouvoir revenir à la vie, ne serait-ce qu'un court instant, pour accomplir un bienfait. Profite donc du reste de ta vie et hâte-toi vers les œuvres pies.",
     "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_cit_87",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
+    "id": "mj_v137",
+    "theme": "Sagesse Profonde",
+    "badge": "Masaalikul Jinaan · v.137–140",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "La compagnie des amis sincères te fait connaître tes vices et tes défauts.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_88",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "La compagnie de tes ennemis peut être utile par leurs critiques et ta longanimité devant leur malveillance.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_89",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Tu n'es au-dessus de personne, car tu ignores comment finira ta vie et quelle sera ta destinée demain.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_90",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Le Seigneur en a fini avec quatre (4) choses: la durée de notre vie; notre création, caractère, fortune.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_91",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Sois indulgent envers le jeune et ne lui épargne aucun conseil qui, selon toi est de nature à le mettre dans la Bonne Voie.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sois parcimonieux dans l'emploi de ton temps, mettant à profit chaque instant et chaque respiration : une seule respiration vaut une pierre précieuse sans égal avec laquelle on peut acquérir un trésor immense.",
     "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_cit_93",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
+    "id": "mj_v147",
+    "theme": "Sagesse Profonde",
+    "badge": "Masaalikul Jinaan · v.147",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "La Pudeur est la sœur de la Foi; partout où elle est absente, la Foi n'y existe pas.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Il est compté parmi les actes les plus méritoires de faire parvenir la joie et les bonnes nouvelles aux musulmans, et jamais la mauvaise nouvelle ni le mal.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v150",
+    "theme": "Sagesse Profonde",
+    "badge": "Masaalikul Jinaan · v.150–151",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Accomplis tes actes de dévotion discrètement, à l'insu des autres : tu seras félicité et loué au Jour de la rétribution, car la plupart des actions exhibées perdent leur mérite ce jour-là.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v187",
+    "theme": "Sagesse Profonde",
+    "badge": "Masaalikul Jinaan · v.187–189",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Multiplie tes bonnes actions pour l'amour d'Allah autant que tu as besoin de Son aide. Agis pour ce bas-monde en fonction de la brièveté de ton séjour ici-bas, et agis pour l'Au-delà en fonction de l'éternité que tu y passeras.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v190",
+    "theme": "Sagesse Profonde",
+    "badge": "Masaalikul Jinaan · v.190–191",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "N'ose désobéir que dans la mesure de ta capacité à supporter le feu de l'Enfer. Et si tu crains ton Seigneur l'Unique comme il se doit, toute créature vivante te craindra par respect.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v195",
+    "theme": "Temps & Oraison",
+    "badge": "Masaalikul Jinaan · v.195–198",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le Witr est la plus recommandée des prières traditionnelles, et les deux rak'as du Fajr sont très désirables : celui qui y récite les sourates Ash-Sharh et Al-Fîl obtient une garantie contre tout ennemi.",
     "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_cit_94",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
+    "id": "mj_v201",
+    "theme": "Temps & Oraison",
+    "badge": "Masaalikul Jinaan · v.201–202",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Ne choisis, quand tu cherches un compagnon, ni un sot, ni un jaloux, ni un envieux.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_95",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Quiconque est plus petit que toi, épargne-le et témoigne-lui de pitié.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_97",
-    "badge": "Ilhâmul Wudûd",
-    "oeuvre": "Ilhâmul Wudûd",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Lorsque tu séjournes dans un groupe, sois attentif, ne sois pas prompt et ne transgresse pas non plus.",
-    "source": "Ilhâmul Wudûd — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_98",
-    "badge": "Ilhâmul Wudûd",
-    "oeuvre": "Ilhâmul Wudûd",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Ne t'empresse pas à intégrer un groupe sans prendre la précaution de les connaître véritablement.",
-    "source": "Ilhâmul Wudûd — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_99",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "La vérité s'éternise, alors que l'Erreur, même au paroxysme de la célébrité, finit par s'évanouir et déchoir.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Celui qui prie six rak'as surérogatoires après la prière du coucher du soleil (Maghrib), sans les interrompre par des paroles déplacées, obtient auprès d'Allah le mérite de douze années d'adoration agréée.",
     "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_cit_101",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
+    "id": "mj_v206",
+    "theme": "Temps & Oraison",
+    "badge": "Masaalikul Jinaan · v.206–208",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Quand un méritant fait une requête auprès de toi, satisfais-le sans réticence. Ne sois jamais avare sur les biens de ce monde, au point d'être déshonoré dans l'Au-delà, car celui qui est frappé d'avarice est éloigné de Dieu et de l'ensemble de Ses créatures.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Celui qui observe régulièrement la prière de la matinée (Ad-Duhâ / Yoor-Yoor), Allah le protège et améliore son sort. Au Jour du Jugement, cette prière intercédera en sa faveur.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v215",
+    "theme": "Temps & Oraison",
+    "badge": "Masaalikul Jinaan · v.215–216",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Celui qui accomplit la prière du matin (Subh) en assemblée puis reste assis à évoquer Allah jusqu'au lever du soleil obtient la récompense d'un pèlerinage majeur et mineur parfaitement accomplis.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v220",
+    "theme": "Temps & Oraison",
+    "badge": "Masaalikul Jinaan · v.220–222",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Les péchés du serviteur s'effacent et tombent de ses épaules à chaque fois qu'il s'incline ou se prosterne avec humilité et recueillement devant Allah.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v224",
+    "theme": "Le Jeûne",
+    "badge": "Masaalikul Jinaan · v.224–225",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le jeûne compte parmi les moyens les plus efficaces pour obtenir l'agrément et les faveurs d'Allah : il existe au Paradis une porte réservée exclusivement aux jeûneurs.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v255",
+    "theme": "Le Jeûne",
+    "badge": "Masaalikul Jinaan · v.255–257",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sache que le jeûne ne consiste pas seulement à s'abstenir de manger et de boire ! Combien de jeûneurs n'obtiennent que la faim et la soif ! Le véritable jeûne engage tous les membres et tous les organes.",
     "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_cit_102",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
+    "id": "mj_v258",
+    "theme": "Le Jeûne",
+    "badge": "Masaalikul Jinaan · v.258–259",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Rends tes précieux services à tous, pour l'amour d'Allah exclusivement, sans relâche ni mot déplaisant.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_105",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Habitue ta langue à la Bonne Parole, ainsi tu en seras heureux et tu seras préservé de tout mal.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_107",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Purifie ton cœur, aime pour eux ce que tu aimerais pour soi-meme, sois digne de confiance.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_108",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Evite deneur faire du mal; reconnais-leur leurs droits; sois patient et fais preuve de longanimité devant le mal qui t'atteindrait de leur part.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_109",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Accordes le pardon à ton offenseur, donnes à celui qui te prive, renoues amitié avec celui qui t'a abandonné et montres toi bon envers tous.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Lors du jeûne, abstiens-toi de regarder ce qui est prohibé, de marcher vers l'interdit, de l'écouter ou d'en parler, et préserve aussi ton cœur de toute mauvaise pensée.",
     "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_cit_111",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
+    "id": "mj_v260",
+    "theme": "Le Jeûne",
+    "badge": "Masaalikul Jinaan · v.260–264",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Si tu es frappé du défaut d'impatience, remets-toi au Tout-Puissant avec humilitéï pour le repousser, car l'impatience fait tomber dans la privation, dans le découragement, dans le regret et la désobéissance.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne te gave pas à l'aube ni à la rupture du jeûne : l'excès de nourriture alourdit le ventre, assombrit le cœur et détourne de l'évocation d'Allah.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v269",
+    "theme": "Le Wird",
+    "badge": "Masaalikul Jinaan · v.269–271",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le wird est un acte d'adoration déterminé dans un temps régulier ; son nom signifie stationner à un point d'eau pour s'abreuver. Chaque wird authentique conduit le pratiquant vers l'enceinte scellée d'Allah sans déviation.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v272",
+    "theme": "Le Wird",
+    "badge": "Masaalikul Jinaan · v.272–275",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Peu importe que le wird vienne de Cheikh Abd al-Qâdir al-Jîlânî, de Cheikh Ahmad at-Tijânî ou d'un autre pôle spirituel : tous les wirds sont dans la rectitude et appellent à l'adoration d'Allah. Garde-toi d'en mépriser ou d'en critiquer aucun.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v290",
+    "theme": "Le Wird",
+    "badge": "Masaalikul Jinaan · v.290–293",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Celui qui ne pratique aucun wird perd continuellement son temps. Comment pourrait-on dédaigner une répétition régulière et constante des Noms d'Allah accomplie pour Son amour ?",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v294",
+    "theme": "Le Wird",
+    "badge": "Masaalikul Jinaan · v.294–295",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Quiconque n'a jamais été éduqué par un directeur spirituel rencontrera de terribles épreuves ; car celui qui n'a aucun guide valable, Satan se charge de le diriger vers les voies de la perdition.",
     "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_cit_112",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
+    "id": "mj_v297",
+    "theme": "Le Wird",
+    "badge": "Masaalikul Jinaan · v.297–298",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Perfectionne ton caractère et traite-les avec gentillesse montre-toi à tous, doux et bienfaisant.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_113",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Pratique toujours avec eux, cette politique, cette sagesse de conseil et de pitié sans jalousie.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_114",
-    "badge": "Ilhâmul Wudûd",
-    "oeuvre": "Ilhâmul Wudûd",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Les meilleures qualités des croyants sont l'endurance, la sincérité, la soumission, la reconnaissance, l'ascétisme, l'exclusivité du culte, la générosité, le silence, le scrupule, la pudeur, la bonne exhortation, la politesse légale, la sobriété.",
-    "source": "Ilhâmul Wudûd — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_115",
-    "badge": "Ilhâmul Wudûd",
-    "oeuvre": "Ilhâmul Wudûd",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Retiens ta langue, sois taciturne où que tu sois.",
-    "source": "Ilhâmul Wudûd — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_116",
-    "badge": "Ilhâmul Wudûd",
-    "oeuvre": "Ilhâmul Wudûd",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Si tu es assailli par le serpent de l'animosité, défends-toi par la prodigue de bons conseils et de générosité.",
-    "source": "Ilhâmul Wudûd — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Si tu n'es pas capable de franchir la distance qui te sépare du point d'eau, ne cherche pas à empêcher les autres d'aller y puiser. Les récompenses du wird dépendent de la pureté et du recueillement du cœur.",
     "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_cit_117",
-    "badge": "Qasida Âkhiru Zamân",
+    "id": "mj_v299",
+    "theme": "Le Dhikr",
+    "badge": "Masaalikul Jinaan · v.299 & 304",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La pratique habituelle de l'évocation d'Allah (le dhikr) est la meilleure action à laquelle l'aspirant puisse s'adonner. La mention du Nom d'Allah constitue le début de la sainteté, et son abandon est le plus haut degré de l'égarement.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v331",
+    "theme": "Le Dhikr",
+    "badge": "Masaalikul Jinaan · v.331–334",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La meilleure des paroles est la Shahâda : « Lâ ilâha illallâh ». Elle est appelée le prix du Paradis et la forteresse d'Allah contre tout mal : prononce-la sans discontinuer !",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v342",
+    "theme": "Le Dhikr",
+    "badge": "Masaalikul Jinaan · v.342–347",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le fruit du Tahlîl est l'affermissement du Tawhîd ; le fruit du Takbîr et du Hamd est le sentiment de la Grandeur d'Allah et la gratitude ; les fruits de la Hawqala et de la Hasbala sont l'abandon confiant à Allah.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v348",
+    "theme": "Le Dhikr",
+    "badge": "Masaalikul Jinaan · v.348–351",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le fruit de la prière sur le Prophète (PSL) est de l'aimer passionnément et d'appliquer sa Sunna. Le fruit de l'Istighfâr (demande de pardon) est la crainte révérencielle d'Allah et la force du repentir sincère.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v352",
+    "theme": "Le Dhikr",
+    "badge": "Masaalikul Jinaan · v.352–355",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Toutes les formules de dhikr sont condensées dans une seule : « Lâ ilâha illallâhu Muhammadun Rasûlullâh ». Son contenu constitue à la fois le début et la fin des itinéraires spirituels.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v356",
+    "theme": "Le Dhikr",
+    "badge": "Masaalikul Jinaan · v.356–360",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Réciter dix fois la Basmala le matin suivie de la Hawqala purifie des péchés comme au jour de la naissance, éloigne soixante-douze sortes de malheurs et confie le serviteur à soixante-dix anges qui implorent le pardon pour lui jusqu'à la nuit.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v379",
+    "theme": "Le Dhikr",
+    "badge": "Masaalikul Jinaan · v.379–387",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La prière sur le Prophète Muhammad (PSL) est la plus méritoire des occupations après les obligations divines : elle peut tenir lieu de guide spirituel, voile les défauts, illumine l'intérieur et l'extérieur, et assure son intercession.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v390",
+    "theme": "Le Dhikr",
+    "badge": "Masaalikul Jinaan · v.390",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Celui qui prend l'habitude de prier constamment sur le Prophète Muhammad (PSL) s'est cramponné à une corde incassable.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v411",
+    "theme": "Méditation (Fikr)",
+    "badge": "Masaalikul Jinaan · v.411–413",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "L'intimité avec Allah s'acquiert par la mention constante (dhikr), et la gnose se réalise par la méditation (fikr). Une seule heure de méditation l'emporte sur une année entière d'adoration.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v414",
+    "theme": "Méditation (Fikr)",
+    "badge": "Masaalikul Jinaan · v.414–415",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sache que la méditation tient lieu de miroir pour le croyant : elle lui montre ses bonnes actions pour l'encourager, et lui révèle ses défauts afin qu'il les réprime.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v428",
+    "theme": "Méditation (Fikr)",
+    "badge": "Masaalikul Jinaan · v.428–432",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La certitude qui naît d'une méditation profonde est bien plus solide que la croyance hâtive. L'intensité de ta foi augmente en fonction de la profondeur de tes pensées.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v440",
+    "theme": "Méditation (Fikr)",
+    "badge": "Masaalikul Jinaan · v.440–441",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "On demanda à un Saint : « Par quoi connais-tu Allah ton Seigneur ? » Il répondit : « Je Le connais par le fait qu'Il défait nos plus fermes décisions. » Celui qui médite acquiert la sagesse.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v442",
+    "theme": "Méditation (Fikr)",
+    "badge": "Masaalikul Jinaan · v.442–443",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Les meilleurs sujets de méditation pour un humain sont les cieux et la terre, suivis de la réflexion sur les bienfaits d'Allah, qui augmente l'amour envers le Bienfaiteur.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v451",
+    "theme": "Méditation (Fikr)",
+    "badge": "Masaalikul Jinaan · v.451–452",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne t'attarde pas à penser à ton dénuement, car cela engendre soucis et tristesse ; ni à l'injustice que tu subis d'autrui, car cela nourrit haine et colère. Sois patient.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v456",
+    "theme": "Méditation (Fikr)",
+    "badge": "Masaalikul Jinaan · v.456–457",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le meilleur jihâd consiste à empêcher son esprit de s'occuper de ce qui ne lui incombe pas. C'est l'effort le plus difficile : celui qui ne le pratique pas hors de la prière ne pourra le réussir pendant la prière.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v463",
+    "theme": "Aumône & Bonté",
+    "badge": "Masaalikul Jinaan · v.463–466",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Au Jour du Jugement dernier, un crieur appellera : « Où sont ceux qui ont été au service des créatures ? Entrez au Paradis sans peine ni épreuve ! » Rends donc tes précieux services à tous, exclusivement pour l'amour d'Allah.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v467",
+    "theme": "Aumône & Bonté",
+    "badge": "Masaalikul Jinaan · v.467–471",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Cache aux êtres humains ce qui leur déplaît et manifeste-leur ce qui leur apporte de la joie. Ne thésaurise jamais par crainte de la pauvreté : si tu dépenses pour l'amour d'Allah, Il te restituera tout ce que tu auras donné.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v481",
+    "theme": "Aumône & Bonté",
+    "badge": "Masaalikul Jinaan · v.481–485",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "L'aumône écarte soixante-dix sortes de morts affreuses, apaise la colère d'Allah, efface les fautes comme l'eau éteint le feu, guérit les malades, purifie la fortune et place le croyant à son ombre au Jour du Jugement.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v496",
+    "theme": "Aumône & Bonté",
+    "badge": "Masaalikul Jinaan · v.496–498",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Toute discrimination est interdite dans l'attribution de l'aumône. Ne délaisse jamais le proche qui est dans le besoin pour aller donner à l'éloigné.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v507",
+    "theme": "Aumône & Bonté",
+    "badge": "Masaalikul Jinaan · v.507 & 513–516",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Adresser de douces paroles à un croyant, lui sourire en le saluant, le féliciter dans son bonheur, le conseiller vers le bien et l'aider dans un besoin licite sont tous comptés comme des aumônes auprès d'Allah.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v529",
+    "theme": "Lecture du Coran",
+    "badge": "Masaalikul Jinaan · v.529–531",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Quiconque veut parvenir à la proximité et à l'agrément d'Allah doit lire et méditer le Coran sans jamais l'abandonner. Attache-toi à sa lecture quotidienne, fût-ce trois hizbs chaque jour.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v535",
+    "theme": "Lecture du Coran",
+    "badge": "Masaalikul Jinaan · v.535–540",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le Coran est la source de toutes les sciences dans le monde. Ne l'abandonne jamais ; pare-toi des vertus qu'Allah y loue et évite tout ce qu'Il y réprouve, car Allah ne l'a révélé que pour qu'il soit appliqué.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v541",
+    "theme": "Lecture du Coran",
+    "badge": "Masaalikul Jinaan · v.541 & 130",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Un seul verset du Coran lu avec compréhension et méditation est plus méritoire que la lecture de tout le Coran accomplie sans réflexion.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v553",
+    "theme": "Lecture du Coran",
+    "badge": "Masaalikul Jinaan · v.553–556",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Lis le Saint Coran avec recueillement, conscient que tu t'adresses à ton Seigneur, comme si tu Le voyais : car si tu ne Le vois pas des yeux, Lui te voit à chaque instant.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v563",
+    "theme": "Lecture du Coran",
+    "badge": "Masaalikul Jinaan · v.563–574",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne passe jamais une journée sans regarder le Coran : un seul regard posé sur le Mushaf est inscrit comme acte de dévotion, fortifie la vue et allège la peine des parents dans la tombe.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v580",
+    "theme": "Lecture du Coran",
+    "badge": "Masaalikul Jinaan · v.580",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le meilleur des humains est celui qui, après avoir appris le Saint Coran, l'enseigne aux autres.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v969",
+    "theme": "Vices & Remèdes",
+    "badge": "Masaalikul Jinaan · v.969–972",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La jalousie (hasad) consiste à souhaiter la disparition du bien d'un croyant et à s'attrister de son bonheur. La haine (hiqd) est de détester les gens de la bonne direction sans raison valable selon la Sharî'a.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v977",
+    "theme": "Vices & Remèdes",
+    "badge": "Masaalikul Jinaan · v.977–979",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Guéris ton cœur de la haine en priant pour ton frère en son absence et en lui souhaitant du bien : celui qui déteste qui Allah a favorisé s'oppose en réalité à la Volonté souveraine du Créateur.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v986",
+    "theme": "Vices & Remèdes",
+    "badge": "Masaalikul Jinaan · v.986–989",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Embellis ton for intérieur, lieu du regard du Maître des créatures, au lieu de te soucier des apparences. Celui qui perfectionne l'état de son cœur voit aussitôt s'embellir ses actes et ses paroles.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v1025",
+    "theme": "Vices & Remèdes",
+    "badge": "Masaalikul Jinaan · v.1025–1029",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Se croire supérieur aux autres est l'une des plus grandes illusions. Évite les mauvaises pensées sur autrui en examinant d'abord tes propres défauts, et garde toujours une bonne opinion des croyants.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v1034",
+    "theme": "Vices & Remèdes",
+    "badge": "Masaalikul Jinaan · v.1034–1035",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sache que la plupart des cris des pécheurs en Enfer ont pour cause la remise au lendemain des actes pieux : tu ne sais ni si tu vivras demain, ni si tu pourras encore les accomplir.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v1057",
+    "theme": "Vices & Remèdes",
+    "badge": "Masaalikul Jinaan · v.1057–1062",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le long espoir et les projets lointains empêchent le repentir et dessèchent le cœur. Une vie passée dans l'oisiveté est une grave catastrophe : la vie humaine est trop précieuse pour n'être employée qu'au futile.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v1070",
+    "theme": "Vices & Remèdes",
+    "badge": "Masaalikul Jinaan · v.1070–1072",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le remède au désespoir est de méditer la Grandeur et l'infinie Miséricorde d'Allah. Et le remède à l'aveuglement sur ses propres défauts est d'accepter les excuses des gens et de voiler leurs fautes.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v1076",
+    "theme": "Vices & Remèdes",
+    "badge": "Masaalikul Jinaan · v.1076–1077",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Rappelle-toi que ce bas-monde n'est point une demeure éternelle, mais un lieu de passage et d'épreuves. Seul est véritablement intelligent celui qui œuvre nuit et jour pour la Demeure éternelle.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v1083",
+    "theme": "Vices & Remèdes",
+    "badge": "Masaalikul Jinaan · v.1083–1087",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La colère, l'aigreur et la rage comptent parmi les caractéristiques de Satan : leur remède est de savoir que rien n'arrive sans la Volonté d'Allah. Et face à l'impatience, remets-toi au Tout-Puissant avec humilité.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v1000",
+    "theme": "Travail & Tawakkul",
+    "badge": "Masaalikul Jinaan · v.1000–1001",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le Seigneur en a fini avec quatre choses : la durée de notre vie, notre création, notre caractère et notre subsistance. Tu n'obtiendras que ce qu'Allah a décrété pour toi.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v1005",
+    "theme": "Travail & Tawakkul",
+    "badge": "Masaalikul Jinaan · v.1005–1011",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Si toutes les créatures se coalisaient pour te faire du bien ou du mal, elles ne pourraient déplacer un seul atome sans la permission de l'Éternel. Aie donc confiance en ton Seigneur et compte entièrement sur Sa Bonté.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v1014",
+    "theme": "Travail & Tawakkul",
+    "badge": "Masaalikul Jinaan · v.1014–1016",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Allah assure à tout être sa subsistance et en est le garant. Ne désespère jamais dans le dénuement et ne cesse d'adresser à ton Seigneur prières et adoration, car Il connaît l'état de chacune de Ses créatures.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v1036",
+    "theme": "Travail & Tawakkul",
+    "badge": "Masaalikul Jinaan · v.1036–1039",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sache que l'abandon à Allah (tawakkul) n'exclut nullement le travail licite (kasb) pour gagner sa vie. Le meilleur comportement consiste à allier l'effort du travail à la confiance absolue en Allah.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v1053",
+    "theme": "Travail & Tawakkul",
+    "badge": "Masaalikul Jinaan · v.1053–1055",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Respecte les causes et les moyens extérieurs pour obéir à la Sharî'a, tout en te soumettant intérieurement à la Volonté d'Allah pour réaliser la Haqîqa : ainsi tu réunis les deux dans la meilleure des voies.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v1089",
+    "theme": "Bonne Conduite (Adab)",
+    "badge": "Masaalikul Jinaan · v.1089–1092",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La meilleure parure dont l'homme puisse se parer est la bonne conduite (al-adab) partout où il passe : les savants rapportent qu'elle représente près des deux tiers de la dévotion.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v1102",
+    "theme": "Bonne Conduite (Adab)",
+    "badge": "Masaalikul Jinaan · v.1102–1103",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Accorde le pardon à celui qui t'offense, donne à celui qui te prive, renoue les liens avec celui qui t'a abandonné et montre-toi bienveillant envers tous.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v1106",
+    "theme": "Bonne Conduite (Adab)",
+    "badge": "Masaalikul Jinaan · v.1106–1111",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "L'adab consiste à obéir et respecter ses parents, ses aînés et son guide spirituel. Honore quiconque est plus âgé que toi, témoigne de pitié envers le plus jeune, et traite ton égal comme tu aimerais être traité toi-même.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v1120",
+    "theme": "Bonne Conduite (Adab)",
+    "badge": "Masaalikul Jinaan · v.1120–1122",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne tourne la tête ni par crainte ni par convoitise vers les créatures, mais aie recours au Créateur. Et l'aspirant qui prend l'habitude de choisir la facilité dans la religion par tiédeur ne réussira jamais.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v1134",
+    "theme": "Prière de Nuit",
+    "badge": "Masaalikul Jinaan · v.1134–1139",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Lève-toi avec force quand les gens dorment, combattant le sommeil pour l'amour d'Allah : deux rak'as accomplies dans la seconde moitié de la nuit ont plus de valeur que ce bas-monde et tout ce qu'il contient.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v1148",
+    "theme": "Prière de Nuit",
+    "badge": "Masaalikul Jinaan · v.1148–1151",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Celui qui prolonge la prière nocturne verra abrégée la longueur du Jour du Jugement. Ce qui facilite le réveil nocturne, c'est la sobriété dans la nourriture, l'abandon des péchés durant le jour et la pureté du cœur.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v1158",
+    "theme": "Prière de Nuit",
+    "badge": "Masaalikul Jinaan · v.1158–1159",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le mal commis appelle le mal, et le bien accompli appelle le bien : une petite quantité de l'un ou de l'autre finit par en entraîner une grande. Cherche donc constamment le bien.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v1166",
+    "theme": "Prière de Nuit",
+    "badge": "Masaalikul Jinaan · v.1166–1168",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne manger que ce qui est licite purifie le cœur, tandis qu'une nourriture illicite empêche l'homme de se lever la nuit pour prier. De même, un regard porté sur l'interdit peut priver le cœur de la douceur du Coran.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v1195",
+    "theme": "Gratitude (Shukr)",
+    "badge": "Masaalikul Jinaan · v.1195–1198",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Témoigne que tout bienfait provient uniquement d'Allah, tout en remerciant sincèrement la personne qui a servi d'intermédiaire : c'est ainsi que l'on unit la Haqîqa et la Sharî'a.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v1200",
+    "theme": "Gratitude (Shukr)",
+    "badge": "Masaalikul Jinaan · v.1200–1203",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sois heureux du Bienfaiteur autant que du bienfait reçu, et utilise les bienfaits d'Allah pour Lui obéir et L'adorer : ainsi tu seras honoré au moment de ta rencontre avec Lui.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v1213",
+    "theme": "Gratitude (Shukr)",
+    "badge": "Masaalikul Jinaan · v.1213–1216",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le droit d'Allah dans l'adversité est la résignation, la longanimité et l'acceptation de Sa décision : Il témoigne envers Ses créatures une miséricorde qu'elles n'ont même pas pour elles-mêmes.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v1362",
+    "theme": "Gratitude (Shukr)",
+    "badge": "Masaalikul Jinaan · v.1362–1368",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La reconnaissance (shukr) consiste à attester que tout bien vient d'Allah et à l'employer dans ce qu'Il agrée. Son degré supérieur est d'adorer Allah par pure vénération, le moyen par obéissance, et l'inférieur par désir du Paradis.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v1234",
+    "theme": "Patience (Sabr)",
+    "badge": "Masaalikul Jinaan · v.1234–1244",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La patience comporte trois degrés : patienter dans l'adoration et l'épreuve (300 degrés), résister aux tentations et aux interdits (600 degrés), et demeurer ferme et humble dans la paix et l'aisance (900 degrés). Le plus brave est celui qui patiente dans l'aisance !",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v1253",
+    "theme": "Patience (Sabr)",
+    "badge": "Masaalikul Jinaan · v.1253–1255",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La famille constitue l'un des chemins qui mènent vers Allah Très-Haut : supporter ses charges avec bonté en paroles et en actes, tout en comptant sur Allah, atteint le plus haut degré de mérite.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v1268",
+    "theme": "Patience (Sabr)",
+    "badge": "Masaalikul Jinaan · v.1268–1270",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Cacher sa douleur, son aumône, son adversité et sa pauvreté constitue l'un des plus précieux viatiques que le serviteur puisse réserver pour l'Au-delà auprès d'Allah.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v1283",
+    "theme": "Patience (Sabr)",
+    "badge": "Masaalikul Jinaan · v.1283–1286",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Quand Allah aime un serviteur, Il le met à l'épreuve afin d'accroître ses récompenses : aucune fatigue, angoisse, maladie ni même piqûre d'épine n'atteint le croyant sans qu'Allah ne lui efface des péchés.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v1302",
+    "theme": "Patience (Sabr)",
+    "badge": "Masaalikul Jinaan · v.1302",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Quand un bonheur t'arrive, remercie Allah avec gratitude ; quand un malheur te frappe, patiente avec constance.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v1309",
+    "theme": "Patience (Sabr)",
+    "badge": "Masaalikul Jinaan · v.1309–1313",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Les viatiques les plus chers à Allah sont deux gouttes et deux gorgées : une larme versée dans l'obscurité de la nuit par crainte d'Allah, une goutte de sang dans Sa voie, la gorgée d'une colère réprimée pour Son agrément, et celle d'une épreuve endurée avec patience.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v1318",
+    "theme": "Invocation (Du'â)",
+    "badge": "Masaalikul Jinaan · v.1318–1324",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Pour que ton invocation soit parfaite, veille à te nourrir et te vêtir du licite, loue Allah, prie sur le Prophète (PSL) au début et à la fin, et lève tes deux mains ouvertes avec humilité dans l'attitude du nécessiteux.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v1330",
+    "theme": "Invocation (Du'â)",
+    "badge": "Masaalikul Jinaan · v.1330–1333",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Invoque Allah avec concentration du cœur, bonne espérance et persévérance ; ne sois jamais pressé ni impatient, ne dis jamais « ma prière n'a pas été exaucée », et ne désespère jamais de Sa Miséricorde.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v1337",
+    "theme": "Invocation (Du'â)",
+    "badge": "Masaalikul Jinaan · v.1337–1349",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Saisis les moments bénis où Allah exauce les vœux : le mois de Ramadan, le jour d'Arafat, la nuit d'Al-Qadr, le vendredi, le dernier tiers de la nuit, entre l'Adhân et l'Iqâma, après les prières, après la lecture du Coran et sous la pluie.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v1355",
+    "theme": "Invocation (Du'â)",
+    "badge": "Masaalikul Jinaan · v.1355–1360",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Parmi ceux dont l'invocation est exaucée : le nécessiteux en détresse, la victime d'une injustice, le voyageur, le jeûneur jusqu'à sa rupture, l'enfant pieux priant pour ses parents, le repenti sincère et le musulman priant pour son frère en son absence.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v1385",
+    "theme": "Saints & Sourates",
+    "badge": "Masaalikul Jinaan · v.1385–1395",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Garde-toi de critiquer ou de dénigrer les Saints d'Allah. Si leurs paroles profondes te laissent perplexe, adopte la sagesse d'Abd al-Wadûd : « Je ne comprends pas les propos des Saints, car moi je suis ce que je suis, et eux sont ce qu'ils sont. »",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "mj_v1404",
+    "theme": "Saints & Sourates",
+    "badge": "Masaalikul Jinaan · v.1404–1408",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Les Saints sont des élus cachés parmi les créatures : ils mangent, boivent et subissent les épreuves comme tout humain. Avoir bonne conviction en eux est une grâce, les combattre mène au malheur.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "mj_v1465",
+    "theme": "Saints & Sourates",
+    "badge": "Masaalikul Jinaan · v.1465–1474",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Reste dans le juste milieu suivant la Sunna : c'est le sommet de la vertu. Ne te fie pas aux simples apparences — tout ce qui brille dans la nuit n'est pas un feu qui réchauffe — et ne méprise jamais un serviteur d'Allah pour son humble vêtement.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "mj_v1480",
+    "theme": "Saints & Sourates",
+    "badge": "Masaalikul Jinaan · v.1480–1494",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La lecture de la sourate Al-Mulk chaque nuit protège des frayeurs de la tombe, et le verset du Trône (Âyat al-Kursî) récité après chaque prière obligatoire ouvre le chemin du Paradis.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "mj_v1516",
+    "theme": "Saints & Sourates",
+    "badge": "Masaalikul Jinaan · v.1516–1519",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La lecture de la sourate Al-Kahf le vendredi illumine le fidèle jusqu'au vendredi suivant, et la lecture sincère de la sourate Yâ-Sîn procure le pardon des péchés.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "mj_v1531",
+    "theme": "Saints & Sourates",
+    "badge": "Masaalikul Jinaan · v.1531–1535",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne verse jamais dans la paresse car la vie est fugitive. Débarrasse-toi de la médisance, de l'ostentation, de la fierté, de la jalousie et de la présomption : un seul de ces vices suffit à gâcher les bonnes œuvres.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "mj_v1556",
+    "theme": "Saints & Sourates",
+    "badge": "Masaalikul Jinaan · v.1556–1558",
+    "oeuvre": "Masaalikul Jinaan (Les Itinéraires du Paradis)",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Qu'Allah fasse de Masaalikul Jinaan un itinéraire menant au Paradis pour quiconque s'engage dans sa voie, et nous accorde Son Agrément, la lumière et la paix dans ce monde et dans l'Au-delà.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "nq_1",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Fais du silence ta réponse si jamais tu es à court d'arguments ; il arrive souvent qu'une parole ne trouve sa vraie réponse que dans le silence.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "nq_2",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Si la belle conduite d'un individu te séduit, adopte-la ; alors ce qui t'avait séduit naîtra en toi.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "nq_3",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne te livre pas souvent, partout où tu te trouves, aux amusements excessifs, aux éclats de rire, à l'agitation et à la futilité.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "nq_4",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Dans une assemblée, maîtrise ton maintien et consacre-toi au silence par réserve : ainsi tu seras comblé d'égards.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "nq_5",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Supporte avec patience les diffamations et ne les rends à personne, car l'échange d'injures et le fait de se traiter mutuellement de menteur relèvent des pires habitudes.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "nq_6",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sois avec tout le monde, ta vie durant, exactement comme tu souhaiterais que l'on soit avec toi.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "nq_7",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Obéis à tes deux parents, sois bienveillant envers eux, empresse-toi d'exécuter leurs ordres et garde-toi de ce qu'ils t'interdisent pour la Face de Dieu : tu gagneras ainsi haute considération.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "nq_8",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sache que la connaissance est exigeante : on ne l'acquiert qu'en s'abstenant des palabres. Nul n'en acquerra une partie s'il ne lui consacre son être tout entier. Sois persévérant !",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "nq_9",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le savoir est à la vie des cœurs ce qu'est la pluie à l'essor d'une terre lorsqu'elle l'arrose.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "nq_10",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La pudeur est la sœur de la foi : partout où la pudeur disparaît, la foi ne saurait demeurer.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "nq_11",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne choisis comme compagnon ni un sot, ni un jaloux, ni un envieux ; ne fréquente que celui qui t'élève en foi et en raison.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "nq_12",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "La vérité demeure et s'éternise, tandis que l'erreur, même au sommet de la célébrité, finit toujours par s'évanouir et déchoir.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "nq_13",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Quand un nécessiteux méritant s'adresse à toi, satisfais-le sans réticence. Ne sois jamais avare des biens de ce monde, car l'avare est éloigné d'Allah et de Ses créatures.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "nq_14",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Habitue ta langue à la bonne parole : ainsi tu connaîtras la paix et tu seras préservé de tout mal.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "nq_15",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sache que manquer à une promesse et mentir font partie des vices les plus laids qui entachent une conversation.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "nq_16",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ni l'oisiveté ni le repos ne profitent à celui qui aspire à s'élever : ils lui sont au contraire préjudiciables. Sache que l'honneur ne s'acquiert qu'à la mesure de l'effort fourni.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "nq_17",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Il est établi selon la sagesse que celui qui sollicite une chose avec persévérance finit par l'obtenir.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "nq_18",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Réduis le sommeil, combats la paresse, diminue le repos excessif et sois sobre dans tes projets mondains.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "nq_19",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "C'est par le savoir et la foi que l'on se distingue véritablement, et non par sa seule lignée ou descendance.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "nq_20",
+    "theme": "Nahju Qadâ'il Hâj",
+    "badge": "Nahju Qadâ'il Hâj",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Honore tes hôtes par la cordialité, la générosité et la joie ; que ton cœur ne se resserre jamais devant un invité, car son séjour est toujours bref.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "iw_1",
+    "theme": "Paroles de Lumière",
+    "badge": "Ilhâmul Wudûd",
+    "oeuvre": "Ilhâmul Wudûd",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Persévère dans la quête de la droiture et de la soumission à Allah, avec ascétisme, scrupule et sobriété.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "iw_2",
+    "theme": "Paroles de Lumière",
+    "badge": "Ilhâmul Wudûd",
+    "oeuvre": "Ilhâmul Wudûd",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Évite la procrastination, car à la longue elle détourne les cœurs soumis de la rectitude.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "iw_3",
+    "theme": "Paroles de Lumière",
+    "badge": "Ilhâmul Wudûd",
+    "oeuvre": "Ilhâmul Wudûd",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Lorsque tu es embrasé par la flamme de la dispute, éteins-la par l'eau du silence et du détournement.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "iw_4",
+    "theme": "Paroles de Lumière",
+    "badge": "Ilhâmul Wudûd",
+    "oeuvre": "Ilhâmul Wudûd",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Lorsque tu es piqué par le scorpion de l'adversité, soigne-toi par le pardon et la paix.",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "iw_5",
+    "theme": "Paroles de Lumière",
+    "badge": "Ilhâmul Wudûd",
+    "oeuvre": "Ilhâmul Wudûd",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Si tu es assailli par la colère ou l'envie, abreuve-toi aux sources de l'endurance et de la tempérance : tu seras comblé de bienfaits.",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "iw_6",
+    "theme": "Paroles de Lumière",
+    "badge": "Ilhâmul Wudûd",
+    "oeuvre": "Ilhâmul Wudûd",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Si tu es attaqué par le serpent de l'animosité, défends-toi par les bons conseils et la générosité.",
+    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
+  },
+  {
+    "id": "iw_7",
+    "theme": "Paroles de Lumière",
+    "badge": "Paroles de Lumière",
+    "oeuvre": "Paroles de Cheikh Ahmadou Bamba",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "L'aspirant sincère (le Mouride) ne doit désirer que l'agrément d'Allah le Clément, partout où il passe.",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "iw_8",
+    "theme": "Paroles de Lumière",
+    "badge": "Paroles de Lumière",
+    "oeuvre": "Paroles de Cheikh Ahmadou Bamba",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Le motif de mon départ en exil est la volonté d'Allah d'élever mon rang et de faire de moi l'intercesseur des miens et le Serviteur du Prophète (PSL) à demeure.",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "iw_9",
+    "theme": "Paroles de Lumière",
+    "badge": "Paroles de Lumière",
+    "oeuvre": "Tazawwudu-ç-Çighâr",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ne consomme que ce qui est pur et licite, loin du douteux et de l'usure : choisis avec soin ce que tu manges et ceux que tu fréquentes.",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "iw_10",
+    "theme": "Paroles de Lumière",
+    "badge": "Paroles de Lumière",
     "oeuvre": "Qasida Âkhiru Zamân",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Évitez de dire du mal de quelqu'un qui est absent.",
-    "source": "Qasida Âkhiru Zamân — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_119",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Sache que manquer à une promesse et mentir font partie des vices qui entachent une conversation,.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_120",
-    "badge": "Ilhâmul Wudûd",
-    "oeuvre": "Ilhâmul Wudûd",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Lorsque tu es embrasé par la flamme de la dispute, éteins-la alors par l'eau du silence et du détournement.",
-    "source": "Ilhâmul Wudûd — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Évite de dire du mal d'une personne absente, et préserve ta langue de la médisance et de la calomnie.",
     "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
   },
   {
-    "id": "sdm_cit_121",
-    "badge": "Ilhâmul Wudûd",
-    "oeuvre": "Ilhâmul Wudûd",
+    "id": "wl_1",
+    "theme": "Sagesse Wolof",
+    "badge": "Nahju Qadâ'il Hâj · Wolof",
+    "oeuvre": "Nahju Qadâ'il Hâj",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Lorsque tu es piqué par le scorpion de l'adversité, soigne-toi par le pardon et la paix.",
-    "source": "Ilhâmul Wudûd — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Xarit dëgg mooy ki lay nëbbal lu ñaaw ngir yëkkati la.\n\n« Ton vrai ami est celui qui voile tes défauts afin de t'élever. »",
     "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_cit_122",
-    "badge": "Ilhâmul Wudûd",
-    "oeuvre": "Ilhâmul Wudûd",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Si tu es enivré par le vin de la colère et de l'envie, abreuve-toi des eaux de l'endurance, de l'ascétisme, ainsi tu seras comblé de bienfaits.",
-    "source": "Ilhâmul Wudûd — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_125",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Sache que les vices qui sont eux-mêmes des péchés, entraînent une sécheresse de cœur très dangereuse.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_128",
-    "badge": "Nahju Qadâ'il Hâj",
+    "id": "wl_2",
+    "theme": "Sagesse Wolof",
+    "badge": "Nahju Qadâ'il Hâj · Wolof",
     "oeuvre": "Nahju Qadâ'il Hâj",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Ni l'oisiveté, ni le repos ne profitent à une personne qui veut devenir aisée, car le bien ne provient jamais de telles attitudes, les sont plutôt préjudiciables à l'aspirant. Sache que la gloire ne s'acquiert que selon l'effort fourni.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Xarit dëgg mooy ki ànd ak yaw di lor boppam ngir jariñ la.\n\n« Ton vrai ami est celui qui t'accompagne sincèrement et accepte la peine pour te servir. »",
     "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_cit_129",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
+    "id": "wl_3",
+    "theme": "Sagesse Wolof",
+    "badge": "Nahju Qadâ'il Hâj · Wolof",
+    "oeuvre": "Nahju Qadâ'il Hâj",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Sache que la vie de l'homme est une chose très précieuse qu'on ne doit employer qu'à l'utile.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Sàkkul te bul yoqat ci sàkku gi ; gàkk-gàkkub aji-sàkku xam-xam mooy yoqat.\n\n« Cherche le savoir sans te lasser : le pire défaut du chercheur est de se décourager. »",
+    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
+  },
+  {
+    "id": "wl_4",
+    "theme": "Sagesse Wolof",
+    "badge": "Nahju Qadâ'il Hâj · Wolof",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Ci xam-xam ak diine la ku gën di gëne, du ci ag askanoo ci ku kawe.\n\n« C'est par le savoir et la foi que l'on s'élève, non par la seule noblesse de naissance. »",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "wl_5",
+    "theme": "Sagesse Wolof",
+    "badge": "Nahju Qadâ'il Hâj · Wolof",
+    "oeuvre": "Nahju Qadâ'il Hâj",
+    "auteur": "Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Kenn du jot teddnga ci lu dul ab coona.\n\n« Nul n'atteint l'honneur véritable sans effort ni persévérance. »",
     "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
   },
   {
-    "id": "sdm_cit_133",
-    "badge": "Nahju Qadâ'il Hâj",
+    "id": "wl_6",
+    "theme": "Sagesse Wolof",
+    "badge": "Nahju Qadâ'il Hâj · Wolof",
     "oeuvre": "Nahju Qadâ'il Hâj",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Il est établi selon la (Sagesse» que celui qui sollicite une chose dans la persévérence finira par l'impétrer.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Àndal ak nit ñi ni nga bëgge ñu ànde ko ak yaw.\n\n« Comporte-toi avec les gens exactement comme tu souhaites qu'ils se comportent avec toi. »",
     "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
   },
   {
-    "id": "sdm_cit_134",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
+    "id": "wl_7",
+    "theme": "Sagesse Wolof",
+    "badge": "Nahju Qadâ'il Hâj · Wolof",
+    "oeuvre": "Nahju Qadâ'il Hâj",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "La jovialité et l'amour du repos doivent être réprimés par l'idée des dangers et de l'incertitude de l'avenir.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
+    "texte": "Jëf yaa ngi ci yéene yi, ku nekk it la nga yéene mooy sag pay.\n\n« Les actes ne valent que par leurs intentions, et chacun est rétribué selon son intention. »",
     "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
   },
   {
-    "id": "sdm_cit_138",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Xarit dëgg mooy ki lay nëbbal lu ñaaw ngir yekkati la.\n\n🇫🇷 Ton vrai ami est celui qui cache tes défauts, pour te revaloriser (te rendre plus grand).",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_139",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Deel weg mag ak doonte da di ku doyadi te xeebu.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_141",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Xarit dëgg mooy ki ànd ak yaw di lor boppam ngir jarifi la.\n\n🇫🇷 Ton vrai ami est celui qui agit de concert avec toi, celui qui se cause un dommage pour te servir.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_142",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bul di baril wax fa moom, nekkal di kuy noopi, loolu dina waral nga am ag jubalam.\n\n🇫🇷 Ne parle pas beaucoup auprès de lui, en vérité, garde le silence, si tu veux profiter de Sa droiture.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_143",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Boo toogee fa moom bul di baril ay gestu mbaa ngay yëngu fu nekk nga jëm fa.\n\n🇫🇷 Ne sois pas, en sa présence, porté à tourner la tête et à bouger de tous côtés.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_144",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Xarit dëgg mooy kok bu la jamono njattee, mu sonnal boppam ngir siggil la.\n\n🇫🇷 Ton vrai ami est aussi celui qui, lorsque les adversités du monde te frappent, il répand sur toi sa fortune, pour te réhabiliter.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_145",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bul def mukk ni ka àndoon ak Qudar, ndare bu daa manul a ñàkk (bul ko di laaj lu mu def lu nekk, nga ne ko loo ci jublu).\n\n🇫🇷 Ne le considère jamais comme en présence d'un familier, sauf en cas de force majeure.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_147",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bul ànd ak moom mukk lu dul cig màggal, bul roy mukk waa jamono jii ( ci seenug ñàkk a màggal seeni sëriñ).\n\n🇫🇷 Ne sois jamais en sa compagnie, la vie durant, sans l'honorer, comme c'est l'habitude de cette présente génération.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_148",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Te ngay teet reek kaf ak coow ci kanamam, boo jubloo defi teggiin.\n\n🇫🇷 Evite de rigoler, de plaisanter et de bavarder devant ton Maître Spirituel, si tu aspires à la Bonne Conduite.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_149",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Nangay yërëm gone, (rikk) bu ko nëbbal benn yoon genn laabiire gu aw yiwam nekk.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_150",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Sàkkul te bul yoqat ci sàkku gi, gàkk-gàkkub aji sàkku ji xam-xam mooy yoqat.\n\n🇫🇷 Recherche, sans te lasser dans la recherche. Le défaut d'un chercheur c'est de se décourager.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_153",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Àdduna de am na yitte yuy teree àgg ca njub ga, te dufiu jeex.\n\n🇫🇷 Le monde connaît des problèmes qui entravent l'accès à la Voie Droite et qui sont interminables.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_157",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bul di déglu nit ñi mbaa xëccoo yi ñu nekk.\n\n🇫🇷 Ne sois attentif ni aux gens, ni à ce qui, pour eux, fait l'objet de dispute.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_159",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bayyil ag péexlu (noos) bul dl toog mukk cib lal ca jamonoy jàng ja, ci lu dul aw tiis (ñàkk pexej.\n\n🇫🇷 Fuis l'aisance et ne assoies jamais sur un lit à l'heure des études, si ce n'est par contrainte.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_160",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Nangay sax cig toroxlu cig toroxal sa bopp, ca jamonoy xamlu ja, kon de danga am leewg xol.\n\n🇫🇷 Consacre-toi à l'effacement, par modestie, durant toute la période des études, ainsi tu obtiendras l'illumination du cœur.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_163",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Xibaarees na it ne xam-xam de ab foñaakon la (kuy daw di soree), ku dul cam su di ab muñkat du ko am\n\n🇫🇷 On rapporte également que la connaissance est farouche, seul l'acquiert un individu patient (longanime).",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_167",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Saxal ci jàng ak nafar li nga jàng te bañ koy dëddook a ginnaawal.\n\n🇫🇷 Persévère dans les études, en révisant ce que tu as appris, sans relâche.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_169",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Nguurug neen waxtu rekk la, nguurug dëgg nag day wey ba yawmal-xiyaam.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_170",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Néewalal nelaw yi, tàggool ak tàyyeel, néewalal noflay, gàttalal mébat.\n\n🇫🇷 Réduis le sommeil, combats la paresse, diminue le repos, sois sobre en projets.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_171",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Ci xam-xam ak diine la ku gën di gêne, du ci ag askanoo ci ku kawe.\n\n🇫🇷 C'est par le savoir et la foi que prédomine celui qui est précédent et non par sa descendance de quelqu'un d'éminent.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_173",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Nanga xam ne gan de fàwwu mu nettali fiofiam fa mu fanaan, ak doonte laajeesu ko ko.\n\n🇫🇷 Sache que l'hôte est toujours un rapporteur de ce qu'il a vu durant son séjour, même si on ne lui demande rien.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_174",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Xamal ne rawanteg nit ñi ci xam-xam lay nekk ak diine, nanga dëkke muñ.\n\n🇫🇷 Sache que ce qui différencie les créatures se trouve dans le savoir et la foi, sois longanime.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_176",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Booy sàkku xam-xam dimbandikool Yàlla te sellal ci xol bu dal.\n\n🇫🇷 Si tu es en quête du savoir, recours à Dieu, puis à la sincérité d'un cœur rassuré (tranquillisé).",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_177",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Rikk bu sa dënn(xol) xat mukk ci gan, ndax moom balaa yàgg mu laxas (mu dem).\n\n🇫🇷 Que ton cœur ne soit pasresserré pour la présence d'un hôte, attendu que son départ estimminent.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_178",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bul bàyyi benn bis am njàng, te nga jëfe ko cig jaamu Yàlla.\n\n🇫🇷 Ne cesse de rechercher quotidiennement le savoir et de le mettre en pratique dans l'adoration (de Dieu).",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_179",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Teralal gan ya cig yaatal ak ganale ak mbégteek jegeel.\n\n🇫🇷 Honore les hôtes par la cordialité, l'hospitalité, la réjouissance et l'intimité.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_181",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bul nay mukk ci poñat mii (alali àddina jii) ba loolu di waral sa gàcca ca (yalmal qiyaam) bis pénc.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_182",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Xamal ne wuute ab dëel (fausser rendez-vous, dige te defoo ko) ak fen bokk nanu ci gàkkgàkki wax, dee leen moytu.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_183",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Saa soo àndeekuw nit cib tukki, dee leen dimbali ci mbooleem lu ñu soxla. m.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_184",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Neen ak noflaay jëmm ju bëgg a doon dara du leen taamu.\n\n🇫🇷 Ni l'oisiveté, ni le repos ne profitent à une personne qui veut devenir aisée.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_185",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Aw yiw manul a bawoo ci Neen ak noflaay, aw ay rekk a cay bawoo.\n\n🇫🇷 L'oisiveté et repos n'offrent jamais le bien.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_186",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Kenn du jot teddnga ga ci lu dul ab coona.\n\n🇫🇷 Sache que la gloire ne s'acquiert que selon l'effort fourni.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_188",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Fonkal sa fiaari way jur, te am yërmaande ci ñoom ak neewant, te deel gaaw ci seeni ndigal aki mbir.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_189",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Boroomug yayoo bu sàkkoo ci yaw dara, defal ko ko.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_190",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Nangay nooyal i wax ci nit ñépp, loolu de ci jikkoy way ñaw yi (ñu yewwu ñi) la bokk.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_191",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Rikk nangay tudd lu baax la nekk ci nit ñi bu nu leen tuddee bul ayibal kenn ci ñoom ndax kat loo leen wax man naa am yaa leen ko ëpp.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_192",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Boo bëggee kooy àndandool bu muy ku dese cim xel mbaa ku ifiaan mbaa ku bariy xemmeemtéef. Bu di toog ak ku dul ku lay dolli diine ak xel.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_193",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bokk na ci ay teggiin ngay nuyyu képp koo dox ba àgg ci moom,te di ko fay bu la nuyyoo. Wolof.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_194",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bokk na ciy teggiin ngay bañ di gëstu rëcc-rëcci nit ñi mbaa seeni ñaawtéef.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_195",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Boo bëggee dund sa diine mucc, sa wërsëg lëw (bari), sab der non, sa làmmiñ bu ci tudd mukk ayibi nit, ndax kat yaw it am nga ay ayib, nit ñi ami làmmiñ.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_196",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Ku dul mérloo boppam du bégloo boroomam.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_198",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Mbañ-rus mooy dàttub diine, fu mu nekkul diine nekku fa.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_199",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Boo bëggee dugg ci kër (walla éegub) jàmbur nanga yëglu.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_200",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bul fiaawal te bul lore Deel tàmmal saw làmmiñ wax lu baax.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_201",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bokk na ci teggiin yu rafet nga saxoo di faj aajoy ku la mag boo ko déggee mu koy sàkku.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_202",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bu kenn soxla ci yaw dara ndare bu danga koo defal loolu mu soxla ci yaw, boo dee def noonu de danga am teraanga.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_203",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Boo toogee ak ku la mag bu defee lu jaaduwul suturaal ko.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_204",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Képp ku aj yitteem ci lekk ak séy na xam ne boole na lépp luy toroxte.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_205",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Ku tëyye boppam wëlif neen yi (caaxaan yi ) limees ko mu bokk ci boroom xel yi.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_207",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Rikk bul di wax kenn fen nga, walla wax nga lu dul dëgg, walla juum nga Walla jeneen wax ju man a merloo ak doonte ki nga koy wax gone la, bu waxee loo xamul nee ko dëggal nga, kon dees na la teral. Nee ko daal man de tegoon naa ko neneen, walla leneen laa jortoon, walla réere woon naa ko.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_208",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Boo toogee ak ku la mag booy ree nangay yam ci muuñ Booy wax ak moom it bul bayliku ( ëppal ci wax ji) ndax loolu du lu rafet.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_209",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bariy ree daay ray ab xol, kon rikk néewalal ree yi, ndax nga gërëmloo Boroom bi.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_210",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Deel muñ ag l)àfifi te bu ci tontu kenn.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_211",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Defal sab tontu boo lottee muy \"noppi\", bari na wax joj tontu baa nga ca ag noppi.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_214",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Xasante ak weddéente bokk nanu ci jikko yi gën a bon niki déorante.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_216",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Nangay taqook ag noppi ànd ak dëddu (ci lug dëddu war) kon de nga jarifiu.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_217",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bul di baj-baji mbaa ngay jéema yëddu lu nëbbu lu mu mana doon.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_218",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Bul di toogandook ku la mag ci lu dul lu manula ñàkk.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_219",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Àndal ak nit ñi ni nga bëgge ñu ànde ko ak yaw.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_220",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Saa su Yàlla defee nga toogandook kula mag nanga ko def cig wegeel akug dal akug xeebu akug watandiku.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_221",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Yaw mbokk mi nanga am yërmande ci mbooleem mbindéef yi, nanga leen di xoole bëtub fieewant ak yërmande.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_222",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Yaw mbokk mi (rikk) boo toogee'k kula mag bu ko tàllal sab tànk, te deel damm sab gis wëlif ko (maanaam bul ko di faral di xool rekk).",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_224",
-    "badge": "Nahju Qadâ'il Hâj",
-    "oeuvre": "Nahju Qadâ'il Hâj",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Jëf yaa ngi ci yéene yi, ku nekk it la nga yéeneey sag pay.",
-    "source": "Nahju Qadâ'il Hâj — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_299",
-    "badge": "Paroles de Lumière",
-    "oeuvre": "Paroles de Lumière",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Rezno emwaes MOUR7Des XURU Ici vécu 15 ans Sokhna Mariama Bousso (Mame Diarra) mère de Cheikh Ahmadou It enfants de sont mis en terre, ainsi que son frère cadet Mame Balla Abibou Lahi.",
-    "source": "Paroles de Lumière — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_302",
-    "badge": "Paroles de Lumière",
-    "oeuvre": "Paroles de Lumière",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Rezno emwaes MOUR7Des Photo de l'ancienne mosquée à l'emplacement de la mosquée actuelle où venait méditer Elle fut demontée et conservée en 1968 Kër gu mak à Njaareem, Dioubel.",
-    "source": "Paroles de Lumière — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_303",
-    "badge": "Paroles de Lumière",
-    "oeuvre": "Paroles de Lumière",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Rezno emwaes MOUR7Des Mosquée de Darou Khoudoss en chantier (Image en 2009) De 1888 à 1895, pour sa retraite spirituelle, venait prier à l'emplacement de cette mosquée.",
-    "source": "Paroles de Lumière — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_cit_312",
-    "badge": "Saint Coran",
-    "oeuvre": "Saint Coran",
-    "auteur": "Parole d'Allah · Méditation",
-    "arabe": "",
-    "texte": "Rezno emwaes MOUR7Des Mausolée (Image en 2009) le 4ème khalife né en 1915 à Diourbel. Son règne fut seulement de 11 mois (du 19 juin 1989 au 13 mai 1990 Avant d'accéder aux plus hautes fonctions il fut pendant 20 ans Imam de la Mosquée de Touba. Toute sa vie avait été consacrée à l'enseignement du Saint Coran.",
-    "source": "Saint Coran — Parole d'Allah · Méditation",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_cit_315",
-    "badge": "Paroles de Lumière",
-    "oeuvre": "Paroles de Lumière",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Rezno emwaes MOUR7Des Mausolée (Image en 2009) Fils de, décédé le 8 aout 2004. Ce grand humaniste, considéré comme un missionnaire de la foi. Il oeuvra sans compter pour l'instruction et l'éducation. Il parcouru le monde pour faire découvrir le mouridisme.",
-    "source": "Paroles de Lumière — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_cit_655",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Waajal 144311 L'aspirant ne doit désirer que l'agrément de Dieu Le Clément partout où il passe.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_cit_812",
-    "badge": "Hadith Prophétique",
-    "oeuvre": "Hadith Prophétique",
-    "auteur": "Prophète Muhammad (PSL)",
-    "arabe": "",
-    "texte": "Le motif de mon départ (en exil) est la volonté que Dieu a eu d'élever mon rang et de faire de moi Vintercesseur des miens et le Serviteur du Prophète (PSI) à demeure.",
-    "source": "Hadith Prophétique — Prophète Muhammad (PSL)",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_cit_832",
-    "badge": "Masaalikul Jinaan",
-    "oeuvre": "Masaalikul Jinaan",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Le meilleur \"jihâd\" (guerre sainte) consiste à empêcher l'esprit de s'occuper de ce qui ne lui incombe pas.\" V.45G. I.",
-    "source": "Masaalikul Jinaan — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_cit_1159",
-    "badge": "Paroles de Lumière",
-    "oeuvre": "Paroles de Lumière",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Dis: «tout ce qui est la volonté d'Allah s'accomplit, on n'y peut rien; il n'y a ni force, ni moyen si ce n'est en Allah».",
-    "source": "Paroles de Lumière — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_txt_986",
-    "badge": "Sagesse du Zikr",
-    "oeuvre": "Sagesse du Zikr",
-    "auteur": "Masaalikul Jinaan · Cheikh Ahmadou Bamba",
-    "arabe": "",
-    "texte": "Le Zikr, mais toutes les formules précitées sont condensées dans une seule, « Laa ilaaha illallaahu Muhammadu Rasuulullaahi« (shw)",
-    "source": "Sagesse du Zikr — Masaalikul Jinaan · Cheikh Ahmadou Bamba",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_txt_982",
-    "badge": "Sagesse du Zikr",
-    "oeuvre": "Sagesse du Zikr",
-    "auteur": "Masaalikul Jinaan · Cheikh Ahmadou Bamba",
-    "arabe": "",
-    "texte": "Le Zikr, quand au « istigfâr\" (Astagfirullah), il te procure une réelle crainte d'Allah.",
-    "source": "Sagesse du Zikr — Masaalikul Jinaan · Cheikh Ahmadou Bamba",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_txt_980",
-    "badge": "Sagesse du Zikr",
-    "oeuvre": "Sagesse du Zikr",
-    "auteur": "Masaalikul Jinaan · Cheikh Ahmadou Bamba",
-    "arabe": "",
-    "texte": "Le Zikr, quand aux fruits de la « hawqala« , de la « hasbala« , et de la prière sur le Prophète (shws)",
-    "source": "Sagesse du Zikr — Masaalikul Jinaan · Cheikh Ahmadou Bamba",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_txt_913",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Céy Boroom Tuubaa, la ko jaam u Yàlla ag liggeeyal Sàngam ba jaraloon keemaan la. Jàr a jëf Mbàkke.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_txt_818",
-    "badge": "Tazawwudu-ç-Çighâr",
+    "id": "wl_8",
+    "theme": "Sagesse Wolof",
+    "badge": "Tazawwudu-ç-Çighâr · Wolof",
     "oeuvre": "Tazawwudu-ç-Çighâr",
     "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Xaaji diiney sunu Boroom ñoo di ngëm (iimaan), nekk na ci ginnaawam wëyale santaaney Yàlla ci kaw suuf (islaam) ak'ug rafetal (ihsaan)",
-    "source": "Tazawwudu-ç-Çighâr — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_txt_715",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Ñatti tawfeex yo'y da na'ñ dax njàxare'y xol : ànd ak Boroom xamxam, fay sa'y bor, nekk ak sa \"xaritu ben bakkan.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_txt_711",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Nëbbal ayib nit ñi, te sori kepp ku def yitteem mu'y wuññi ayibi nit ñi.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_txt_710",
-    "badge": "Tazawwudu-ç-Çighâr",
-    "oeuvre": "Tazawwudu-ç-Çighâr",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Waa Aljana leen rekk lanu'y réccu moo'y waxtu yileen rëcc te sabbaaluñ ca Yàlla Sunu Boroom.",
-    "source": "Tazawwudu-ç-Çighâr — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_txt_698",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Céy Boroom Tuubaa, ken du moom ci wéetal Yàlla ak topp sangam ba.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
+    "texte": "Xaaji diiney sunu Boroom ñoo di ngëm (Îmân), topp ndigali Yàlla (Islâm) ak rafetal (Ihsân).\n\n« Les trois piliers de la religion sont la Foi, l'Islam et l'Excellence spirituelle. »",
     "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
   },
   {
-    "id": "sdm_txt_655",
-    "badge": "Sagesse Mouride",
+    "id": "wl_9",
+    "theme": "Sagesse Wolof",
+    "badge": "Sagesse Mouride · Wolof",
     "oeuvre": "Sagesse Mouride",
     "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Murid bi len warul nekk yitteem ludul ngëram u Yàlla.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_txt_582",
-    "badge": "Tazawwudu-ç-Çighâr",
-    "oeuvre": "Tazawwudu-ç-Çighâr",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Deel sukkandiku ci boroom xàmxàm bi, di roy ki'y topp Suna's Yonenta ba, ka di aji gën ca ña'y jubal.",
-    "source": "Tazawwudu-ç-Çighâr — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_txt_580",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Màndargam Bëgg Yàlla mooy yitte ju kawe jëm ci saxoo tuubal ko.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_txt_577",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Màndargam ragal Yàlla moo'y bàyyi tere yepp ci ludul sette.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_txt_576",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Cëslaayul topp Yàlla ñatt la te ñoo di Ragal, Yaakaar ag Bëgg.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
+    "texte": "Muriid bi lenn warul nekk yitteem lu dul ngërëmu Yàlla.\n\n« L'unique préoccupation du Mouride sincère doit être l'agrément d'Allah. »",
     "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   },
   {
-    "id": "sdm_txt_571",
-    "badge": "Sagesse Mouride",
+    "id": "wl_10",
+    "theme": "Sagesse Wolof",
+    "badge": "Sagesse Mouride · Wolof",
     "oeuvre": "Sagesse Mouride",
     "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Bokk na ci dundug sofiyanke bi, saxoo Wird te Yàlla rekk tax.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
+    "texte": "Cëslaayul topp Yàlla ñatt la : Ragal Yàlla, Yaakaar ko ak Bëgg ko.\n\n« Les trois fondements de la dévotion sont la Crainte, l'Espoir et l'Amour d'Allah. »",
+    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
+  },
+  {
+    "id": "wl_11",
+    "theme": "Sagesse Wolof",
+    "badge": "Sagesse Mouride · Wolof",
+    "oeuvre": "Sagesse Mouride",
+    "auteur": "Enseignements de Touba · SDM",
+    "texte": "Liggeey am lu lew loo dunde warteef la ci bépp jullit ; xam-xam ak jaamu Yàlla dañuy mat ci dund gu lew.\n\n« Gagner sa vie licitement est un devoir : savoir et adoration s'épanouissent dans le licite. »",
+    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
+  },
+  {
+    "id": "wl_12",
+    "theme": "Sagesse Wolof",
+    "badge": "Sagesse Mouride · Wolof",
+    "oeuvre": "Sagesse Mouride",
+    "auteur": "Enseignements de Touba · SDM",
+    "texte": "Kàsoob Saytaane mooy baril tudd Yàlla, ngànnaayam mooy sàggan.\n\n« La prison de Satan est le dhikr abondant ; son arme principale est l'insouciance. »",
+    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
+  },
+  {
+    "id": "wl_13",
+    "theme": "Sagesse Wolof",
+    "badge": "Sagesse Mouride · Wolof",
+    "oeuvre": "Sagesse Mouride",
+    "auteur": "Enseignements de Touba · SDM",
+    "texte": "Nëbbal ayibi nit ñi, te sori képp ku def yitteem muy wuññi ayibi nit ñi.\n\n« Voile les défauts des gens et éloigne-toi de quiconque s'emploie à les exposer. »",
+    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
+  },
+  {
+    "id": "wl_14",
+    "theme": "Sagesse Wolof",
+    "badge": "Sagesse Mouride · Wolof",
+    "oeuvre": "Sagesse Mouride",
+    "auteur": "Enseignements de Touba · SDM",
+    "texte": "Waa Àjjana lenn rekk lañuy réccu : waxtu yi leen rëcc te sabbaaluñ ca Yàlla.\n\n« Les gens du Paradis ne regretteront qu'une chose : les instants passés sans évoquer Allah. »",
     "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_txt_570",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Wacci yoon u njub yatti yi dana'ñ ko waral, rëy (moo sankoon saytaane), ñakk a doylu(moo gennee Adama aljana) ak kiñaan u fiiraange(moo taaxoon Kayin domi Adama ray mbokkam ma Abel)",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_txt_564",
-    "badge": "Tazawwudu-ç-Çighâr",
-    "oeuvre": "Tazawwudu-ç-Çighâr",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Na nga góor-góorlu ci topp njubug sunu Boroom gi te wóolu ko ci bàyyi koo'g sa bopp ngir sànt ko ci xeewal yi'm la'y defal.",
-    "source": "Tazawwudu-ç-Çighâr — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_txt_558",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Avec ihsaan Collection vivez pleinement vos moments particuliers.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_txt_557",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Na ngeen sax ci xeñtu ak Topp Yàlla ngir ne loli moleen di may mujj gu rafet.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_txt_555",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Ligeey am lu lew lo dunde warteef la ci bep jullit. Xamxam ak Jàam u Yàlla du jariñ ludul ci kaw la nga'y dunde di lu lew.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
-  },
-  {
-    "id": "sdm_txt_552",
-    "badge": "Tazawwudu-ç-Çighâr",
-    "oeuvre": "Tazawwudu-ç-Çighâr",
-    "auteur": "Cheikh Ahmadou Bamba (RTA)",
-    "arabe": "",
-    "texte": "Ngir sàmm seeni biir, na ngeen sax ci xeewaloo lu dagan lol fàggu ga lew na looli da na leel dolli jigee sunu Boroom.",
-    "source": "Tazawwudu-ç-Çighâr — Cheikh Ahmadou Bamba (RTA)",
-    "theme_image": "/static/images/sdm_rappels/sdm_kaaba_or.jpg"
-  },
-  {
-    "id": "sdm_txt_539",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Sunu Borom tere na jiko yi sawara di am cër ëlëk. Tere na fen, soss, jëw, rëy, ngistal, bëgguw tagg, soxor, iñaan ak yëgg ngëneel ci kaw ñeneen ñi.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_firdaws_jade.jpg"
-  },
-  {
-    "id": "sdm_txt_536",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Sóobu ci yoon u Yàlla dacee bokk yam ci liñ la rëddal mu'y jëfe digle yi, bàyyi tere yi te saxoo tuup.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_sufi_dawn.jpg"
-  },
-  {
-    "id": "sdm_txt_535",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Kaso'b Saytaane moo'y baril tudd Yàlla ngànnayam moo'y sàggan.",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_touba_emerald.jpg"
-  },
-  {
-    "id": "sdm_txt_534",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Kaso'b bànneex mooy noppi ci wax ju la dul yokk wala ju àmul njariñ, waye ngànnaayam moodi wax ju bari ju amul njariñ (wax ci kawi kàddu wala ci'm bind)",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_parchemin_royal.jpg"
-  },
-  {
-    "id": "sdm_txt_533",
-    "badge": "Sagesse Mouride",
-    "oeuvre": "Sagesse Mouride",
-    "auteur": "Enseignements de Touba · SDM",
-    "arabe": "",
-    "texte": "Kaso'b aduna mooy xàmxàm bu ànd ak jëfe te Yàlla rekk tax, waye ngànnaayam moodi jotaay ak àndando yu amul njariñ (niki toogaay u jëm ak jëm wala ci xarala yi « technologies\")",
-    "source": "Sagesse Mouride — Enseignements de Touba · SDM",
-    "theme_image": "/static/images/sdm_rappels/sdm_nuit_medine.jpg"
   }
 ]

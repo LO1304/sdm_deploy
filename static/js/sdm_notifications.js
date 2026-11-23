@@ -228,7 +228,7 @@
             }
         }
 
-        // 3. Verset du Jour à l'heure exacte choisie par l'utilisateur
+        // 3. Verset du Jour à l'heure exacte choisie par l'utilisateur -> Lien direct vers le Studio Verset !
         if (prefs.verseEnabled) {
             const vm = toMin(prefs.verseTime);
             const vKey = `verse_${today}`;
@@ -238,49 +238,78 @@
                 dispatchNotification(
                     `📖 Verset du Jour · ${v.ref || 'Saint Coran'}`,
                     v.fr || v.ar,
-                    '/coran/',
+                    '/?tab=spirit&load=verset',
                     vKey
                 );
             }
         }
 
-        // 4. Citation de Cheikh Ahmadou Bamba à l'heure exacte choisie par l'utilisateur
+        // 4. Citation de Cheikh Ahmadou Bamba -> Lien DIRECT vers la citation exacte (enregistrer / copier / partager)
         if (prefs.citationEnabled) {
             const cm = toMin(prefs.citationTime);
             const cKey = `citation_${today}`;
             if (cm >= 0 && !fired[cKey] && nowMin >= cm && nowMin <= cm + 90) {
                 markFired(cKey);
                 const cit = (feed && feed.citation_du_jour) || {
-                    texte: "La meilleure parure dont l'homme puisse se parer est la bonne conduite partout où il passe.",
-                    source: "Masaalikul Jinaan · Cheikh Ahmadou Bamba"
+                    id: 'mj_v1089',
+                    texte: "La meilleure parure dont l'homme puisse se parer est la bonne conduite (al-adab) partout où il passe.",
+                    source: "Masaalikul Jinaan · Cheikh Ahmadou Bamba (RTA)"
                 };
+                const citUrl = '/?tab=spirit&cid=' + encodeURIComponent(cit.id || 'mj_v1089');
                 dispatchNotification(
                     `۞ Parole de Cheikh Ahmadou Bamba`,
                     `« ${cit.texte} » — ${cit.source}`,
-                    '/',
+                    citUrl,
                     cKey
                 );
             }
         }
 
-        // 5. Coach Tazawwudu-ç-Çighâr « Mode Duolingo » (si leçon non faite aujourd'hui ou jour sauté !)
-        if (prefs.duolingoEnabled && feed && feed.tazawwud) {
+        // 5. Coach « Mode Duolingo » (Tazawwudu-ç-Çighâr & Masaalikul Jinaan — relance si jour sauté !)
+        if (prefs.duolingoEnabled) {
             const dm = toMin(prefs.duolingoTime);
             const dKey = `duolingo_${today}`;
-            const tz = feed.tazawwud;
-            if (!tz.done_today && dm >= 0 && !fired[dKey] && nowMin >= dm) {
-                markFired(dKey);
-                const pool = tz.missed_yesterday ? DUOLINGO_NUDGES_MISSED : DUOLINGO_NUDGES_TODAY;
-                let msg = pool[now.getDate() % pool.length];
-                if (tz.streak > 0 && !tz.missed_yesterday) {
-                    msg = `🔥 Série de ${tz.streak} jour(s) en danger ! ` + msg;
+            if (dm >= 0 && !fired[dKey] && nowMin >= dm) {
+                // Vérifier progression locale Masaalikul Jinaan
+                let mjDoneToday = false, mjMissed = false, mjStreak = 0;
+                try {
+                    const mj = JSON.parse(localStorage.getItem('sdm_masaalik_progress_v1') || '{}');
+                    const days = Array.isArray(mj.active_days) ? mj.active_days : [];
+                    mjDoneToday = days.includes(today);
+                    const yest = new Date(Date.now() - 86400000);
+                    const yIso = `${yest.getFullYear()}-${String(yest.getMonth() + 1).padStart(2, '0')}-${String(yest.getDate()).padStart(2, '0')}`;
+                    mjMissed = days.length > 0 && !days.includes(yIso) && !mjDoneToday;
+                    mjStreak = mj.streak || 0;
+                } catch (e) {}
+
+                const tz = (feed && feed.tazawwud) || { done_today: false, missed_yesterday: false, streak: 0 };
+                if (!mjDoneToday && !tz.done_today) {
+                    markFired(dKey);
+                    const targetMasaalik = (now.getDate() % 2 === 0);
+                    if (targetMasaalik) {
+                        const title = mjMissed
+                            ? '🦉 Jour sauté sur Masaalikul Jinaan !'
+                            : '🔥 Ta flamme Masaalikul Jinaan va s\'éteindre !';
+                        const body = mjMissed
+                            ? 'Tu as sauté hier sur Masaalikul Jinaan ! Reviens faire 1 chapitre rapide pour rallumer ta flamme et monter ta note /20.'
+                            : (mjStreak > 0
+                                ? `🔥 Série de ${mjStreak} jour(s) en danger ! 3 minutes sur Masaalikul Jinaan suffisent aujourd'hui.`
+                                : '📖 3 minutes sur Masaalikul Jinaan aujourd\'hui = une leçon de Cheikh Ahmadou Bamba maîtrisée et ta flamme allumée !');
+                        dispatchNotification(title, body, '/masaalik/', dKey);
+                    } else {
+                        const pool = tz.missed_yesterday ? DUOLINGO_NUDGES_MISSED : DUOLINGO_NUDGES_TODAY;
+                        let msg = pool[now.getDate() % pool.length];
+                        if (tz.streak > 0 && !tz.missed_yesterday) {
+                            msg = `🔥 Série de ${tz.streak} jour(s) en danger ! ` + msg;
+                        }
+                        dispatchNotification(
+                            tz.missed_yesterday ? '🦉 Jour sauté sur Tazawwudu-ç-Çighâr !' : '🔥 Ta flamme Tazawwud va s\'éteindre !',
+                            msg,
+                            '/tazawwud/',
+                            dKey
+                        );
+                    }
                 }
-                dispatchNotification(
-                    tz.missed_yesterday ? '🦉 Jour sauté sur Tazawwudu-ç-Çighâr !' : '🔥 Ta flamme Tazawwud va s\'éteindre !',
-                    msg,
-                    '/tazawwud/',
-                    dKey
-                );
             }
         }
     }
@@ -314,11 +343,11 @@
         },
         testNow(kind) {
             if (kind === 'duolingo') {
-                dispatchNotification('🦉 Coach Tazawwud (Mode Duolingo)', '🔥 Ne brise pas ta série ! 2 minutes sur Tazawwudu-ç-Çighâr suffisent pour garder ta flamme allumée !', '/tazawwud/', 'sdm-test-duo');
+                dispatchNotification('🦉 Coach Duolingo · Masaalikul Jinaan', '🔥 Ne brise pas ta série ! 3 minutes sur Masaalikul Jinaan suffisent pour garder ta flamme allumée et améliorer ta note /20 !', '/masaalik/', 'sdm-test-duo');
             } else if (kind === 'khassida') {
                 dispatchNotification('📚 Nouveau Khassida : Mawahibou Nâfih', 'Un nouveau manuscrit est disponible dans votre bibliothèque SDM Mouride.', '/collection/khassida/', 'sdm-test-kh');
             } else {
-                dispatchNotification('۞ Citation de Cheikh Ahmadou Bamba', '« La meilleure parure dont l\'homme puisse se parer, est la bonne conduite partout où il passe. » — Masaalikul Jinaan', '/', 'sdm-test-cit');
+                dispatchNotification('۞ Citation de Cheikh Ahmadou Bamba', '« La meilleure parure dont l\'homme puisse se parer est la bonne conduite (al-adab) partout où il passe. » — Masaalikul Jinaan', '/?tab=spirit&cid=mj_v1089', 'sdm-test-cit');
             }
         },
         checkNow: runNotificationChecks

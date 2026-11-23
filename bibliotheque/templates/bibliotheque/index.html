@@ -270,20 +270,20 @@
     <!-- ─── ONGLET 1 : DÉCOUVRIR (RAPPEL DU JOUR SDM + DOSSIERS AUDIO & PROFILS + 1RES PAGES KHASSIDAS) ─── -->
     <div id="htab-panel-essentiel" class="home-tab-panel active space-y-3.5">
 
-        <!-- Aperçu Rappel du Jour SDM (1 toucher -> Studio Personnalisable Nano Banana SDM) -->
+        <!-- Aperçu Rappel du Jour SDM (1 toucher -> Ouvre DIRECTEMENT cette citation dans le Studio) -->
         {% if rappel_du_jour_sdm %}
-        <div onclick="switchHomeTab('spirit')" class="relative rounded-2xl overflow-hidden border border-gold-500/40 p-3.5 flex items-center gap-3 cursor-pointer tap-card shadow-lg">
-            <img src="{{ rappel_du_jour_sdm.theme_image|default:'/static/images/sdm_rappels/sdm_touba_emerald.jpg' }}" alt="Rappel SDM" class="absolute inset-0 w-full h-full object-cover opacity-45 z-0">
+        <div onclick="openCitationById('{{ rappel_du_jour_sdm.id|default:''|escapejs }}')" class="relative rounded-2xl overflow-hidden border border-gold-500/40 p-3.5 flex items-center gap-3 cursor-pointer tap-card shadow-lg">
+            <img src="{{ rappel_du_jour_sdm.theme_image|default:'/static/images/sdm_rappels/sdm_touba_emerald.jpg' }}" alt="Rappel SDM" loading="eager" decoding="async" class="absolute inset-0 w-full h-full object-cover opacity-45 z-0">
             <div class="absolute inset-0 bg-gradient-to-r from-[#040B08]/92 via-[#040B08]/78 to-[#040B08]/65 z-0"></div>
             <div class="relative z-10 w-11 h-11 rounded-xl border border-gold-400/50 overflow-hidden flex-shrink-0 shadow">
-                <img src="{{ rappel_du_jour_sdm.theme_image|default:'/static/images/sdm_rappels/sdm_touba_emerald.jpg' }}" alt="SDM" class="w-full h-full object-cover">
+                <img src="/static/images/sdm_rappels/thumbs/sdm_touba_emerald.jpg" alt="SDM" class="w-full h-full object-cover">
             </div>
             <div class="relative z-10 flex-1 min-w-0">
-                <span class="text-[9px] font-extrabold uppercase tracking-widest text-gold-400 block">۞ Rappel du Jour SDM · Personnalisable</span>
+                <span class="text-[9px] font-extrabold uppercase tracking-widest text-gold-400 block">۞ {{ rappel_du_jour_sdm.badge|default:"Citation du Jour SDM" }}</span>
                 <p class="text-[11.5px] font-bold text-white line-clamp-2 leading-snug mt-0.5">{{ rappel_du_jour_sdm.texte }}</p>
             </div>
             <span class="relative z-10 px-2.5 py-1.5 rounded-full bg-gold-500/20 border border-gold-400/45 text-gold-300 text-[9.5px] font-extrabold flex-shrink-0">
-                Créer ›
+                Ouvrir ›
             </span>
         </div>
         {% endif %}
@@ -392,29 +392,44 @@
         </div>
         {% endif %}
 
-        <!-- Tazawwudu-ç-Çighâr & Quizz Islamique côte à côte -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <a href="{% url 'tazawwud_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-amber-900/80 to-yellow-900/70 border border-amber-400/40 flex items-center justify-between gap-3" style="text-decoration:none;">
-                <div>
-                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-300 block">5 Grandes Étapes · 31 Leçons</span>
-                    <h3 class="text-base font-black text-white mt-0.5">Tazawwudu-ç-Çighâr</h3>
-                    <p class="text-[11px] text-amber-100/80 mt-1">Apprentissage guidé, audio & révisions certifiantes</p>
+        <!-- Académies Mode Duolingo (Masaalik-ul Jinaan + Tazawwudu-ç-Çighâr) & Quizz Islamique -->
+        <div class="space-y-2.5">
+            <a href="{% url 'masaalik_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-emerald-950 via-teal-900/90 to-amber-900/75 border border-gold-400/50 flex items-center justify-between gap-3 shadow-lg tap-card" style="text-decoration:none;">
+                <div class="min-w-0">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold-500/20 border border-gold-400/45 text-[9px] font-extrabold uppercase tracking-wider text-gold-300">
+                        🔥 Nouveau · Mode Duolingo · 4 Portes · 16 Chapitres
+                    </span>
+                    <h3 class="text-base font-black text-white mt-1">Masaalikul Jinaan</h3>
+                    <p class="text-[11px] text-emerald-100/85 mt-0.5">Les Itinéraires du Paradis · Étape par étape, quiz intermédiaires, notes /20 & suivi quotidien</p>
                 </div>
-                <div class="w-11 h-11 rounded-2xl bg-amber-400 text-black flex items-center justify-center flex-shrink-0 font-black">
-                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-gold-400 to-amber-500 text-black flex items-center justify-center flex-shrink-0 font-black shadow">
+                    <i class="fa-solid fa-route text-lg"></i>
                 </div>
             </a>
 
-            <a href="{% url 'quiz_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-emerald-900/80 to-teal-900/70 border border-emerald-400/40 flex items-center justify-between gap-3" style="text-decoration:none;">
-                <div>
-                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 block">Culture & Défis</span>
-                    <h3 class="text-base font-black text-white mt-0.5">Quizz Islamique</h3>
-                    <p class="text-[11px] text-emerald-100/80 mt-1">Testez vos connaissances et défiez vos compagnons</p>
-                </div>
-                <div class="w-11 h-11 rounded-2xl bg-emerald-400 text-black flex items-center justify-center flex-shrink-0 font-black">
-                    <i class="fa-solid fa-trophy text-lg"></i>
-                </div>
-            </a>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <a href="{% url 'tazawwud_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-amber-900/80 to-yellow-900/70 border border-amber-400/40 flex items-center justify-between gap-3 tap-card" style="text-decoration:none;">
+                    <div>
+                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-300 block">Mode Duolingo · 31 Leçons</span>
+                        <h3 class="text-base font-black text-white mt-0.5">Tazawwudu-ç-Çighâr</h3>
+                        <p class="text-[11px] text-amber-100/80 mt-1">Apprentissage guidé, audio & révisions certifiantes</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-2xl bg-amber-400 text-black flex items-center justify-center flex-shrink-0 font-black">
+                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    </div>
+                </a>
+
+                <a href="{% url 'quiz_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-emerald-900/80 to-teal-900/70 border border-emerald-400/40 flex items-center justify-between gap-3 tap-card" style="text-decoration:none;">
+                    <div>
+                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 block">1 638+ Questions · Défis Live</span>
+                        <h3 class="text-base font-black text-white mt-0.5">Quizz Islamique</h3>
+                        <p class="text-[11px] text-emerald-100/80 mt-1">Tirage aléatoire et duels en direct avec vos amis</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-2xl bg-emerald-400 text-black flex items-center justify-center flex-shrink-0 font-black">
+                        <i class="fa-solid fa-trophy text-lg"></i>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -462,15 +477,15 @@
     <div id="htab-panel-spirit" class="home-tab-panel space-y-3.5">
 
         <!-- CARTE VISUELLE QUOTIDIENNE SDM PERSONNALISABLE -->
-        <div class="rounded-[24px] overflow-hidden border border-gold-500/40 bg-[#05120C] shadow-2xl">
+        <div id="sdm-rappel-studio-card" class="rounded-[24px] overflow-hidden border border-gold-500/40 bg-[#05120C] shadow-2xl">
             <div class="flex items-center justify-between px-3.5 py-2.5 border-b border-white/10 bg-black/35">
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></span>
-                    <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-gold-400">
-                        Citation du Jour SDM <span id="sdm-rappel-counter" class="text-white/55"></span>
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse flex-shrink-0"></span>
+                    <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-gold-400 truncate">
+                        Studio Citations SDM <span id="sdm-rappel-counter" class="text-white/55"></span>
                     </span>
                 </div>
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center gap-1.5 flex-shrink-0">
                     <button type="button" onclick="randomSdmRappel()" class="w-7 h-7 rounded-full bg-gold-500/20 border border-gold-400/40 text-gold-300 text-[11px] flex items-center justify-center tap-card" title="Citation aléatoire">
                         <i class="fa-solid fa-shuffle"></i>
                     </button>
@@ -481,6 +496,27 @@
                         <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
+            </div>
+
+            <!-- FILTRES PAR THÈME (MASAALIKUL JINAAN & ŒUVRES DE CHEIKH AHMADOU BAMBA) -->
+            <div id="sdm-theme-filters" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar px-3 py-2 bg-black/45 border-b border-white/10">
+                <button type="button" data-theme="ALL" onclick="filterSdmTheme('ALL', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-gold-500 text-black text-[10px] font-black whitespace-nowrap flex-shrink-0">Tous</button>
+                <button type="button" data-theme="MASAALIK" onclick="filterSdmTheme('MASAALIK', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">۞ Masaalikul Jinaan</button>
+                <button type="button" data-theme="Science & Action" onclick="filterSdmTheme('Science & Action', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Science & Action</button>
+                <button type="button" data-theme="Le Dhikr" onclick="filterSdmTheme('Le Dhikr', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Dhikr</button>
+                <button type="button" data-theme="Méditation (Fikr)" onclick="filterSdmTheme('Méditation (Fikr)', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Méditation (Fikr)</button>
+                <button type="button" data-theme="Aumône & Bonté" onclick="filterSdmTheme('Aumône & Bonté', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Aumône & Bonté</button>
+                <button type="button" data-theme="Lecture du Coran" onclick="filterSdmTheme('Lecture du Coran', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Coran</button>
+                <button type="button" data-theme="Vices & Remèdes" onclick="filterSdmTheme('Vices & Remèdes', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Vices & Remèdes</button>
+                <button type="button" data-theme="Travail & Tawakkul" onclick="filterSdmTheme('Travail & Tawakkul', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Travail & Tawakkul</button>
+                <button type="button" data-theme="Bonne Conduite (Adab)" onclick="filterSdmTheme('Bonne Conduite (Adab)', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Adab</button>
+                <button type="button" data-theme="Prière de Nuit" onclick="filterSdmTheme('Prière de Nuit', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Prière de Nuit</button>
+                <button type="button" data-theme="Gratitude (Shukr)" onclick="filterSdmTheme('Gratitude (Shukr)', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Gratitude</button>
+                <button type="button" data-theme="Patience (Sabr)" onclick="filterSdmTheme('Patience (Sabr)', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Patience</button>
+                <button type="button" data-theme="Invocation (Du'â)" onclick="filterSdmTheme('Invocation (Du\'â)', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Invocation</button>
+                <button type="button" data-theme="Saints & Sourates" onclick="filterSdmTheme('Saints & Sourates', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Saints & Sourates</button>
+                <button type="button" data-theme="Nahju Qadâ'il Hâj" onclick="filterSdmTheme('Nahju Qadâ\'il Hâj', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Nahju Qadâ'il Hâj</button>
+                <button type="button" data-theme="Sagesse Wolof" onclick="filterSdmTheme('Sagesse Wolof', this)" class="sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0">Sagesse Wolof</button>
             </div>
 
             <!-- APERÇU CARTE 3:4 AVEC FOND NANO BANANA SDM / GALERIE + SOURCE STYLÉE -->
@@ -543,7 +579,7 @@
                         <button type="button" onclick="setSdmCardBg('{{ th.src }}', this)"
                                 class="sdm-theme-swatch w-8 h-8 rounded-full overflow-hidden border-2 {% if forloop.first %}border-gold-400 scale-105{% else %}border-white/20{% endif %} flex-shrink-0 tap-card"
                                 title="{{ th.label }}">
-                            <img src="{{ th.src }}" alt="{{ th.label }}" class="w-full h-full object-cover">
+                            <img src="{{ th.thumb|default:th.src }}" alt="{{ th.label }}" loading="lazy" decoding="async" class="w-full h-full object-cover">
                         </button>
                         {% endfor %}
                     </div>
@@ -576,52 +612,87 @@
                     </div>
                 </div>
 
-                <!-- 4. Taille & Export / Partage -->
-                <div class="flex items-center gap-2 pt-0.5">
-                    <button type="button" onclick="adjustSdmFont(-1)" class="px-2.5 py-2 rounded-xl bg-white/10 text-white text-[11px] font-black tap-card">A-</button>
-                    <button type="button" onclick="adjustSdmFont(1)" class="px-2.5 py-2 rounded-xl bg-white/10 text-white text-[11px] font-black tap-card">A+</button>
-                    <button type="button" onclick="exportSdmRappelImage(false)" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
+                <!-- 4. Taille, Copier, WhatsApp, Télécharger PNG & Partager -->
+                <div class="grid grid-cols-2 gap-2 pt-0.5">
+                    <button type="button" onclick="exportSdmRappelImage(false)" class="py-2.5 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
                         <i class="fa-solid fa-download"></i> Enregistrer PNG
                     </button>
-                    <button type="button" onclick="exportSdmRappelImage(true)" class="px-3.5 py-2 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-extrabold flex items-center gap-1.5 tap-card">
-                        <i class="fa-solid fa-share-nodes"></i> Partager
+                    <button type="button" onclick="exportSdmRappelImage(true)" class="py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400/45 text-emerald-200 text-[11px] font-extrabold flex items-center justify-center gap-1.5 tap-card">
+                        <i class="fa-solid fa-share-nodes"></i> Partager Image
+                    </button>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="adjustSdmFont(-1)" class="px-2.5 py-2 rounded-xl bg-white/10 text-white text-[11px] font-black tap-card">A-</button>
+                    <button type="button" onclick="adjustSdmFont(1)" class="px-2.5 py-2 rounded-xl bg-white/10 text-white text-[11px] font-black tap-card">A+</button>
+                    <button type="button" onclick="copyCurrentStudioText()" class="flex-1 py-2 rounded-xl bg-white/10 border border-white/15 text-white text-[10.5px] font-extrabold flex items-center justify-center gap-1.5 tap-card">
+                        <i class="fa-regular fa-copy"></i> Copier
+                    </button>
+                    <button type="button" onclick="shareCurrentStudioWhatsapp()" class="flex-1 py-2 rounded-xl bg-[#25D366]/20 border border-[#25D366]/45 text-[#4ADE80] text-[10.5px] font-extrabold flex items-center justify-center gap-1.5 tap-card">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- VERSET & BEUYITT COMPLÉMENTAIRES -->
-        <div class="glass-gold rounded-2xl p-4 border border-gold-500/35 text-center">
+        <!-- VERSET, HADITH & BEUYITT COMPLÉMENTAIRES — TOUS PARTAGEABLES & TRANSFORMABLES EN IMAGE SDM -->
+        <div id="sdm-verset-du-jour" class="glass-gold rounded-2xl p-4 border border-gold-500/35 text-center">
             <span class="px-3 py-1 rounded-full bg-gold-500/20 text-gold-400 text-[10px] font-extrabold uppercase tracking-wider inline-block mb-2">
                 ۞ Verset du Jour
             </span>
             {% if contenu.verset.arabe %}
-            <div class="font-arabic text-2xl text-white leading-loose py-1" dir="rtl">
-                {{ contenu.verset.arabe }}
+            <div id="daily-verset-ar" class="font-arabic text-2xl text-white leading-loose py-1" dir="rtl">{{ contenu.verset.arabe }}</div>
+            {% endif %}
+            <p id="daily-verset-fr" class="text-xs font-medium text-white/90 italic mt-1">{{ contenu.verset.francais|default:"N'est-ce point par l'évocation d'Allah que se tranquillisent les cœurs ?" }}</p>
+            <p id="daily-verset-ref" class="mt-1.5 text-[10px] font-extrabold uppercase text-gold-400">{{ contenu.verset.ref|default:"Saint Coran" }}</p>
+            <div class="flex items-center justify-center gap-1.5 mt-3 pt-2.5 border-t border-white/10">
+                <button type="button" onclick="loadDailyToStudio('verset')" class="px-2.5 py-1.5 rounded-xl bg-gold-500/20 border border-gold-400/45 text-gold-300 text-[10px] font-extrabold flex items-center gap-1 tap-card">
+                    <i class="fa-solid fa-image"></i> Image SDM
+                </button>
+                <button type="button" onclick="shareDailyWhatsapp('verset')" class="px-2.5 py-1.5 rounded-xl bg-[#25D366]/20 border border-[#25D366]/45 text-[#4ADE80] text-[10px] font-extrabold flex items-center gap-1 tap-card">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </button>
+                <button type="button" onclick="copyDailyCard('verset')" class="px-2.5 py-1.5 rounded-xl bg-white/10 text-white text-[10px] font-extrabold flex items-center gap-1 tap-card">
+                    <i class="fa-regular fa-copy"></i> Copier
+                </button>
             </div>
-            {% endif %}
-            <p class="text-xs font-medium text-white/85 italic mt-1">
-                "{{ contenu.verset.francais|default:'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ' }}"
-            </p>
-            {% if contenu.verset.ref %}
-            <p class="mt-1.5 text-[10px] font-extrabold uppercase text-gold-400">{{ contenu.verset.ref }}</p>
-            {% endif %}
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <div class="glass rounded-2xl p-3.5 border border-white/10 text-center">
-                <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-1">Hadith du Jour</span>
-                <p class="text-xs text-white/85 leading-relaxed">{{ contenu.rappel.francais|default:"La sagesse est une lumière..." }}</p>
-                {% if contenu.rappel.ref %}
-                <p class="mt-1.5 text-[10px] font-bold text-gold-400/80">{{ contenu.rappel.ref }}</p>
-                {% endif %}
+            <div id="sdm-hadith-du-jour" class="glass rounded-2xl p-3.5 border border-white/10 text-center flex flex-col justify-between">
+                <div>
+                    <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-1">Hadith du Jour</span>
+                    <p id="daily-hadith-fr" class="text-xs text-white/85 leading-relaxed">{{ contenu.rappel.francais|default:"La sagesse est une lumière que Dieu dépose dans le cœur du croyant sincère." }}</p>
+                    <p id="daily-hadith-ref" class="mt-1.5 text-[10px] font-bold text-gold-400/80">{{ contenu.rappel.ref|default:"Hadith Prophétique" }}</p>
+                </div>
+                <div class="flex items-center justify-center gap-1.5 mt-3 pt-2.5 border-t border-white/10">
+                    <button type="button" onclick="loadDailyToStudio('hadith')" class="px-2 py-1 rounded-lg bg-gold-500/20 border border-gold-400/40 text-gold-300 text-[9.5px] font-extrabold flex items-center gap-1 tap-card">
+                        <i class="fa-solid fa-image"></i> Image
+                    </button>
+                    <button type="button" onclick="shareDailyWhatsapp('hadith')" class="px-2 py-1 rounded-lg bg-[#25D366]/20 border border-[#25D366]/40 text-[#4ADE80] text-[9.5px] font-extrabold flex items-center gap-1 tap-card">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button type="button" onclick="copyDailyCard('hadith')" class="px-2 py-1 rounded-lg bg-white/10 text-white text-[9.5px] font-extrabold flex items-center gap-1 tap-card">
+                        <i class="fa-regular fa-copy"></i> Copier
+                    </button>
+                </div>
             </div>
-            <div class="glass rounded-2xl p-3.5 border border-white/10 text-center">
-                <span class="text-[9px] font-extrabold uppercase tracking-widest text-gold-400 block mb-1">Beuyitt du Jour</span>
-                <p class="text-xs italic text-white/85 leading-relaxed">"{{ contenu.beuyit.francais|default:'La poésie divine nourrit l\'âme...' }}"</p>
-                {% if contenu.beuyit.ref %}
-                <p class="mt-1.5 text-[10px] font-bold text-gold-400/80">{{ contenu.beuyit.ref }}</p>
-                {% endif %}
+            <div id="sdm-beuyit-du-jour" class="glass rounded-2xl p-3.5 border border-white/10 text-center flex flex-col justify-between">
+                <div>
+                    <span class="text-[9px] font-extrabold uppercase tracking-widest text-gold-400 block mb-1">Beuyitt du Jour</span>
+                    <p id="daily-beuyit-fr" class="text-xs italic text-white/85 leading-relaxed">{{ contenu.beuyit.francais|default:"La poésie spirituelle élève l'âme vers l'agrément d'Allah." }}</p>
+                    <p id="daily-beuyit-ref" class="mt-1.5 text-[10px] font-bold text-gold-400/80">{{ contenu.beuyit.ref|default:"Khassida · Cheikh Ahmadou Bamba" }}</p>
+                </div>
+                <div class="flex items-center justify-center gap-1.5 mt-3 pt-2.5 border-t border-white/10">
+                    <button type="button" onclick="loadDailyToStudio('beuyit')" class="px-2 py-1 rounded-lg bg-gold-500/20 border border-gold-400/40 text-gold-300 text-[9.5px] font-extrabold flex items-center gap-1 tap-card">
+                        <i class="fa-solid fa-image"></i> Image
+                    </button>
+                    <button type="button" onclick="shareDailyWhatsapp('beuyit')" class="px-2 py-1 rounded-lg bg-[#25D366]/20 border border-[#25D366]/40 text-[#4ADE80] text-[9.5px] font-extrabold flex items-center gap-1 tap-card">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button type="button" onclick="copyDailyCard('beuyit')" class="px-2 py-1 rounded-lg bg-white/10 text-white text-[9.5px] font-extrabold flex items-center gap-1 tap-card">
+                        <i class="fa-regular fa-copy"></i> Copier
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -798,9 +869,11 @@
         if (navigator.share) navigator.share({ title: 'SDM Mouride', text: text, url: window.location.origin }).catch(()=>{});
     }
 
-    /* ═══ STUDIO RAPPEL QUOTIDIEN SDM (NANO BANANA + GALERIE + OPACITÉ + COULEURS + SWIPE + PNG HD) ═══ */
+    /* ═══ STUDIO RAPPEL QUOTIDIEN SDM (THÈMES + DEEP-LINK + GALERIE + OPACITÉ + COULEURS + WHATSAPP + PNG HD) ═══ */
     const SDM_RAPPELS = {{ sdm_rappels_json|safe|default:"[]" }};
+    let sdmFilteredRappels = SDM_RAPPELS.slice();
     let sdmRappelIdx = {{ rappel_du_jour_index|default:0 }};
+    let sdmActiveOverride = null; // utilisé quand l'utilisateur charge Verset / Hadith / Beuyitt dans le Studio
     let sdmFontScale = 1.0;
     let sdmCustomBgActive = false;
     let sdmUserPickedBg = false;
@@ -811,13 +884,37 @@
     let sdmIsDarkInk = false;
     let sdmCurrentBg = document.getElementById('sdm-rappel-bg-img')?.getAttribute('src') || '/static/images/sdm_rappels/sdm_touba_emerald.jpg';
 
+    function sdmShowToast(msg) {
+        let t = document.getElementById('sdm-studio-toast');
+        if (!t) {
+            t = document.createElement('div');
+            t.id = 'sdm-studio-toast';
+            t.style.cssText = 'position:fixed;bottom:84px;left:50%;transform:translateX(-50%);z-index:99999;background:rgba(4,18,12,0.96);border:1px solid rgba(250,204,21,0.65);color:#FDE047;padding:8px 16px;border-radius:99px;font-size:11.5px;font-weight:800;box-shadow:0 10px 28px rgba(0,0,0,0.6);white-space:nowrap;transition:opacity .25s;';
+            document.body.appendChild(t);
+        }
+        t.textContent = msg;
+        t.style.opacity = '1';
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2400);
+    }
+
+    function getCurrentStudioItem() {
+        if (sdmActiveOverride) return sdmActiveOverride;
+        if (!sdmFilteredRappels.length) return null;
+        return sdmFilteredRappels[sdmRappelIdx % sdmFilteredRappels.length];
+    }
+
     function renderSdmRappelCard() {
-        if (!SDM_RAPPELS || !SDM_RAPPELS.length) return;
-        const r = SDM_RAPPELS[sdmRappelIdx % SDM_RAPPELS.length];
+        const r = getCurrentStudioItem();
+        if (!r) return;
         const cntEl = document.getElementById('sdm-rappel-counter');
-        if (cntEl) cntEl.textContent = `(${sdmRappelIdx + 1}/${SDM_RAPPELS.length})`;
+        if (cntEl) {
+            cntEl.textContent = sdmActiveOverride
+                ? `(${r.badge || 'Rappel du Jour'})`
+                : `(${(sdmRappelIdx % sdmFilteredRappels.length) + 1}/${sdmFilteredRappels.length})`;
+        }
         const bEl = document.getElementById('sdm-rappel-badge');
-        if (bEl) bEl.textContent = r.oeuvre || r.badge || 'Citation SDM';
+        if (bEl) bEl.textContent = r.badge || r.theme || r.oeuvre || 'Citation SDM';
         const arEl = document.getElementById('sdm-rappel-ar');
         if (arEl) {
             arEl.textContent = r.arabe || '';
@@ -835,6 +932,127 @@
             if (img) img.src = r.theme_image;
         }
     }
+
+    window.filterSdmTheme = function(theme, btn) {
+        sdmActiveOverride = null;
+        if (theme === 'ALL') {
+            sdmFilteredRappels = SDM_RAPPELS.slice();
+        } else if (theme === 'MASAALIK') {
+            sdmFilteredRappels = SDM_RAPPELS.filter(r => (r.id || '').startsWith('mj_') || (r.oeuvre || '').toLowerCase().includes('masaalik'));
+        } else {
+            sdmFilteredRappels = SDM_RAPPELS.filter(r => r.theme === theme);
+        }
+        if (!sdmFilteredRappels.length) sdmFilteredRappels = SDM_RAPPELS.slice();
+        sdmRappelIdx = 0;
+        renderSdmRappelCard();
+        document.querySelectorAll('.sdm-tf-chip').forEach(b => {
+            b.className = 'sdm-tf-chip px-2.5 py-1 rounded-full bg-white/10 text-white/85 text-[10px] font-extrabold whitespace-nowrap flex-shrink-0';
+        });
+        if (btn) {
+            btn.className = 'sdm-tf-chip px-2.5 py-1 rounded-full bg-gold-500 text-black text-[10px] font-black whitespace-nowrap flex-shrink-0';
+        }
+        try { if (navigator.vibrate) navigator.vibrate(6); } catch (e) {}
+    };
+
+    window.openCitationById = function(cid) {
+        sdmActiveOverride = null;
+        sdmFilteredRappels = SDM_RAPPELS.slice();
+        if (cid) {
+            const foundIdx = sdmFilteredRappels.findIndex(r => String(r.id) === String(cid));
+            if (foundIdx >= 0) sdmRappelIdx = foundIdx;
+        }
+        switchHomeTab('spirit');
+        renderSdmRappelCard();
+        setTimeout(() => {
+            document.getElementById('sdm-rappel-studio-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
+    };
+
+    function getDailyPayload(kind) {
+        if (kind === 'verset') {
+            return {
+                badge: 'Verset du Jour',
+                arabe: document.getElementById('daily-verset-ar')?.textContent?.trim() || '',
+                texte: document.getElementById('daily-verset-fr')?.textContent?.trim() || '',
+                oeuvre: document.getElementById('daily-verset-ref')?.textContent?.trim() || 'Saint Coran',
+                auteur: 'Parole d\'Allah · SDM Mouride',
+                theme_image: '/static/images/sdm_rappels/sdm_kaaba_or.jpg'
+            };
+        }
+        if (kind === 'hadith') {
+            return {
+                badge: 'Hadith du Jour',
+                arabe: '',
+                texte: document.getElementById('daily-hadith-fr')?.textContent?.trim() || '',
+                oeuvre: document.getElementById('daily-hadith-ref')?.textContent?.trim() || 'Hadith Prophétique',
+                auteur: 'Prophète Muhammad (PSL)',
+                theme_image: '/static/images/sdm_rappels/sdm_nuit_medine.jpg'
+            };
+        }
+        return {
+            badge: 'Beuyitt du Jour',
+            arabe: '',
+            texte: document.getElementById('daily-beuyit-fr')?.textContent?.trim() || '',
+            oeuvre: document.getElementById('daily-beuyit-ref')?.textContent?.trim() || 'Khassida',
+            auteur: 'Cheikh Ahmadou Bamba (RTA)',
+            theme_image: '/static/images/sdm_rappels/sdm_touba_emerald.jpg'
+        };
+    }
+
+    window.loadDailyToStudio = function(kind) {
+        sdmActiveOverride = getDailyPayload(kind);
+        switchHomeTab('spirit');
+        renderSdmRappelCard();
+        document.getElementById('sdm-rappel-studio-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        sdmShowToast('✨ Chargé dans le Studio Image SDM !');
+    };
+
+    function formatItemShareText(item) {
+        if (!item) return '';
+        const parts = [];
+        if (item.arabe) parts.push(item.arabe);
+        if (item.texte) parts.push('« ' + item.texte + ' »');
+        const src = [item.oeuvre || item.badge, item.auteur].filter(Boolean).join(' — ');
+        if (src) parts.push('۞ ' + src);
+        const link = item.id
+            ? `${window.location.origin}/?tab=spirit&cid=${encodeURIComponent(item.id)}`
+            : `${window.location.origin}/?tab=spirit`;
+        parts.push('📲 SDM Mouride : ' + link);
+        return parts.join('\n\n');
+    }
+
+    function copyTextFallback(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => sdmShowToast('📋 Citation copiée !')).catch(() => sdmShowToast('📋 Prêt à partager'));
+            return;
+        }
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); sdmShowToast('📋 Citation copiée !'); } catch (e) {}
+        ta.remove();
+    }
+
+    window.copyCurrentStudioText = function() {
+        copyTextFallback(formatItemShareText(getCurrentStudioItem()));
+    };
+
+    window.shareCurrentStudioWhatsapp = function() {
+        const txt = formatItemShareText(getCurrentStudioItem());
+        window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+    };
+
+    window.copyDailyCard = function(kind) {
+        copyTextFallback(formatItemShareText(getDailyPayload(kind)));
+    };
+
+    window.shareDailyWhatsapp = function(kind) {
+        const txt = formatItemShareText(getDailyPayload(kind));
+        window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+    };
 
     window.setSdmPhotoOpacity = function(valPct) {
         const pct = Math.max(15, Math.min(100, parseInt(valPct, 10) || 75));
@@ -879,16 +1097,18 @@
     };
 
     window.navSdmRappel = function(delta) {
-        if (!SDM_RAPPELS.length) return;
-        sdmRappelIdx = (sdmRappelIdx + delta + SDM_RAPPELS.length) % SDM_RAPPELS.length;
+        sdmActiveOverride = null;
+        if (!sdmFilteredRappels.length) return;
+        sdmRappelIdx = (sdmRappelIdx + delta + sdmFilteredRappels.length) % sdmFilteredRappels.length;
         renderSdmRappelCard();
         try { if (navigator.vibrate) navigator.vibrate(6); } catch (e) {}
     };
 
     window.randomSdmRappel = function() {
-        if (SDM_RAPPELS.length < 2) return;
-        let next = Math.floor(Math.random() * SDM_RAPPELS.length);
-        if (next === sdmRappelIdx) next = (next + 1) % SDM_RAPPELS.length;
+        sdmActiveOverride = null;
+        if (sdmFilteredRappels.length < 2) return;
+        let next = Math.floor(Math.random() * sdmFilteredRappels.length);
+        if (next === sdmRappelIdx) next = (next + 1) % sdmFilteredRappels.length;
         sdmRappelIdx = next;
         renderSdmRappelCard();
         try { if (navigator.vibrate) navigator.vibrate(8); } catch (e) {}
@@ -960,6 +1180,23 @@
     })();
 
     if (SDM_RAPPELS.length) renderSdmRappelCard();
+
+    // Ouverture DIRECTE sur une citation ou un rappel précis via ?tab=spirit&cid=... ou ?load=verset
+    (function handleCitationDeepLink() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab');
+            const cid = params.get('cid');
+            const loadKind = params.get('load');
+            if (loadKind && ['verset', 'hadith', 'beuyit'].includes(loadKind)) {
+                window.loadDailyToStudio(loadKind);
+            } else if (cid) {
+                window.openCitationById(cid);
+            } else if (tab && ['essentiel', 'zikr', 'spirit', 'app'].includes(tab)) {
+                switchHomeTab(tab);
+            }
+        } catch (e) {}
+    })();
 
     window.adjustSdmFont = function(dir) {
         sdmFontScale = Math.max(0.75, Math.min(1.4, sdmFontScale + dir * 0.1));

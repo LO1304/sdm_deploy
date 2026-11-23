@@ -3,7 +3,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-from bibliotheque import views, firebase_auth_view, tazawwud_views
+from bibliotheque import views, firebase_auth_view, tazawwud_views, masaalik_views
 
 urlpatterns = [
     # Accueil et Authentification
@@ -102,6 +102,11 @@ urlpatterns = [
     path('api/notifications/read/', views.mark_notifications_read, name='mark_notifications_read'),
     path('api/profil/update-notif-pref/', views.update_notif_pref, name='update_notif_pref'),
     path('api/profil/update-location/', views.update_location, name='update_location'),
+
+    # ── MASAALIK-UL JINAAN (ACADÉMIE MODE DUOLINGO · 4 PORTES · 16 CHAPITRES) ──
+    path('masaalik/', masaalik_views.masaalik_home, name='masaalik_home'),
+    path('masaalik/chapitre/<slug:slug>/', masaalik_views.masaalik_chapitre, name='masaalik_chapitre'),
+    path('api/masaalik/save-progress/', masaalik_views.masaalik_save_progress, name='masaalik_save_progress'),
 
     # ── TAZAWWUDU-Ç-ÇIGHÂR ──
     path('tazawwud/', tazawwud_views.tazawwud_home, name='tazawwud_home'),

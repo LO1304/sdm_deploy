@@ -1,0 +1,319 @@
+{% extends 'bibliotheque/layout.html' %}
+{% load static %}
+
+{% block title %}Masaalikul Jinaan · Mode Duolingo · SDM Mouride{% endblock %}
+
+{% block extra_css %}
+<style>
+    .mj-hero {
+        background: radial-gradient(circle at top right, rgba(250,204,21,0.22), transparent 55%),
+                    linear-gradient(155deg, rgba(6,44,32,0.96), rgba(4,16,12,0.98));
+        border: 1px solid rgba(250,204,21,0.35);
+    }
+    .mj-tree-line {
+        position: relative;
+    }
+    .mj-tree-line::before {
+        content: "";
+        position: absolute;
+        left: 22px;
+        top: 16px;
+        bottom: 16px;
+        width: 2px;
+        background: linear-gradient(180deg, rgba(250,204,21,0.45), rgba(16,185,129,0.25));
+        z-index: 0;
+    }
+    .mj-node {
+        position: relative;
+        z-index: 1;
+        transition: transform .15s ease, border-color .2s ease;
+    }
+    .mj-node:active { transform: scale(0.985); }
+    .mj-day-pill.done {
+        background: rgba(16,185,129,0.22);
+        border-color: rgba(52,211,153,0.65);
+        color: #6EE7B7;
+    }
+    .mj-day-pill.today {
+        border-color: rgba(250,204,21,0.75);
+        box-shadow: 0 0 12px rgba(250,204,21,0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-4 pb-6">
+
+    <!-- EN-TÊTE ACADÉMIE MASAALIKUL JINAAN -->
+    <div class="mj-hero rounded-[24px] p-4 shadow-2xl">
+        <div class="flex items-center justify-between gap-2 mb-3">
+            <a href="{% url 'home' %}" class="w-8 h-8 rounded-xl bg-white/10 text-white flex items-center justify-center tap-card" style="text-decoration:none;">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+            </a>
+            <span class="px-3 py-1 rounded-full bg-gold-500/20 border border-gold-400/45 text-gold-300 text-[9.5px] font-black uppercase tracking-widest">
+                ۞ Cheikh Ahmadou Bamba (RTA)
+            </span>
+            <a href="{% url 'notifications' %}" class="w-8 h-8 rounded-xl bg-gold-500/15 border border-gold-400/35 text-gold-300 flex items-center justify-center tap-card" style="text-decoration:none;" title="Rappels Duolingo">
+                <i class="fa-solid fa-bell text-xs"></i>
+            </a>
+        </div>
+
+        <h1 class="text-xl font-black text-white leading-tight">Masaalikul Jinaan</h1>
+        <p class="text-[11.5px] text-emerald-100/80 mt-0.5">
+            Les Itinéraires du Paradis · 4 Grandes Portes · {{ total_chapitres }} Chapitres · {{ total_questions }} Questions
+        </p>
+
+        <!-- STATS DUOLINGO (FLAMME, MOYENNE /20, CHAPITRES, XP) -->
+        <div class="grid grid-cols-4 gap-2 mt-3.5">
+            <div class="rounded-2xl bg-black/40 border border-orange-400/30 p-2 text-center">
+                <span class="text-base block">🔥</span>
+                <span id="mj-stat-streak" class="text-sm font-black text-orange-300 tabular-nums">0</span>
+                <span class="text-[9px] text-white/60 font-bold block">Jours</span>
+            </div>
+            <div class="rounded-2xl bg-black/40 border border-gold-400/30 p-2 text-center">
+                <span class="text-base block">🎓</span>
+                <span id="mj-stat-avg" class="text-sm font-black text-gold-300 tabular-nums">—/20</span>
+                <span class="text-[9px] text-white/60 font-bold block">Moyenne</span>
+            </div>
+            <div class="rounded-2xl bg-black/40 border border-emerald-400/30 p-2 text-center">
+                <span class="text-base block">✅</span>
+                <span id="mj-stat-done" class="text-sm font-black text-emerald-300 tabular-nums">0/{{ total_chapitres }}</span>
+                <span class="text-[9px] text-white/60 font-bold block">Chapitres</span>
+            </div>
+            <div class="rounded-2xl bg-black/40 border border-sky-400/30 p-2 text-center">
+                <span class="text-base block">⚡</span>
+                <span id="mj-stat-xp" class="text-sm font-black text-sky-300 tabular-nums">0</span>
+                <span class="text-[9px] text-white/60 font-bold block">XP</span>
+            </div>
+        </div>
+
+        <!-- BARRE DE PROGRESSION GLOBALE -->
+        <div class="mt-3">
+            <div class="flex items-center justify-between text-[10px] font-extrabold text-white/75 mb-1">
+                <span>Progression globale dans le livre</span>
+                <span id="mj-progress-pct" class="text-gold-300">0%</span>
+            </div>
+            <div class="w-full h-2.5 rounded-full bg-white/10 overflow-hidden">
+                <div id="mj-progress-bar" class="h-full rounded-full bg-gradient-to-r from-emerald-400 via-gold-400 to-amber-400 transition-all duration-500" style="width:0%;"></div>
+            </div>
+        </div>
+
+        <!-- CALENDRIER D'ÉVOLUTION 7 JOURS -->
+        <div class="grid grid-cols-7 gap-1.5 mt-3.5">
+            {% for d in week_days %}
+            <div data-day-iso="{{ d.iso }}" class="mj-day-pill {% if d.done %}done{% endif %} {% if d.is_today %}today{% endif %} rounded-xl border border-white/10 bg-black/30 py-1.5 text-center">
+                <span class="text-[9px] font-extrabold uppercase block opacity-75">{{ d.label }}</span>
+                <span class="mj-day-icon text-xs block mt-0.5">{% if d.done %}🔥{% else %}{{ d.num }}{% endif %}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- BOUTON CONTINUER DIRECTEMENT -->
+        <a id="mj-next-cta" href="{% url 'masaalik_chapitre' 'introduction-egalite' %}"
+           class="mt-3.5 w-full py-3 rounded-2xl bg-gradient-to-r from-gold-400 to-amber-500 text-black text-xs font-black flex items-center justify-center gap-2 shadow-lg tap-card"
+           style="text-decoration:none;">
+            <i class="fa-solid fa-play"></i>
+            <span id="mj-next-cta-label">Commencer : Chapitre 1 · Introduction</span>
+        </a>
+    </div>
+
+    <!-- COACH DUOLINGO (FÉLICITATIONS & REMERCIEMENTS OU RELANCE HARCELANTE SI JOUR SAUTÉ !) -->
+    <div id="mj-coach-banner" class="rounded-2xl p-3.5 border border-emerald-400/40 bg-emerald-950/60 flex items-start gap-3">
+        <div id="mj-coach-emoji" class="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-xl flex-shrink-0">
+            🦉
+        </div>
+        <div class="flex-1 min-w-0">
+            <span id="mj-coach-title" class="text-[10.5px] font-black uppercase tracking-wider text-gold-300 block">
+                Coach Masaalikul Jinaan
+            </span>
+            <p id="mj-coach-text" class="text-[11.5px] text-white/90 leading-snug mt-0.5">
+                Prêt pour 4 minutes lumineuses ? Chaque chapitre est découpé en petites étapes fluides avec des questions intermédiaires et ta note /20 !
+            </p>
+        </div>
+    </div>
+
+    <!-- ARBORESCENCE DES 4 GRANDES PORTES & 16 CHAPITRES -->
+    {% for porte in portes %}
+    <section class="space-y-2.5">
+        <div class="rounded-2xl p-3.5 bg-gradient-to-r {{ porte.couleur }} border border-white/20 shadow-lg flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-black/30 border border-white/20 flex items-center justify-center text-white text-base flex-shrink-0">
+                <i class="fa-solid {{ porte.icone }}"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+                <h2 class="text-[13px] font-black text-white leading-snug">{{ porte.titre }}</h2>
+                <p class="text-[10.5px] text-white/80 leading-snug mt-0.5">{{ porte.sous_titre }}</p>
+            </div>
+        </div>
+
+        <div class="mj-tree-line space-y-2.5 pl-1">
+            {% for ch in porte.chapitres %}
+            <a href="{% url 'masaalik_chapitre' ch.slug %}" data-ch-slug="{{ ch.slug }}"
+               class="mj-node glass rounded-2xl p-3 border border-white/12 flex items-center gap-3 tap-card"
+               style="text-decoration:none;">
+                <div class="mj-node-badge w-10 h-10 rounded-full bg-white/10 border-2 border-white/25 text-white font-black text-xs flex items-center justify-center flex-shrink-0">
+                    {{ ch.num }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="text-[9.5px] font-extrabold uppercase tracking-wider text-gold-400">{{ ch.versets }}</span>
+                        <span class="text-[9.5px] text-white/50">· {{ ch.duree }} · {{ ch.questions|length }} questions</span>
+                    </div>
+                    <h3 class="text-[13px] font-extrabold text-white leading-snug mt-0.5 truncate">{{ ch.titre }}</h3>
+                    <div class="mj-node-grade text-[10px] font-bold text-white/55 mt-0.5">
+                        Non commencé · Touchez pour étudier
+                    </div>
+                </div>
+                <div class="mj-node-stars text-xs text-white/30 flex-shrink-0">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function initMasaalikHome() {
+    const STORAGE_KEY = 'sdm_masaalik_progress_v1';
+    const SERVER_PROG = {{ session_progress_json|safe|default:"{}" }};
+    const ALL_CH = {{ all_chapitres_meta_json|safe|default:"[]" }};
+    const TODAY_ISO = '{{ today_iso }}';
+    const YEST_ISO = '{{ yest_iso }}';
+
+    // Fusionner localStorage (hors-ligne) + session serveur sans rien perdre
+    let localProg = {};
+    try { localProg = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) {}
+    const merged = {
+        chapters: Object.assign({}, SERVER_PROG.chapters || {}, localProg.chapters || {}),
+        active_days: Array.from(new Set([...(SERVER_PROG.active_days || []), ...(localProg.active_days || [])])).sort(),
+        xp: Math.max(Number(SERVER_PROG.xp || 0), Number(localProg.xp || 0)),
+        streak: 0
+    };
+
+    // Garder la meilleure note si présent des deux côtés
+    for (const slug of Object.keys(SERVER_PROG.chapters || {})) {
+        const s = SERVER_PROG.chapters[slug];
+        const l = (localProg.chapters || {})[slug];
+        if (l && s) {
+            merged.chapters[slug] = {
+                note_20: Math.max(Number(s.note_20 || 0), Number(l.note_20 || 0)),
+                stars: Math.max(Number(s.stars || 0), Number(l.stars || 0)),
+                completed: Boolean(s.completed || l.completed),
+                updated_at: l.updated_at || s.updated_at
+            };
+        }
+    }
+
+    // Calculer la flamme (streak)
+    const daySet = new Set(merged.active_days);
+    let streak = 0;
+    const baseDate = daySet.has(TODAY_ISO) ? new Date(TODAY_ISO + 'T12:00:00') : new Date(YEST_ISO + 'T12:00:00');
+    let cur = new Date(baseDate.getTime());
+    while (true) {
+        const iso = cur.toISOString().slice(0, 10);
+        if (daySet.has(iso)) {
+            streak += 1;
+            cur.setDate(cur.getDate() - 1);
+        } else {
+            break;
+        }
+    }
+    merged.streak = streak;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(merged)); } catch (e) {}
+
+    // Mettre à jour stats
+    const completedList = ALL_CH.filter(c => merged.chapters[c.slug] && merged.chapters[c.slug].completed);
+    const doneCount = completedList.length;
+    const totalCount = ALL_CH.length || 16;
+    const pct = Math.round((doneCount / totalCount) * 100);
+    const notes = completedList.map(c => Number(merged.chapters[c.slug].note_20 || 0));
+    const avg = notes.length ? (notes.reduce((a, b) => a + b, 0) / notes.length).toFixed(1).replace(/\.0$/, '') : null;
+
+    document.getElementById('mj-stat-streak').textContent = streak;
+    document.getElementById('mj-stat-avg').textContent = avg !== null ? `${avg}/20` : '—/20';
+    document.getElementById('mj-stat-done').textContent = `${doneCount}/${totalCount}`;
+    document.getElementById('mj-stat-xp').textContent = merged.xp;
+    document.getElementById('mj-progress-pct').textContent = `${pct}%`;
+    document.getElementById('mj-progress-bar').style.width = `${pct}%`;
+
+    // Calendrier 7 jours
+    document.querySelectorAll('.mj-day-pill[data-day-iso]').forEach(el => {
+        const iso = el.getAttribute('data-day-iso');
+        if (daySet.has(iso)) {
+            el.classList.add('done');
+            const ic = el.querySelector('.mj-day-icon');
+            if (ic) ic.textContent = '🔥';
+        }
+    });
+
+    // Mettre à jour chaque nœud de l'arborescence avec sa note /20 et ses étoiles
+    let nextUnfinished = null;
+    ALL_CH.forEach(ch => {
+        const node = document.querySelector(`.mj-node[data-ch-slug="${ch.slug}"]`);
+        const info = merged.chapters[ch.slug];
+        if (!info || !info.completed) {
+            if (!nextUnfinished) nextUnfinished = ch;
+            return;
+        }
+        if (!node) return;
+        node.classList.add('border-emerald-400/45', 'bg-emerald-950/35');
+        const badge = node.querySelector('.mj-node-badge');
+        if (badge) {
+            badge.className = 'mj-node-badge w-10 h-10 rounded-full bg-emerald-500 text-black font-black text-sm flex items-center justify-center flex-shrink-0 shadow';
+            badge.innerHTML = '<i class="fa-solid fa-check"></i>';
+        }
+        const gradeEl = node.querySelector('.mj-node-grade');
+        if (gradeEl) {
+            gradeEl.className = 'mj-node-grade text-[10.5px] font-extrabold text-emerald-300 mt-0.5';
+            gradeEl.textContent = `Validé · Note : ${info.note_20}/20`;
+        }
+        const starsEl = node.querySelector('.mj-node-stars');
+        if (starsEl) {
+            const st = Number(info.stars || 0);
+            starsEl.className = 'mj-node-stars text-[11px] flex-shrink-0';
+            starsEl.textContent = '⭐'.repeat(st) + '☆'.repeat(Math.max(0, 3 - st));
+        }
+    });
+
+    // Bouton "Continuer"
+    const cta = document.getElementById('mj-next-cta');
+    const ctaLbl = document.getElementById('mj-next-cta-label');
+    if (nextUnfinished && cta && ctaLbl) {
+        cta.href = `/masaalik/chapitre/${nextUnfinished.slug}/`;
+        ctaLbl.textContent = doneCount === 0
+            ? `Commencer : Ch.${nextUnfinished.num} · ${nextUnfinished.titre}`
+            : `Continuer : Ch.${nextUnfinished.num} · ${nextUnfinished.titre}`;
+    } else if (doneCount >= totalCount && ctaLbl) {
+        ctaLbl.textContent = '🏆 Tous les 16 chapitres terminés · Réviser un chapitre';
+    }
+
+    // COACH DUOLINGO : Merci chaleureux si actif aujourd'hui OU harcèlement amical si jour sauté !
+    const banner = document.getElementById('mj-coach-banner');
+    const emoji = document.getElementById('mj-coach-emoji');
+    const title = document.getElementById('mj-coach-title');
+    const text = document.getElementById('mj-coach-text');
+    const doneToday = daySet.has(TODAY_ISO);
+    const missedYesterday = merged.active_days.length > 0 && !daySet.has(YEST_ISO) && !doneToday;
+
+    if (doneToday) {
+        banner.className = 'rounded-2xl p-3.5 border border-emerald-400/55 bg-emerald-950/70 flex items-start gap-3';
+        emoji.textContent = '🌟';
+        title.textContent = `Alhamdoulillah ! Flamme de ${streak} jour(s) allumée !`;
+        text.textContent = `Merci infiniment pour ta régularité aujourd'hui (${doneCount}/${totalCount} chapitres · moyenne ${avg || '20'}/20). Continue ainsi, tu honores les enseignements de Cheikh Ahmadou Bamba !`;
+    } else if (missedYesterday) {
+        banner.className = 'rounded-2xl p-3.5 border border-rose-400/60 bg-rose-950/70 flex items-start gap-3 animate-pulse';
+        emoji.textContent = '🦉🔥';
+        title.textContent = 'Alerte Duolingo · Tu as sauté hier !';
+        text.textContent = 'Hé ! Ne laisse pas Masaalikul Jinaan prendre la poussière ! 4 minutes maintenant suffisent pour rallumer ta flamme et faire grimper ta note /20. Allez, on s\'y remet tout de suite !';
+    } else if (doneCount > 0) {
+        banner.className = 'rounded-2xl p-3.5 border border-amber-400/60 bg-amber-950/65 flex items-start gap-3';
+        emoji.textContent = '🔥';
+        title.textContent = `Ta série de ${streak} jour(s) t'attend aujourd'hui !`;
+        text.textContent = `Bravo pour tes ${doneCount} chapitre(s) déjà validé(s) ! Fais 1 petit chapitre aujourd'hui avant minuit pour ne pas briser ta flamme.`;
+    }
+})();
+</script>
+{% endblock %}

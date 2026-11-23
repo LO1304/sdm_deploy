@@ -36,14 +36,11 @@
     `;
     document.head.appendChild(style);
 
-    // 2. Injecter Speculation Rules API (Prerender/Prefetch natif 0ms sur Chrome Android & Chromium)
+    // 2. Speculation Rules API léger (Prefetch au toucher uniquement — ne sature jamais le CPU mobile ni Render)
     try {
         if (HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
-            const curPath = window.location.pathname;
-            const otherTabs = CORE_TABS.filter(p => p !== curPath);
             const rules = {
-                prerender: [
-                    { source: 'list', urls: otherTabs.slice(0, 3) },
+                prefetch: [
                     {
                         source: 'document',
                         where: {
@@ -55,21 +52,7 @@
                                 { not: { selector_matches: '[data-no-prefetch], [target="_blank"]' } }
                             ]
                         },
-                        eagerness: 'moderate'
-                    }
-                ],
-                prefetch: [
-                    { source: 'list', urls: otherTabs },
-                    {
-                        source: 'document',
-                        where: {
-                            and: [
-                                { href_matches: '/*' },
-                                { not: { href_matches: '/logout*' } },
-                                { not: { href_matches: '/admin*' } }
-                            ]
-                        },
-                        eagerness: 'moderate'
+                        eagerness: 'conservative'
                     }
                 ]
             };
@@ -131,19 +114,22 @@
     }
 
     function warmCoreTabs() {
-        if (navigator.connection && (navigator.connection.saveData || navigator.connection.effectiveType === '2g')) return;
+        const conn = navigator.connection;
+        if (conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g')) return;
         const cur = window.location.pathname;
-        CORE_TABS.forEach((tab, idx) => {
-            if (tab !== cur) {
-                setTimeout(() => prefetchUrl(tab), 350 + idx * 220);
-            }
+        // Précharger doucement 1 onglet à la fois après 3.5s pour ne jamais ralentir l'écran actif
+        const queue = CORE_TABS.filter(t => t !== cur);
+        queue.forEach((tab, idx) => {
+            setTimeout(() => {
+                if (!document.hidden) prefetchUrl(tab);
+            }, 3500 + idx * 1400);
         });
     }
 
-    if ('requestIdleCallback' in window) {
-        requestIdleCallback(warmCoreTabs, { timeout: 1500 });
+    if (document.readyState === 'complete') {
+        warmCoreTabs();
     } else {
-        setTimeout(warmCoreTabs, 700);
+        window.addEventListener('load', warmCoreTabs, { once: true });
     }
 
     // Prefetch dès que le doigt touche un lien ou une carte

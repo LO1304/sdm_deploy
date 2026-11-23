@@ -395,7 +395,7 @@ def home(request):
     import datetime
 
     today_key = datetime.date.today().isoformat()
-    pub_cache_key = f'sdm_home_public_v1_{today_key}'
+    pub_cache_key = f'sdm_home_public_v2_{today_key}'
     pub = cache.get(pub_cache_key)
 
     if pub is None:
@@ -510,12 +510,12 @@ def home(request):
         niveau_spirituel = 1 + (points // 50)
 
     sdm_card_themes = [
-        {'id': 'touba', 'label': 'Touba', 'src': '/static/images/sdm_rappels/sdm_touba_emerald.jpg'},
-        {'id': 'parchemin', 'label': 'Parchemin', 'src': '/static/images/sdm_rappels/sdm_parchemin_royal.jpg'},
-        {'id': 'medine', 'label': 'Médine', 'src': '/static/images/sdm_rappels/sdm_nuit_medine.jpg'},
-        {'id': 'kaaba', 'label': 'Or Noir', 'src': '/static/images/sdm_rappels/sdm_kaaba_or.jpg'},
-        {'id': 'jade', 'label': 'Firdaws', 'src': '/static/images/sdm_rappels/sdm_firdaws_jade.jpg'},
-        {'id': 'soufi', 'label': 'Aurore', 'src': '/static/images/sdm_rappels/sdm_sufi_dawn.jpg'},
+        {'id': 'touba', 'label': 'Touba', 'src': '/static/images/sdm_rappels/sdm_touba_emerald.jpg', 'thumb': '/static/images/sdm_rappels/thumbs/sdm_touba_emerald.jpg'},
+        {'id': 'parchemin', 'label': 'Parchemin', 'src': '/static/images/sdm_rappels/sdm_parchemin_royal.jpg', 'thumb': '/static/images/sdm_rappels/thumbs/sdm_parchemin_royal.jpg'},
+        {'id': 'medine', 'label': 'Médine', 'src': '/static/images/sdm_rappels/sdm_nuit_medine.jpg', 'thumb': '/static/images/sdm_rappels/thumbs/sdm_nuit_medine.jpg'},
+        {'id': 'kaaba', 'label': 'Or Noir', 'src': '/static/images/sdm_rappels/sdm_kaaba_or.jpg', 'thumb': '/static/images/sdm_rappels/thumbs/sdm_kaaba_or.jpg'},
+        {'id': 'jade', 'label': 'Firdaws', 'src': '/static/images/sdm_rappels/sdm_firdaws_jade.jpg', 'thumb': '/static/images/sdm_rappels/thumbs/sdm_firdaws_jade.jpg'},
+        {'id': 'soufi', 'label': 'Aurore', 'src': '/static/images/sdm_rappels/sdm_sufi_dawn.jpg', 'thumb': '/static/images/sdm_rappels/thumbs/sdm_sufi_dawn.jpg'},
     ]
 
     context = {
@@ -2441,15 +2441,16 @@ def notifications_list(request):
 def api_notifications_sync_feed(request):
     """Flux léger JSON pour les notifications locales programmées (nouveau Khassida, verset, citation, prières, streak Tazawwud)."""
     import datetime as dt
-    feed_pub = cache.get('sdm_notif_pub_feed_v1')
+    feed_pub = cache.get('sdm_notif_pub_feed_v2')
     if feed_pub is None:
         latest_kh = Khassida.objects.only('id', 'titre').order_by('-id').first()
         latest_kh_data = {'id': latest_kh.id, 'titre': latest_kh.titre} if latest_kh else None
 
-        # Citation du jour (depuis nos 318 citations SDM)
+        # Citation du jour (depuis nos citations vérifiées SDM & Masaalikul Jinaan)
         citation_data = {
-            'texte': "La meilleure parure dont l'homme puisse se parer, est la bonne conduite partout où il passe.",
-            'source': "Masaalikul Jinaan · Cheikh Ahmadou Bamba",
+            'id': 'mj_v1089',
+            'texte': "La meilleure parure dont l'homme puisse se parer est la bonne conduite (al-adab) partout où il passe.",
+            'source': "Masaalikul Jinaan · Cheikh Ahmadou Bamba (RTA)",
             'badge': "Masaalikul Jinaan"
         }
         rappels_path = os.path.join(settings.BASE_DIR, 'daily_rappels_sdm.json')
@@ -2459,9 +2460,12 @@ def api_notifications_sync_feed(request):
                     cits = json.load(rf)
                 if cits:
                     c = cits[dt.date.today().toordinal() % len(cits)]
+                    oeuvre = c.get('oeuvre') or c.get('badge') or 'Masaalikul Jinaan'
+                    auteur = c.get('auteur') or 'Cheikh Ahmadou Bamba (RTA)'
                     citation_data = {
+                        'id': c.get('id') or 'mj_v1089',
                         'texte': (c.get('texte') or '')[:220],
-                        'source': c.get('source') or 'Cheikh Ahmadou Bamba',
+                        'source': f"{oeuvre} · {auteur}",
                         'badge': c.get('badge') or 'Citation SDM',
                     }
             except Exception:
@@ -2514,7 +2518,7 @@ def api_notifications_sync_feed(request):
             'verset_du_jour': verset_data,
             'prayers': prayers,
         }
-        cache.set('sdm_notif_pub_feed_v1', feed_pub, 180)
+        cache.set('sdm_notif_pub_feed_v2', feed_pub, 180)
 
     # État Tazawwud "Mode Duolingo" personnel
     tazawwud_state = {'done_today': False, 'missed_yesterday': False, 'streak': 0, 'score_total': 0}
