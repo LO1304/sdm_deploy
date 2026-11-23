@@ -373,7 +373,12 @@
             </div>
         </div>
 
-        <div style="display:flex; align-items:center; gap:2px;">
+        <div style="display:flex; align-items:center; gap:4px;">
+            {% if categorie == 'coran' %}
+            <button type="button" id="btn-jukki-lu-pdf" onclick="togglePdfJukkiLu()" style="display:none; height:34px; padding:0 10px; border-radius:11px; border:1px solid rgba(16,185,129,0.5); background:rgba(16,185,129,0.14); color:#6EE7B7; font-size:11px; font-weight:800; align-items:center; gap:5px; cursor:pointer; flex-shrink:0;" title="Valider ce Jukki comme lu">
+                <i class="fa-regular fa-circle-check"></i> <span id="lbl-jukki-lu-pdf">Lu</span>
+            </button>
+            {% endif %}
             <button type="button" id="btn-save-offline-top" onclick="saveCurrentDocOffline()" class="icon-btn" title="Enregistrer hors-ligne dans l'application">
                 <i class="fa-solid fa-cloud-arrow-down"></i>
             </button>
@@ -1045,6 +1050,64 @@
             }
             if (rAud.paused) { rAud.play(); rIcon.className = "fa-solid fa-pause"; }
             else { rAud.pause(); rIcon.className = "fa-solid fa-play"; }
+        }
+
+        // Validation "Jukki Lu ✓" synchronisée avec /coran/ (localStorage sdm_coran_jukki_read_v1)
+        const JUKKI_READ_KEY = 'sdm_coran_jukki_read_v1';
+        let CURRENT_PDF_JUKKI = 0;
+        (function detectPdfJukki() {
+            const btn = document.getElementById('btn-jukki-lu-pdf');
+            if (!btn) return;
+            const qsNum = parseInt(new URLSearchParams(window.location.search).get('jukki') || '0', 10);
+            const titleMatch = ("{{ document.titre|escapejs }}").match(/(?:jukki|juz|hizb|partie)\s*(\d{1,2})/i);
+            const num = (qsNum >= 1 && qsNum <= 30) ? qsNum : (titleMatch ? parseInt(titleMatch[1], 10) : 0);
+            if (num >= 1 && num <= 30) {
+                CURRENT_PDF_JUKKI = num;
+                btn.style.display = 'inline-flex';
+                renderPdfJukkiBtn();
+            }
+        })();
+
+        function renderPdfJukkiBtn() {
+            const btn = document.getElementById('btn-jukki-lu-pdf');
+            if (!btn || !CURRENT_PDF_JUKKI) return;
+            let read = [];
+            try { read = JSON.parse(localStorage.getItem(JUKKI_READ_KEY) || '{}').read || []; } catch (e) {}
+            const isRead = read.map(Number).includes(CURRENT_PDF_JUKKI);
+            btn.style.background = isRead ? 'linear-gradient(135deg,#10B981,#059669)' : 'rgba(16,185,129,0.14)';
+            btn.style.color = isRead ? '#ffffff' : '#6EE7B7';
+            btn.style.borderColor = isRead ? '#6EE7B7' : 'rgba(16,185,129,0.5)';
+            btn.innerHTML = isRead
+                ? `<i class="fa-solid fa-circle-check"></i> <span>Jukki ${CURRENT_PDF_JUKKI} lu ✓</span>`
+                : `<i class="fa-regular fa-circle-check"></i> <span>Valider lu</span>`;
+        }
+
+        function togglePdfJukkiLu() {
+            if (!CURRENT_PDF_JUKKI) return;
+            let state = { read: [], lastRead: 0 };
+            try { state = JSON.parse(localStorage.getItem(JUKKI_READ_KEY) || '{}'); } catch (e) {}
+            const set = new Set((state.read || []).map(Number).filter(n => n >= 1 && n <= 30));
+            let marked = false;
+            if (set.has(CURRENT_PDF_JUKKI)) {
+                set.delete(CURRENT_PDF_JUKKI);
+            } else {
+                set.add(CURRENT_PDF_JUKKI);
+                state.lastRead = CURRENT_PDF_JUKKI;
+                marked = true;
+            }
+            state.read = [...set].sort((a, b) => a - b);
+            if (!marked && state.lastRead === CURRENT_PDF_JUKKI) {
+                state.lastRead = state.read.length ? state.read[state.read.length - 1] : 0;
+            }
+            state.updatedAt = new Date().toISOString();
+            try { localStorage.setItem(JUKKI_READ_KEY, JSON.stringify(state)); } catch (e) {}
+            renderPdfJukkiBtn();
+            try { if (navigator.vibrate) navigator.vibrate(marked ? 12 : 6); } catch (e) {}
+            if (window.SDMOfflineVault && window.SDMOfflineVault.showToast) {
+                window.SDMOfflineVault.showToast(
+                    marked ? `Jukki ${CURRENT_PDF_JUKKI} validé comme lu ✓ (${state.read.length}/30)` : `Jukki ${CURRENT_PDF_JUKKI} remis en « À lire »`
+                );
+            }
         }
 
         init();
