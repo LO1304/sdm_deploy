@@ -5,7 +5,13 @@ from django.http import JsonResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from .masaalik_data import MASAALIK_PORTES, get_all_chapitres, get_chapitre_by_slug, build_masaalik_deck
+from .masaalik_data import (
+    MASAALIK_PORTES,
+    get_all_chapitres,
+    get_chapitre_by_slug,
+    build_masaalik_deck,
+    get_chapitre_verbatim_versets,
+)
 
 
 def _compute_streak(active_days):
@@ -27,6 +33,42 @@ def _get_session_progress(request):
     if not isinstance(prog, dict):
         prog = {"chapters": {}, "active_days": [], "xp": 0, "streak": 0}
     return prog
+
+
+def apprentissage_home(request):
+    """Grand pôle unifié d'Apprentissage : Masaalik-ul Jinaan, Tazawwudu-ç-Çighâr et œuvres à venir."""
+    all_ch = get_all_chapitres()
+    upcoming_books = [
+        {
+            "titre": "Tazawwudu-sh-Shubbân",
+            "sous_titre": "Le Viatique de la Jeunesse",
+            "desc": "Guide complet des obligations religieuses, de la piété et de la conduite du jeune croyant.",
+            "icone": "fa-seedling",
+        },
+        {
+            "titre": "Nahju Qadâ'il Hâj",
+            "sous_titre": "La Voie de la Satisfaction des Besoins",
+            "desc": "Les règles d'or de la bienséance (Al-Adab), du respect des parents, des maîtres et de la communauté.",
+            "icone": "fa-hands-holding-circle",
+        },
+        {
+            "titre": "Jawharu-n-Nafîs",
+            "sous_titre": "Le Joyau Précieux (Fiqh)",
+            "desc": "Versification du précis de jurisprudence d'Al-Akhdarî : pureté, prière et pratiques quotidiennes.",
+            "icone": "fa-gem",
+        },
+        {
+            "titre": "Munawwiru-ç-Çudûr",
+            "sous_titre": "L'Illuminateur des Cœurs",
+            "desc": "Éducation spirituelle, purification des organes et élévation morale selon Cheikh Ahmadou Bamba.",
+            "icone": "fa-sun",
+        },
+    ]
+    return render(request, "bibliotheque/apprentissage_home.html", {
+        "masaalik_total_chapitres": len(all_ch),
+        "masaalik_total_questions": sum(len(c["questions"]) for c in all_ch),
+        "upcoming_books": upcoming_books,
+    })
 
 
 def masaalik_home(request):
@@ -75,11 +117,14 @@ def masaalik_chapitre(request, slug):
         raise Http404("Chapitre Masaalikul Jinaan introuvable")
 
     deck = build_masaalik_deck(chapitre)
+    verbatim = get_chapitre_verbatim_versets(chapitre)
     context = {
         "chapitre": chapitre,
         "prev_ch": prev_ch,
         "next_ch": next_ch,
         "deck_json": json.dumps(deck, ensure_ascii=False),
+        "verbatim_versets": verbatim,
+        "verbatim_count": len(verbatim),
         "total_steps": len(deck),
         "total_questions": len(chapitre["questions"]),
     }

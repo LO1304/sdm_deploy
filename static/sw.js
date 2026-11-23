@@ -1,7 +1,8 @@
-const CACHE_NAME = 'sdm-premium-v17';
+const CACHE_NAME = 'sdm-premium-v18';
 const SHELL_ASSETS = [
   '/',
   '/offline/',
+  '/apprentissage/',
   '/masaalik/',
   '/zikr-compteur/',
   '/telechargements/',
@@ -25,6 +26,7 @@ const SHELL_ASSETS = [
 
 const INSTANT_SHELL_PATHS = new Set([
   '/',
+  '/apprentissage/',
   '/masaalik/',
   '/collection/son/',
   '/collection/khassida/',

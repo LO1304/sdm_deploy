@@ -93,7 +93,8 @@
     function canPrefetchUrl(href) {
         if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return false;
         try {
-            const u = new URL(href, window.location.origin);
+            // Résoudre contre window.location.href (et NON origin) pour préserver le chemin courant sur ?cat=... / ?oeuvre=... / ?profil=...
+            const u = new URL(href, window.location.href);
             if (u.origin !== window.location.origin) return false;
             if (u.pathname === window.location.pathname && u.search === window.location.search) return false;
             if (/^\/(logout|admin|api|sons-api|proxy-|favoris\/toggle)/.test(u.pathname)) return false;

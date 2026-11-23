@@ -201,12 +201,12 @@
                 <span class="tile-sub">Chapelet</span>
             </a>
 
-            <a href="{% url 'tazawwud_home' %}" class="app-launcher-tile">
-                <div class="tile-icon" style="background:linear-gradient(135deg,#F59E0B,#9A3412); color:#FFF7ED;">
+            <a href="{% url 'apprentissage_home' %}" class="app-launcher-tile">
+                <div class="tile-icon" style="background:linear-gradient(135deg,#F59E0B,#065F46); color:#FFF7ED; border:1.5px solid rgba(250,204,21,0.55);">
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
-                <span class="tile-title">Tazawwud</span>
-                <span class="tile-sub">31 Leçons</span>
+                <span class="tile-title">Apprentissage</span>
+                <span class="tile-sub">Œuvres · Cours</span>
             </a>
 
             <a href="{% url 'quiz_home' %}" class="app-launcher-tile">
@@ -249,6 +249,56 @@
                 <i class="fa-solid fa-crown text-[11px]"></i> SDM Premium
             </a>
         </div>
+    </section>
+
+    <!-- 3B. GRAND PÔLE APPRENTISSAGE (TOUT EN HAUT DE L'ACCUEIL : MASAALIKUL JINAAN, TAZAWWUDU-Ç-ÇIGHÂR & ŒUVRES À VENIR) -->
+    <section class="mb-3.5 rounded-[22px] p-3.5 border border-gold-400/45 shadow-xl"
+             style="background:radial-gradient(circle at top right, rgba(250,204,21,0.16), transparent 55%), linear-gradient(155deg, rgba(6,38,26,0.94), rgba(4,14,10,0.97));">
+        <div class="flex items-center justify-between mb-2.5 px-0.5">
+            <div class="flex items-center gap-2 min-w-0">
+                <span class="w-7 h-7 rounded-xl bg-gradient-to-br from-gold-400 to-amber-500 text-black flex items-center justify-center text-xs flex-shrink-0 shadow">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </span>
+                <div class="min-w-0">
+                    <h2 class="text-[12.5px] font-black text-white leading-tight truncate">Apprentissage & Enseignements</h2>
+                    <p class="text-[9.5px] font-bold text-gold-300/90 truncate">Tazawwudu-ç-Çighâr · Masaalik-ul Jinaan · Œuvres à venir</p>
+                </div>
+            </div>
+            <a href="{% url 'apprentissage_home' %}" class="px-2.5 py-1 rounded-full bg-gold-500/20 border border-gold-400/45 text-[10px] font-black text-gold-300 flex-shrink-0 tap-card" style="text-decoration:none;">
+                Tout voir ›
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+            <a href="{% url 'masaalik_home' %}" class="rounded-2xl p-3 bg-gradient-to-br from-emerald-900/80 to-teal-950/90 border border-emerald-400/45 flex flex-col justify-between gap-1.5 tap-card" style="text-decoration:none;">
+                <div class="flex items-center justify-between">
+                    <span class="px-1.5 py-0.5 rounded-md bg-emerald-400/20 text-[8.5px] font-black uppercase text-emerald-200">32 Chapitres</span>
+                    <i class="fa-solid fa-route text-gold-300 text-xs"></i>
+                </div>
+                <div>
+                    <h3 class="text-[13px] font-black text-white leading-tight">Masaalik-ul Jinaan</h3>
+                    <p class="text-[10px] text-emerald-100/80 mt-0.5 leading-snug">Versets authentiques, résumés & 193 questions</p>
+                </div>
+            </a>
+
+            <a href="{% url 'tazawwud_home' %}" class="rounded-2xl p-3 bg-gradient-to-br from-amber-900/75 to-yellow-950/90 border border-amber-400/45 flex flex-col justify-between gap-1.5 tap-card" style="text-decoration:none;">
+                <div class="flex items-center justify-between">
+                    <span class="px-1.5 py-0.5 rounded-md bg-amber-400/20 text-[8.5px] font-black uppercase text-amber-200">31 Leçons</span>
+                    <i class="fa-solid fa-book-open-reader text-amber-300 text-xs"></i>
+                </div>
+                <div>
+                    <h3 class="text-[13px] font-black text-white leading-tight">Tazawwudu-ç-Çighâr</h3>
+                    <p class="text-[10px] text-amber-100/80 mt-0.5 leading-snug">Foi, Fiqh, audio & parcours guidé</p>
+                </div>
+            </a>
+        </div>
+
+        <a href="{% url 'apprentissage_home' %}" class="mt-2 px-3 py-2 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-between gap-2 tap-card" style="text-decoration:none;">
+            <span class="text-[10px] font-bold text-white/75 truncate">
+                <i class="fa-solid fa-sparkles text-gold-400 mr-1"></i> Bientôt : Tazawwudu-sh-Shubbân · Nahju Qadâ'il Hâj · Jawharu-n-Nafîs…
+            </span>
+            <i class="fa-solid fa-chevron-right text-[9px] text-gold-300 flex-shrink-0"></i>
+        </a>
     </section>
 
     <!-- 4. CONTRÔLE SEGMENTÉ MOBILE (STYLE iOS) -->
@@ -438,44 +488,18 @@
         </div>
         {% endif %}
 
-        <!-- Académies d'Étude Guidée (Masaalik-ul Jinaan + Tazawwudu-ç-Çighâr) & Quizz Islamique -->
-        <div class="space-y-2.5">
-            <a href="{% url 'masaalik_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-emerald-950 via-teal-900/90 to-amber-900/75 border border-gold-400/50 flex items-center justify-between gap-3 shadow-lg tap-card" style="text-decoration:none;">
-                <div class="min-w-0">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold-500/20 border border-gold-400/45 text-[9px] font-extrabold uppercase tracking-wider text-gold-300">
-                        ۞ Nouveau · 4 Portes · 32 Leçons & Sous-Chapitres
-                    </span>
-                    <h3 class="text-base font-black text-white mt-1">Masaalikul Jinaan</h3>
-                    <p class="text-[11px] text-emerald-100/85 mt-0.5">Les Itinéraires du Paradis · Étape par étape, résumés, 193 questions & notes /20</p>
+        <!-- Quizz Islamique (Défis & Questions Aléatoires) -->
+        <div>
+            <a href="{% url 'quiz_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-emerald-900/80 to-teal-900/70 border border-emerald-400/40 flex items-center justify-between gap-3 tap-card" style="text-decoration:none;">
+                <div>
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 block">1 638+ Questions · Défis Live</span>
+                    <h3 class="text-base font-black text-white mt-0.5">Quizz Islamique</h3>
+                    <p class="text-[11px] text-emerald-100/80 mt-1">Tirage aléatoire et duels en direct avec vos amis</p>
                 </div>
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-gold-400 to-amber-500 text-black flex items-center justify-center flex-shrink-0 font-black shadow">
-                    <i class="fa-solid fa-route text-lg"></i>
+                <div class="w-11 h-11 rounded-2xl bg-emerald-400 text-black flex items-center justify-center flex-shrink-0 font-black">
+                    <i class="fa-solid fa-trophy text-lg"></i>
                 </div>
             </a>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <a href="{% url 'tazawwud_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-amber-900/80 to-yellow-900/70 border border-amber-400/40 flex items-center justify-between gap-3 tap-card" style="text-decoration:none;">
-                    <div>
-                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-300 block">Apprentissage Guidé · 31 Leçons</span>
-                        <h3 class="text-base font-black text-white mt-0.5">Tazawwudu-ç-Çighâr</h3>
-                        <p class="text-[11px] text-amber-100/80 mt-1">Apprentissage guidé, audio & révisions certifiantes</p>
-                    </div>
-                    <div class="w-11 h-11 rounded-2xl bg-amber-400 text-black flex items-center justify-center flex-shrink-0 font-black">
-                        <i class="fa-solid fa-graduation-cap text-lg"></i>
-                    </div>
-                </a>
-
-                <a href="{% url 'quiz_home' %}" class="rounded-2xl p-4 bg-gradient-to-br from-emerald-900/80 to-teal-900/70 border border-emerald-400/40 flex items-center justify-between gap-3 tap-card" style="text-decoration:none;">
-                    <div>
-                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 block">1 638+ Questions · Défis Live</span>
-                        <h3 class="text-base font-black text-white mt-0.5">Quizz Islamique</h3>
-                        <p class="text-[11px] text-emerald-100/80 mt-1">Tirage aléatoire et duels en direct avec vos amis</p>
-                    </div>
-                    <div class="w-11 h-11 rounded-2xl bg-emerald-400 text-black flex items-center justify-center flex-shrink-0 font-black">
-                        <i class="fa-solid fa-trophy text-lg"></i>
-                    </div>
-                </a>
-            </div>
         </div>
     </div>
 

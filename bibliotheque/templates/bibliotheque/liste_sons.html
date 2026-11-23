@@ -560,13 +560,13 @@
 
     <!-- PILULES DE DOSSIERS EXISTANTS -->
     <div class="cats-row">
-        <a href="?" class="cat-pill {% if not active_cat %}active{% endif %}">
+        <a href="{% url 'liste_sons' %}" class="cat-pill {% if not active_cat %}active{% endif %}">
             <i class="fa-solid fa-folder-tree"></i>
             <span>Dossiers ({{ total_all_sons }})</span>
         </a>
         {% for code, label, cnt in categories_with_counts %}
         {% if cnt > 0 %}
-        <a href="?cat={{ code }}" class="cat-pill {% if active_cat == code %}active{% endif %}">
+        <a href="{% url 'liste_sons' %}?cat={{ code }}" class="cat-pill {% if active_cat == code %}active{% endif %}">
             {% if code == 'CORAN' %}<i class="fa-solid fa-book-quran"></i>
             {% elif code == 'KHASSIDA' %}<i class="fa-solid fa-feather-pointed"></i>
             {% elif code == 'WAKHTANE' %}<i class="fa-solid fa-microphone-lines"></i>
@@ -599,7 +599,7 @@
                 <button type="button" class="ap-btn ap-btn-glass tap-card" onclick="playRandomVisible()">
                     <i class="fa-solid fa-shuffle"></i> Aléatoire
                 </button>
-                <a href="{% if active_cat %}?cat={{ active_cat }}{% elif active_profil_obj %}?cat={{ active_profil_obj.categorie }}{% else %}?{% endif %}" class="ap-btn ap-btn-glass tap-card">
+                <a href="{% url 'liste_sons' %}{% if active_cat %}?cat={{ active_cat }}{% elif active_profil_obj %}?cat={{ active_profil_obj.categorie }}{% endif %}" class="ap-btn ap-btn-glass tap-card">
                     <i class="fa-solid fa-folder-open"></i> Retour Dossier
                 </a>
             </div>
@@ -627,7 +627,7 @@
                 <button type="button" class="ap-btn ap-btn-glass tap-card" onclick="playRandomVisible()">
                     <i class="fa-solid fa-shuffle"></i> Aléatoire
                 </button>
-                <a href="{% if active_cat %}?cat={{ active_cat }}{% else %}?{% endif %}" class="ap-btn ap-btn-glass tap-card">
+                <a href="{% url 'liste_sons' %}{% if active_cat %}?cat={{ active_cat }}{% endif %}" class="ap-btn ap-btn-glass tap-card">
                     <i class="fa-solid fa-arrow-left"></i> Dossiers
                 </a>
             </div>
@@ -637,7 +637,7 @@
     <!-- NIVEAU 2 : DOSSIER EXISTANT OUVERT (?cat=KHASSIDA, WAKHTANE, etc.) -->
     {% elif active_cat %}
     <div class="folder-active-bar">
-        <a href="?" class="back-btn" title="Retour aux dossiers"><i class="fa-solid fa-arrow-left" style="font-size:13px;"></i></a>
+        <a href="{% url 'liste_sons' %}" class="back-btn" title="Retour aux dossiers"><i class="fa-solid fa-arrow-left" style="font-size:13px;"></i></a>
         <div class="folder-box-icon" style="width:40px; height:40px; font-size:16px; background:{% if active_folder_meta %}{{ active_folder_meta.gradient }}{% else %}linear-gradient(135deg,#D4AF37,#065F46){% endif %};">
             <i class="fa-solid {% if active_folder_meta %}{{ active_folder_meta.icon }}{% else %}fa-folder-open{% endif %}"></i>
         </div>
@@ -661,7 +661,7 @@
 
     <div class="profiles-carousel" id="profilesCarousel">
         {% for p in collections_profiles %}
-        <a href="?cat={{ active_cat }}&profil={{ p.nom|urlencode }}" class="profile-chip-card tap-card" data-profile-name="{{ p.nom|lower }}">
+        <a href="{% url 'liste_sons' %}?cat={{ active_cat }}&profil={{ p.nom|urlencode }}" class="profile-chip-card tap-card" data-profile-name="{{ p.nom|lower }}">
             <div class="profile-avatar" style="background:{{ p.gradient }};">
                 <img src="{{ p.image|default:'/static/images/audio_thumbs/touba.jpg' }}" alt="{{ p.nom }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                 <span class="profile-badge-cnt">{{ p.count }}</span>
@@ -673,7 +673,7 @@
 
     <div class="collections-grid" id="collectionsGrid">
         {% for p in collections_profiles %}
-        <a href="?cat={{ active_cat }}&profil={{ p.nom|urlencode }}" class="collection-card tap-card" data-profile-name="{{ p.nom|lower }}">
+        <a href="{% url 'liste_sons' %}?cat={{ active_cat }}&profil={{ p.nom|urlencode }}" class="collection-card tap-card" data-profile-name="{{ p.nom|lower }}">
             <div class="profile-avatar" style="width:58px; height:58px; font-size:19px; background:{{ p.gradient }};">
                 <img src="{{ p.image|default:'/static/images/audio_thumbs/touba.jpg' }}" alt="{{ p.nom }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                 <span class="profile-badge-cnt">{{ p.count }}</span>
@@ -701,7 +701,7 @@
     <!-- VUE 1B : DOSSIERS PAR TITRE D'ŒUVRE AVEC LES IMAGES EXISTANTES -->
     <div class="title-folders-grid" id="titleFoldersGrid">
         {% for tf in title_folders %}
-        <a href="?oeuvre={{ tf.slug }}" class="title-folder-card tap-card" data-title-folder="{{ tf.titre|lower }}">
+        <a href="{% url 'liste_sons' %}?oeuvre={{ tf.slug }}" class="title-folder-card tap-card" data-title-folder="{{ tf.titre|lower }}">
             <div class="title-folder-cover">
                 <img src="{{ tf.image }}" alt="{{ tf.titre }}" loading="lazy"
                      onerror="this.onerror=null;this.src='{{ tf.fallback_image }}';">
@@ -719,7 +719,7 @@
     <div class="folders-stack" id="foldersStackView">
         {% for folder in folders_tree %}
         <div class="folder-box" data-folder-name="{{ folder.label|lower }}">
-            <a href="?cat={{ folder.code }}" class="folder-box-head tap-card">
+            <a href="{% url 'liste_sons' %}?cat={{ folder.code }}" class="folder-box-head tap-card">
                 <div class="folder-box-icon" style="background:{{ folder.gradient }}; overflow:hidden; padding:0; border:1.5px solid rgba(250,204,21,0.55);">
                     <img src="{{ folder.image|default:'/static/images/audio_thumbs/touba.jpg' }}" alt="{{ folder.label }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                 </div>
@@ -733,7 +733,7 @@
             <!-- PROFILS EXISTANTS RANGÉS DIRECTEMENT DANS CE DOSSIER (AVEC IMAGES NETTES) -->
             <div class="folder-profiles-shelf" id="shelf-{{ folder.code }}">
                 {% for p in folder.profiles %}
-                <a href="?cat={{ folder.code }}&profil={{ p.nom|urlencode }}" class="profile-chip-card tap-card" style="width:92px;" data-profile-name="{{ p.nom|lower }}">
+                <a href="{% url 'liste_sons' %}?cat={{ folder.code }}&profil={{ p.nom|urlencode }}" class="profile-chip-card tap-card" style="width:92px;" data-profile-name="{{ p.nom|lower }}">
                     <div class="profile-avatar" style="width:48px; height:48px; font-size:15px; background:{{ p.gradient }};">
                         <img src="{{ p.image|default:'/static/images/audio_thumbs/touba.jpg' }}" alt="{{ p.nom }}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                         <span class="profile-badge-cnt">{{ p.count }}</span>

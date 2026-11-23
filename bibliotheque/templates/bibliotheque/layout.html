@@ -291,56 +291,55 @@
 
     <!-- Lecteur Audio Global Persistant (Ne s'arrête pas entre les pages ni en arrière-plan) -->
     <audio id="sdm-global-audio" preload="auto" playsinline webkit-playsinline></audio>
+    <!-- Audio dédié au lancement (joue automatiquement Wajahtou Wadjhiyaza et s'arrête dès l'entrée dans l'app) -->
+    <audio id="sdm-splash-audio" preload="auto" playsinline webkit-playsinline src="https://res.cloudinary.com/dcajqzg2h/video/upload/v1795376309/media/audios/telegram/khassida/KURELSQACIDAS_8012_Wajahtou_Wadjhiyaza.mp3"></audio>
 
-    <!-- ═══ ÉCRAN DE LANCEMENT ANIMÉ SDM (PHOTO SERIGNE TOUBA FLOUTÉE + PALETTES + CITATION + WAJAHTOU WADJHIYAZA) ═══ -->
+    <!-- ═══ ÉCRAN DE LANCEMENT ANIMÉ SDM (PHOTO SERIGNE TOUBA VISIBLE + PALETTES + VERSET UNIQUE + WAJAHTOU WADJHIYAZA AUTO) ═══ -->
     <div id="sdm-launch-splash" style="display:none;position:fixed;inset:0;z-index:10060;background:#030A07;overflow:hidden;">
+        <!-- Fond photo Serigne Touba légèrement adouci pour rester parfaitement reconnaissable -->
         <img src="{% static 'images/serigne_touba_splash.jpg' %}" alt="Cheikh Ahmadou Bamba"
-             style="position:absolute;inset:-14px;width:calc(100% + 28px);height:calc(100% + 28px);object-fit:cover;object-position:center 22%;filter:blur(6px) brightness(0.42) contrast(1.08);transform:scale(1.06);animation:sdmSplashZoom 14s ease-in-out infinite alternate;">
-        <div style="position:absolute;inset:0;background:radial-gradient(circle at 20% 20%, rgba(250,204,21,0.22), transparent 52%), radial-gradient(circle at 82% 78%, rgba(16,185,129,0.26), transparent 55%), linear-gradient(180deg, rgba(3,10,7,0.55) 0%, rgba(3,10,7,0.75) 55%, rgba(3,10,7,0.96) 100%);"></div>
+             style="position:absolute;inset:-8px;width:calc(100% + 16px);height:calc(100% + 16px);object-fit:cover;object-position:center 16%;filter:blur(2px) brightness(0.62) contrast(1.06);transform:scale(1.03);animation:sdmSplashZoom 14s ease-in-out infinite alternate;">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 20% 18%, rgba(250,204,21,0.2), transparent 50%), radial-gradient(circle at 82% 78%, rgba(16,185,129,0.22), transparent 52%), linear-gradient(180deg, rgba(3,10,7,0.32) 0%, rgba(3,10,7,0.52) 52%, rgba(3,10,7,0.92) 100%);"></div>
         <!-- Palettes lumineuses flottantes -->
-        <div style="position:absolute;top:14%;left:12%;width:150px;height:150px;border-radius:50%;background:rgba(250,204,21,0.16);filter:blur(42px);animation:sdmOrbFloat 7s ease-in-out infinite alternate;pointer-events:none;"></div>
-        <div style="position:absolute;bottom:18%;right:10%;width:180px;height:180px;border-radius:50%;background:rgba(16,185,129,0.2);filter:blur(48px);animation:sdmOrbFloat 9s ease-in-out infinite alternate-reverse;pointer-events:none;"></div>
+        <div style="position:absolute;top:12%;left:10%;width:150px;height:150px;border-radius:50%;background:rgba(250,204,21,0.18);filter:blur(40px);animation:sdmOrbFloat 7s ease-in-out infinite alternate;pointer-events:none;"></div>
+        <div style="position:absolute;bottom:18%;right:10%;width:180px;height:180px;border-radius:50%;background:rgba(16,185,129,0.22);filter:blur(46px);animation:sdmOrbFloat 9s ease-in-out infinite alternate-reverse;pointer-events:none;"></div>
 
-        <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(28px, env(safe-area-inset-top, 28px)) 24px max(30px, env(safe-area-inset-bottom, 30px));text-align:center;max-width:440px;margin:0 auto;">
-            <!-- Haut : Logo + Palettes -->
-            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px;">
+        <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(24px, env(safe-area-inset-top, 24px)) 22px max(26px, env(safe-area-inset-bottom, 26px));text-align:center;max-width:440px;margin:0 auto;">
+            <!-- Haut : Palettes + Portrait NET de Cheikh Ahmadou Bamba + Titre -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:9px;margin-top:4px;">
                 <div style="display:flex;align-items:center;gap:6px;">
-                    <span style="width:18px;height:4px;border-radius:99px;background:#FDE047;"></span>
-                    <span style="width:10px;height:4px;border-radius:99px;background:#34D399;"></span>
-                    <span style="width:6px;height:4px;border-radius:99px;background:#F59E0B;"></span>
+                    <span style="width:20px;height:4px;border-radius:99px;background:#FDE047;"></span>
+                    <span style="width:12px;height:4px;border-radius:99px;background:#34D399;"></span>
+                    <span style="width:7px;height:4px;border-radius:99px;background:#F59E0B;"></span>
                 </div>
-                <div style="width:76px;height:76px;border-radius:24px;background:linear-gradient(135deg,rgba(250,204,21,0.22),rgba(6,78,59,0.65));border:2px solid rgba(250,204,21,0.7);display:flex;align-items:center;justify-content:center;font-size:32px;color:#FDE047;box-shadow:0 0 36px rgba(250,204,21,0.35);animation:sdmLogoPulse 2.6s ease-in-out infinite;">
-                    ۞
+                <div style="width:116px;height:116px;border-radius:50%;padding:3px;background:linear-gradient(135deg,#FDE047,#10B981,#D4AF37);box-shadow:0 0 38px rgba(250,204,21,0.45);animation:sdmLogoPulse 2.6s ease-in-out infinite;">
+                    <img src="{% static 'images/serigne_touba_splash.jpg' %}" alt="Cheikh Ahmadou Bamba"
+                         style="width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center 18%;display:block;border:2px solid #040B08;">
                 </div>
                 <div>
-                    <div style="font-size:22px;font-weight:900;letter-spacing:0.12em;color:#FDE047;text-shadow:0 2px 16px rgba(0,0,0,0.85);">SDM MOURIDE</div>
-                    <div style="font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.72);margin-top:2px;">Cheikh Ahmadou Bamba · Khadimou Rassoul</div>
+                    <div style="font-size:21px;font-weight:900;letter-spacing:0.12em;color:#FDE047;text-shadow:0 2px 16px rgba(0,0,0,0.9);">SDM MOURIDE</div>
+                    <div style="font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.85);margin-top:2px;">Cheikh Ahmadou Bamba · Khadimou Rassoul</div>
                 </div>
             </div>
 
-            <!-- Centre : Citation différente à chaque lancement -->
-            <div style="background:rgba(4,16,11,0.68);backdrop-filter:blur(14px);border:1px solid rgba(250,204,21,0.35);border-radius:22px;padding:18px 18px;width:100%;box-shadow:0 16px 40px rgba(0,0,0,0.55);">
-                <div style="font-size:9.5px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:#FDE047;margin-bottom:8px;">۞ Parole de Lumière</div>
-                <p id="sdm-splash-quote" style="font-size:13.5px;font-weight:700;color:#fff;line-height:1.55;margin:0;"></p>
-                <div id="sdm-splash-source" style="font-size:10px;font-weight:800;color:#6EE7B7;margin-top:10px;letter-spacing:0.06em;"></div>
+            <!-- Centre : Un VERSET différent à chaque lancement -->
+            <div style="background:rgba(4,16,11,0.72);backdrop-filter:blur(12px);border:1px solid rgba(250,204,21,0.42);border-radius:22px;padding:16px 18px;width:100%;box-shadow:0 16px 40px rgba(0,0,0,0.55);">
+                <div style="font-size:9.5px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:#FDE047;margin-bottom:7px;">۞ Verset du Lancement</div>
+                <p id="sdm-splash-ar" dir="rtl" style="font-family:'Amiri',serif;font-size:19px;font-weight:700;color:#FEF08A;line-height:1.6;margin:0 0 6px 0;display:none;"></p>
+                <p id="sdm-splash-quote" style="font-size:13px;font-weight:700;color:#fff;line-height:1.55;margin:0;"></p>
+                <div id="sdm-splash-source" style="font-size:10px;font-weight:800;color:#6EE7B7;margin-top:9px;letter-spacing:0.06em;"></div>
             </div>
 
-            <!-- Bas : Audio Wajahtou Wadjhiyaza + Bouton Entrer -->
+            <!-- Bas : Audio automatique Wajahtou Wadjhiyaza (s'arrête dès qu'on entre) + Bouton Entrer -->
             <div style="width:100%;display:flex;flex-direction:column;gap:10px;">
-                <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(0,0,0,0.55);border:1px solid rgba(52,211,153,0.4);">
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(0,0,0,0.58);border:1px solid rgba(52,211,153,0.45);">
                     <span class="sdm-mini-eq" style="display:inline-flex;"><span></span><span></span><span></span></span>
                     <span style="font-size:10.5px;font-weight:800;color:#A7F3D0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Wajahtou Wadjhiyaza · Kourel National Hizbut Tarqiyyah</span>
                 </div>
-                <div style="display:flex;gap:8px;">
-                    <button type="button" onclick="window.enterSdmFromSplash(true)"
-                            style="flex:1;padding:14px 16px;border-radius:18px;border:none;background:linear-gradient(135deg,#FDE047,#D4AF37);color:#040B08;font-size:13px;font-weight:900;letter-spacing:0.04em;cursor:pointer;box-shadow:0 10px 28px rgba(212,175,55,0.42);">
-                        <i class="fa-solid fa-play" style="margin-right:6px;"></i> Entrer avec le Khassida
-                    </button>
-                    <button type="button" onclick="window.enterSdmFromSplash(false)"
-                            style="padding:14px 14px;border-radius:18px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.08);color:#fff;font-size:12px;font-weight:800;cursor:pointer;" title="Entrer sans son">
-                        <i class="fa-solid fa-volume-xmark"></i>
-                    </button>
-                </div>
+                <button type="button" onclick="window.enterSdmFromSplash()"
+                        style="width:100%;padding:14px 18px;border-radius:18px;border:none;background:linear-gradient(135deg,#FDE047,#D4AF37);color:#040B08;font-size:13.5px;font-weight:900;letter-spacing:0.04em;cursor:pointer;box-shadow:0 10px 28px rgba(212,175,55,0.45);">
+                    Entrer dans l'application <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -389,64 +388,89 @@
 
     <script>
     (function initSdmSplashAndInstall() {
-        const SPLASH_KEY = 'sdm_splash_shown_v1';
-        const LAUNCH_AUDIO = {
-            id: 'launch_wajahtou_ht',
-            titre: 'Wajahtou Wadjhiyaza',
-            auteur: 'Kourel National Hizbut Tarqiyyah',
-            url: 'https://res.cloudinary.com/dcajqzg2h/video/upload/v1795376309/media/audios/telegram/khassida/KURELSQACIDAS_8012_Wajahtou_Wadjhiyaza.mp3'
-        };
-        const LAUNCH_QUOTES = [
-            { t: "La meilleure parure dont l'homme puisse se parer est la bonne conduite (al-adab) partout où il passe.", s: "Masaalikul Jinaan (v.1089) · Cheikh Ahmadou Bamba" },
-            { t: "L'homme le plus estimé auprès d'Allah est celui qui Le craint le plus, sans discrimination d'aucune sorte.", s: "Masaalikul Jinaan (v.48) · Cheikh Ahmadou Bamba" },
-            { t: "Sache que la science et l'action constituent les deux moyens pour atteindre le bonheur éternel.", s: "Masaalikul Jinaan (v.91) · Cheikh Ahmadou Bamba" },
-            { t: "La mention du Nom d'Allah constitue le début de la sainteté, et son abandon est le plus haut degré de l'égarement.", s: "Masaalikul Jinaan (v.304) · Cheikh Ahmadou Bamba" },
-            { t: "Le meilleur jihâd consiste à empêcher son esprit de s'occuper de ce qui ne lui incombe pas.", s: "Masaalikul Jinaan (v.456) · Cheikh Ahmadou Bamba" },
-            { t: "Sache que l'abandon à Allah n'exclut nullement le travail licite (kasb) : le meilleur comportement est d'allier les deux.", s: "Masaalikul Jinaan (v.1037–1039) · Cheikh Ahmadou Bamba" },
-            { t: "Quand un bonheur t'arrive, remercie Allah ; quand un malheur te frappe, patiente avec constance.", s: "Masaalikul Jinaan (v.1302) · Cheikh Ahmadou Bamba" },
-            { t: "Embellis ton for intérieur, lieu du regard du Maître des créatures, au lieu de te soucier des apparences.", s: "Masaalikul Jinaan (v.986) · Cheikh Ahmadou Bamba" },
-            { t: "Le savoir est à la vie des cœurs ce qu'est la pluie à l'essor d'une terre lorsqu'elle l'arrose.", s: "Nahju Qadâ'il Hâj · Cheikh Ahmadou Bamba" },
-            { t: "L'aspirant sincère (le Mouride) ne doit désirer que l'agrément d'Allah le Clément, partout où il passe.", s: "Paroles de Lumière · Cheikh Ahmadou Bamba" }
+        const SPLASH_KEY = 'sdm_splash_shown_v2';
+        const LAUNCH_VERSES = [
+            { ar: "فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ", t: "Souvenez-vous de Moi donc, Je Me souviendrai de vous. Remerciez-Moi et ne soyez pas ingrats envers Moi.", s: "Saint Coran · Sourate Al-Baqarah (2:152)" },
+            { ar: "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ", t: "N'est-ce point par l'évocation d'Allah que se tranquillisent les cœurs ?", s: "Saint Coran · Sourate Ar-Ra'd (13:28)" },
+            { ar: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ۝ إِنَّ مَعَ الْعُسْرِ يُسْرًا", t: "À côté de la difficulté est, certes, une facilité ! Oui, à côté de la difficulté est une facilité !", s: "Saint Coran · Sourate Ash-Sharh (94:5–6)" },
+            { ar: "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ", t: "Et quiconque place sa confiance en Allah, Il lui suffit.", s: "Saint Coran · Sourate At-Talâq (65:3)" },
+            { ar: "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ", t: "Certes, Allah est avec les endurants.", s: "Saint Coran · Sourate Al-Baqarah (2:153)" },
+            { ar: "وَقُل رَّبِّ زِدْنِي عِلْمًا", t: "Et dis : « Ô mon Seigneur, accrois mes connaissances ! »", s: "Saint Coran · Sourate Tâ-Hâ (20:114)" },
+            { ar: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ", t: "Allah nous suffit ; Il est notre meilleur Garant.", s: "Saint Coran · Sourate Âl-'Imrân (3:173)" },
+            { ar: "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ", t: "Si vous êtes reconnaissants, très certainement J'augmenterai Mes bienfaits pour vous.", s: "Saint Coran · Sourate Ibrâhîm (14:7)" },
+            { ar: "وَرَحْمَتِي وَسِعَتْ كُلَّ شَيْءٍ", t: "Et Ma miséricorde embrasse toute chose.", s: "Saint Coran · Sourate Al-A'râf (7:156)" },
+            { ar: "", t: "L'homme le plus estimé auprès d'ALLAH est celui qui Le craint le plus, sans discrimination d'aucune sorte.", s: "Masaalik-ul Jinaan · Verset 48 · Cheikh Ahmadou Bamba" },
+            { ar: "", t: "Sache que la science et l'action constituent les deux moyens pour atteindre le bonheur éternel.", s: "Masaalik-ul Jinaan · Verset 91 · Cheikh Ahmadou Bamba" },
+            { ar: "", t: "La mention du Nom d'ALLAH constitue le début de la sainteté, et son abandon est le plus haut degré de l'égarement.", s: "Masaalik-ul Jinaan · Verset 304 · Cheikh Ahmadou Bamba" },
+            { ar: "", t: "Aie confiance en ton Seigneur et compte sur Lui, cesse de tergiverser et de t'attrister.", s: "Masaalik-ul Jinaan · Verset 1010 · Cheikh Ahmadou Bamba" },
+            { ar: "", t: "La meilleure parure dont l'homme puisse se parer est la bonne conduite (al-adab) partout où il passe.", s: "Masaalik-ul Jinaan · Verset 1089 · Cheikh Ahmadou Bamba" }
         ];
 
-        // 1. Afficher le Splash Screen animé une fois par ouverture de l'app (avec citation différente à chaque lancement)
         const splashEl = document.getElementById('sdm-launch-splash');
-        if (splashEl && !sessionStorage.getItem(SPLASH_KEY)) {
-            let lastQIdx = parseInt(localStorage.getItem('sdm_last_splash_q') || '-1', 10);
-            let nextQIdx = Math.floor(Math.random() * LAUNCH_QUOTES.length);
-            if (nextQIdx === lastQIdx) nextQIdx = (nextQIdx + 1) % LAUNCH_QUOTES.length;
-            localStorage.setItem('sdm_last_splash_q', String(nextQIdx));
-            const q = LAUNCH_QUOTES[nextQIdx];
-            const qEl = document.getElementById('sdm-splash-quote');
-            const sEl = document.getElementById('sdm-splash-source');
-            if (qEl) qEl.textContent = '« ' + q.t + ' »';
-            if (sEl) sEl.textContent = q.s;
-            splashEl.style.display = 'block';
+        const splashAud = document.getElementById('sdm-splash-audio');
+        let splashClosed = false;
 
-            // Tenter la lecture douce immédiate de Wajahtou Wadjhiyaza (si autorisé par le navigateur)
-            setTimeout(() => {
-                const aud = document.getElementById('sdm-global-audio');
-                if (aud && !aud.src && window.SDMAudioEngine) {
-                    window.SDMAudioEngine.loadAndPlay(LAUNCH_AUDIO).catch(() => {});
-                }
-            }, 350);
+        function stopSplashAudio() {
+            if (!splashAud) return;
+            try {
+                splashAud.pause();
+                splashAud.currentTime = 0;
+            } catch (e) {}
         }
 
-        window.enterSdmFromSplash = function(playAudio) {
+        function tryAutoPlaySplashAudio() {
+            if (!splashAud || splashClosed) return;
+            splashAud.volume = 0.9;
+            splashAud.muted = false;
+            const p = splashAud.play();
+            if (p && typeof p.catch === 'function') {
+                p.catch(() => {
+                    // Si la politique du navigateur exige un geste initial, démarrer dès le 1er effleurement sur le splash (sans rien demander)
+                    const unlock = (ev) => {
+                        if (splashClosed) return;
+                        if (ev && ev.target && ev.target.closest && ev.target.closest('button')) return;
+                        splashAud.play().catch(() => {});
+                    };
+                    if (splashEl) {
+                        splashEl.addEventListener('touchstart', unlock, { once: true, passive: true });
+                        splashEl.addEventListener('pointerdown', unlock, { once: true, passive: true });
+                    }
+                });
+            }
+        }
+
+        // 1. Afficher le Splash Screen animé à chaque lancement (un VERSET différent + lecture automatique Wajahtou Wadjhiyaza)
+        if (splashEl && !sessionStorage.getItem(SPLASH_KEY)) {
+            let lastIdx = parseInt(localStorage.getItem('sdm_last_splash_v') || '-1', 10);
+            let nextIdx = (lastIdx + 1) % LAUNCH_VERSES.length;
+            if (isNaN(nextIdx) || nextIdx < 0) nextIdx = Math.floor(Math.random() * LAUNCH_VERSES.length);
+            localStorage.setItem('sdm_last_splash_v', String(nextIdx));
+            const v = LAUNCH_VERSES[nextIdx];
+            const arEl = document.getElementById('sdm-splash-ar');
+            const qEl = document.getElementById('sdm-splash-quote');
+            const sEl = document.getElementById('sdm-splash-source');
+            if (arEl) {
+                if (v.ar) { arEl.textContent = v.ar; arEl.style.display = 'block'; }
+                else { arEl.style.display = 'none'; }
+            }
+            if (qEl) qEl.textContent = '« ' + v.t + ' »';
+            if (sEl) sEl.textContent = v.s;
+            splashEl.style.display = 'block';
+
+            // Démarrer automatiquement Wajahtou Wadjhiyaza immédiatement
+            tryAutoPlaySplashAudio();
+        }
+
+        // Dès qu'on entre dans l'application, le son de lancement s'arrête immédiatement
+        window.enterSdmFromSplash = function() {
+            splashClosed = true;
             sessionStorage.setItem(SPLASH_KEY, '1');
+            stopSplashAudio();
             const sp = document.getElementById('sdm-launch-splash');
             if (sp) {
-                sp.style.transition = 'opacity 0.35s ease';
+                sp.style.transition = 'opacity 0.3s ease';
                 sp.style.opacity = '0';
-                setTimeout(() => { sp.style.display = 'none'; }, 360);
-            }
-            const aud = document.getElementById('sdm-global-audio');
-            if (playAudio && window.SDMAudioEngine) {
-                if (!aud || aud.paused || !aud.src) {
-                    window.SDMAudioEngine.loadAndPlay(LAUNCH_AUDIO).catch(() => {});
-                }
-            } else if (!playAudio && aud && !aud.paused) {
-                aud.pause();
+                setTimeout(() => { sp.style.display = 'none'; }, 310);
             }
         };
 

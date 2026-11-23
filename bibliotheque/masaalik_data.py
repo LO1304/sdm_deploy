@@ -796,75 +796,196 @@ def get_chapitre_by_slug(slug):
     return None, None, None
 
 
+import json
+import os
+import re
+
+_MASAALIK_VERSETS_CACHE = None
+
+
+def load_masaalik_versets():
+    """Charge une seule fois les 1 195 versets intégraux extraits du PDF Masaalik-ul Jinaan."""
+    global _MASAALIK_VERSETS_CACHE
+    if _MASAALIK_VERSETS_CACHE is None:
+        p = os.path.join(os.path.dirname(__file__), "masaalik_versets.json")
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                raw = json.load(f)
+            _MASAALIK_VERSETS_CACHE = {int(k): v for k, v in raw.items()}
+        except Exception:
+            _MASAALIK_VERSETS_CACHE = {}
+    return _MASAALIK_VERSETS_CACHE
+
+
+def _parse_verse_ranges(versets_str):
+    """Parse 'v.1190 – v.1227 & v.1362 – v.1384' en liste de tuples (start, end)."""
+    ranges = []
+    for part in re.split(r"[&,;]", versets_str or ""):
+        nums = [int(x) for x in re.findall(r"\d+", part)]
+        if len(nums) >= 2:
+            ranges.append((nums[0], nums[1]))
+        elif len(nums) == 1:
+            ranges.append((nums[0], nums[0]))
+    return ranges
+
+
+def get_chapitre_verbatim_versets(chapitre):
+    """Retourne tous les versets authentiques numérotés [(num, texte), ...] couverts par ce chapitre."""
+    vmap = load_masaalik_versets()
+    out = []
+    seen = set()
+    for lo, hi in _parse_verse_ranges(chapitre.get("versets", "")):
+        for n in range(lo, hi + 1):
+            if n in vmap and n not in seen:
+                seen.add(n)
+                out.append({"num": n, "texte": vmap[n]})
+    return out
+
+
 def build_masaalik_deck(chapitre):
     """
-    Parcours fluide étape par étape calibré petit écran :
-      1. Vue d'ensemble du chapitre (plan des étapes)
-      2. Passages courts fidèles au texte (étape par étape)
-      3. Petit résumé objectif (« L'essentiel de ce que dit le livre ») AVANT les questions intermédiaires
-      4. Questions intermédiaires nombreuses et variées avec explications exactes
+    Parcours fluide étape par étape avec les VRAIS VERSETS AUTHENTIQUES du livre :
+      1. Vue d'ensemble du chapitre (plan & nombre de versets authentiques)
+      2. Cartes de lecture contenant les VRAIS VERSETS numérotés (3 à 4 versets courts par écran mobile)
+         entrecoupés de questions intermédiaires régulières
+      3. Petit résumé objectif (« L'essentiel de ce que dit le livre ») AVANT les questions finales
+      4. Questions de validation avec explications fidèles au texte
     """
     deck = []
     passages = chapitre.get("passages", [])
     questions = chapitre.get("questions", [])
+    verbatim = get_chapitre_verbatim_versets(chapitre)
+
+    # Construire les cartes de lecture : vrais versets numérotés si présents dans le PDF,
+    # sinon passages fidèles (pour v.602-968 absents du PDF source)
+    reading_cards = []
+    if verbatim:
+        # 1) Regrouper par blocs de 3 ou 4 versets pour tenir confortablement sur un petit écran mobile
+        #    Si le chapitre a <= 36 versets : 100% de TOUS les versets sont affichés étape par étape.
+        #    Si le chapitre est très long (> 36 versets) : on affiche les versets exacts correspondant
+        #    à chaque repère du chapitre (4 versets autour de chaque passage) + accès intégral en 1 clic.
+        if len(verbatim) <= 36:
+            chunk_size = 3 if len(verbatim) <= 15 else 4
+            for i in range(0, len(verbatim), chunk_size):
+                chunk = verbatim[i:i + chunk_size]
+                ref = f"v.{chunk[0]['num']} – v.{chunk[-1]['num']}" if len(chunk) > 1 else f"v.{chunk[0]['num']}"
+                # Associer un titre thématique si un passage couvre ce verset
+                card_title = chapitre["titre"]
+                for p in passages:
+                    p_ranges = _parse_verse_ranges(p.get("ref", ""))
+                    if p_ranges and any(lo <= chunk[0]["num"] <= hi or lo <= chunk[-1]["num"] <= hi for lo, hi in p_ranges):
+                        card_title = p["titre"]
+                        break
+                reading_cards.append({
+                    "ref": ref,
+                    "titre": card_title,
+                    "versets": chunk,
+                    "texte": "",
+                })
+        else:
+            # Chapitre long (>36 versets) : extraire pour chaque passage thématique les vrais versets du PDF
+            # (4 versets authentiques par carte, sans doublon) + couvrir début, milieu et fin
+            vmap = {v["num"]: v for v in verbatim}
+            used_nums = set()
+            for p in passages:
+                p_ranges = _parse_verse_ranges(p.get("ref", ""))
+                chunk = []
+                for lo, hi in p_ranges:
+                    for n in range(lo, hi + 1):
+                        if n in vmap and n not in used_nums and len(chunk) < 4:
+                            chunk.append(vmap[n])
+                            used_nums.add(n)
+                if chunk:
+                    ref = f"v.{chunk[0]['num']} – v.{chunk[-1]['num']}" if len(chunk) > 1 else f"v.{chunk[0]['num']}"
+                    reading_cards.append({
+                        "ref": ref,
+                        "titre": p["titre"],
+                        "versets": chunk,
+                        "texte": "",
+                    })
+            # Ajouter 2 cartes complémentaires si le chapitre a encore beaucoup de versets non couverts
+            remaining = [v for v in verbatim if v["num"] not in used_nums]
+            if len(remaining) >= 4 and len(reading_cards) < 8:
+                mid_idx = len(remaining) // 2
+                for start_i in (0, max(4, mid_idx)):
+                    extra = remaining[start_i:start_i + 4]
+                    if extra and len(reading_cards) < 8:
+                        ref = f"v.{extra[0]['num']} – v.{extra[-1]['num']}" if len(extra) > 1 else f"v.{extra[0]['num']}"
+                        reading_cards.append({
+                            "ref": ref,
+                            "titre": f"Suite des versets ({ref})",
+                            "versets": extra,
+                            "texte": "",
+                        })
+            reading_cards.sort(key=lambda c: c["versets"][0]["num"])
+    else:
+        for p in passages:
+            reading_cards.append({
+                "ref": p["ref"],
+                "titre": p["titre"],
+                "versets": [],
+                "texte": p["texte"],
+            })
+
+    total_read = len(reading_cards)
 
     # 1. Carte d'ouverture avec plan clair de la leçon
     deck.append({
         "type": "intro",
         "tag": f"Leçon {chapitre['num']} · {chapitre['versets']}",
         "titre": chapitre["titre"],
-        "texte": chapitre["resume"],
-        "etapes_titres": [p["titre"] for p in passages],
-        "meta": f"{len(passages)} étapes de lecture · 1 résumé · {len(questions)} questions intermédiaires",
+        "texte": (
+            f"Lis les versets authentiques de Cheikh Ahmadou Bamba étape par étape ({len(verbatim)} versets dans ce chapitre), "
+            f"puis valide ta compréhension avec {len(questions)} questions intermédiaires."
+            if verbatim else chapitre["resume"]
+        ),
+        "etapes_titres": [f"{c['ref']} · {c['titre']}" for c in reading_cards[:6]],
+        "meta": f"{total_read} étapes de versets · 1 petit résumé · {len(questions)} questions",
+        "verbatim_total": len(verbatim),
     })
 
-    # 2. Découper en 2 blocs fluides : 1re moitié passages -> mini-questions -> 2e moitié passages -> Petit Résumé -> questions finales
-    mid_p = max(1, len(passages) // 2)
-    mid_q = max(1, len(questions) // 3)
+    # 2. Entrelacer les cartes de versets et les questions intermédiaires de façon naturelle
+    mid_q_count = max(1, len(questions) // 2) if len(questions) >= 3 else (1 if questions else 0)
+    q_cursor = 0
+    interval = max(1, total_read // (mid_q_count + 1)) if mid_q_count else total_read + 1
 
-    for idx_p, p in enumerate(passages[:mid_p], 1):
+    for idx_r, rc in enumerate(reading_cards, 1):
         deck.append({
             "type": "passage",
-            "tag": f"Étape {idx_p}/{len(passages)} · {p['ref']}",
-            "titre": p["titre"],
-            "texte": p["texte"],
+            "tag": f"Versets {idx_r}/{total_read} · {rc['ref']}",
+            "titre": rc["titre"],
+            "texte": rc["texte"],
+            "versets": rc["versets"],
         })
+        if q_cursor < mid_q_count and idx_r < total_read and (idx_r % interval == 0):
+            q = questions[q_cursor]
+            q_cursor += 1
+            deck.append({
+                "type": "question",
+                "q_num": q_cursor,
+                "q_total": len(questions),
+                "question": q["q"],
+                "options": q["options"],
+                "answer": q["answer"],
+                "explication": q["explication"],
+            })
 
-    for q_idx in range(min(mid_q, len(questions))):
-        q = questions[q_idx]
-        deck.append({
-            "type": "question",
-            "q_num": q_idx + 1,
-            "q_total": len(questions),
-            "question": q["q"],
-            "options": q["options"],
-            "answer": q["answer"],
-            "explication": q["explication"],
-        })
-
-    for idx_p, p in enumerate(passages[mid_p:], mid_p + 1):
-        deck.append({
-            "type": "passage",
-            "tag": f"Étape {idx_p}/{len(passages)} · {p['ref']}",
-            "titre": p["titre"],
-            "texte": p["texte"],
-        })
-
-    # 3. Petit résumé objectif AVANT les questions de validation
+    # 3. Petit résumé objectif AVANT les questions finales
     deck.append({
         "type": "resume",
         "tag": f"Petit Résumé · {chapitre['versets']}",
-        "titre": "L'essentiel à retenir avant les questions",
+        "titre": "L'essentiel à retenir avant les questions finales",
         "texte": chapitre["resume"],
         "points": [f"{p['ref']} — {p['titre']}" for p in passages],
     })
 
-    # 4. Questions intermédiaires & validation
-    for q_idx in range(min(mid_q, len(questions)), len(questions)):
-        q = questions[q_idx]
+    # 4. Questions finales de validation
+    while q_cursor < len(questions):
+        q = questions[q_cursor]
+        q_cursor += 1
         deck.append({
             "type": "question",
-            "q_num": q_idx + 1,
+            "q_num": q_cursor,
             "q_total": len(questions),
             "question": q["q"],
             "options": q["options"],

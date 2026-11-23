@@ -104,7 +104,8 @@ urlpatterns = [
     path('api/profil/update-notif-pref/', views.update_notif_pref, name='update_notif_pref'),
     path('api/profil/update-location/', views.update_location, name='update_location'),
 
-    # ── MASAALIK-UL JINAAN (ACADÉMIE MODE DUOLINGO · 4 PORTES · 16 CHAPITRES) ──
+    # ── GRAND PÔLE APPRENTISSAGE & MASAALIK-UL JINAAN (4 PORTES · 32 CHAPITRES) ──
+    path('apprentissage/', masaalik_views.apprentissage_home, name='apprentissage_home'),
     path('masaalik/', masaalik_views.masaalik_home, name='masaalik_home'),
     path('masaalik/chapitre/<slug:slug>/', masaalik_views.masaalik_chapitre, name='masaalik_chapitre'),
     path('api/masaalik/save-progress/', masaalik_views.masaalik_save_progress, name='masaalik_save_progress'),
