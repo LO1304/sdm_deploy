@@ -19,16 +19,16 @@
         {% endif %}
     </div>
 
-    <!-- CARTE D'ACTIVATION PERMISSION SYSTÈME -->
-    <div class="glass rounded-3xl p-4 border border-gold-500/35 shadow-xl">
+    <!-- CARTE D'ACTIVATION PERMISSION BARRE DE NOTIFICATION OS -->
+    <div class="glass rounded-3xl p-4 border border-gold-500/40 shadow-xl space-y-2.5">
         <div class="flex items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">
                 <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-gold-400 to-gold-600 text-black flex items-center justify-center text-lg flex-shrink-0">
                     <i class="fa-solid fa-bell"></i>
                 </div>
                 <div class="min-w-0">
-                    <p class="text-sm font-black text-white">Alertes sur votre téléphone</p>
-                    <p id="notif-perm-status" class="text-[11px] text-white/60">Prières, Wird, Citations, Nouveaux Sons & Khassidas</p>
+                    <p class="text-sm font-black text-white">Barre de notifications du téléphone</p>
+                    <p id="notif-perm-status" class="text-[11px] text-white/70">Touchez « Activer » pour recevoir les alertes dans la barre de notification</p>
                 </div>
             </div>
             <button type="button" id="btn-enable-notif" onclick="enableSdmNotifications()"
@@ -36,10 +36,13 @@
                 Activer
             </button>
         </div>
+        <div id="notif-denied-help" class="hidden rounded-2xl bg-rose-500/15 border border-rose-400/40 px-3 py-2 text-[11px] text-rose-200 leading-snug">
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i> Les notifications ont été bloquées sur votre navigateur. Ouvrez l'icône cadenas/réglages à côté de l'adresse web → <strong>Notifications → Autoriser</strong>, puis rechargez la page.
+        </div>
     </div>
 
-    <!-- CHOIX DU MODE SONORE & SONS DE KHASSIDAS POUR LES RAPPELS ET PRIÈRES -->
-    <div class="glass rounded-3xl p-4 border border-emerald-500/30 space-y-3">
+    <!-- CHOIX DU MODE SONORE (SON / VIBRATION / SILENCIEUX) & SÉLECTEUR LIBRE DE TOUS LES SONS -->
+    <div class="glass rounded-3xl p-4 border border-emerald-500/35 space-y-3.5">
         <div class="flex items-center justify-between pb-2 border-b border-white/10">
             <h2 class="text-xs font-extrabold uppercase tracking-wider text-emerald-300">
                 <i class="fa-solid fa-volume-high mr-1.5"></i> Son, Vibration & Silencieux
@@ -47,43 +50,73 @@
             <span id="notif-saved-toast" class="text-[10px] font-bold text-emerald-400 hidden">Enregistré ✓</span>
         </div>
 
-        <!-- Mode sonore des rappels -->
-        <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/5 space-y-2">
-            <div class="flex items-center justify-between gap-2">
-                <span class="text-xs font-extrabold text-white">Mode des rappels généraux</span>
-                <select id="pref-soundMode" onchange="saveNotifUiPrefs()" class="bg-black/60 border border-gold-500/35 rounded-xl px-2.5 py-1.5 text-[11px] text-gold-300 font-extrabold">
-                    <option value="sound">🔔 Son Khassida</option>
-                    <option value="vibrate">📳 Vibration seule</option>
-                    <option value="silent">🔕 Silencieux (notif seule)</option>
-                </select>
+        <!-- A. RAPPELS GÉNÉRAUX (WIRD, VERSETS, CITATIONS, NOUVEAUX SONS) -->
+        <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2.5">
+            <span class="text-xs font-black text-white block">1. Rappels généraux (Wird, Citations, Versets, Sons)</span>
+            <div class="grid grid-cols-3 gap-1.5">
+                <button type="button" data-mode-group="reminder" data-mode-val="sound" onclick="setModePill('reminder','sound')" class="mode-pill py-2 rounded-xl text-[11px] font-black border border-white/15 bg-white/5 text-white/75 tap-card">🔔 Sonore</button>
+                <button type="button" data-mode-group="reminder" data-mode-val="vibrate" onclick="setModePill('reminder','vibrate')" class="mode-pill py-2 rounded-xl text-[11px] font-black border border-white/15 bg-white/5 text-white/75 tap-card">📳 Vibration</button>
+                <button type="button" data-mode-group="reminder" data-mode-val="silent" onclick="setModePill('reminder','silent')" class="mode-pill py-2 rounded-xl text-[11px] font-black border border-white/15 bg-white/5 text-white/75 tap-card">🔕 Silencieux</button>
             </div>
-            <div class="flex items-center gap-2">
-                <select id="pref-reminderSoundUrl" onchange="saveNotifUiPrefs()" class="flex-1 min-w-0 bg-black/50 border border-white/15 rounded-xl px-2.5 py-2 text-[11px] text-white font-bold">
-                    <option value="https://res.cloudinary.com/dcajqzg2h/video/upload/v1795376309/media/audios/telegram/khassida/KURELSQACIDAS_8012_Wajahtou_Wadjhiyaza.mp3">Wajahtou Wadjhiyaza · Hizbut Tarqiyyah</option>
-                </select>
-                <button type="button" onclick="previewSelectedSound('pref-reminderSoundUrl')" class="px-3 py-2 rounded-xl bg-gold-500/20 border border-gold-400/40 text-gold-300 text-[10.5px] font-black flex-shrink-0 tap-card">
-                    <i class="fa-solid fa-play"></i>
-                </button>
+            <div id="reminder-sound-box" class="rounded-xl bg-black/45 border border-gold-500/30 p-2.5 space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-gold-400 block">Son choisi pour les rappels</span>
+                        <span id="lbl-reminder-sound" class="text-[11.5px] font-bold text-white block truncate">Wajahtou Wadjhiyaza · Hizbut Tarqiyyah</span>
+                    </div>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        <button type="button" onclick="previewSlotSound('reminder')" class="px-2.5 py-1.5 rounded-lg bg-gold-500/20 border border-gold-400/45 text-gold-300 text-[10.5px] font-black tap-card" title="Écouter">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <button type="button" onclick="window.SDMNotifications?.stopPreviewSound()" class="px-2 py-1.5 rounded-lg bg-white/10 text-white/75 text-[10.5px] font-black tap-card" title="Arrêter">
+                            <i class="fa-solid fa-stop"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button" onclick="openSoundPickerModal('reminder')" class="py-2 px-2.5 rounded-xl bg-gradient-to-r from-gold-400 to-amber-500 text-black text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
+                        <i class="fa-solid fa-music"></i> Choisir un son SDM
+                    </button>
+                    <label class="py-2 px-2.5 rounded-xl bg-white/10 border border-white/15 text-white text-[11px] font-extrabold flex items-center justify-center gap-1.5 cursor-pointer tap-card">
+                        <i class="fa-solid fa-folder-open text-gold-300"></i> Mon téléphone
+                        <input type="file" accept="audio/*" class="hidden" onchange="importPhoneSound('reminder', this)">
+                    </label>
+                </div>
             </div>
         </div>
 
-        <!-- Mode sonore des heures de prière -->
-        <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/5 space-y-2">
-            <div class="flex items-center justify-between gap-2">
-                <span class="text-xs font-extrabold text-white">Son des Heures de Prière</span>
-                <select id="pref-prayerSoundMode" onchange="saveNotifUiPrefs()" class="bg-black/60 border border-emerald-500/35 rounded-xl px-2.5 py-1.5 text-[11px] text-emerald-300 font-extrabold">
-                    <option value="sound">🕌 Sonore (Adhan / Khassida)</option>
-                    <option value="vibrate">📳 Vibration seule</option>
-                    <option value="silent">🔕 Silencieux (notif seule)</option>
-                </select>
+        <!-- B. HEURES DE PRIÈRE -->
+        <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2.5">
+            <span class="text-xs font-black text-white block">2. Heures de Prière (Fajr, Tisbar, Takussan, Timiss, Guéwé)</span>
+            <div class="grid grid-cols-3 gap-1.5">
+                <button type="button" data-mode-group="prayer" data-mode-val="sound" onclick="setModePill('prayer','sound')" class="mode-pill py-2 rounded-xl text-[11px] font-black border border-white/15 bg-white/5 text-white/75 tap-card">🕌 Sonore</button>
+                <button type="button" data-mode-group="prayer" data-mode-val="vibrate" onclick="setModePill('prayer','vibrate')" class="mode-pill py-2 rounded-xl text-[11px] font-black border border-white/15 bg-white/5 text-white/75 tap-card">📳 Vibration</button>
+                <button type="button" data-mode-group="prayer" data-mode-val="silent" onclick="setModePill('prayer','silent')" class="mode-pill py-2 rounded-xl text-[11px] font-black border border-white/15 bg-white/5 text-white/75 tap-card">🔕 Silencieux</button>
             </div>
-            <div class="flex items-center gap-2">
-                <select id="pref-prayerSoundUrl" onchange="saveNotifUiPrefs()" class="flex-1 min-w-0 bg-black/50 border border-white/15 rounded-xl px-2.5 py-2 text-[11px] text-white font-bold">
-                    <option value="https://res.cloudinary.com/dcajqzg2h/video/upload/v1795376309/media/audios/telegram/khassida/KURELSQACIDAS_8012_Wajahtou_Wadjhiyaza.mp3">Wajahtou Wadjhiyaza · Hizbut Tarqiyyah</option>
-                </select>
-                <button type="button" onclick="previewSelectedSound('pref-prayerSoundUrl')" class="px-3 py-2 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-black flex-shrink-0 tap-card">
-                    <i class="fa-solid fa-play"></i>
-                </button>
+            <div id="prayer-sound-box" class="rounded-xl bg-black/45 border border-emerald-500/30 p-2.5 space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 block">Son choisi pour les prières</span>
+                        <span id="lbl-prayer-sound" class="text-[11.5px] font-bold text-white block truncate">Wajahtou Wadjhiyaza · Hizbut Tarqiyyah</span>
+                    </div>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        <button type="button" onclick="previewSlotSound('prayer')" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-400/45 text-emerald-300 text-[10.5px] font-black tap-card" title="Écouter">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <button type="button" onclick="window.SDMNotifications?.stopPreviewSound()" class="px-2 py-1.5 rounded-lg bg-white/10 text-white/75 text-[10.5px] font-black tap-card" title="Arrêter">
+                            <i class="fa-solid fa-stop"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button" onclick="openSoundPickerModal('prayer')" class="py-2 px-2.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
+                        <i class="fa-solid fa-music"></i> Choisir un son SDM
+                    </button>
+                    <label class="py-2 px-2.5 rounded-xl bg-white/10 border border-white/15 text-white text-[11px] font-extrabold flex items-center justify-center gap-1.5 cursor-pointer tap-card">
+                        <i class="fa-solid fa-folder-open text-emerald-300"></i> Mon téléphone
+                        <input type="file" accept="audio/*" class="hidden" onchange="importPhoneSound('prayer', this)">
+                    </label>
+                </div>
             </div>
         </div>
     </div>
@@ -115,14 +148,14 @@
             </div>
         </div>
 
-        <!-- 2. Rappels Wird Quotidien (06h30 après Suba & 17h00 après Takussan) -->
+        <!-- 2. Rappels Wird Mahuz (06h30 après Suba & 17h00 après Takussan) -->
         <div class="p-3 rounded-2xl bg-gradient-to-r from-emerald-950/60 to-amber-950/35 border border-gold-500/30 space-y-2">
             <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3 min-w-0">
                     <span class="w-9 h-9 rounded-xl bg-gold-500/20 text-gold-300 flex items-center justify-center flex-shrink-0 text-base">📿</span>
                     <div class="min-w-0">
-                        <p class="text-xs font-extrabold text-white">Wird Quotidien (Suba & Takussan)</p>
-                        <p class="text-[10px] text-gold-200/75">Rappels automatiques 06h30 et 17h00 + suivi des jours</p>
+                        <p class="text-xs font-extrabold text-white">Wird Mahuz (Suba & Takussan)</p>
+                        <p class="text-[10px] text-gold-200/75">Rappels automatiques 06h30 et 17h00 + suivi 7 jours</p>
                     </div>
                 </div>
                 <input type="checkbox" id="pref-wirdEnabled" onchange="saveNotifUiPrefs()" class="w-5 h-5 accent-amber-400 flex-shrink-0">
@@ -169,7 +202,7 @@
             </div>
         </div>
 
-        <!-- 5. Nouveaux Sons publiés (alertes réelles) -->
+        <!-- 5. Nouveaux Sons publiés -->
         <div class="flex items-center justify-between gap-3 p-3 rounded-2xl bg-white/[0.04] border border-white/5">
             <div class="flex items-center gap-3 min-w-0">
                 <span class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-300 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-headphones"></i></span>
@@ -181,7 +214,7 @@
             <input type="checkbox" id="pref-sonEnabled" onchange="saveNotifUiPrefs()" class="w-5 h-5 accent-sky-400 flex-shrink-0">
         </div>
 
-        <!-- 6. Nouveaux Khassidas ajoutés -->
+        <!-- 6. Nouveaux Khassidas PDF -->
         <div class="flex items-center justify-between gap-3 p-3 rounded-2xl bg-white/[0.04] border border-white/5">
             <div class="flex items-center gap-3 min-w-0">
                 <span class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-300 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-book-open"></i></span>
@@ -193,13 +226,13 @@
             <input type="checkbox" id="pref-khassidaEnabled" onchange="saveNotifUiPrefs()" class="w-5 h-5 accent-purple-400 flex-shrink-0">
         </div>
 
-        <!-- 7. Rappel d'Étude Quotidien (Masaalikul Jinaan & Tazawwud) -->
+        <!-- 7. Suivi d'Étude Quotidien -->
         <div class="flex items-center justify-between gap-3 p-3 rounded-2xl bg-gradient-to-r from-orange-500/10 to-amber-500/5 border border-orange-400/25">
             <div class="flex items-center gap-3 min-w-0">
                 <span class="w-9 h-9 rounded-xl bg-orange-500/20 text-orange-300 flex items-center justify-center flex-shrink-0 text-base">🔥</span>
                 <div class="min-w-0">
                     <p class="text-xs font-extrabold text-white">Suivi d'Étude Quotidien</p>
-                    <p class="text-[10px] text-orange-200/80">Relance Masaalikul Jinaan & Tazawwud si jour sauté</p>
+                    <p class="text-[10px] text-orange-200/80">Relance Masaalik-ul Jinaan & Tazawwud si jour sauté</p>
                 </div>
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
@@ -208,7 +241,7 @@
             </div>
         </div>
 
-        <!-- Boutons de test immédiat -->
+        <!-- Boutons de test immédiat (envoie une VRAIE notif barre OS + son choisi !) -->
         <div class="pt-1 grid grid-cols-2 sm:grid-cols-4 gap-2">
             <button type="button" onclick="window.SDMNotifications?.testNow('citation')" class="py-2 px-2 rounded-xl bg-white/5 border border-white/10 text-[10.5px] font-bold text-white/85 tap-card">
                 Tester Citation
@@ -225,7 +258,7 @@
         </div>
     </div>
 
-    <!-- HISTORIQUE DES NOTIFICATIONS (SERVEUR + ALERTES LOCALES RÉCENTES) -->
+    <!-- HISTORIQUE DES NOTIFICATIONS -->
     <div class="space-y-2.5">
         <div class="flex items-center justify-between px-1">
             <h2 class="text-[11px] font-extrabold uppercase tracking-wider text-white/50">Historique Récent</h2>
@@ -257,12 +290,37 @@
             </div>
         </div>
         {% empty %}
-        <div class="glass p-8 rounded-3xl text-center border border-white/5">
-            <i class="fa-regular fa-bell text-3xl text-gold-400/40 mb-2 block"></i>
+        <div class="glass p-6 rounded-3xl text-center border border-white/5">
+            <i class="fa-regular fa-bell text-2xl text-gold-400/40 mb-1.5 block"></i>
             <p class="text-xs font-bold text-white/70">Vos rappels quotidiens sont programmés !</p>
-            <p class="text-[11px] text-white/45 mt-1">Prières, Wird, versets, citations et nouveaux sons s'afficheront ici.</p>
+            <p class="text-[11px] text-white/45 mt-1">Prières, Wird Mahuz, versets, citations et nouveaux sons apparaîtront ici et dans votre barre de notification.</p>
         </div>
         {% endfor %}
+    </div>
+</div>
+
+<!-- MODAL SÉLECTEUR LIBRE DE TOUS LES SONS SDM (RECHERCHE INSTANTANÉE + ÉCOUTE + CHOIX) -->
+<div id="sdm-sound-picker-modal" onclick="if(event.target===this) closeSoundPickerModal()"
+     class="hidden fixed inset-0 z-[10050] bg-black/82 backdrop-blur-md flex items-end sm:items-center justify-center p-2 sm:p-4">
+    <div class="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#071811] border border-gold-400/45 p-4 max-h-[84vh] flex flex-col shadow-2xl space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b border-white/10">
+            <div>
+                <span class="text-[9.5px] font-black uppercase tracking-widest text-gold-400 block">Bibliothèque Audio SDM</span>
+                <h3 id="sound-picker-title" class="text-sm font-black text-white">Choisir un son pour les rappels</h3>
+            </div>
+            <button type="button" onclick="closeSoundPickerModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="flex items-center gap-2 bg-black/50 border border-gold-500/35 rounded-2xl px-3 py-2">
+            <i class="fa-solid fa-magnifying-glass text-gold-400 text-xs"></i>
+            <input type="search" id="sound-picker-search" oninput="renderSoundPickerList(this.value)"
+                   placeholder="Rechercher n'importe quel Khassida, Adhan, Kourel…"
+                   class="flex-1 bg-transparent border-none outline-none text-xs text-white font-bold">
+        </div>
+        <div id="sound-picker-list" class="overflow-y-auto flex-1 space-y-1.5 pr-1">
+            <p class="text-center text-xs text-white/55 py-6">Chargement de tous les sons SDM…</p>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -270,18 +328,35 @@
 {% block extra_js %}
 <script>
 (function initNotifSettingsPage() {
-    async function populateSoundOptions(prefs) {
-        if (!window.SDMNotifications || !window.SDMNotifications.syncFeed) return;
-        const feed = await window.SDMNotifications.syncFeed();
-        const sounds = (feed && Array.isArray(feed.alert_sounds) && feed.alert_sounds.length) ? feed.alert_sounds : [];
-        if (!sounds.length) return;
-        ['pref-reminderSoundUrl', 'pref-prayerSoundUrl'].forEach((id, idx) => {
-            const sel = document.getElementById(id);
-            if (!sel) return;
-            sel.innerHTML = sounds.map(s => `<option value="${s.url}">${s.label}</option>`).join('');
-            const wanted = idx === 0 ? prefs.reminderSoundUrl : prefs.prayerSoundUrl;
-            if (wanted && sounds.some(s => s.url === wanted)) sel.value = wanted;
+    let allAudioCatalog = [];
+    let activePickerSlot = 'reminder';
+
+    function paintModePills(slot, mode) {
+        document.querySelectorAll(`[data-mode-group="${slot}"]`).forEach(btn => {
+            const isMe = btn.getAttribute('data-mode-val') === mode;
+            if (isMe) {
+                btn.style.background = slot === 'prayer'
+                    ? 'linear-gradient(135deg,#34D399,#059669)'
+                    : 'linear-gradient(135deg,#FDE047,#D4AF37)';
+                btn.style.color = '#040B08';
+                btn.style.borderColor = 'transparent';
+            } else {
+                btn.style.background = 'rgba(255,255,255,0.05)';
+                btn.style.color = 'rgba(255,255,255,0.75)';
+                btn.style.borderColor = 'rgba(255,255,255,0.14)';
+            }
         });
+        const box = document.getElementById(slot === 'prayer' ? 'prayer-sound-box' : 'reminder-sound-box');
+        if (box) box.style.opacity = (mode === 'sound') ? '1' : '0.45';
+    }
+
+    function flashSaved() {
+        const toast = document.getElementById('notif-saved-toast');
+        if (toast) {
+            toast.classList.remove('hidden');
+            clearTimeout(toast._t);
+            toast._t = setTimeout(() => toast.classList.add('hidden'), 1800);
+        }
     }
 
     function loadNotifUiPrefs() {
@@ -303,24 +378,149 @@
         setChk('pref-khassidaEnabled', p.khassidaEnabled);
         setChk('pref-studyEnabled', p.studyEnabled);
         setVal('pref-studyTime', p.studyTime || '19:30');
-        setVal('pref-soundMode', p.soundMode || 'sound');
-        setVal('pref-prayerSoundMode', p.prayerSoundMode || 'sound');
 
-        populateSoundOptions(p);
+        paintModePills('reminder', p.soundMode || 'sound');
+        paintModePills('prayer', p.prayerSoundMode || 'sound');
+
+        const rLbl = document.getElementById('lbl-reminder-sound');
+        const pLbl = document.getElementById('lbl-prayer-sound');
+        if (rLbl) rLbl.textContent = p.reminderSoundLabel || 'Wajahtou Wadjhiyaza · Hizbut Tarqiyyah';
+        if (pLbl) pLbl.textContent = p.prayerSoundLabel || 'Wajahtou Wadjhiyaza · Hizbut Tarqiyyah';
+
         renderLocalNotifHistory();
 
         const st = document.getElementById('notif-perm-status');
         const btn = document.getElementById('btn-enable-notif');
+        const deniedHelp = document.getElementById('notif-denied-help');
         if ('Notification' in window && st && btn) {
             if (Notification.permission === 'granted') {
-                st.textContent = 'Notifications système activées sur ce téléphone ✓';
+                st.textContent = 'Actif dans la barre de notification du téléphone ✓';
                 st.className = 'text-[11px] text-emerald-400 font-bold';
                 btn.textContent = 'Actif ✓';
+                if (deniedHelp) deniedHelp.classList.add('hidden');
             } else if (Notification.permission === 'denied') {
-                st.textContent = 'Autorisez les notifications dans les réglages du navigateur';
+                st.textContent = 'Notifications bloquées dans les réglages du navigateur';
+                st.className = 'text-[11px] text-rose-300 font-bold';
+                if (deniedHelp) deniedHelp.classList.remove('hidden');
             }
         }
     }
+
+    window.setModePill = function(slot, mode) {
+        if (!window.SDMNotifications) return;
+        const patch = slot === 'prayer' ? { prayerSoundMode: mode } : { soundMode: mode };
+        window.SDMNotifications.savePrefs(patch);
+        paintModePills(slot, mode);
+        flashSaved();
+        if (mode === 'vibrate' && navigator.vibrate) {
+            try { navigator.vibrate([120, 60, 120]); } catch (e) {}
+        }
+    };
+
+    window.previewSlotSound = function(slot) {
+        if (!window.SDMNotifications) return;
+        const p = window.SDMNotifications.getPrefs();
+        const url = slot === 'prayer' ? p.prayerSoundUrl : p.reminderSoundUrl;
+        window.SDMNotifications.previewSound(url);
+    };
+
+    window.importPhoneSound = async function(slot, inputEl) {
+        const file = inputEl && inputEl.files && inputEl.files[0];
+        if (!file || !window.SDMNotifications) return;
+        try {
+            await window.SDMNotifications.saveCustomSoundFile(slot, file);
+            const patch = slot === 'prayer'
+                ? { prayerSoundUrl: 'idb://prayer', prayerSoundLabel: '📁 ' + file.name, prayerSoundMode: 'sound' }
+                : { reminderSoundUrl: 'idb://reminder', reminderSoundLabel: '📁 ' + file.name, soundMode: 'sound' };
+            window.SDMNotifications.savePrefs(patch);
+            loadNotifUiPrefs();
+            flashSaved();
+            window.SDMNotifications.previewSound('idb://' + slot);
+        } catch (e) {}
+        inputEl.value = '';
+    };
+
+    async function ensureAllAudioLoaded() {
+        if (allAudioCatalog.length) return;
+        try {
+            const res = await fetch('/sons-api/liste/', { credentials: 'same-origin' });
+            if (res.ok) {
+                const d = await res.json();
+                allAudioCatalog = Array.isArray(d.playlist) ? d.playlist : [];
+            }
+        } catch (e) {}
+        if (!allAudioCatalog.length && window.SDMNotifications) {
+            const feed = await window.SDMNotifications.syncFeed();
+            if (feed && Array.isArray(feed.alert_sounds)) {
+                allAudioCatalog = feed.alert_sounds.map((s, i) => ({ id: i, titre: s.label, auteur: 'SDM', url: s.url }));
+            }
+        }
+    }
+
+    window.openSoundPickerModal = async function(slot) {
+        activePickerSlot = slot;
+        const modal = document.getElementById('sdm-sound-picker-modal');
+        const title = document.getElementById('sound-picker-title');
+        if (title) title.textContent = slot === 'prayer' ? 'Choisir le son des Heures de Prière' : 'Choisir le son des Rappels SDM';
+        if (modal) {
+            modal.classList.remove('hidden');
+            // Portaler au-dessus de tout stacking context
+            if (modal.parentElement !== document.body) document.body.appendChild(modal);
+        }
+        await ensureAllAudioLoaded();
+        renderSoundPickerList(document.getElementById('sound-picker-search')?.value || '');
+    };
+
+    window.closeSoundPickerModal = function() {
+        window.SDMNotifications?.stopPreviewSound();
+        document.getElementById('sdm-sound-picker-modal')?.classList.add('hidden');
+    };
+
+    window.pickSdmSound = function(idx) {
+        const item = allAudioCatalog[idx];
+        if (!item || !window.SDMNotifications) return;
+        const label = `${item.titre} · ${item.auteur || 'SDM'}`;
+        const patch = activePickerSlot === 'prayer'
+            ? { prayerSoundUrl: item.url, prayerSoundLabel: label, prayerSoundMode: 'sound' }
+            : { reminderSoundUrl: item.url, reminderSoundLabel: label, soundMode: 'sound' };
+        window.SDMNotifications.savePrefs(patch);
+        loadNotifUiPrefs();
+        flashSaved();
+        closeSoundPickerModal();
+    };
+
+    window.previewCatalogSound = function(idx) {
+        const item = allAudioCatalog[idx];
+        if (item && window.SDMNotifications) window.SDMNotifications.previewSound(item.url);
+    };
+
+    window.renderSoundPickerList = function(query) {
+        const box = document.getElementById('sound-picker-list');
+        if (!box) return;
+        const q = (query || '').trim().toLowerCase();
+        const matches = [];
+        for (let i = 0; i < allAudioCatalog.length; i++) {
+            const it = allAudioCatalog[i];
+            if (!q || (it.titre || '').toLowerCase().includes(q) || (it.auteur || '').toLowerCase().includes(q)) {
+                matches.push({ idx: i, it });
+                if (matches.length >= 60) break;
+            }
+        }
+        if (!matches.length) {
+            box.innerHTML = '<p class="text-center text-xs text-white/55 py-6">Aucun son trouvé pour cette recherche.</p>';
+            return;
+        }
+        box.innerHTML = matches.map(({ idx, it }) =>
+            `<div class="p-2.5 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-between gap-2">` +
+                `<div class="min-w-0 flex-1">` +
+                    `<div class="text-xs font-extrabold text-white truncate">${String(it.titre || '').replace(/</g,'&lt;')}</div>` +
+                    `<div class="text-[10px] text-gold-300/80 truncate">${String(it.auteur || 'Kourel SDM').replace(/</g,'&lt;')}</div>` +
+                `</div>` +
+                `<button type="button" onclick="previewCatalogSound(${idx})" class="w-8 h-8 rounded-xl bg-white/10 text-gold-300 flex items-center justify-center flex-shrink-0 tap-card" title="Écouter"><i class="fa-solid fa-play text-[10px]"></i></button>` +
+                `<button type="button" onclick="pickSdmSound(${idx})" class="px-2.5 py-1.5 rounded-xl bg-gold-400 text-black text-[10.5px] font-black flex-shrink-0 tap-card">Choisir</button>` +
+            `</div>`
+        ).join('');
+    };
 
     window.saveNotifUiPrefs = function() {
         if (!window.SDMNotifications) return;
@@ -340,23 +540,9 @@
             sonEnabled: gChk('pref-sonEnabled'),
             khassidaEnabled: gChk('pref-khassidaEnabled'),
             studyEnabled: gChk('pref-studyEnabled'),
-            studyTime: gVal('pref-studyTime', '19:30'),
-            soundMode: gVal('pref-soundMode', 'sound'),
-            prayerSoundMode: gVal('pref-prayerSoundMode', 'sound'),
-            reminderSoundUrl: gVal('pref-reminderSoundUrl', ''),
-            prayerSoundUrl: gVal('pref-prayerSoundUrl', '')
+            studyTime: gVal('pref-studyTime', '19:30')
         });
-        const toast = document.getElementById('notif-saved-toast');
-        if (toast) {
-            toast.classList.remove('hidden');
-            clearTimeout(toast._t);
-            toast._t = setTimeout(() => toast.classList.add('hidden'), 1800);
-        }
-    };
-
-    window.previewSelectedSound = function(selId) {
-        const url = document.getElementById(selId)?.value;
-        if (url && window.SDMNotifications) window.SDMNotifications.previewSound(url);
+        flashSaved();
     };
 
     window.enableSdmNotifications = async function() {

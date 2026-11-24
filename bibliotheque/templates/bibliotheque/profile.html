@@ -116,11 +116,105 @@
             <div class="text-xs text-white/50 mt-1">Wird complétés</div>
         </div>
 
-        <!-- Favoris -->
-        <div class="glass rounded-2xl p-4 text-center stat-card border border-white/5">
+        <!-- Favoris (Cliquable vers Mes Favoris) -->
+        <a href="{% url 'favoris' %}" class="glass rounded-2xl p-4 text-center stat-card border border-yellow-500/30 block" style="text-decoration:none;">
             <div class="text-2xl mb-2">⭐</div>
-            <div class="text-2xl font-bold text-white">{{ nb_favoris|default:0 }}</div>
-            <div class="text-xs text-white/50 mt-1">Favoris</div>
+            <div class="text-2xl font-bold text-yellow-300">{{ nb_favoris|default:0 }}</div>
+            <div class="text-xs text-yellow-200/80 font-semibold mt-1">Mes Favoris ›</div>
+        </a>
+    </div>
+
+    {# ══════════════════════════════════════════ #}
+    {# B2. MODIFIER MES INFORMATIONS & OPTIONS    #}
+    {# ══════════════════════════════════════════ #}
+    <div class="glass rounded-3xl p-5 border border-yellow-500/25 space-y-4">
+        <div class="flex items-center justify-between">
+            <h2 class="text-sm font-black text-white flex items-center gap-2">
+                <i class="fas fa-user-pen text-yellow-400"></i> Modifier mes informations
+            </h2>
+            <button type="button" onclick="document.getElementById('edit-profile-form').classList.toggle('hidden')"
+                    class="px-3 py-1 rounded-xl bg-yellow-500/20 border border-yellow-400/40 text-yellow-300 text-[11px] font-extrabold">
+                Éditer
+            </button>
+        </div>
+
+        {% if profile_saved_msg %}
+        <div class="rounded-2xl bg-emerald-500/15 border border-emerald-400/45 px-3.5 py-2.5 text-xs font-bold text-emerald-200">
+            <i class="fas fa-check-circle mr-1"></i> {{ profile_saved_msg }}
+        </div>
+        {% endif %}
+        {% if profile_error_msg %}
+        <div class="rounded-2xl bg-rose-500/15 border border-rose-400/45 px-3.5 py-2.5 text-xs font-bold text-rose-200">
+            <i class="fas fa-exclamation-circle mr-1"></i> {{ profile_error_msg }}
+        </div>
+        {% endif %}
+
+        <form method="post" id="edit-profile-form" class="{% if not profile_error_msg %}hidden{% endif %} space-y-3 pt-1">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_profile">
+            <div>
+                <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-yellow-300 mb-1">Nom d'utilisateur</label>
+                <input type="text" name="username" value="{{ request.user.username }}" required
+                       class="w-full rounded-xl bg-black/45 border border-white/15 px-3 py-2.5 text-xs font-bold text-white outline-none focus:border-yellow-400">
+            </div>
+            <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                    <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-white/70 mb-1">Prénom</label>
+                    <input type="text" name="first_name" value="{{ request.user.first_name }}" placeholder="Votre prénom"
+                           class="w-full rounded-xl bg-black/45 border border-white/15 px-3 py-2.5 text-xs font-bold text-white outline-none focus:border-yellow-400">
+                </div>
+                <div>
+                    <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-white/70 mb-1">Nom</label>
+                    <input type="text" name="last_name" value="{{ request.user.last_name }}" placeholder="Votre nom"
+                           class="w-full rounded-xl bg-black/45 border border-white/15 px-3 py-2.5 text-xs font-bold text-white outline-none focus:border-yellow-400">
+                </div>
+            </div>
+            <div>
+                <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-white/70 mb-1">Adresse Email</label>
+                <input type="email" name="email" value="{{ request.user.email }}" placeholder="exemple@email.com"
+                       class="w-full rounded-xl bg-black/45 border border-white/15 px-3 py-2.5 text-xs font-bold text-white outline-none focus:border-yellow-400">
+            </div>
+            <div>
+                <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-white/70 mb-1">Ville (Horaires de prière)</label>
+                <input type="text" name="ville" value="{{ profile.ville|default:'Touba' }}" placeholder="Ex : Touba, Dakar, Thiès…"
+                       class="w-full rounded-xl bg-black/45 border border-white/15 px-3 py-2.5 text-xs font-bold text-white outline-none focus:border-yellow-400">
+            </div>
+            <div>
+                <label class="block text-[10.5px] font-extrabold uppercase tracking-wider text-white/70 mb-1">Nouveau mot de passe (optionnel)</label>
+                <input type="password" name="new_password" minlength="6" placeholder="Laisser vide pour ne pas changer"
+                       class="w-full rounded-xl bg-black/45 border border-white/15 px-3 py-2.5 text-xs font-bold text-white outline-none focus:border-yellow-400">
+            </div>
+            <button type="submit" class="w-full py-3 rounded-2xl bg-gradient-to-r from-yellow-400 to-amber-500 text-black text-xs font-black uppercase tracking-wider shadow-lg">
+                Enregistrer mes modifications
+            </button>
+        </form>
+
+        <!-- Raccourcis essentiels du compte -->
+        <div class="grid grid-cols-2 gap-2 pt-1">
+            <a href="{% url 'favoris' %}" class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center gap-2.5 action-item" style="text-decoration:none;">
+                <span class="w-8 h-8 rounded-xl bg-yellow-500/20 text-yellow-300 flex items-center justify-center text-xs"><i class="fas fa-star"></i></span>
+                <span class="text-xs font-extrabold text-white">Mes Favoris</span>
+            </a>
+            <a href="{% url 'notifications' %}" class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center gap-2.5 action-item" style="text-decoration:none;">
+                <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs"><i class="fas fa-bell"></i></span>
+                <span class="text-xs font-extrabold text-white">Notifications</span>
+            </a>
+            <a href="{% url 'telechargements' %}" class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center gap-2.5 action-item" style="text-decoration:none;">
+                <span class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-xs"><i class="fas fa-cloud-arrow-down"></i></span>
+                <span class="text-xs font-extrabold text-white">Hors-Ligne</span>
+            </a>
+            <button type="button" onclick="if(window.openSdmModelPicker) openSdmModelPicker()" class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center gap-2.5 action-item text-left">
+                <span class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-xs"><i class="fas fa-palette"></i></span>
+                <span class="text-xs font-extrabold text-white">8 Thèmes</span>
+            </button>
+            <a href="{% url 'apprentissage_home' %}" class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center gap-2.5 action-item" style="text-decoration:none;">
+                <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-xs"><i class="fas fa-graduation-cap"></i></span>
+                <span class="text-xs font-extrabold text-white">Apprentissage</span>
+            </a>
+            <a href="/wird/mahuz-al-khafif/" class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center gap-2.5 action-item" style="text-decoration:none;">
+                <span class="w-8 h-8 rounded-xl bg-gold-500/20 text-gold-300 flex items-center justify-center text-xs">📿</span>
+                <span class="text-xs font-extrabold text-white">Wird Mahuz</span>
+            </a>
         </div>
     </div>
 

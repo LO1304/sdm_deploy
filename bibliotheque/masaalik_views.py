@@ -11,6 +11,7 @@ from .masaalik_data import (
     get_chapitre_by_slug,
     build_masaalik_deck,
     get_chapitre_verbatim_versets,
+    get_masaalik_exam,
 )
 
 
@@ -129,6 +130,19 @@ def masaalik_chapitre(request, slug):
         "total_questions": len(chapitre["questions"]),
     }
     return render(request, "bibliotheque/masaalik/chapitre.html", context)
+
+
+@login_required(login_url='/login/')
+def masaalik_examen(request, exam_slug):
+    """Test de fin de Grande Porte (porte-1..4) ou Grand Examen Final Masaalik-ul Jinaan."""
+    exam = get_masaalik_exam(exam_slug)
+    if not exam:
+        raise Http404("Examen Masaalik-ul Jinaan introuvable")
+    return render(request, "bibliotheque/masaalik/examen.html", {
+        "exam": exam,
+        "questions_json": json.dumps(exam["questions"], ensure_ascii=False),
+        "total_questions": len(exam["questions"]),
+    })
 
 
 @csrf_exempt

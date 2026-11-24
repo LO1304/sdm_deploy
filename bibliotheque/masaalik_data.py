@@ -996,5 +996,69 @@ def build_masaalik_deck(chapitre):
     return deck
 
 
+def get_masaalik_exam(exam_slug):
+    """
+    Construit un examen de fin de Grande Porte (porte-1..porte-4) ou le Grand Examen Final (examen-final)
+    en puisant de manière équilibrée dans les chapitres authentiques de Masaalik-ul Jinaan.
+    """
+    if exam_slug == "examen-final":
+        questions = []
+        # Prendre 1 question équilibrée par chapitre jusqu'à 25 questions couvrant les 4 Grandes Portes
+        all_ch = get_all_chapitres()
+        step = max(1, len(all_ch) / 25)
+        for i in range(25):
+            ch = all_ch[min(len(all_ch) - 1, int(i * step))]
+            qs = ch.get("questions") or []
+            if qs:
+                q = qs[i % len(qs)]
+                questions.append({
+                    "chapitre": f"Ch.{ch['num']} · {ch['titre']}",
+                    "question": q["q"],
+                    "options": q["options"],
+                    "answer": q["answer"],
+                    "explication": q["explication"],
+                })
+        return {
+            "slug": "examen-final",
+            "is_final": True,
+            "badge": "🎓 Grand Examen Final Certifiant",
+            "titre": "Examen Final · Masaalik-ul Jinaan",
+            "sous_titre": "4 Grandes Portes · 32 Chapitres · Versets 1 à 1562",
+            "questions": questions,
+        }
+
+    porte = next((p for p in MASAALIK_PORTES if p["code"] == exam_slug), None)
+    if not porte:
+        return None
+
+    questions = []
+    chapitres = porte.get("chapitres") or []
+    target_n = 12 if len(chapitres) >= 6 else 10
+    # 1er passage : 1 question par chapitre, 2e passage : compléter jusqu'à target_n
+    for round_i in range(3):
+        for ch in chapitres:
+            qs = ch.get("questions") or []
+            if round_i < len(qs) and len(questions) < target_n:
+                q = qs[round_i]
+                questions.append({
+                    "chapitre": f"Ch.{ch['num']} · {ch['titre']}",
+                    "question": q["q"],
+                    "options": q["options"],
+                    "answer": q["answer"],
+                    "explication": q["explication"],
+                })
+        if len(questions) >= target_n:
+            break
+
+    return {
+        "slug": porte["code"],
+        "is_final": False,
+        "badge": f"🏆 Test de Fin · {porte['titre'].split('·')[0].strip()}",
+        "titre": f"Test de Validation · {porte['titre']}",
+        "sous_titre": porte["sous_titre"],
+        "questions": questions,
+    }
+
+
 # Alias rétrocompatible
 build_duolingo_deck = build_masaalik_deck

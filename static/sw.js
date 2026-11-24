@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sdm-premium-v22';
+const CACHE_NAME = 'sdm-premium-v23';
 const SHELL_ASSETS = [
   '/',
   '/offline/',

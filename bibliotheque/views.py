@@ -627,10 +627,18 @@ def liste_dynamique(request, categorie):
             filtered_kh = [k for k in compact_kh if ql in k[1].lower() or ql in k[2].lower()]
         else:
             filtered_kh = compact_kh
+        favoris_ids = []
+        if request.user.is_authenticated:
+            try:
+                kh_ct = ContentType.objects.get_for_model(Khassida)
+                favoris_ids = list(Favori.objects.filter(user=request.user, content_type=kh_ct).values_list('object_id', flat=True))
+            except Exception:
+                pass
         return render(request, template_name, {
             'items': [],
             'items_count': len(filtered_kh),
             'khassidas_json': json.dumps(filtered_kh, ensure_ascii=False, separators=(',', ':')),
+            'favoris_ids_json': json.dumps(favoris_ids),
             'categorie': categorie,
             'query': query,
         })
@@ -1873,8 +1881,43 @@ def api_restore_session(request):
 
 @login_required
 def profil_view(request):
-    """Page de profil utilisateur avec statistiques spirituelles complètes."""
+    """Page de profil utilisateur avec modification des infos, mot de passe et statistiques spirituelles."""
     profile, created = Profile.objects.get_or_create(user=request.user)
+    profile_saved_msg = None
+    profile_error_msg = None
+
+    if request.method == 'POST' and request.POST.get('action') == 'update_profile':
+        new_username = (request.POST.get('username') or '').strip()
+        new_first = (request.POST.get('first_name') or '').strip()
+        new_last = (request.POST.get('last_name') or '').strip()
+        new_email = (request.POST.get('email') or '').strip()
+        new_ville = (request.POST.get('ville') or '').strip()
+        new_pwd = (request.POST.get('new_password') or '').strip()
+
+        u = request.user
+        if new_username and new_username != u.username:
+            if User.objects.filter(username__iexact=new_username).exclude(id=u.id).exists():
+                profile_error_msg = "Ce nom d'utilisateur est déjà pris par un autre compte."
+            else:
+                u.username = new_username
+        if not profile_error_msg:
+            u.first_name = new_first[:80]
+            u.last_name = new_last[:80]
+            if new_email:
+                u.email = new_email[:150]
+            if new_pwd:
+                if len(new_pwd) < 6:
+                    profile_error_msg = "Le nouveau mot de passe doit contenir au moins 6 caractères."
+                else:
+                    u.set_password(new_pwd)
+            if not profile_error_msg:
+                u.save()
+                if new_pwd:
+                    login(request, u, backend='django.contrib.auth.backends.ModelBackend')
+                if hasattr(profile, 'ville') and new_ville:
+                    profile.ville = new_ville[:100]
+                    profile.save(update_fields=['ville'])
+                profile_saved_msg = "Vos informations de profil ont été mises à jour ✓"
 
     # Stats Zikr
     zikr_stats = HistoriqueZikr.objects.filter(user=request.user).aggregate(
@@ -1958,6 +2001,8 @@ def profil_view(request):
         'taz_nb_erreurs': taz_nb_erreurs,
         'taz_rappel_du_jour': (get_rappels_tazawwud()[timezone.now().day % len(get_rappels_tazawwud())] if get_rappels_tazawwud() else None),
         'taz_rappels_json': json.dumps(get_rappels_tazawwud()),
+        'profile_saved_msg': profile_saved_msg,
+        'profile_error_msg': profile_error_msg,
     }
     return render(request, 'bibliotheque/profile.html', context)
 
@@ -2038,17 +2083,21 @@ def voir_historique_general(request):
     consultations = HistoriqueConsultation.objects.filter(user=request.user).order_by('-date_vue')
     return render(request, 'bibliotheque/historique_general.html', {'consultations': consultations})
 
-@login_required
 def toggle_favori(request, model_name, object_id):
     from django.apps import apps
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+    if not request.user.is_authenticated:
+        if is_ajax:
+            return JsonResponse({'status': 'login_required', 'login_url': '/login/'}, status=401)
+        return redirect(f"/login/?next={request.META.get('HTTP_REFERER', '/')}")
     try:
         model_class = apps.get_model('bibliotheque', model_name)
     except LookupError:
-        return JsonResponse({'status': 'error'})
-    
+        return JsonResponse({'status': 'error'}, status=400)
+
     content_type = ContentType.objects.get_for_model(model_class)
     obj = get_object_or_404(model_class, id=object_id)
-    
+
     favori, created = Favori.objects.get_or_create(
         user=request.user,
         content_type=content_type,
@@ -2060,11 +2109,10 @@ def toggle_favori(request, model_name, object_id):
         status = 'removed'
     else:
         status = 'added'
-        
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+
+    if is_ajax:
         return JsonResponse({'status': status})
-    
-    # Redirect to the previous page
+
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
 def lire_wird(request, slug):

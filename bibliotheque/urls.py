@@ -108,6 +108,7 @@ urlpatterns = [
     path('apprentissage/', masaalik_views.apprentissage_home, name='apprentissage_home'),
     path('masaalik/', masaalik_views.masaalik_home, name='masaalik_home'),
     path('masaalik/chapitre/<slug:slug>/', masaalik_views.masaalik_chapitre, name='masaalik_chapitre'),
+    path('masaalik/examen/<slug:exam_slug>/', masaalik_views.masaalik_examen, name='masaalik_examen'),
     path('api/masaalik/save-progress/', masaalik_views.masaalik_save_progress, name='masaalik_save_progress'),
 
     # ── TAZAWWUDU-Ç-ÇIGHÂR ──

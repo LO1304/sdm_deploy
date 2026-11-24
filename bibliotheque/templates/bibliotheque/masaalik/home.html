@@ -168,9 +168,45 @@
                 </div>
             </a>
             {% endfor %}
+
+            <!-- TEST DE VALIDATION DE FIN DE GRANDE PORTE -->
+            <a href="{% url 'masaalik_examen' porte.code %}" data-exam-slug="exam_{{ porte.code }}"
+               class="mj-exam-node block rounded-2xl p-3.5 bg-gradient-to-r from-amber-950/85 via-yellow-900/55 to-emerald-950/85 border border-gold-400/55 flex items-center gap-3 shadow-lg tap-card"
+               style="text-decoration:none;">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400 to-amber-500 text-black font-black text-base flex items-center justify-center flex-shrink-0 shadow">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-gold-300 block">🏆 Test de Fin de Grande Partie</span>
+                    <h3 class="text-[13px] font-black text-white leading-snug truncate">Évaluation · {{ porte.titre }}</h3>
+                    <div class="mj-exam-grade text-[10px] font-bold text-amber-200/85 mt-0.5">Test récapitulatif noté /20 · Touchez pour passer</div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-gold-300 flex-shrink-0"></i>
+            </a>
         </div>
     </section>
     {% endfor %}
+
+    <!-- GRAND EXAMEN FINAL CERTIFIANT MASAALIK-UL JINAAN (4 GRANDES PORTES · 25 QUESTIONS) -->
+    <section class="pt-2">
+        <a href="{% url 'masaalik_examen' 'examen-final' %}" data-exam-slug="exam_examen-final"
+           class="mj-exam-node block rounded-[26px] p-5 bg-gradient-to-br from-amber-500/25 via-emerald-950/95 to-black border-2 border-gold-400/70 shadow-2xl tap-card"
+           style="text-decoration:none;">
+            <div class="flex items-center gap-3.5">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold-300 via-gold-400 to-amber-600 text-black flex items-center justify-center text-2xl flex-shrink-0 shadow-xl">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-gold-400 text-black text-[9px] font-black uppercase tracking-widest">
+                        🎓 Grand Examen Final
+                    </span>
+                    <h2 class="text-base font-black text-white mt-1 leading-tight">Examen Final · Masaalik-ul Jinaan</h2>
+                    <p class="text-[11px] text-emerald-100/85 mt-0.5">25 questions couvrant les 4 Grandes Portes (v.1–1562) · Note /20 & Attestation SDM</p>
+                    <div class="mj-exam-grade text-[10.5px] font-extrabold text-gold-300 mt-1.5">Passer l'examen final →</div>
+                </div>
+            </div>
+        </a>
+    </section>
 </div>
 {% endblock %}
 
@@ -246,6 +282,17 @@
             el.classList.add('done');
             const ic = el.querySelector('.mj-day-icon');
             if (ic) ic.textContent = '🔥';
+        }
+    });
+
+    // Mettre à jour les notes des 4 Tests de Porte + Examen Final
+    const examsMap = Object.assign({}, localProg.exams || {});
+    document.querySelectorAll('.mj-exam-node[data-exam-slug]').forEach(el => {
+        const eslug = el.getAttribute('data-exam-slug');
+        const info = examsMap[eslug] || merged.chapters[eslug];
+        if (info && info.note_20 !== undefined) {
+            const gEl = el.querySelector('.mj-exam-grade');
+            if (gEl) gEl.textContent = `✅ Meilleure note : ${info.note_20}/20 · Touchez pour repasser`;
         }
     });
 

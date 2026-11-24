@@ -534,7 +534,10 @@
                 <h1>{{ categorie|title }} · Manuscrits & Lecture</h1>
                 <p><span id="visible-count">{% if khassidas_json %}{{ items_count }}{% else %}{{ items|length }}{% endif %}</span> sur {% if khassidas_json %}{{ items_count }}{% else %}{{ items|length }}{% endif %} œuvres disponibles · Miniatures 1re Page</p>
             </div>
-            <!-- Bouton d'ouverture rapide des 8 Modèles -->
+            <!-- Accès direct Mes Favoris + 8 Modèles -->
+            <a href="{% url 'favoris' %}" class="icon-action-btn" style="color:var(--gold-lt); border-color:var(--border-g);" title="Mes Favoris">
+                <i class="fa-solid fa-star"></i>
+            </a>
             <button type="button" onclick="toggleThemeBar()" class="icon-action-btn active" title="Changer de Modèle Visuel">
                 <i class="fa-solid fa-palette"></i>
             </button>
@@ -968,6 +971,7 @@
             const thumbSrc = k.cover || thumbUrl;
             const favUrl = `/favoris/toggle/${cat}/${k.id}/`;
             const isSaved = savedOfflineKeys.has(`${cat}_${k.id}`);
+            const isFav = KH_FAV_SET.has(String(k.id));
 
             const card = document.createElement('div');
             card.className = 'item-card';
@@ -1001,7 +1005,7 @@
                 `<div class="item-actions-row">` +
                     `<div style="display:flex; gap:5px;">` +
                         `<button type="button" class="fav-btn" onclick="openFirstPageQuickLook(this.closest('.item-card').querySelector('.first-page-miniature'))" title="Voir la 1re page"><i class="fa-regular fa-eye"></i></button>` +
-                        `<a href="${favUrl}" class="fav-btn" title="Ajouter aux favoris"><i class="fa-solid fa-star"></i></a>` +
+                        `<button type="button" class="fav-btn" data-fav-id="${k.id}" onclick="toggleKhassidaFav(event, '${cat}', ${k.id}, this)" ${isFav ? 'style="color:#FDE047;border-color:#FDE047;background:rgba(250,204,21,0.18);"' : ''} title="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}"><i class="fa-${isFav ? 'solid' : 'regular'} fa-star"></i></button>` +
                         `<button type="button" class="fav-btn btn-offline-save" onclick="saveCardOffline(event, this)" ${isSaved ? 'style="color:#10B981;border-color:#10B981;"' : ''} title="Enregistrer hors-ligne"><i class="fa-solid ${isSaved ? 'fa-check' : 'fa-cloud-arrow-down'}"></i></button>` +
                     `</div>` +
                     `<a href="${readUrl}" class="read-pill-btn"><i class="fa-solid fa-book-open"></i><span>Lire</span></a>` +
@@ -1214,9 +1218,50 @@
             }
         }
 
+        // ── FAVORIS KHASSIDAS PDF INSTANTANÉS (AJAX + COMPTE) ──
+        const KH_FAV_SET = new Set({{ favoris_ids_json|default:"[]"|safe }}.map(String));
+        async function toggleKhassidaFav(e, cat, id, btnEl) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            try {
+                const res = await fetch(`/favoris/toggle/${cat}/${id}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (res.status === 401) {
+                    if (window.SDMOfflineVault && window.SDMOfflineVault.showToast) {
+                        window.SDMOfflineVault.showToast('Connectez-vous pour enregistrer vos favoris ★', false);
+                    }
+                    setTimeout(() => { window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname); }, 700);
+                    return;
+                }
+                const d = await res.json();
+                const added = d.status === 'added';
+                if (added) KH_FAV_SET.add(String(id)); else KH_FAV_SET.delete(String(id));
+                if (btnEl) {
+                    btnEl.innerHTML = added ? '<i class="fa-solid fa-star"></i>' : '<i class="fa-regular fa-star"></i>';
+                    btnEl.style.color = added ? '#FDE047' : '';
+                    btnEl.style.borderColor = added ? '#FDE047' : '';
+                    btnEl.style.background = added ? 'rgba(250,204,21,0.18)' : '';
+                    btnEl.title = added ? 'Retirer des favoris' : 'Ajouter aux favoris';
+                }
+                if (window.SDMOfflineVault && window.SDMOfflineVault.showToast) {
+                    window.SDMOfflineVault.showToast(added ? 'Ajouté à Mes Favoris ★' : 'Retiré de Mes Favoris');
+                }
+            } catch (err) {
+                if (window.SDMOfflineVault && window.SDMOfflineVault.showToast) {
+                    window.SDMOfflineVault.showToast('Erreur réseau lors de l\'ajout aux favoris', false);
+                }
+            }
+        }
+
         function closeFirstPageQuickLook() {
             document.getElementById('page1-preview-modal')?.classList.remove('open');
         }
     </script>
+    <script src="{% static 'js/sdm_notifications.js' %}"></script>
 </body>
 </html>

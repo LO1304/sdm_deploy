@@ -42,7 +42,9 @@
         soundMode: 'sound',         // 'sound' | 'vibrate' | 'silent'
         prayerSoundMode: 'sound',   // 'sound' | 'vibrate' | 'silent'
         reminderSoundUrl: DEFAULT_KHASSIDA_SOUND,
-        prayerSoundUrl: DEFAULT_KHASSIDA_SOUND
+        reminderSoundLabel: 'Wajahtou Wadjhiyaza · Kourel National Hizbut Tarqiyyah',
+        prayerSoundUrl: DEFAULT_KHASSIDA_SOUND,
+        prayerSoundLabel: 'Wajahtou Wadjhiyaza · Kourel National Hizbut Tarqiyyah'
     };
 
     const FALLBACK_VERSES = [
@@ -65,6 +67,53 @@
 
     let chimeAudio = null;
     let chimeTimer = null;
+    let chimeBlobUrl = null;
+
+    // ── Stockage IndexedDB pour les sons choisis directement depuis le téléphone ──
+    function openCustomSoundDb() {
+        return new Promise((resolve, reject) => {
+            if (!('indexedDB' in window)) return reject(new Error('no-idb'));
+            const req = indexedDB.open('sdm_custom_sounds_v1', 1);
+            req.onupgradeneeded = () => {
+                if (!req.result.objectStoreNames.contains('sounds')) {
+                    req.result.createObjectStore('sounds', { keyPath: 'slot' });
+                }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+    }
+
+    async function saveCustomSoundFile(slot, file) {
+        const db = await openCustomSoundDb();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction('sounds', 'readwrite');
+            tx.objectStore('sounds').put({ slot: String(slot), name: file.name, type: file.type || 'audio/mpeg', blob: file });
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+
+    async function getCustomSoundUrl(slot) {
+        try {
+            const db = await openCustomSoundDb();
+            return await new Promise((resolve) => {
+                const tx = db.transaction('sounds', 'readonly');
+                const req = tx.objectStore('sounds').get(String(slot));
+                req.onsuccess = () => {
+                    const rec = req.result;
+                    if (rec && rec.blob) {
+                        if (chimeBlobUrl) { try { URL.revokeObjectURL(chimeBlobUrl); } catch (e) {} }
+                        chimeBlobUrl = URL.createObjectURL(rec.blob);
+                        resolve(chimeBlobUrl);
+                    } else resolve('');
+                };
+                req.onerror = () => resolve('');
+            });
+        } catch (e) {
+            return '';
+        }
+    }
 
     function getPrefs() {
         try {
@@ -202,19 +251,25 @@
         } catch (e) {}
     }
 
-    function playNotificationSound(soundUrl, durationMs = 7500) {
-        // Ne pas interrompre un Khassida déjà en lecture dans le lecteur principal
-        const mainAud = document.getElementById('sdm-global-audio');
-        if (mainAud && !mainAud.paused && mainAud.src) return;
-        if (!soundUrl) { playSoftWebAudioChime(); return; }
+    async function playNotificationSound(soundUrl, durationMs = 7500, forcePreview = false) {
+        // Pour les notifications auto, ne pas interrompre un Khassida en lecture ; pour l'aperçu manuel, toujours jouer !
+        if (!forcePreview) {
+            const mainAud = document.getElementById('sdm-global-audio');
+            if (mainAud && !mainAud.paused && mainAud.src) return;
+        }
+        let resolvedUrl = soundUrl;
+        if (resolvedUrl && resolvedUrl.startsWith('idb://')) {
+            resolvedUrl = await getCustomSoundUrl(resolvedUrl.replace('idb://', ''));
+        }
+        if (!resolvedUrl) { playSoftWebAudioChime(); return; }
         try {
             stopPreviewSound();
             if (!chimeAudio) {
                 chimeAudio = new Audio();
                 chimeAudio.preload = 'none';
             }
-            chimeAudio.src = soundUrl;
-            chimeAudio.volume = 0.85;
+            chimeAudio.src = resolvedUrl;
+            chimeAudio.volume = 0.9;
             const p = chimeAudio.play();
             if (p && typeof p.catch === 'function') {
                 p.catch(() => playSoftWebAudioChime());
@@ -222,6 +277,51 @@
             chimeTimer = setTimeout(stopPreviewSound, durationMs);
         } catch (e) {
             playSoftWebAudioChime();
+        }
+    }
+
+    async function showOsNotification(title, body, url, tag, mode) {
+        if (!('Notification' in window)) return false;
+        if (Notification.permission !== 'granted') return false;
+
+        // IMPORTANT Android Chrome : ne PAS définir "vibrate" si silent === true (sinon Chrome rejette silencieusement showNotification !)
+        const notifOpts = {
+            body: body,
+            icon: '/static/images/icons/icon-192x192.png',
+            badge: '/static/images/icons/icon-192x192.png',
+            tag: tag || ('sdm-notif-' + Date.now()),
+            renotify: true,
+            silent: (mode === 'silent'),
+            requireInteraction: false,
+            data: { url: url || '/' }
+        };
+        if (mode !== 'silent') {
+            notifOpts.vibrate = [180, 90, 180];
+        }
+
+        if ('serviceWorker' in navigator) {
+            try {
+                let reg = await navigator.serviceWorker.getRegistration();
+                if (!reg) reg = await navigator.serviceWorker.ready;
+                if (reg && typeof reg.showNotification === 'function') {
+                    await reg.showNotification(title, notifOpts);
+                    return true;
+                }
+            } catch (e) {}
+        }
+        try {
+            const n = new Notification(title, {
+                body: body,
+                icon: '/static/images/icons/icon-192x192.png',
+                silent: (mode === 'silent')
+            });
+            n.onclick = () => {
+                window.focus();
+                if (url) window.location.href = url;
+            };
+            return true;
+        } catch (e) {
+            return false;
         }
     }
 
@@ -235,38 +335,13 @@
         showInAppBanner(title, body, url);
 
         if (mode === 'sound') {
-            playNotificationSound(soundUrl, isPrayer ? 10000 : 7000);
+            playNotificationSound(soundUrl, isPrayer ? 10000 : 7500, Boolean(opts.isTest));
             try { if (navigator.vibrate) navigator.vibrate([160, 80, 160]); } catch (e) {}
         } else if (mode === 'vibrate') {
             try { if (navigator.vibrate) navigator.vibrate([180, 90, 180]); } catch (e) {}
         }
 
-        if ('Notification' in window && Notification.permission === 'granted') {
-            const notifOpts = {
-                body: body,
-                icon: '/static/images/icons/icon-192x192.png',
-                badge: '/static/images/icons/icon-192x192.png',
-                tag: tag || 'sdm-notif',
-                renotify: true,
-                silent: (mode === 'silent'),
-                vibrate: (mode === 'silent') ? undefined : [160, 80, 160],
-                data: { url: url || '/' }
-            };
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.ready.then((reg) => {
-                    if (reg && reg.showNotification) {
-                        return reg.showNotification(title, notifOpts);
-                    }
-                    if (reg && reg.active) {
-                        reg.active.postMessage({ type: 'SHOW_NOTIFICATION', title, body, url, tag, silent: mode === 'silent' });
-                    }
-                }).catch(() => {
-                    try { new Notification(title, { body, icon: '/static/images/icons/icon-192x192.png', silent: mode === 'silent' }); } catch (e) {}
-                });
-            } else {
-                try { new Notification(title, { body, icon: '/static/images/icons/icon-192x192.png', silent: mode === 'silent' }); } catch (e) {}
-            }
-        }
+        showOsNotification(title, body, url, tag, mode);
     }
 
     function showInAppBanner(title, body, url) {
@@ -561,8 +636,9 @@
         getLivePrayers,
         getHistory,
         syncFeed,
+        saveCustomSoundFile,
         previewSound(url) {
-            playNotificationSound(url || getPrefs().reminderSoundUrl, 8000);
+            playNotificationSound(url || getPrefs().reminderSoundUrl, 9000, true);
         },
         stopPreviewSound,
         async requestPermission() {
@@ -573,25 +649,29 @@
                 await registerPeriodicBgSync();
                 dispatchNotification(
                     '۞ Notifications SDM Activées !',
-                    'Prières, Wird Mahuz (06h30/17h00), Versets, Citations, Nouveaux Sons & Khassidas actifs.',
+                    'Prières, Wird Mahuz (06h30/17h00), Versets, Citations, Nouveaux Sons & Khassidas actifs dans votre barre de notification.',
                     '/notifications/',
-                    'sdm-welcome',
-                    { kind: 'system' }
+                    'sdm-welcome-' + Date.now(),
+                    { kind: 'system', isTest: true }
                 );
             }
             return perm;
         },
-        testNow(kind) {
+        async testNow(kind) {
+            if ('Notification' in window && Notification.permission === 'default') {
+                try { await Notification.requestPermission(); } catch (e) {}
+            }
+            const ts = Date.now();
             if (kind === 'study') {
-                dispatchNotification('🔥 Rappel d\'Étude · Masaalik-ul Jinaan', 'Ne brise pas ta série ! 3 minutes sur Masaalik-ul Jinaan suffisent pour garder ta flamme allumée et améliorer ta note /20 !', '/apprentissage/', 'sdm-test-study', { kind: 'study' });
+                dispatchNotification('🔥 Rappel d\'Étude · Masaalik-ul Jinaan', 'Ne brise pas ta série ! 3 minutes sur Masaalik-ul Jinaan suffisent pour garder ta flamme allumée !', '/apprentissage/', 'sdm-test-study-' + ts, { kind: 'study', isTest: true });
             } else if (kind === 'wird') {
-                dispatchNotification('📿 Rappel Wird Mahuz (06h30 / 17h00)', 'Pensez à accomplir votre Wird Mahuz et à valider votre séance dans le compteur sacré.', '/wird/mahuz-al-khafif/', 'sdm-test-wird', { kind: 'wird' });
+                dispatchNotification('📿 Rappel Wird Mahuz (06h30 / 17h00)', 'Pensez à accomplir votre Wird Mahuz et à valider votre séance dans le compteur sacré.', '/wird/mahuz-al-khafif/', 'sdm-test-wird-' + ts, { kind: 'wird', isTest: true });
             } else if (kind === 'son') {
-                dispatchNotification('🎧 Nouveau Son : Serigne Bassirou Mbacké Khelcom', 'De nouveaux enseignements sont disponibles dans l\'Audiothèque SDM !', '/collection/son/?cat=BASSIROU_KHELCOM', 'sdm-test-son', { kind: 'son' });
+                dispatchNotification('🎧 Nouveau Son : Serigne Bassirou Mbacké Khelcom', 'De nouveaux enseignements sont disponibles dans l\'Audiothèque SDM !', '/collection/son/?cat=BASSIROU_KHELCOM', 'sdm-test-son-' + ts, { kind: 'son', isTest: true });
             } else if (kind === 'prayer') {
-                dispatchNotification('🕌 Heure de la Prière : Takussan (Asr)', 'Il est l\'heure de la prière de Takussan. Préparez vos ablutions.', '/', 'sdm-test-prayer', { isPrayer: true, kind: 'prayer' });
+                dispatchNotification('🕌 Heure de la Prière : Takussan (Asr)', 'Il est l\'heure de la prière de Takussan. Préparez vos ablutions.', '/', 'sdm-test-prayer-' + ts, { isPrayer: true, kind: 'prayer', isTest: true });
             } else {
-                dispatchNotification('۞ Parole de Cheikh Ahmadou Bamba', '« La meilleure parure dont l\'homme puisse se parer est la bonne conduite (al-adab) partout où il passe. » — Masaalik-ul Jinaan (v.1089)', '/?tab=spirit&cid=mj_v1089', 'sdm-test-cit', { kind: 'citation' });
+                dispatchNotification('۞ Parole de Cheikh Ahmadou Bamba', '« La meilleure parure dont l\'homme puisse se parer est la bonne conduite (al-adab) partout où il passe. » — Masaalik-ul Jinaan (v.1089)', '/?tab=spirit&cid=mj_v1089', 'sdm-test-cit-' + ts, { kind: 'citation', isTest: true });
             }
         },
         checkNow: () => runNotificationChecks(true)
