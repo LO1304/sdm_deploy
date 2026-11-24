@@ -68,15 +68,21 @@
     let chimeAudio = null;
     let chimeTimer = null;
     let chimeBlobUrl = null;
+    let pushSyncTimer = null;
+    let cachedPushEndpoint = '';
 
-    // ── Stockage IndexedDB pour les sons choisis directement depuis le téléphone ──
+    // ── Stockage IndexedDB pour les sons choisis directement depuis le téléphone (multi-fichiers) ──
     function openCustomSoundDb() {
         return new Promise((resolve, reject) => {
             if (!('indexedDB' in window)) return reject(new Error('no-idb'));
-            const req = indexedDB.open('sdm_custom_sounds_v1', 1);
+            const req = indexedDB.open('sdm_custom_sounds_v1', 2);
             req.onupgradeneeded = () => {
-                if (!req.result.objectStoreNames.contains('sounds')) {
-                    req.result.createObjectStore('sounds', { keyPath: 'slot' });
+                const db = req.result;
+                if (!db.objectStoreNames.contains('sounds')) {
+                    db.createObjectStore('sounds', { keyPath: 'slot' });
+                }
+                if (!db.objectStoreNames.contains('library')) {
+                    db.createObjectStore('library', { keyPath: 'id' });
                 }
             };
             req.onsuccess = () => resolve(req.result);
@@ -86,20 +92,61 @@
 
     async function saveCustomSoundFile(slot, file) {
         const db = await openCustomSoundDb();
+        const libId = 'phone_' + Date.now() + '_' + Math.floor(Math.random() * 9999);
         return new Promise((resolve, reject) => {
-            const tx = db.transaction('sounds', 'readwrite');
-            tx.objectStore('sounds').put({ slot: String(slot), name: file.name, type: file.type || 'audio/mpeg', blob: file });
-            tx.oncomplete = () => resolve(true);
+            const tx = db.transaction(['sounds', 'library'], 'readwrite');
+            tx.objectStore('sounds').put({ slot: String(slot), name: file.name, type: file.type || 'audio/mpeg', blob: file, savedAt: Date.now() });
+            tx.objectStore('library').put({ id: libId, name: file.name, type: file.type || 'audio/mpeg', blob: file, savedAt: Date.now() });
+            tx.oncomplete = () => resolve({ ok: true, id: libId, url: 'idb://' + libId });
             tx.onerror = () => reject(tx.error);
         });
     }
 
-    async function getCustomSoundUrl(slot) {
+    async function listLibraryPhoneSounds() {
         try {
             const db = await openCustomSoundDb();
             return await new Promise((resolve) => {
-                const tx = db.transaction('sounds', 'readonly');
-                const req = tx.objectStore('sounds').get(String(slot));
+                if (!db.objectStoreNames.contains('library')) return resolve([]);
+                const tx = db.transaction('library', 'readonly');
+                const req = tx.objectStore('library').getAll();
+                req.onsuccess = () => {
+                    const arr = (req.result || []).map(r => ({
+                        id: r.id,
+                        name: r.name || 'Son du téléphone',
+                        url: 'idb://' + r.id,
+                        savedAt: r.savedAt || 0
+                    })).sort((a, b) => b.savedAt - a.savedAt);
+                    resolve(arr);
+                };
+                req.onerror = () => resolve([]);
+            });
+        } catch (e) {
+            return [];
+        }
+    }
+
+    async function deleteLibraryPhoneSound(id) {
+        try {
+            const db = await openCustomSoundDb();
+            return await new Promise((resolve) => {
+                const tx = db.transaction('library', 'readwrite');
+                tx.objectStore('library').delete(String(id));
+                tx.oncomplete = () => resolve(true);
+                tx.onerror = () => resolve(false);
+            });
+        } catch (e) {
+            return false;
+        }
+    }
+
+    async function getCustomSoundUrl(key) {
+        try {
+            const db = await openCustomSoundDb();
+            const isLib = String(key).startsWith('phone_') && db.objectStoreNames.contains('library');
+            const storeName = isLib ? 'library' : 'sounds';
+            return await new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const req = tx.objectStore(storeName).get(String(key));
                 req.onsuccess = () => {
                     const rec = req.result;
                     if (rec && rec.blob) {
@@ -113,6 +160,73 @@
         } catch (e) {
             return '';
         }
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
+    async function ensurePushSubscribed(requestIfDefault = false) {
+        try {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+                return { supported: false, subscribed: false, reason: 'unsupported' };
+            }
+            let perm = Notification.permission;
+            if (perm === 'default' && requestIfDefault) {
+                perm = await Notification.requestPermission();
+            }
+            if (perm !== 'granted') {
+                return { supported: true, subscribed: false, permission: perm, reason: 'permission_' + perm };
+            }
+
+            const reg = await navigator.serviceWorker.ready;
+            let sub = await reg.pushManager.getSubscription();
+            if (!sub) {
+                const keyRes = await fetch('/api/push/vapid-public-key/', { credentials: 'same-origin' });
+                if (!keyRes.ok) return { supported: true, subscribed: false, reason: 'vapid_http_' + keyRes.status };
+                const keyJson = await keyRes.json();
+                if (!keyJson.publicKey) return { supported: true, subscribed: false, reason: 'no_vapid_key' };
+                sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(keyJson.publicKey)
+                });
+            }
+            const subJson = sub.toJSON ? sub.toJSON() : JSON.parse(JSON.stringify(sub));
+            cachedPushEndpoint = subJson.endpoint || '';
+
+            const saveRes = await fetch('/api/push/subscribe/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subscription: subJson,
+                    prefs: getPrefs(),
+                    prayers: getLivePrayers() || [],
+                    tzOffsetMin: new Date().getTimezoneOffset()
+                })
+            });
+            const ok = saveRes.ok;
+            try { localStorage.setItem('sdm_push_endpoint_v1', cachedPushEndpoint); } catch (e) {}
+            return { supported: true, subscribed: ok, endpoint: cachedPushEndpoint, permission: perm };
+        } catch (e) {
+            return { supported: true, subscribed: false, reason: String(e && e.message ? e.message : e) };
+        }
+    }
+
+    function schedulePushPrefsSync() {
+        if (pushSyncTimer) clearTimeout(pushSyncTimer);
+        pushSyncTimer = setTimeout(() => {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                ensurePushSubscribed(false);
+            }
+        }, 900);
     }
 
     function getPrefs() {
@@ -146,6 +260,7 @@
         const merged = Object.assign({}, getPrefs(), p);
         try { localStorage.setItem(PREFS_KEY, JSON.stringify(merged)); } catch (e) {}
         syncPrefsToSwCache(merged);
+        schedulePushPrefsSync();
     }
 
     function getLivePrayers() {
@@ -170,6 +285,7 @@
                 localStorage.setItem(LIVE_PRAYERS_KEY, JSON.stringify({ date: todayIso(), prayers: map }));
             } catch (e) {}
             syncPrefsToSwCache(getPrefs());
+            schedulePushPrefsSync();
         }
     }
 
@@ -225,7 +341,40 @@
     function stopPreviewSound() {
         if (chimeTimer) { clearTimeout(chimeTimer); chimeTimer = null; }
         if (chimeAudio) {
-            try { chimeAudio.pause(); chimeAudio.currentTime = 0; } catch (e) {}
+            try {
+                chimeAudio.onerror = null;
+                chimeAudio.onplaying = null;
+                chimeAudio.onended = null;
+                chimeAudio.pause();
+                chimeAudio.currentTime = 0;
+            } catch (e) {}
+        }
+        try {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        } catch (e) {}
+    }
+
+    function speakNotificationText(text, onState) {
+        try {
+            if (!('speechSynthesis' in window)) {
+                playSoftWebAudioChime();
+                if (onState) onState('error', 'Synthèse vocale non prise en charge sur ce navigateur.');
+                return false;
+            }
+            window.speechSynthesis.cancel();
+            const clean = String(text || 'Rappel spirituel SDM Mouride.').replace(/[۞🎧📚🕌📿📖🔥⚡📁🔔📳🔕]/g, '').trim();
+            const u = new SpeechSynthesisUtterance(clean);
+            u.lang = 'fr-FR';
+            u.rate = 0.98;
+            u.onstart = () => { if (onState) onState('playing', 'Lecture vocale en cours…'); };
+            u.onend = () => { if (onState) onState('ended', 'Lecture terminée'); };
+            u.onerror = () => { if (onState) onState('error', 'Voix indisponible'); };
+            window.speechSynthesis.speak(u);
+            if (onState) onState('playing', 'Lecture vocale : ' + clean.slice(0, 60));
+            return true;
+        } catch (e) {
+            playSoftWebAudioChime();
+            return false;
         }
     }
 
@@ -251,31 +400,85 @@
         } catch (e) {}
     }
 
-    async function playNotificationSound(soundUrl, durationMs = 7500, forcePreview = false) {
+    async function playNotificationSound(soundUrl, durationMs = 12000, forcePreview = false, opts = {}) {
+        const onState = typeof opts.onState === 'function' ? opts.onState : null;
         // Pour les notifications auto, ne pas interrompre un Khassida en lecture ; pour l'aperçu manuel, toujours jouer !
         if (!forcePreview) {
             const mainAud = document.getElementById('sdm-global-audio');
             if (mainAud && !mainAud.paused && mainAud.src) return;
         }
-        let resolvedUrl = soundUrl;
-        if (resolvedUrl && resolvedUrl.startsWith('idb://')) {
+        stopPreviewSound();
+
+        const rawUrl = String(soundUrl || '').trim();
+        // Mode Audio-Texte (Voix parlée TTS)
+        if (rawUrl.startsWith('tts://')) {
+            const spoken = rawUrl.startsWith('tts://custom:')
+                ? decodeURIComponent(rawUrl.slice('tts://custom:'.length))
+                : (opts.spokenText || 'Rappel spirituel SDM Mouride. Il est temps de faire votre rappel quotidien.');
+            speakNotificationText(spoken, onState);
+            return;
+        }
+
+        let resolvedUrl = rawUrl;
+        if (resolvedUrl.startsWith('idb://')) {
             resolvedUrl = await getCustomSoundUrl(resolvedUrl.replace('idb://', ''));
         }
-        if (!resolvedUrl) { playSoftWebAudioChime(); return; }
+        if (!resolvedUrl) {
+            if (onState) onState('error', 'Fichier audio introuvable.');
+            playSoftWebAudioChime();
+            return;
+        }
+
+        const fallbackUrl = opts.fallbackUrl || (opts.sonId ? `/proxy-audio/${opts.sonId}/` : '');
         try {
-            stopPreviewSound();
             if (!chimeAudio) {
                 chimeAudio = new Audio();
-                chimeAudio.preload = 'none';
+                chimeAudio.preload = 'auto';
             }
-            chimeAudio.src = resolvedUrl;
-            chimeAudio.volume = 0.9;
-            const p = chimeAudio.play();
-            if (p && typeof p.catch === 'function') {
-                p.catch(() => playSoftWebAudioChime());
+            let triedFallback = false;
+            const tryUrl = (src) => {
+                if (onState) onState('loading', 'Chargement du son…');
+                chimeAudio.onerror = () => {
+                    if (!triedFallback && fallbackUrl && src !== fallbackUrl) {
+                        triedFallback = true;
+                        tryUrl(fallbackUrl);
+                    } else {
+                        if (onState) onState('error', 'Impossible de lire ce lien audio.');
+                        if (!forcePreview) playSoftWebAudioChime();
+                    }
+                };
+                chimeAudio.onplaying = () => {
+                    if (onState) onState('playing', 'Lecture en cours…');
+                };
+                chimeAudio.onended = () => {
+                    if (onState) onState('ended', 'Lecture terminée');
+                };
+                chimeAudio.src = src;
+                chimeAudio.volume = 0.95;
+                chimeAudio.load();
+                const p = chimeAudio.play();
+                if (p && typeof p.catch === 'function') {
+                    p.catch(() => {
+                        if (!triedFallback && fallbackUrl && src !== fallbackUrl) {
+                            triedFallback = true;
+                            tryUrl(fallbackUrl);
+                        } else if (onState) {
+                            onState('error', 'Appuyez sur le lecteur ci-dessous pour lancer le son.');
+                        } else {
+                            playSoftWebAudioChime();
+                        }
+                    });
+                }
+            };
+            tryUrl(resolvedUrl);
+            if (durationMs > 0) {
+                chimeTimer = setTimeout(() => {
+                    stopPreviewSound();
+                    if (onState) onState('ended', 'Aperçu terminé');
+                }, durationMs);
             }
-            chimeTimer = setTimeout(stopPreviewSound, durationMs);
         } catch (e) {
+            if (onState) onState('error', 'Erreur de lecture audio.');
             playSoftWebAudioChime();
         }
     }
@@ -335,7 +538,9 @@
         showInAppBanner(title, body, url);
 
         if (mode === 'sound') {
-            playNotificationSound(soundUrl, isPrayer ? 10000 : 7500, Boolean(opts.isTest));
+            playNotificationSound(soundUrl, isPrayer ? 12000 : 9000, Boolean(opts.isTest), {
+                spokenText: `${title}. ${body}`
+            });
             try { if (navigator.vibrate) navigator.vibrate([160, 80, 160]); } catch (e) {}
         } else if (mode === 'vibrate') {
             try { if (navigator.vibrate) navigator.vibrate([180, 90, 180]); } catch (e) {}
@@ -637,8 +842,13 @@
         getHistory,
         syncFeed,
         saveCustomSoundFile,
-        previewSound(url) {
-            playNotificationSound(url || getPrefs().reminderSoundUrl, 9000, true);
+        listLibraryPhoneSounds,
+        deleteLibraryPhoneSound,
+        getCustomSoundUrl,
+        speakNotificationText,
+        ensurePushSubscribed,
+        previewSound(url, opts = {}) {
+            playNotificationSound(url || getPrefs().reminderSoundUrl, opts.durationMs || 25000, true, opts);
         },
         stopPreviewSound,
         async requestPermission() {
@@ -647,9 +857,12 @@
             if (perm === 'granted') {
                 syncPrefsToSwCache(getPrefs());
                 await registerPeriodicBgSync();
+                const pushRes = await ensurePushSubscribed(false);
                 dispatchNotification(
                     '۞ Notifications SDM Activées !',
-                    'Prières, Wird Mahuz (06h30/17h00), Versets, Citations, Nouveaux Sons & Khassidas actifs dans votre barre de notification.',
+                    pushRes.subscribed
+                        ? 'Actif dans la barre système MÊME EN DEHORS de l\'application (Web Push activé ✓).'
+                        : 'Prières, Wird Mahuz, Versets, Citations, Nouveaux Sons & Khassidas actifs dans votre barre de notification.',
                     '/notifications/',
                     'sdm-welcome-' + Date.now(),
                     { kind: 'system', isTest: true }
@@ -657,9 +870,28 @@
             }
             return perm;
         },
+        async testBackgroundPush(kind = 'citation', delaySec = 5) {
+            const subRes = await ensurePushSubscribed(true);
+            if (!subRes.subscribed || !subRes.endpoint) {
+                // Fallback direct si Web Push non supporté sur ce navigateur
+                await this.testNow(kind);
+                return { status: 'local_fallback', reason: subRes.reason || 'push_unavailable' };
+            }
+            const res = await fetch('/api/push/test/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ endpoint: subRes.endpoint, kind: kind, delaySec: delaySec })
+            });
+            const data = await res.json().catch(() => ({}));
+            return data;
+        },
         async testNow(kind) {
             if ('Notification' in window && Notification.permission === 'default') {
-                try { await Notification.requestPermission(); } catch (e) {}
+                try {
+                    const p = await Notification.requestPermission();
+                    if (p === 'granted') await ensurePushSubscribed(false);
+                } catch (e) {}
             }
             const ts = Date.now();
             if (kind === 'study') {
@@ -667,7 +899,7 @@
             } else if (kind === 'wird') {
                 dispatchNotification('📿 Rappel Wird Mahuz (06h30 / 17h00)', 'Pensez à accomplir votre Wird Mahuz et à valider votre séance dans le compteur sacré.', '/wird/mahuz-al-khafif/', 'sdm-test-wird-' + ts, { kind: 'wird', isTest: true });
             } else if (kind === 'son') {
-                dispatchNotification('🎧 Nouveau Son : Serigne Bassirou Mbacké Khelcom', 'De nouveaux enseignements sont disponibles dans l\'Audiothèque SDM !', '/collection/son/?cat=BASSIROU_KHELCOM', 'sdm-test-son-' + ts, { kind: 'son', isTest: true });
+                dispatchNotification('🎧 Nouveau Son disponible sur SDM', 'De nouveaux Khassidas, Coran, Xam-Xam et Wakhtane sont disponibles dans l\'Audiothèque SDM !', '/collection/son/', 'sdm-test-son-' + ts, { kind: 'son', isTest: true });
             } else if (kind === 'prayer') {
                 dispatchNotification('🕌 Heure de la Prière : Takussan (Asr)', 'Il est l\'heure de la prière de Takussan. Préparez vos ablutions.', '/', 'sdm-test-prayer-' + ts, { isPrayer: true, kind: 'prayer', isTest: true });
             } else {
@@ -677,6 +909,22 @@
         checkNow: () => runNotificationChecks(true)
     };
 
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            const d = event.data || {};
+            if (d.type === 'SDM_PUSH_RECEIVED') {
+                addHistoryEntry(d.title, d.body, d.url, d.kind || 'push');
+                const prefs = getPrefs();
+                const isP = d.kind === 'prayer';
+                const mode = isP ? (prefs.prayerSoundMode || prefs.soundMode || 'sound') : (prefs.soundMode || 'sound');
+                const sUrl = d.soundUrl || (isP ? prefs.prayerSoundUrl : prefs.reminderSoundUrl);
+                if (mode === 'sound' && !d.silent) {
+                    playNotificationSound(sUrl, isP ? 12000 : 9000, false, { spokenText: `${d.title}. ${d.body}` });
+                }
+            }
+        });
+    }
+
     window.addEventListener('online', () => { updateOfflinePill(); runNotificationChecks(true); });
     window.addEventListener('offline', updateOfflinePill);
     window.addEventListener('DOMContentLoaded', () => {
@@ -684,6 +932,7 @@
         syncPrefsToSwCache(getPrefs());
         if ('Notification' in window && Notification.permission === 'granted') {
             registerPeriodicBgSync();
+            setTimeout(() => ensurePushSubscribed(false), 1200);
         }
         setTimeout(() => runNotificationChecks(false), 1800);
         setInterval(() => runNotificationChecks(false), 45000);

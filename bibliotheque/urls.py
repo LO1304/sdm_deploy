@@ -97,10 +97,14 @@ urlpatterns = [
     # Tâches quotidiennes (Cron Gratuit)
     path('api/trigger-daily-tasks/', views.trigger_daily_tasks, name='trigger_daily_tasks'),
     
-    # Notifications & Flux intelligent
+    # Notifications & Flux intelligent + Web Push Arrière-Plan (VAPID)
     path('notifications/', views.notifications_list, name='notifications'),
     path('api/notifications/sync-feed/', views.api_notifications_sync_feed, name='api_notifications_sync_feed'),
     path('api/notifications/read/', views.mark_notifications_read, name='mark_notifications_read'),
+    path('api/push/vapid-public-key/', views.api_push_vapid_key, name='api_push_vapid_key'),
+    path('api/push/subscribe/', views.api_push_subscribe, name='api_push_subscribe'),
+    path('api/push/test/', views.api_push_test, name='api_push_test'),
+    path('api/push/tick/', views.api_push_tick, name='api_push_tick'),
     path('api/profil/update-notif-pref/', views.update_notif_pref, name='update_notif_pref'),
     path('api/profil/update-location/', views.update_location, name='update_location'),
 

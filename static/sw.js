@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sdm-premium-v23';
+const CACHE_NAME = 'sdm-premium-v24';
 const SHELL_ASSETS = [
   '/',
   '/offline/',
@@ -195,12 +195,12 @@ self.addEventListener('message', (event) => {
       body: data.body || '',
       icon: '/static/images/icons/icon-192x192.png',
       badge: '/static/images/icons/icon-192x192.png',
-      tag: data.tag || 'sdm-reminder',
+      tag: data.tag || ('sdm-reminder-' + Date.now()),
       renotify: true,
       silent: silent,
-      vibrate: silent ? undefined : [180, 90, 180],
       data: { url: data.url || '/' }
     };
+    if (!silent) options.vibrate = [180, 90, 180];
     event.waitUntil(self.registration.showNotification(title, options));
   }
 });
@@ -239,15 +239,17 @@ async function runSwBackgroundNotificationCheck() {
       if (fired.last_son_id && fired.last_son_id !== sid) {
         fired.last_son_id = sid;
         changed = true;
-        await self.registration.showNotification(`🎧 Nouveau Son : ${feed.latest_son.titre}`, {
+        const o1 = {
           body: `${feed.latest_son.auteur || 'Kourel Mouride'} vient d'être ajouté sur SDM Mouride.`,
           icon: '/static/images/icons/icon-192x192.png',
           badge: '/static/images/icons/icon-192x192.png',
           tag: `sdm-son-${sid}`,
+          renotify: true,
           silent: silent,
-          vibrate: silent ? undefined : [160, 80, 160],
           data: { url: `/collection/son/?autoplay=${sid}` }
-        });
+        };
+        if (!silent) o1.vibrate = [160, 80, 160];
+        await self.registration.showNotification(`🎧 Nouveau Son : ${feed.latest_son.titre}`, o1);
       } else if (!fired.last_son_id) {
         fired.last_son_id = sid;
         changed = true;
@@ -265,15 +267,17 @@ async function runSwBackgroundNotificationCheck() {
         if (pm >= 0 && !fired[k] && nowMin >= (pm - lead) && nowMin <= (pm + 25)) {
           fired[k] = Date.now();
           changed = true;
-          await self.registration.showNotification(`🕌 Heure de la Prière : ${p.name}`, {
+          const o2 = {
             body: `La prière de ${p.name} est prévue à ${p.time}.`,
             icon: '/static/images/icons/icon-192x192.png',
             badge: '/static/images/icons/icon-192x192.png',
             tag: k,
+            renotify: true,
             silent: pSilent,
-            vibrate: pSilent ? undefined : [180, 90, 180],
             data: { url: '/' }
-          });
+          };
+          if (!pSilent) o2.vibrate = [180, 90, 180];
+          await self.registration.showNotification(`🕌 Heure de la Prière : ${p.name}`, o2);
           break;
         }
       }
@@ -288,29 +292,33 @@ async function runSwBackgroundNotificationCheck() {
       if (wm >= 0 && !fired[kM] && nowMin >= wm && nowMin <= wm + 180) {
         fired[kM] = Date.now();
         changed = true;
-        await self.registration.showNotification('📿 Rappel Wird Mahuz du Matin (06h30)', {
+        const o3 = {
           body: 'Ouvrez le compteur sacré pour accomplir votre Wird du matin après Suba.',
           icon: '/static/images/icons/icon-192x192.png',
           badge: '/static/images/icons/icon-192x192.png',
           tag: kM,
+          renotify: true,
           silent: silent,
-          vibrate: silent ? undefined : [160, 80, 160],
           data: { url: wUrl }
-        });
+        };
+        if (!silent) o3.vibrate = [160, 80, 160];
+        await self.registration.showNotification('📿 Rappel Wird Mahuz du Matin (06h30)', o3);
       }
       const kE = `sw_wird_e_${today}`;
       if (we >= 0 && !fired[kE] && nowMin >= we && nowMin <= we + 180) {
         fired[kE] = Date.now();
         changed = true;
-        await self.registration.showNotification('📿 Rappel Wird Mahuz du Soir (17h00)', {
+        const o4 = {
           body: 'N\'oubliez pas votre Wird Mahuz du soir après Takussan !',
           icon: '/static/images/icons/icon-192x192.png',
           badge: '/static/images/icons/icon-192x192.png',
           tag: kE,
+          renotify: true,
           silent: silent,
-          vibrate: silent ? undefined : [160, 80, 160],
           data: { url: wUrl }
-        });
+        };
+        if (!silent) o4.vibrate = [160, 80, 160];
+        await self.registration.showNotification('📿 Rappel Wird Mahuz du Soir (17h00)', o4);
       }
     }
 
@@ -328,22 +336,49 @@ self.addEventListener('periodicsync', (event) => {
   }
 });
 
-// ── PUSH NOTIFICATIONS SERVEUR ──
+// ── PUSH NOTIFICATIONS SERVEUR (FONCTIONNE MÊME APPLICATION COMPLÈTEMENT FERMÉE !) ──
 self.addEventListener('push', (event) => {
   let data = {};
   if (event.data) {
     try { data = event.data.json(); }
-    catch (e) { data = { notification: { title: 'SDM Mouride', body: event.data.text() } }; }
+    catch (e) { data = { title: 'SDM Mouride', body: event.data.text() }; }
   }
   const title = data.notification?.title || data.title || 'Rappel SDM Mouride';
+  const body = data.notification?.body || data.body || '';
+  const url = (data.data && data.data.url) || data.url || '/';
+  const silent = Boolean(data.silent);
   const options = {
-    body: data.notification?.body || data.body || '',
+    body: body,
     icon: '/static/images/icons/icon-192x192.png',
     badge: '/static/images/icons/icon-192x192.png',
-    data: data.data || { url: data.url || '/' },
-    vibrate: [200, 100, 200]
+    tag: data.tag || ('sdm-push-' + Date.now()),
+    renotify: true,
+    silent: silent,
+    data: { url: url, kind: data.kind || 'general', soundUrl: data.soundUrl || '' }
   };
-  event.waitUntil(self.registration.showNotification(title, options));
+  if (!silent) {
+    options.vibrate = [200, 100, 200];
+  }
+  event.waitUntil(
+    Promise.all([
+      self.registration.showNotification(title, options),
+      clients.matchAll({ type: 'window', includeUncontrolled: true }).then((winClients) => {
+        winClients.forEach((client) => {
+          try {
+            client.postMessage({
+              type: 'SDM_PUSH_RECEIVED',
+              title: title,
+              body: body,
+              url: url,
+              kind: data.kind || 'general',
+              soundUrl: data.soundUrl || '',
+              silent: silent
+            });
+          } catch (e) {}
+        });
+      }).catch(() => {})
+    ])
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {

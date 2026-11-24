@@ -736,3 +736,39 @@ class TazawwudUserBadge(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tazawwud_badges")
     badge = models.ForeignKey(TazawwudBadge, on_delete=models.CASCADE)
     date_obtention = models.DateTimeField(auto_now_add=True)
+
+
+# ── WEB PUSH (VAPID) POUR NOTIFICATIONS BARRE OS MÊME APP FERMÉE ──
+class WebPushConfig(models.Model):
+    """Stocke la paire de clés VAPID persistante en base (singleton)."""
+    public_key = models.TextField()
+    private_key_pem = models.TextField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"VAPID Config #{self.id}"
+
+
+class WebPushSubscription(models.Model):
+    """Abonnement Web Push d'un appareil (utilisateur connecté ou invité) + horaires de rappels."""
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="webpush_subscriptions")
+    endpoint = models.TextField(unique=True)
+    p256dh = models.CharField(max_length=255)
+    auth = models.CharField(max_length=255)
+    tz_offset_min = models.IntegerField(default=0, help_text="getTimezoneOffset() JS en minutes (0 pour Dakar/UTC)")
+    prefs_json = models.JSONField(default=dict, blank=True)
+    prayers_json = models.JSONField(default=list, blank=True)
+    fired_json = models.JSONField(default=dict, blank=True)
+    last_seen_son_id = models.IntegerField(default=0)
+    last_seen_khassida_id = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        who = self.user.username if self.user else 'Invité'
+        return f"PushSub({who}, active={self.is_active})"
+

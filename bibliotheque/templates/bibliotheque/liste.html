@@ -937,6 +937,7 @@
         let virtualFiltered = VIRTUAL_ITEMS;
         let virtualRendered = 0;
         let savedOfflineKeys = new Set();
+        const KH_FAV_SET = new Set({{ favoris_ids_json|default:"[]"|safe }}.map(String));
 
         const allCards = IS_VIRTUAL_KH ? [] : Array.from(document.querySelectorAll('#items-container .item-card'));
         let imgObserver = null;
@@ -1219,7 +1220,6 @@
         }
 
         // ── FAVORIS KHASSIDAS PDF INSTANTANÉS (AJAX + COMPTE) ──
-        const KH_FAV_SET = new Set({{ favoris_ids_json|default:"[]"|safe }}.map(String));
         async function toggleKhassidaFav(e, cat, id, btnEl) {
             if (e) { e.preventDefault(); e.stopPropagation(); }
             try {

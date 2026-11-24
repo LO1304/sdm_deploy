@@ -3225,6 +3225,158 @@ def api_defi_save_score(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error'}, status=400)
 
+
+# ── WEB PUSH (VAPID) : NOTIFICATIONS BARRE OS MÊME EN DEHORS DE L'APPLICATION ──
+def api_push_vapid_key(request):
+    """Retourne la clé publique VAPID pour abonner le Service Worker aux notifications push arrière-plan."""
+    try:
+        from .webpush_utils import get_or_create_vapid_keys
+        pub_key, _ = get_or_create_vapid_keys()
+        return JsonResponse({'status': 'ok', 'publicKey': pub_key})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+@csrf_exempt
+def api_push_subscribe(request):
+    """Enregistre ou met à jour l'abonnement Web Push d'un appareil (invité ou connecté) + préférences & horaires."""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'POST requis'}, status=405)
+    try:
+        from .models import WebPushSubscription
+        data = json.loads(request.body.decode('utf-8') or '{}')
+        sub_obj = data.get('subscription') or data
+        endpoint = (sub_obj.get('endpoint') or '').strip()
+        keys = sub_obj.get('keys') or {}
+        p256dh = (keys.get('p256dh') or data.get('p256dh') or '').strip()
+        auth_key = (keys.get('auth') or data.get('auth') or '').strip()
+        if not endpoint or not p256dh or not auth_key:
+            return JsonResponse({'status': 'error', 'message': 'Abonnement push incomplet'}, status=400)
+
+        prefs = data.get('prefs') if isinstance(data.get('prefs'), dict) else {}
+        prayers = data.get('prayers') if isinstance(data.get('prayers'), list) else []
+        tz_offset = int(data.get('tzOffsetMin', 0) or 0)
+
+        latest_son = Son.objects.order_by('-id').values_list('id', flat=True).first() or 0
+        latest_kh = Khassida.objects.order_by('-id').values_list('id', flat=True).first() or 0
+
+        sub, created = WebPushSubscription.objects.get_or_create(
+            endpoint=endpoint,
+            defaults={
+                'user': request.user if request.user.is_authenticated else None,
+                'p256dh': p256dh,
+                'auth': auth_key,
+                'tz_offset_min': tz_offset,
+                'prefs_json': prefs,
+                'prayers_json': prayers,
+                'last_seen_son_id': latest_son,
+                'last_seen_khassida_id': latest_kh,
+                'is_active': True,
+            }
+        )
+        if not created:
+            if request.user.is_authenticated:
+                sub.user = request.user
+            sub.p256dh = p256dh
+            sub.auth = auth_key
+            sub.tz_offset_min = tz_offset
+            if prefs:
+                sub.prefs_json = prefs
+            if prayers:
+                sub.prayers_json = prayers
+            sub.is_active = True
+            sub.save()
+
+        return JsonResponse({'status': 'ok', 'created': created, 'id': sub.id})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@csrf_exempt
+def api_push_test(request):
+    """Envoie un VRAI Web Push serveur (immédiat ou différé de 5s pour tester hors de l'application !)."""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'POST requis'}, status=405)
+    try:
+        import threading
+        import time as _time
+        from django.db import close_old_connections
+        from .models import WebPushSubscription
+        from .webpush_utils import send_webpush
+
+        data = json.loads(request.body.decode('utf-8') or '{}')
+        endpoint = (data.get('endpoint') or '').strip()
+        kind = (data.get('kind') or 'citation').strip()
+        delay_sec = max(0, min(20, int(data.get('delaySec', 0) or 0)))
+
+        sub = None
+        if endpoint:
+            sub = WebPushSubscription.objects.filter(endpoint=endpoint, is_active=True).first()
+        if not sub and request.user.is_authenticated:
+            sub = WebPushSubscription.objects.filter(user=request.user, is_active=True).first()
+        if not sub:
+            return JsonResponse({'status': 'no_subscription', 'message': 'Activez d\'abord les notifications push.'}, status=400)
+
+        prefs = sub.prefs_json or {}
+        if kind == 'prayer':
+            title = '🕌 Heure de la Prière : Takussan (Asr)'
+            body = 'Notification push arrière-plan SDM : il est l\'heure de la prière de Takussan.'
+            url = '/'
+            silent = (prefs.get('prayerSoundMode') == 'silent')
+            sound_url = prefs.get('prayerSoundUrl', '')
+        elif kind == 'wird':
+            title = '📿 Rappel Wird Mahuz (06h30 / 17h00)'
+            body = 'Touchez pour ouvrir le compteur sacré du Wird Mahuz et valider votre journée.'
+            url = '/wird/mahuz-al-khafif/'
+            silent = (prefs.get('soundMode') == 'silent')
+            sound_url = prefs.get('reminderSoundUrl', '')
+        elif kind == 'son':
+            title = '🎧 Nouveau Son disponible sur SDM Mouride'
+            body = 'Touchez pour écouter les Khassidas, Coran, Xam-Xam et Wakhtane.'
+            url = '/collection/son/'
+            silent = (prefs.get('soundMode') == 'silent')
+            sound_url = prefs.get('reminderSoundUrl', '')
+        else:
+            title = '۞ Rappel SDM Mouride (hors application ✓)'
+            body = '« La meilleure parure dont l\'homme puisse se parer est la bonne conduite (al-adab). » — Masaalik-ul Jinaan'
+            url = '/?tab=spirit&cid=mj_v1089'
+            silent = (prefs.get('soundMode') == 'silent')
+            sound_url = prefs.get('reminderSoundUrl', '')
+
+        tag = f"sdm-push-test-{kind}-{int(_time.time())}"
+
+        if delay_sec > 0:
+            sub_id = sub.id
+            def _delayed():
+                _time.sleep(delay_sec)
+                try:
+                    close_old_connections()
+                    s_fresh = WebPushSubscription.objects.filter(id=sub_id, is_active=True).first()
+                    if s_fresh:
+                        send_webpush(s_fresh, title, body, url=url, tag=tag, silent=silent, kind=kind, sound_url=sound_url)
+                    close_old_connections()
+                except Exception:
+                    pass
+            threading.Thread(target=_delayed, daemon=True).start()
+            return JsonResponse({'status': 'scheduled', 'delaySec': delay_sec})
+
+        ok, detail = send_webpush(sub, title, body, url=url, tag=tag, silent=silent, kind=kind, sound_url=sound_url)
+        return JsonResponse({'status': 'sent' if ok else 'failed', 'detail': detail}, status=200 if ok else 502)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@csrf_exempt
+def api_push_tick(request):
+    """Déclenche une vérification immédiate de tous les Web Push programmés (compatible cron externe)."""
+    try:
+        from .webpush_utils import process_due_webpushes
+        res = process_due_webpushes()
+        return JsonResponse({'status': 'ok', **res})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
 # ── TAZAWWUDU-Ç-ÇIGHÂR VIEWS (importé de tazawwud_views) ──
 from .tazawwud_views import (
     tazawwud_home, tazawwud_dashboard, tazawwud_module, tazawwud_lecon,

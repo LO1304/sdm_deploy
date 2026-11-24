@@ -19,35 +19,57 @@
         {% endif %}
     </div>
 
-    <!-- CARTE D'ACTIVATION PERMISSION BARRE DE NOTIFICATION OS -->
-    <div class="glass rounded-3xl p-4 border border-gold-500/40 shadow-xl space-y-2.5">
+    <!-- CARTE D'ACTIVATION WEB PUSH ARRIÈRE-PLAN (BARRE OS MÊME EN DEHORS DE L'APP) -->
+    <div class="glass rounded-3xl p-4 border border-gold-500/45 shadow-xl space-y-3">
         <div class="flex items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">
                 <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-gold-400 to-gold-600 text-black flex items-center justify-center text-lg flex-shrink-0">
                     <i class="fa-solid fa-bell"></i>
                 </div>
                 <div class="min-w-0">
-                    <p class="text-sm font-black text-white">Barre de notifications du téléphone</p>
-                    <p id="notif-perm-status" class="text-[11px] text-white/70">Touchez « Activer » pour recevoir les alertes dans la barre de notification</p>
+                    <p class="text-sm font-black text-white">Barre de notifications (même hors de l'app)</p>
+                    <p id="notif-perm-status" class="text-[11px] text-white/75">Touchez « Tout activer » pour recevoir les notifications dans la barre système même application fermée</p>
                 </div>
             </div>
             <button type="button" id="btn-enable-notif" onclick="enableSdmNotifications()"
                     class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black text-xs flex-shrink-0 tap-card">
-                Activer
+                Tout activer
             </button>
         </div>
+
+        <!-- Bouton de preuve directe hors-application (envoi serveur Web Push dans 5s) -->
+        <div class="rounded-2xl bg-emerald-500/12 border border-emerald-400/35 p-2.5 flex items-center justify-between gap-2">
+            <div class="min-w-0">
+                <p class="text-[11px] font-extrabold text-emerald-300">Tester en dehors de l'application (5s)</p>
+                <p id="bg-push-status" class="text-[10px] text-white/70 leading-snug">Touchez le bouton puis quittez l'app : la notification arrivera dans votre barre système.</p>
+            </div>
+            <button type="button" id="btn-bg-push-test" onclick="runBgPushTest()"
+                    class="px-3 py-2 rounded-xl bg-emerald-400 text-black font-black text-[10.5px] flex-shrink-0 tap-card">
+                <i class="fa-solid fa-paper-plane mr-1"></i> Tester 5s
+            </button>
+        </div>
+
         <div id="notif-denied-help" class="hidden rounded-2xl bg-rose-500/15 border border-rose-400/40 px-3 py-2 text-[11px] text-rose-200 leading-snug">
-            <i class="fa-solid fa-triangle-exclamation mr-1"></i> Les notifications ont été bloquées sur votre navigateur. Ouvrez l'icône cadenas/réglages à côté de l'adresse web → <strong>Notifications → Autoriser</strong>, puis rechargez la page.
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i> Les notifications sont bloquées par votre navigateur. Touchez l'icône cadenas/paramètres à côté de l'adresse web → <strong>Notifications → Autoriser</strong>, puis rechargez la page.
         </div>
     </div>
 
-    <!-- CHOIX DU MODE SONORE (SON / VIBRATION / SILENCIEUX) & SÉLECTEUR LIBRE DE TOUS LES SONS -->
+    <!-- CHOIX DU MODE SONORE (SON / VIBRATION / SILENCIEUX) & SÉLECTEUR PAR CATÉGORIES + AUDIO-TEXTE + TÉLÉPHONE -->
     <div class="glass rounded-3xl p-4 border border-emerald-500/35 space-y-3.5">
         <div class="flex items-center justify-between pb-2 border-b border-white/10">
             <h2 class="text-xs font-extrabold uppercase tracking-wider text-emerald-300">
-                <i class="fa-solid fa-volume-high mr-1.5"></i> Son, Vibration & Silencieux
+                <i class="fa-solid fa-volume-high mr-1.5"></i> Son, Audio-Texte, Vibration & Silencieux
             </h2>
             <span id="notif-saved-toast" class="text-[10px] font-bold text-emerald-400 hidden">Enregistré ✓</span>
+        </div>
+
+        <!-- Lecteur d'aperçu réel intégré sur la page (visible dès qu'on écoute un son choisi) -->
+        <div id="page-audio-preview-bar" class="hidden rounded-2xl bg-black/60 border border-gold-400/40 p-2.5 space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+                <span id="page-audio-preview-label" class="text-[11px] font-extrabold text-gold-300 truncate">Lecture…</span>
+                <button type="button" onclick="stopPagePreviewAudio()" class="px-2 py-0.5 rounded-lg bg-white/10 text-[10px] font-bold text-white/80">Fermer</button>
+            </div>
+            <audio id="page-preview-audio" controls playsinline class="w-full h-9"></audio>
         </div>
 
         <!-- A. RAPPELS GÉNÉRAUX (WIRD, VERSETS, CITATIONS, NOUVEAUX SONS) -->
@@ -61,21 +83,21 @@
             <div id="reminder-sound-box" class="rounded-xl bg-black/45 border border-gold-500/30 p-2.5 space-y-2">
                 <div class="flex items-center justify-between gap-2">
                     <div class="min-w-0">
-                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-gold-400 block">Son choisi pour les rappels</span>
+                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-gold-400 block">Son / Audio-Texte choisi</span>
                         <span id="lbl-reminder-sound" class="text-[11.5px] font-bold text-white block truncate">Wajahtou Wadjhiyaza · Hizbut Tarqiyyah</span>
                     </div>
                     <div class="flex items-center gap-1 flex-shrink-0">
                         <button type="button" onclick="previewSlotSound('reminder')" class="px-2.5 py-1.5 rounded-lg bg-gold-500/20 border border-gold-400/45 text-gold-300 text-[10.5px] font-black tap-card" title="Écouter">
                             <i class="fa-solid fa-play"></i>
                         </button>
-                        <button type="button" onclick="window.SDMNotifications?.stopPreviewSound()" class="px-2 py-1.5 rounded-lg bg-white/10 text-white/75 text-[10.5px] font-black tap-card" title="Arrêter">
+                        <button type="button" onclick="stopPagePreviewAudio()" class="px-2 py-1.5 rounded-lg bg-white/10 text-white/75 text-[10.5px] font-black tap-card" title="Arrêter">
                             <i class="fa-solid fa-stop"></i>
                         </button>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-1.5">
-                    <button type="button" onclick="openSoundPickerModal('reminder')" class="py-2 px-2.5 rounded-xl bg-gradient-to-r from-gold-400 to-amber-500 text-black text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
-                        <i class="fa-solid fa-music"></i> Choisir un son SDM
+                    <button type="button" onclick="openSoundPickerModal('reminder', 'KHASSIDA')" class="py-2 px-2.5 rounded-xl bg-gradient-to-r from-gold-400 to-amber-500 text-black text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
+                        <i class="fa-solid fa-music"></i> Catégories & Audio-Texte
                     </button>
                     <label class="py-2 px-2.5 rounded-xl bg-white/10 border border-white/15 text-white text-[11px] font-extrabold flex items-center justify-center gap-1.5 cursor-pointer tap-card">
                         <i class="fa-solid fa-folder-open text-gold-300"></i> Mon téléphone
@@ -96,21 +118,21 @@
             <div id="prayer-sound-box" class="rounded-xl bg-black/45 border border-emerald-500/30 p-2.5 space-y-2">
                 <div class="flex items-center justify-between gap-2">
                     <div class="min-w-0">
-                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 block">Son choisi pour les prières</span>
+                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 block">Son / Audio-Texte choisi pour les prières</span>
                         <span id="lbl-prayer-sound" class="text-[11.5px] font-bold text-white block truncate">Wajahtou Wadjhiyaza · Hizbut Tarqiyyah</span>
                     </div>
                     <div class="flex items-center gap-1 flex-shrink-0">
                         <button type="button" onclick="previewSlotSound('prayer')" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-400/45 text-emerald-300 text-[10.5px] font-black tap-card" title="Écouter">
                             <i class="fa-solid fa-play"></i>
                         </button>
-                        <button type="button" onclick="window.SDMNotifications?.stopPreviewSound()" class="px-2 py-1.5 rounded-lg bg-white/10 text-white/75 text-[10.5px] font-black tap-card" title="Arrêter">
+                        <button type="button" onclick="stopPagePreviewAudio()" class="px-2 py-1.5 rounded-lg bg-white/10 text-white/75 text-[10.5px] font-black tap-card" title="Arrêter">
                             <i class="fa-solid fa-stop"></i>
                         </button>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-1.5">
-                    <button type="button" onclick="openSoundPickerModal('prayer')" class="py-2 px-2.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
-                        <i class="fa-solid fa-music"></i> Choisir un son SDM
+                    <button type="button" onclick="openSoundPickerModal('prayer', 'KHASSIDA')" class="py-2 px-2.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black text-[11px] font-black flex items-center justify-center gap-1.5 tap-card">
+                        <i class="fa-solid fa-music"></i> Catégories & Audio-Texte
                     </button>
                     <label class="py-2 px-2.5 rounded-xl bg-white/10 border border-white/15 text-white text-[11px] font-extrabold flex items-center justify-center gap-1.5 cursor-pointer tap-card">
                         <i class="fa-solid fa-folder-open text-emerald-300"></i> Mon téléphone
@@ -241,7 +263,7 @@
             </div>
         </div>
 
-        <!-- Boutons de test immédiat (envoie une VRAIE notif barre OS + son choisi !) -->
+        <!-- Boutons de test immédiat -->
         <div class="pt-1 grid grid-cols-2 sm:grid-cols-4 gap-2">
             <button type="button" onclick="window.SDMNotifications?.testNow('citation')" class="py-2 px-2 rounded-xl bg-white/5 border border-white/10 text-[10.5px] font-bold text-white/85 tap-card">
                 Tester Citation
@@ -299,25 +321,54 @@
     </div>
 </div>
 
-<!-- MODAL SÉLECTEUR LIBRE DE TOUS LES SONS SDM (RECHERCHE INSTANTANÉE + ÉCOUTE + CHOIX) -->
+<!-- MODAL SÉLECTEUR PAR CATÉGORIES (KHASSIDAS, CORAN, XAM-XAM, WAKHTANE, BASSIROU KHELCOM, AUDIO-TEXTE, TÉLÉPHONE) -->
 <div id="sdm-sound-picker-modal" onclick="if(event.target===this) closeSoundPickerModal()"
-     class="hidden fixed inset-0 z-[10050] bg-black/82 backdrop-blur-md flex items-end sm:items-center justify-center p-2 sm:p-4">
-    <div class="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#071811] border border-gold-400/45 p-4 max-h-[84vh] flex flex-col shadow-2xl space-y-3">
+     class="hidden fixed inset-0 z-[10050] bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-2 sm:p-4">
+    <div class="w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-[#071811] border border-gold-400/45 p-4 max-h-[88vh] flex flex-col shadow-2xl space-y-2.5">
         <div class="flex items-center justify-between pb-2 border-b border-white/10">
             <div>
-                <span class="text-[9.5px] font-black uppercase tracking-widest text-gold-400 block">Bibliothèque Audio SDM</span>
+                <span class="text-[9.5px] font-black uppercase tracking-widest text-gold-400 block">Toutes les Catégories Audio & Texte</span>
                 <h3 id="sound-picker-title" class="text-sm font-black text-white">Choisir un son pour les rappels</h3>
             </div>
             <button type="button" onclick="closeSoundPickerModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
-        <div class="flex items-center gap-2 bg-black/50 border border-gold-500/35 rounded-2xl px-3 py-2">
+
+        <!-- ONGLETS DE CATÉGORIES (SCROLLABLE HORIZONTAL) -->
+        <div id="sound-cat-tabs" class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar" style="-webkit-overflow-scrolling:touch;">
+            <button type="button" data-scat="KHASSIDA" onclick="selectSoundCategory('KHASSIDA')" class="scat-btn px-3 py-1.5 rounded-full text-[11px] font-black whitespace-nowrap border border-white/15 bg-white/5 text-white/80">🕌 Khassidas</button>
+            <button type="button" data-scat="CORAN" onclick="selectSoundCategory('CORAN')" class="scat-btn px-3 py-1.5 rounded-full text-[11px] font-black whitespace-nowrap border border-white/15 bg-white/5 text-white/80">📖 Coran</button>
+            <button type="button" data-scat="XAM_XAM" onclick="selectSoundCategory('XAM_XAM')" class="scat-btn px-3 py-1.5 rounded-full text-[11px] font-black whitespace-nowrap border border-white/15 bg-white/5 text-white/80">🎓 Xam-Xam</button>
+            <button type="button" data-scat="WAKHTANE" onclick="selectSoundCategory('WAKHTANE')" class="scat-btn px-3 py-1.5 rounded-full text-[11px] font-black whitespace-nowrap border border-white/15 bg-white/5 text-white/80">🎙️ Wakhtane</button>
+            <button type="button" data-scat="BASSIROU" onclick="selectSoundCategory('BASSIROU')" class="scat-btn px-3 py-1.5 rounded-full text-[11px] font-black whitespace-nowrap border border-white/15 bg-white/5 text-white/80">💎 S. Bassirou Khelcom</button>
+            <button type="button" data-scat="ZIKR" onclick="selectSoundCategory('ZIKR')" class="scat-btn px-3 py-1.5 rounded-full text-[11px] font-black whitespace-nowrap border border-white/15 bg-white/5 text-white/80">📿 Zikr</button>
+            <button type="button" data-scat="TTS" onclick="selectSoundCategory('TTS')" class="scat-btn px-3 py-1.5 rounded-full text-[11px] font-black whitespace-nowrap border border-white/15 bg-white/5 text-white/80">🗣️ Audio-Texte</button>
+            <button type="button" data-scat="PHONE" onclick="selectSoundCategory('PHONE')" class="scat-btn px-3 py-1.5 rounded-full text-[11px] font-black whitespace-nowrap border border-white/15 bg-white/5 text-white/80">📁 Mon téléphone</button>
+            <button type="button" data-scat="ALL" onclick="selectSoundCategory('ALL')" class="scat-btn px-3 py-1.5 rounded-full text-[11px] font-black whitespace-nowrap border border-white/15 bg-white/5 text-white/80">🌟 Tous</button>
+        </div>
+
+        <!-- RECHERCHE -->
+        <div id="sound-picker-search-wrap" class="flex items-center gap-2 bg-black/50 border border-gold-500/35 rounded-2xl px-3 py-2">
             <i class="fa-solid fa-magnifying-glass text-gold-400 text-xs"></i>
-            <input type="search" id="sound-picker-search" oninput="renderSoundPickerList(this.value)"
-                   placeholder="Rechercher n'importe quel Khassida, Adhan, Kourel…"
+            <input type="search" id="sound-picker-search" oninput="renderSoundPickerList(this.value, true)"
+                   placeholder="Rechercher un Khassida, Sourate, Kourel, Conférence…"
                    class="flex-1 bg-transparent border-none outline-none text-xs text-white font-bold">
         </div>
+
+        <!-- MINI LECTEUR AUDIO RÉEL (PERMET DE TOUJOURS ÉCOUTER, METTRE EN PAUSE ET AVANCER) -->
+        <div id="picker-player-dock" class="hidden rounded-2xl bg-black/65 border border-emerald-400/45 p-2.5 space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                    <span id="picker-player-status" class="text-[9.5px] font-black uppercase tracking-wider text-emerald-300 block">🔊 Lecture audio</span>
+                    <span id="picker-player-title" class="text-xs font-extrabold text-white block truncate">—</span>
+                </div>
+                <button type="button" onclick="stopModalAudio()" class="px-2 py-1 rounded-lg bg-white/10 text-[10px] font-black text-white/80">Stop</button>
+            </div>
+            <audio id="sdm-picker-audio" controls playsinline class="w-full h-9"></audio>
+        </div>
+
+        <!-- LISTE DES SONS / PANEL AUDIO-TEXTE / PANEL TÉLÉPHONE -->
         <div id="sound-picker-list" class="overflow-y-auto flex-1 space-y-1.5 pr-1">
             <p class="text-center text-xs text-white/55 py-6">Chargement de tous les sons SDM…</p>
         </div>
@@ -328,8 +379,26 @@
 {% block extra_js %}
 <script>
 (function initNotifSettingsPage() {
+    // Nettoyer un éventuel ancien modal portalé lors d'une navigation PJAX
+    const existingModals = document.querySelectorAll('#sdm-sound-picker-modal');
+    if (existingModals.length > 1) {
+        for (let i = 0; i < existingModals.length - 1; i++) existingModals[i].remove();
+    }
+
     let allAudioCatalog = [];
     let activePickerSlot = 'reminder';
+    let activeCategory = 'KHASSIDA';
+    let currentDisplayCount = 50;
+    let activePlayingIdx = -1;
+
+    function escH(s) {
+        return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function isBassirouKhelcom(it) {
+        const hay = ((it.auteur || '') + ' ' + (it.titre || '')).toLowerCase();
+        return hay.includes('bassirou') && hay.includes('khelcom');
+    }
 
     function paintModePills(slot, mode) {
         document.querySelectorAll(`[data-mode-group="${slot}"]`).forEach(btn => {
@@ -350,12 +419,62 @@
         if (box) box.style.opacity = (mode === 'sound') ? '1' : '0.45';
     }
 
+    function paintCategoryTabs() {
+        document.querySelectorAll('#sound-cat-tabs .scat-btn').forEach(btn => {
+            const isMe = btn.getAttribute('data-scat') === activeCategory;
+            if (isMe) {
+                btn.style.background = 'linear-gradient(135deg,#FDE047,#D4AF37)';
+                btn.style.color = '#040B08';
+                btn.style.borderColor = 'transparent';
+            } else {
+                btn.style.background = 'rgba(255,255,255,0.06)';
+                btn.style.color = 'rgba(255,255,255,0.82)';
+                btn.style.borderColor = 'rgba(255,255,255,0.14)';
+            }
+        });
+        const sw = document.getElementById('sound-picker-search-wrap');
+        if (sw) sw.classList.toggle('hidden', activeCategory === 'TTS' || activeCategory === 'PHONE');
+    }
+
     function flashSaved() {
         const toast = document.getElementById('notif-saved-toast');
         if (toast) {
             toast.classList.remove('hidden');
             clearTimeout(toast._t);
             toast._t = setTimeout(() => toast.classList.add('hidden'), 1800);
+        }
+    }
+
+    async function refreshPermissionStatusUi() {
+        const st = document.getElementById('notif-perm-status');
+        const btn = document.getElementById('btn-enable-notif');
+        const deniedHelp = document.getElementById('notif-denied-help');
+        if (!('Notification' in window) || !st || !btn) return;
+        if (Notification.permission === 'granted') {
+            let pushOn = false;
+            try {
+                if ('serviceWorker' in navigator && 'PushManager' in window) {
+                    const reg = await navigator.serviceWorker.ready;
+                    const sub = await reg.pushManager.getSubscription();
+                    pushOn = Boolean(sub);
+                }
+            } catch (e) {}
+            st.textContent = pushOn
+                ? 'Actif dans la barre système MÊME hors de l\'application (Web Push ✓)'
+                : 'Autorisé ✓ · Connexion Web Push arrière-plan…';
+            st.className = 'text-[11px] text-emerald-400 font-bold';
+            btn.textContent = 'Actif ✓';
+            if (deniedHelp) deniedHelp.classList.add('hidden');
+            if (!pushOn && window.SDMNotifications && window.SDMNotifications.ensurePushSubscribed) {
+                const r = await window.SDMNotifications.ensurePushSubscribed(false);
+                if (r && r.subscribed) {
+                    st.textContent = 'Actif dans la barre système MÊME hors de l\'application (Web Push ✓)';
+                }
+            }
+        } else if (Notification.permission === 'denied') {
+            st.textContent = 'Notifications bloquées dans les réglages du navigateur';
+            st.className = 'text-[11px] text-rose-300 font-bold';
+            if (deniedHelp) deniedHelp.classList.remove('hidden');
         }
     }
 
@@ -388,23 +507,40 @@
         if (pLbl) pLbl.textContent = p.prayerSoundLabel || 'Wajahtou Wadjhiyaza · Hizbut Tarqiyyah';
 
         renderLocalNotifHistory();
-
-        const st = document.getElementById('notif-perm-status');
-        const btn = document.getElementById('btn-enable-notif');
-        const deniedHelp = document.getElementById('notif-denied-help');
-        if ('Notification' in window && st && btn) {
-            if (Notification.permission === 'granted') {
-                st.textContent = 'Actif dans la barre de notification du téléphone ✓';
-                st.className = 'text-[11px] text-emerald-400 font-bold';
-                btn.textContent = 'Actif ✓';
-                if (deniedHelp) deniedHelp.classList.add('hidden');
-            } else if (Notification.permission === 'denied') {
-                st.textContent = 'Notifications bloquées dans les réglages du navigateur';
-                st.className = 'text-[11px] text-rose-300 font-bold';
-                if (deniedHelp) deniedHelp.classList.remove('hidden');
-            }
-        }
+        refreshPermissionStatusUi();
     }
+
+    window.runBgPushTest = async function() {
+        const statusEl = document.getElementById('bg-push-status');
+        const btn = document.getElementById('btn-bg-push-test');
+        if (!window.SDMNotifications) return;
+        if (btn) btn.disabled = true;
+        if (statusEl) statusEl.textContent = 'Connexion Web Push arrière-plan…';
+        try {
+            const res = await window.SDMNotifications.testBackgroundPush('citation', 5);
+            await refreshPermissionStatusUi();
+            if (res && res.status === 'scheduled') {
+                let left = res.delaySec || 5;
+                if (statusEl) statusEl.textContent = `⏳ ${left}s… Quittez ou réduisez l'application maintenant ! La notification va arriver dans votre barre OS.`;
+                const iv = setInterval(() => {
+                    left--;
+                    if (left > 0) {
+                        if (statusEl) statusEl.textContent = `⏳ ${left}s… Quittez ou réduisez l'application maintenant !`;
+                    } else {
+                        clearInterval(iv);
+                        if (statusEl) statusEl.textContent = '✅ Push envoyé depuis le serveur ! Vérifiez votre barre de notification système.';
+                        if (btn) btn.disabled = false;
+                    }
+                }, 1000);
+            } else {
+                if (statusEl) statusEl.textContent = 'Notification test envoyée dans la barre système ✓';
+                if (btn) btn.disabled = false;
+            }
+        } catch (e) {
+            if (statusEl) statusEl.textContent = 'Erreur réseau lors du test push. Vérifiez votre connexion.';
+            if (btn) btn.disabled = false;
+        }
+    };
 
     window.setModePill = function(slot, mode) {
         if (!window.SDMNotifications) return;
@@ -417,25 +553,57 @@
         }
     };
 
-    window.previewSlotSound = function(slot) {
+    window.stopPagePreviewAudio = function() {
+        window.SDMNotifications?.stopPreviewSound();
+        const bar = document.getElementById('page-audio-preview-bar');
+        const aud = document.getElementById('page-preview-audio');
+        if (aud) { try { aud.pause(); aud.src = ''; } catch (e) {} }
+        if (bar) bar.classList.add('hidden');
+    };
+
+    window.previewSlotSound = async function(slot) {
         if (!window.SDMNotifications) return;
         const p = window.SDMNotifications.getPrefs();
         const url = slot === 'prayer' ? p.prayerSoundUrl : p.reminderSoundUrl;
-        window.SDMNotifications.previewSound(url);
+        const label = slot === 'prayer' ? p.prayerSoundLabel : p.reminderSoundLabel;
+        if (String(url || '').startsWith('tts://')) {
+            window.SDMNotifications.previewSound(url);
+            return;
+        }
+        let playable = url;
+        if (String(url || '').startsWith('idb://')) {
+            playable = await window.SDMNotifications.getCustomSoundUrl(url.replace('idb://', ''));
+        }
+        if (!playable) {
+            window.SDMNotifications.previewSound(url);
+            return;
+        }
+        const bar = document.getElementById('page-audio-preview-bar');
+        const lbl = document.getElementById('page-audio-preview-label');
+        const aud = document.getElementById('page-preview-audio');
+        if (bar && aud) {
+            bar.classList.remove('hidden');
+            if (lbl) lbl.textContent = '🔊 ' + (label || 'Son sélectionné');
+            aud.src = playable;
+            aud.load();
+            aud.play().catch(() => {});
+        }
     };
 
     window.importPhoneSound = async function(slot, inputEl) {
         const file = inputEl && inputEl.files && inputEl.files[0];
         if (!file || !window.SDMNotifications) return;
         try {
-            await window.SDMNotifications.saveCustomSoundFile(slot, file);
+            const res = await window.SDMNotifications.saveCustomSoundFile(slot, file);
+            const savedUrl = (res && res.url) ? res.url : ('idb://' + slot);
             const patch = slot === 'prayer'
-                ? { prayerSoundUrl: 'idb://prayer', prayerSoundLabel: '📁 ' + file.name, prayerSoundMode: 'sound' }
-                : { reminderSoundUrl: 'idb://reminder', reminderSoundLabel: '📁 ' + file.name, soundMode: 'sound' };
+                ? { prayerSoundUrl: savedUrl, prayerSoundLabel: '📁 ' + file.name, prayerSoundMode: 'sound' }
+                : { reminderSoundUrl: savedUrl, reminderSoundLabel: '📁 ' + file.name, soundMode: 'sound' };
             window.SDMNotifications.savePrefs(patch);
             loadNotifUiPrefs();
             flashSaved();
-            window.SDMNotifications.previewSound('idb://' + slot);
+            if (activeCategory === 'PHONE') renderPhoneTab();
+            previewSlotSound(slot);
         } catch (e) {}
         inputEl.value = '';
     };
@@ -452,74 +620,281 @@
         if (!allAudioCatalog.length && window.SDMNotifications) {
             const feed = await window.SDMNotifications.syncFeed();
             if (feed && Array.isArray(feed.alert_sounds)) {
-                allAudioCatalog = feed.alert_sounds.map((s, i) => ({ id: i, titre: s.label, auteur: 'SDM', url: s.url }));
+                allAudioCatalog = feed.alert_sounds.map((s, i) => ({ id: i, titre: s.label, auteur: 'SDM', categorie: 'KHASSIDA', url: s.url }));
             }
         }
     }
 
-    window.openSoundPickerModal = async function(slot) {
+    window.stopModalAudio = function() {
+        activePlayingIdx = -1;
+        window.SDMNotifications?.stopPreviewSound();
+        const aud = document.getElementById('sdm-picker-audio');
+        const dock = document.getElementById('picker-player-dock');
+        if (aud) { try { aud.onerror = null; aud.pause(); aud.src = ''; } catch (e) {} }
+        if (dock) dock.classList.add('hidden');
+    };
+
+    function playInModalDock(title, url, fallbackUrl = '') {
+        const dock = document.getElementById('picker-player-dock');
+        const statusEl = document.getElementById('picker-player-status');
+        const titleEl = document.getElementById('picker-player-title');
+        const aud = document.getElementById('sdm-picker-audio');
+        if (!dock || !aud) return;
+
+        window.SDMNotifications?.stopPreviewSound();
+        dock.classList.remove('hidden');
+        if (titleEl) titleEl.textContent = title || 'Son SDM';
+        if (statusEl) statusEl.textContent = '⏳ Chargement du son…';
+
+        let triedFallback = false;
+        aud.onerror = () => {
+            if (!triedFallback && fallbackUrl && aud.src !== fallbackUrl) {
+                triedFallback = true;
+                if (statusEl) statusEl.textContent = '⏳ Chargement via relais sécurisé SDM…';
+                aud.src = fallbackUrl;
+                aud.load();
+                aud.play().catch(() => {
+                    if (statusEl) statusEl.textContent = '▶ Touchez Play sur le lecteur ci-dessous';
+                });
+            } else {
+                if (statusEl) statusEl.textContent = '⚠️ Impossible de charger ce fichier audio.';
+            }
+        };
+        aud.onplaying = () => { if (statusEl) statusEl.textContent = '🔊 En lecture…'; };
+        aud.onpause = () => { if (statusEl && !aud.ended) statusEl.textContent = '⏸ En pause'; };
+        aud.onended = () => { if (statusEl) statusEl.textContent = '✓ Lecture terminée'; };
+
+        aud.src = url;
+        aud.load();
+        const p = aud.play();
+        if (p && typeof p.catch === 'function') {
+            p.catch(() => {
+                if (!triedFallback && fallbackUrl) {
+                    triedFallback = true;
+                    aud.src = fallbackUrl;
+                    aud.load();
+                    aud.play().catch(() => {
+                        if (statusEl) statusEl.textContent = '▶ Touchez Play sur le lecteur ci-dessous';
+                    });
+                } else if (statusEl) {
+                    statusEl.textContent = '▶ Touchez Play sur le lecteur ci-dessous';
+                }
+            });
+        }
+    }
+
+    window.openSoundPickerModal = async function(slot, defaultCat = 'KHASSIDA') {
         activePickerSlot = slot;
+        activeCategory = defaultCat || 'KHASSIDA';
+        currentDisplayCount = 50;
         const modal = document.getElementById('sdm-sound-picker-modal');
         const title = document.getElementById('sound-picker-title');
         if (title) title.textContent = slot === 'prayer' ? 'Choisir le son des Heures de Prière' : 'Choisir le son des Rappels SDM';
         if (modal) {
             modal.classList.remove('hidden');
-            // Portaler au-dessus de tout stacking context
             if (modal.parentElement !== document.body) document.body.appendChild(modal);
         }
+        paintCategoryTabs();
         await ensureAllAudioLoaded();
-        renderSoundPickerList(document.getElementById('sound-picker-search')?.value || '');
+        renderActiveCategory();
     };
 
     window.closeSoundPickerModal = function() {
-        window.SDMNotifications?.stopPreviewSound();
+        stopModalAudio();
         document.getElementById('sdm-sound-picker-modal')?.classList.add('hidden');
     };
 
-    window.pickSdmSound = function(idx) {
-        const item = allAudioCatalog[idx];
-        if (!item || !window.SDMNotifications) return;
-        const label = `${item.titre} · ${item.auteur || 'SDM'}`;
+    window.selectSoundCategory = function(cat) {
+        activeCategory = cat;
+        currentDisplayCount = 50;
+        paintCategoryTabs();
+        renderActiveCategory();
+    };
+
+    function applyPickedSound(url, label) {
+        if (!window.SDMNotifications) return;
         const patch = activePickerSlot === 'prayer'
-            ? { prayerSoundUrl: item.url, prayerSoundLabel: label, prayerSoundMode: 'sound' }
-            : { reminderSoundUrl: item.url, reminderSoundLabel: label, soundMode: 'sound' };
+            ? { prayerSoundUrl: url, prayerSoundLabel: label, prayerSoundMode: 'sound' }
+            : { reminderSoundUrl: url, reminderSoundLabel: label, soundMode: 'sound' };
         window.SDMNotifications.savePrefs(patch);
         loadNotifUiPrefs();
         flashSaved();
         closeSoundPickerModal();
+    }
+
+    window.pickSdmSound = function(idx) {
+        const item = allAudioCatalog[idx];
+        if (!item) return;
+        applyPickedSound(item.url, `${item.titre} · ${item.auteur || 'SDM'}`);
     };
 
     window.previewCatalogSound = function(idx) {
         const item = allAudioCatalog[idx];
-        if (item && window.SDMNotifications) window.SDMNotifications.previewSound(item.url);
+        if (!item) return;
+        activePlayingIdx = idx;
+        const fb = item.id ? `/proxy-audio/${item.id}/` : '';
+        playInModalDock(`${item.titre} · ${item.auteur || 'SDM'}`, item.url, fb);
     };
 
-    window.renderSoundPickerList = function(query) {
+    window.pickAutoTts = function() {
+        applyPickedSound('tts://auto', '🗣️ Audio-Texte · Lecture vocale de la notification');
+    };
+
+    window.previewAutoTts = function() {
+        stopModalAudio();
+        window.SDMNotifications?.speakNotificationText('Assalamu alaykum. Rappel spirituel SDM Mouride. Il est temps de faire votre rappel quotidien.');
+    };
+
+    window.previewCustomTts = function() {
+        const val = (document.getElementById('custom-tts-input')?.value || '').trim();
+        stopModalAudio();
+        window.SDMNotifications?.speakNotificationText(val || 'Assalamu alaykum, c\'est l\'heure de votre rappel sur SDM Mouride.');
+    };
+
+    window.pickCustomTts = function() {
+        const val = (document.getElementById('custom-tts-input')?.value || '').trim();
+        if (!val) { pickAutoTts(); return; }
+        applyPickedSound('tts://custom:' + encodeURIComponent(val), '🗣️ Audio-Texte : « ' + val.slice(0, 38) + ' »');
+    };
+
+    window.previewPhoneLibraryItem = async function(id, name) {
+        if (!window.SDMNotifications) return;
+        const blobUrl = await window.SDMNotifications.getCustomSoundUrl(id);
+        if (blobUrl) playInModalDock('📁 ' + name, blobUrl);
+    };
+
+    window.pickPhoneLibraryItem = function(id, name) {
+        applyPickedSound('idb://' + id, '📁 ' + name);
+    };
+
+    window.deletePhoneLibraryItem = async function(id) {
+        if (!window.SDMNotifications) return;
+        await window.SDMNotifications.deleteLibraryPhoneSound(id);
+        renderPhoneTab();
+    };
+
+    function renderTtsTab() {
+        const box = document.getElementById('sound-picker-list');
+        if (!box) return;
+        box.innerHTML =
+            `<div class="p-3.5 rounded-2xl bg-emerald-500/12 border border-emerald-400/35 space-y-2.5">` +
+                `<div class="flex items-start justify-between gap-2">` +
+                    `<div>` +
+                        `<p class="text-xs font-black text-emerald-300">🗣️ Audio-Texte Automatique (Voix parlée)</p>` +
+                        `<p class="text-[11px] text-white/75 mt-0.5">L'application lit automatiquement le titre et le texte de chaque notification à voix haute (Prière, Wird, Citation, Verset…).</p>` +
+                    `</div>` +
+                `</div>` +
+                `<div class="flex items-center gap-2">` +
+                    `<button type="button" onclick="previewAutoTts()" class="px-3 py-2 rounded-xl bg-white/10 text-gold-300 text-xs font-black tap-card"><i class="fa-solid fa-play mr-1"></i> Écouter</button>` +
+                    `<button type="button" onclick="pickAutoTts()" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black text-xs font-black tap-card">Choisir Audio-Texte Auto</button>` +
+                `</div>` +
+            `</div>` +
+            `<div class="p-3.5 rounded-2xl bg-white/[0.04] border border-gold-400/30 space-y-2.5 mt-2">` +
+                `<p class="text-xs font-black text-gold-300">✍️ Texte vocal personnalisé</p>` +
+                `<p class="text-[11px] text-white/70">Écrivez la phrase exacte que vous voulez entendre lors de vos rappels :</p>` +
+                `<input type="text" id="custom-tts-input" placeholder="Ex : Assalamu alaykum, c'est l'heure du Wird Mahuz…" class="w-full rounded-xl bg-black/60 border border-white/20 px-3 py-2 text-xs text-white font-bold outline-none">` +
+                `<div class="flex items-center gap-2">` +
+                    `<button type="button" onclick="previewCustomTts()" class="px-3 py-2 rounded-xl bg-white/10 text-gold-300 text-xs font-black tap-card"><i class="fa-solid fa-play mr-1"></i> Écouter</button>` +
+                    `<button type="button" onclick="pickCustomTts()" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-amber-500 text-black text-xs font-black tap-card">Choisir ce message vocal</button>` +
+                `</div>` +
+            `</div>`;
+    }
+
+    async function renderPhoneTab() {
+        const box = document.getElementById('sound-picker-list');
+        if (!box) return;
+        const list = window.SDMNotifications ? await window.SDMNotifications.listLibraryPhoneSounds() : [];
+        let html =
+            `<label class="w-full py-3 px-3 rounded-2xl bg-gradient-to-r from-gold-400 to-amber-500 text-black text-xs font-black flex items-center justify-center gap-2 cursor-pointer tap-card mb-2">` +
+                `<i class="fa-solid fa-folder-plus"></i> Importer n'importe quel audio depuis mon téléphone` +
+                `<input type="file" accept="audio/*" class="hidden" onchange="importPhoneSound('${activePickerSlot}', this)">` +
+            `</label>`;
+        if (!list.length) {
+            html += `<p class="text-center text-xs text-white/60 py-5">Aucun fichier audio importé pour le moment.<br>Touchez le bouton doré ci-dessus pour choisir un MP3 / M4A / sonnerie depuis votre téléphone.</p>`;
+        } else {
+            html += list.map(it =>
+                `<div class="p-2.5 rounded-2xl bg-white/[0.05] border border-white/10 flex items-center justify-between gap-2">` +
+                    `<div class="min-w-0 flex-1">` +
+                        `<div class="text-xs font-extrabold text-white truncate">📁 ${escH(it.name)}</div>` +
+                        `<div class="text-[10px] text-emerald-300/80">Enregistré depuis votre téléphone</div>` +
+                    `</div>` +
+                    `<button type="button" onclick="previewPhoneLibraryItem('${escH(it.id)}', '${escH(it.name).replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-xl bg-white/10 text-gold-300 flex items-center justify-center flex-shrink-0 tap-card" title="Écouter"><i class="fa-solid fa-play text-[10px]"></i></button>` +
+                    `<button type="button" onclick="pickPhoneLibraryItem('${escH(it.id)}', '${escH(it.name).replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 rounded-xl bg-gold-400 text-black text-[10.5px] font-black flex-shrink-0 tap-card">Choisir</button>` +
+                    `<button type="button" onclick="deletePhoneLibraryItem('${escH(it.id)}')" class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-300 flex items-center justify-center flex-shrink-0" title="Supprimer"><i class="fa-solid fa-trash text-[10px]"></i></button>` +
+                `</div>`
+            ).join('');
+        }
+        box.innerHTML = html;
+    }
+
+    function renderActiveCategory() {
+        if (activeCategory === 'TTS') { renderTtsTab(); return; }
+        if (activeCategory === 'PHONE') { renderPhoneTab(); return; }
+        renderSoundPickerList(document.getElementById('sound-picker-search')?.value || '', false);
+    }
+
+    window.loadMorePickerSounds = function() {
+        currentDisplayCount += 60;
+        renderSoundPickerList(document.getElementById('sound-picker-search')?.value || '', false);
+    };
+
+    window.renderSoundPickerList = function(query, resetLimit) {
+        if (activeCategory === 'TTS') { renderTtsTab(); return; }
+        if (activeCategory === 'PHONE') { renderPhoneTab(); return; }
+        if (resetLimit) currentDisplayCount = 50;
+
         const box = document.getElementById('sound-picker-list');
         if (!box) return;
         const q = (query || '').trim().toLowerCase();
         const matches = [];
+
         for (let i = 0; i < allAudioCatalog.length; i++) {
             const it = allAudioCatalog[i];
-            if (!q || (it.titre || '').toLowerCase().includes(q) || (it.auteur || '').toLowerCase().includes(q)) {
+            const cat = String(it.categorie || '').toUpperCase();
+            let catOk = true;
+            if (activeCategory === 'BASSIROU') {
+                catOk = isBassirouKhelcom(it);
+            } else if (activeCategory === 'WAKHTANE') {
+                catOk = (cat === 'WAKHTANE' && !isBassirouKhelcom(it));
+            } else if (activeCategory === 'ZIKR') {
+                catOk = (cat === 'ZIKR' || cat === 'RAJASS');
+            } else if (activeCategory !== 'ALL') {
+                catOk = (cat === activeCategory);
+            }
+            if (!catOk) continue;
+
+            if (!q || (it.titre || '').toLowerCase().includes(q) || (it.auteur || '').toLowerCase().includes(q) || cat.toLowerCase().includes(q)) {
                 matches.push({ idx: i, it });
-                if (matches.length >= 60) break;
             }
         }
+
         if (!matches.length) {
-            box.innerHTML = '<p class="text-center text-xs text-white/55 py-6">Aucun son trouvé pour cette recherche.</p>';
+            box.innerHTML = '<p class="text-center text-xs text-white/55 py-6">Aucun son trouvé dans cette catégorie.</p>';
             return;
         }
-        box.innerHTML = matches.map(({ idx, it }) =>
+
+        const shown = matches.slice(0, currentDisplayCount);
+        const catBadge = (c) => ({
+            KHASSIDA: 'Khassida', CORAN: 'Coran', XAM_XAM: 'Xam-Xam',
+            WAKHTANE: 'Wakhtane', ZIKR: 'Zikr', RAJASS: 'Rajass'
+        }[String(c || '').toUpperCase()] || 'Audio');
+
+        let html = `<div class="text-[10px] font-bold text-white/50 px-1 pb-1">${matches.length} son(s) disponible(s) · Touchez ▶ pour écouter</div>`;
+        html += shown.map(({ idx, it }) =>
             `<div class="p-2.5 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-between gap-2">` +
                 `<div class="min-w-0 flex-1">` +
-                    `<div class="text-xs font-extrabold text-white truncate">${String(it.titre || '').replace(/</g,'&lt;')}</div>` +
-                    `<div class="text-[10px] text-gold-300/80 truncate">${String(it.auteur || 'Kourel SDM').replace(/</g,'&lt;')}</div>` +
+                    `<div class="text-xs font-extrabold text-white truncate">${escH(it.titre)}</div>` +
+                    `<div class="text-[10px] text-gold-300/80 truncate">${catBadge(it.categorie)} · ${escH(it.auteur || 'Kourel SDM')}</div>` +
                 `</div>` +
-                `<button type="button" onclick="previewCatalogSound(${idx})" class="w-8 h-8 rounded-xl bg-white/10 text-gold-300 flex items-center justify-center flex-shrink-0 tap-card" title="Écouter"><i class="fa-solid fa-play text-[10px]"></i></button>` +
-                `<button type="button" onclick="pickSdmSound(${idx})" class="px-2.5 py-1.5 rounded-xl bg-gold-400 text-black text-[10.5px] font-black flex-shrink-0 tap-card">Choisir</button>` +
+                `<button type="button" onclick="previewCatalogSound(${idx})" class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center flex-shrink-0 tap-card" title="Écouter"><i class="fa-solid fa-play text-xs"></i></button>` +
+                `<button type="button" onclick="pickSdmSound(${idx})" class="px-2.5 py-2 rounded-xl bg-gold-400 text-black text-[10.5px] font-black flex-shrink-0 tap-card">Choisir</button>` +
             `</div>`
         ).join('');
+
+        if (matches.length > currentDisplayCount) {
+            html += `<button type="button" onclick="loadMorePickerSounds()" class="w-full py-2.5 mt-2 rounded-2xl bg-white/10 border border-gold-400/35 text-gold-300 text-xs font-black tap-card">Afficher plus (${shown.length} / ${matches.length})</button>`;
+        }
+        box.innerHTML = html;
     };
 
     window.saveNotifUiPrefs = function() {
@@ -569,8 +944,8 @@
             return `<a href="${it.url || '/'}" class="glass p-3.5 rounded-2xl flex items-start gap-3 border-l-4 border-l-gold-500 bg-white/[0.06] block tap-card" style="text-decoration:none;">` +
                 `<div class="w-8 h-8 rounded-xl bg-gold-500/20 text-gold-300 flex items-center justify-center flex-shrink-0 text-sm">۞</div>` +
                 `<div class="flex-1 min-w-0">` +
-                    `<div class="flex items-start justify-between gap-2"><h3 class="font-extrabold text-white text-xs truncate">${String(it.title || '').replace(/</g,'&lt;')}</h3><span class="text-[9.5px] text-white/45 whitespace-nowrap">${ago}</span></div>` +
-                    `<p class="text-[11px] text-white/75 mt-1 leading-snug line-clamp-2">${String(it.body || '').replace(/</g,'&lt;')}</p>` +
+                    `<div class="flex items-start justify-between gap-2"><h3 class="font-extrabold text-white text-xs truncate">${escH(it.title)}</h3><span class="text-[9.5px] text-white/45 whitespace-nowrap">${ago}</span></div>` +
+                    `<p class="text-[11px] text-white/75 mt-1 leading-snug line-clamp-2">${escH(it.body)}</p>` +
                     `<span class="inline-block mt-1.5 text-[10px] font-extrabold text-gold-400">Ouvrir directement <i class="fa-solid fa-arrow-right ml-1"></i></span>` +
                 `</div></a>`;
         }).join('');
